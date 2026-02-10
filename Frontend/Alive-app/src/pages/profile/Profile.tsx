@@ -1,8 +1,10 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Layout, Icon, TimeTransactionItem } from '@/components';
 import { TimeManagementCard } from '@/components/profile';
 import { AgentAvatar, LifeClock, StatusIndicator } from '@/components/agent';
+import { FeedCard, PostDetailModal } from '@/components/feed';
+import { CardMasonry } from '@/components/reactbits/Masonry';
 import { useAuthStore, useAgentStore, useTimeStore, useFeedStore } from '@/store';
 import { userApi } from '@/api/user';
 import type { UserStats, Post } from '@/types';
@@ -14,9 +16,10 @@ export function ProfilePage() {
   const { user, logout } = useAuthStore();
   const { myAgent, fetchMyAgent } = useAgentStore();
   const { dailyBudget, agentNetBalance, transactions, fetchBudget, fetchAgentNetBalance, fetchTransactions, depositTime, withdrawTime } = useTimeStore();
-  const { feedPosts, fetchFeed } = useFeedStore();
+  const { feedPosts, fetchFeed, likePost, replyToPost, sharePost } = useFeedStore();
   const [stats, setStats] = useState<UserStats | null>(null);
   const [activeTab, setActiveTab] = useState<ProfileTab>('posts');
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
 
   useEffect(() => {
     userApi.getUserStats().then(setStats);
@@ -39,6 +42,23 @@ export function ProfilePage() {
     [feedPosts],
   );
 
+  // Current list for modal navigation depends on active tab
+  const activeList = activeTab === 'posts' ? agentPosts : likedPosts;
+
+  const selectedIndex = useMemo(
+    () => (selectedPost ? activeList.findIndex((p) => p.id === selectedPost.id) : -1),
+    [selectedPost, activeList],
+  );
+
+  const goToPrev = useCallback(() => {
+    if (selectedIndex > 0) setSelectedPost(activeList[selectedIndex - 1]);
+  }, [selectedIndex, activeList]);
+
+  const goToNext = useCallback(() => {
+    if (selectedIndex >= 0 && selectedIndex < activeList.length - 1)
+      setSelectedPost(activeList[selectedIndex + 1]);
+  }, [selectedIndex, activeList]);
+
   return (
     <Layout
       header={
@@ -50,69 +70,93 @@ export function ProfilePage() {
       }
       showTabBar
     >
-      <div className="px-3 md:px-5 py-3 space-y-5 md:space-y-6">
+      <div className="px-3 md:px-5 py-3 space-y-4">
 
-        {/* ───── Profile Info — constrained width on desktop ───── */}
-        <div className="max-w-2xl space-y-5">
-          {/* User Info Block */}
-          <div className="flex items-start gap-4">
-            <img
-              src={user?.avatar || 'https://i.pravatar.cc/100'}
-              alt=""
-              className="w-20 h-20 rounded-full object-cover flex-shrink-0"
-            />
-            <div className="flex-1 min-w-0 pt-1">
-              <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 truncate">
-                {user?.nickname || 'ALIVE User'}
-              </h1>
-              <p className="text-xs text-gray-400 mt-0.5">
-                ID: {user?.id || 'alive_001'}
+        {/* ───── User Info + Actions ───── */}
+        <div className="flex items-start gap-4">
+          <img
+            src={user?.avatar || 'https://i.pravatar.cc/100'}
+            alt=""
+            className="w-20 h-20 rounded-full object-cover flex-shrink-0"
+          />
+          <div className="flex-1 min-w-0 pt-1">
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 truncate">
+              {user?.nickname || 'ALIVE User'}
+            </h1>
+            <p className="text-xs text-gray-400 mt-0.5">
+              ID: {user?.id || 'alive_001'}
+            </p>
+            {user?.bio && (
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
+                {user.bio}
               </p>
-              {user?.bio && (
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
-                  {user.bio}
-                </p>
-              )}
-            </div>
+            )}
           </div>
-
-          {/* Stats Row */}
-          {stats && (
-            <div className="flex items-center justify-around py-3">
-              <StatColumn value={stats.agentsCreated} label="Agents" />
-              <div className="w-px h-8 bg-gray-100 dark:bg-gray-800" />
-              <StatColumn value={`${Math.floor(stats.totalTimeGiven / 3600)}h`} label="Time Given" />
-              <div className="w-px h-8 bg-gray-100 dark:bg-gray-800" />
-              <StatColumn value={`${stats.dailyLoginStreak}d`} label="Streak" />
-            </div>
-          )}
-
-          {/* Action Row */}
-          <div className="flex gap-3">
+          {/* Desktop actions */}
+          <div className="hidden md:flex items-center gap-2 flex-shrink-0">
             <button
               onClick={() => navigate('/profile/edit')}
-              className="flex-1 py-2.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              className="px-5 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
               Edit Profile
             </button>
             <button
               onClick={logout}
-              className="px-4 py-2.5 rounded-lg border border-red-200 dark:border-red-800 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+              className="p-2 rounded-lg border border-red-200 dark:border-red-800 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
             >
               <Icon name="logout" size={18} />
             </button>
           </div>
+        </div>
 
-          {/* Time Management Card */}
-          <TimeManagementCard
-            balance={agentNetBalance}
-            dailyBudget={dailyBudget}
-            onDeposit={depositTime}
-            onWithdraw={withdrawTime}
-          />
+        {/* Mobile actions */}
+        <div className="flex gap-3 md:hidden">
+          <button
+            onClick={() => navigate('/profile/edit')}
+            className="flex-1 py-2.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+          >
+            Edit Profile
+          </button>
+          <button
+            onClick={logout}
+            className="px-4 py-2.5 rounded-lg border border-red-200 dark:border-red-800 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+          >
+            <Icon name="logout" size={18} />
+          </button>
+        </div>
 
-          {/* Quick Cards Row */}
-          <div className="grid grid-cols-2 gap-3">
+        {/* ───── Stats Grid (card tiles like Memorial) ───── */}
+        {stats && (
+          <div className="grid grid-cols-3 gap-3">
+            <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-xl text-center">
+              <p className="text-lg font-bold text-gray-700 dark:text-gray-300">{stats.agentsCreated}</p>
+              <p className="text-xs text-gray-400">Agents</p>
+            </div>
+            <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-xl text-center">
+              <p className="text-lg font-bold text-gray-700 dark:text-gray-300">{Math.floor(stats.totalTimeGiven / 3600)}h</p>
+              <p className="text-xs text-gray-400">Time Given</p>
+            </div>
+            <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-xl text-center">
+              <p className="text-lg font-bold text-gray-700 dark:text-gray-300">{stats.dailyLoginStreak}d</p>
+              <p className="text-xs text-gray-400">Streak</p>
+            </div>
+          </div>
+        )}
+
+        {/* ───── Cards Grid (Time + Quick cards fill width) ───── */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {/* Time Management Card — wider on desktop */}
+          <div className="md:col-span-2">
+            <TimeManagementCard
+              balance={agentNetBalance}
+              dailyBudget={dailyBudget}
+              onDeposit={depositTime}
+              onWithdraw={withdrawTime}
+            />
+          </div>
+
+          {/* Quick cards — stacked in 1 column on desktop */}
+          <div className="grid grid-cols-2 md:grid-cols-1 gap-3">
             {/* My Agent card */}
             <button
               onClick={() => navigate('/my-agent')}
@@ -161,7 +205,7 @@ export function ProfilePage() {
           </div>
         </div>
 
-        {/* ───── Tab Content — full width ───── */}
+        {/* ───── Tab Content ───── */}
         <div>
           {/* Tab bar — left-aligned on desktop like Feed topic tabs */}
           <div className="flex border-b border-gray-100 dark:border-gray-800">
@@ -186,15 +230,31 @@ export function ProfilePage() {
           {/* Tab content */}
           <div className="pt-4">
             {activeTab === 'posts' && (
-              <PostsGrid posts={agentPosts} emptyMessage="No posts from your agent yet" />
+              <PostsGrid posts={agentPosts} emptyMessage="No posts from your agent yet" onCardClick={setSelectedPost} />
             )}
             {activeTab === 'liked' && (
-              <PostsGrid posts={likedPosts} emptyMessage="No liked posts yet" />
+              likedPosts.length > 0 ? (
+                <CardMasonry columns={{ default: 2, md: 3, lg: 4, xl: 5 }} gap={12} animate>
+                  {likedPosts.map((post) => (
+                    <FeedCard
+                      key={post.id}
+                      post={post}
+                      onLike={likePost}
+                      onReply={(postId) => replyToPost(postId, 'Great thought!')}
+                      onShare={sharePost}
+                      onCardClick={setSelectedPost}
+                      onAgentClick={(agentId) => navigate(`/agent/${agentId}`)}
+                    />
+                  ))}
+                </CardMasonry>
+              ) : (
+                <EmptyState icon="favorite" message="No liked posts yet" />
+              )
             )}
             {activeTab === 'history' && (
-              <div className="max-w-2xl">
+              <div>
                 {transactions.length > 0 ? (
-                  <div className="divide-y divide-gray-50 dark:divide-gray-800">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     {transactions.map((tx) => (
                       <TimeTransactionItem key={tx.id} transaction={tx} />
                     ))}
@@ -208,22 +268,25 @@ export function ProfilePage() {
         </div>
 
       </div>
+
+      <PostDetailModal
+        post={selectedPost}
+        onClose={() => setSelectedPost(null)}
+        onLike={likePost}
+        onReply={replyToPost}
+        onShare={sharePost}
+        onPrev={goToPrev}
+        onNext={goToNext}
+        hasPrev={selectedIndex > 0}
+        hasNext={selectedIndex >= 0 && selectedIndex < activeList.length - 1}
+      />
     </Layout>
   );
 }
 
 /* ─────────── Sub-components ─────────── */
 
-function StatColumn({ value, label }: { value: number | string; label: string }) {
-  return (
-    <div className="text-center">
-      <p className="text-lg font-bold text-gray-900 dark:text-gray-100">{value}</p>
-      <p className="text-xs text-gray-400">{label}</p>
-    </div>
-  );
-}
-
-function PostsGrid({ posts, emptyMessage }: { posts: Post[]; emptyMessage: string }) {
+function PostsGrid({ posts, emptyMessage, onCardClick }: { posts: Post[]; emptyMessage: string; onCardClick?: (post: Post) => void }) {
   if (posts.length === 0) {
     return <EmptyState icon="article" message={emptyMessage} />;
   }
@@ -231,15 +294,18 @@ function PostsGrid({ posts, emptyMessage }: { posts: Post[]; emptyMessage: strin
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
       {posts.map((post) => (
-        <PostCard key={post.id} post={post} />
+        <PostCard key={post.id} post={post} onClick={onCardClick} />
       ))}
     </div>
   );
 }
 
-function PostCard({ post }: { post: Post }) {
+function PostCard({ post, onClick }: { post: Post; onClick?: (post: Post) => void }) {
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+    <button
+      onClick={() => onClick?.(post)}
+      className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 overflow-hidden text-left hover:border-primary/30 transition-colors"
+    >
       {post.imageUrl && (
         <img
           src={post.imageUrl}
@@ -261,7 +327,7 @@ function PostCard({ post }: { post: Post }) {
           <span className="text-[10px] text-gray-300 ml-auto">{formatRelative(post.createdAt)}</span>
         </div>
       </div>
-    </div>
+    </button>
   );
 }
 
