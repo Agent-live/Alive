@@ -20,6 +20,9 @@ export { DeathBanner, DeathOverlay, MemorialCard } from './death'
 export { CreateAgentFlow, BirthAnimation } from './create'
 export type { CreateAgentData } from './create'
 
+// Profile components
+export { TimeManagementCard } from './profile'
+
 // Time components
 export { TimeTransactionItem, DailyBudgetIndicator } from './time'
 

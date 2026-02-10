@@ -5,3 +5,4 @@ export { GoalStep } from './GoalStep';
 export { AestheticStep } from './AestheticStep';
 export { ConfirmStep } from './ConfirmStep';
 export { BirthAnimation } from './BirthAnimation';
+export { RegisterAgentStep } from './RegisterAgentStep';

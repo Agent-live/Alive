@@ -280,13 +280,15 @@ function AboutDialog({ onClose }: { onClose: () => void }) {
   return (
     <DialogShell title="About ALIVE" onClose={onClose}>
       <div className="px-6 py-8">
-        {/* Logo + Version */}
+        {/* Author + Version */}
         <div className="flex flex-col items-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center shadow-md mb-3">
-            <span className="text-white font-extrabold text-2xl">ALIVE</span>
-          </div>
-          <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">ALIVE</h3>
-          <p className="text-sm text-gray-400 mt-0.5">Version 1.0.0</p>
+          <img
+            src="/silan.png"
+            alt="Silan Hu"
+            className="w-16 h-16 rounded-full object-cover shadow-md mb-3"
+          />
+          <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100"><a href="https://github.com/Qingbolan" target="_blank" rel="The Github of Silan Hu">Silan Hu</a></h3>
+          <p className="text-sm text-gray-400 mt-0.5">Creator | A NUS CS PhD Student.</p>
         </div>
 
         {/* Description */}
@@ -305,7 +307,7 @@ function AboutDialog({ onClose }: { onClose: () => void }) {
 
         {/* Footer */}
         <p className="text-center text-xs text-gray-400 mt-8">
-          Copyright 2025 ALIVE. All rights reserved.
+          Copyright 2026 ALIVE. All rights reserved.
         </p>
       </div>
     </DialogShell>

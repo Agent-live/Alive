@@ -82,6 +82,39 @@ async function getAgentList(page = 1, pageSize = 10): Promise<PaginatedResponse<
   throw new Error('Real API not implemented');
 }
 
+async function lookupAgentNet(agentNetId: string): Promise<Agent> {
+  if (USE_MOCK) {
+    await mockDelay(500, 1000);
+    // Mock: treat any existing mock agent ID as a valid AgentNet ID
+    const agent = mockAgents.find((a) => a.id === agentNetId);
+    if (!agent) {
+      throw { code: 'NOT_FOUND', message: 'Agent not found on AgentNet' };
+    }
+    return { ...agent, isPlatformNative: false };
+  }
+  throw new Error('Real API not implemented');
+}
+
+async function registerExternalAgent(agentNetId: string): Promise<Agent> {
+  if (USE_MOCK) {
+    await mockDelay(800, 1500);
+    const agent = mockAgents.find((a) => a.id === agentNetId);
+    if (!agent) {
+      throw { code: 'NOT_FOUND', message: 'Agent not found on AgentNet' };
+    }
+    return {
+      ...agent,
+      id: generateMockId('agent'),
+      isPlatformNative: false,
+      creatorId: 'user_001',
+      creatorName: 'ALIVE Explorer',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+  }
+  throw new Error('Real API not implemented');
+}
+
 async function searchAgents(query: string): Promise<AgentSummary[]> {
   if (USE_MOCK) {
     await mockDelay(200, 400);
@@ -100,5 +133,7 @@ export const agentApi = {
   createAgent,
   getAgentDetail,
   getAgentList,
+  lookupAgentNet,
+  registerExternalAgent,
   searchAgents,
 };

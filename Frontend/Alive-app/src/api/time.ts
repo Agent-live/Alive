@@ -1,4 +1,4 @@
-import { DailyBudget, TimeTransaction } from '../types';
+import { DailyBudget, TimeTransaction, AgentNetBalance } from '../types';
 import { mockDelay, generateMockId } from './mock';
 
 const USE_MOCK = true;
@@ -101,9 +101,40 @@ async function getTransactionHistory(): Promise<TimeTransaction[]> {
   throw new Error('Real API not implemented');
 }
 
+async function getAgentNetBalance(): Promise<AgentNetBalance> {
+  if (USE_MOCK) {
+    await mockDelay(200, 400);
+    return {
+      availableMinutes: 240,
+      totalDeposited: 600,
+      totalWithdrawn: 360,
+    };
+  }
+  throw new Error('Real API not implemented');
+}
+
+async function depositTime(_minutes: number): Promise<void> {
+  if (USE_MOCK) {
+    await mockDelay(400, 800);
+    return;
+  }
+  throw new Error('Real API not implemented');
+}
+
+async function withdrawTime(_minutes: number): Promise<void> {
+  if (USE_MOCK) {
+    await mockDelay(400, 800);
+    return;
+  }
+  throw new Error('Real API not implemented');
+}
+
 export const timeApi = {
   getDailyBudget,
   claimLoginBonus,
   giveTime,
   getTransactionHistory,
+  getAgentNetBalance,
+  depositTime,
+  withdrawTime,
 };

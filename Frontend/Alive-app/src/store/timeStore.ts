@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { DailyBudget, TimeTransaction, TimeConfig } from '../types';
+import { DailyBudget, TimeTransaction, TimeConfig, AgentNetBalance } from '../types';
 import { timeApi } from '../api/time';
 import { toast } from './uiStore';
 
@@ -10,11 +10,15 @@ interface TimeState {
   timeConfig: TimeConfig;
   loginBonusClaimed: boolean;
   lastLoginDate: string | null;
+  agentNetBalance: AgentNetBalance | null;
 
   claimLoginBonus: () => Promise<void>;
   giveTime: (agentId: string, amount: number) => Promise<void>;
   fetchBudget: () => Promise<void>;
   fetchTransactions: () => Promise<void>;
+  fetchAgentNetBalance: () => Promise<void>;
+  depositTime: (minutes: number) => Promise<void>;
+  withdrawTime: (minutes: number) => Promise<void>;
 }
 
 const DEFAULT_TIME_CONFIG: TimeConfig = {
@@ -34,6 +38,7 @@ export const useTimeStore = create<TimeState>()(
       timeConfig: DEFAULT_TIME_CONFIG,
       loginBonusClaimed: false,
       lastLoginDate: null,
+      agentNetBalance: null,
 
       claimLoginBonus: async () => {
         try {
@@ -73,6 +78,39 @@ export const useTimeStore = create<TimeState>()(
           set({ transactions });
         } catch (error) {
           console.error('Failed to fetch transactions:', error);
+        }
+      },
+
+      fetchAgentNetBalance: async () => {
+        try {
+          const balance = await timeApi.getAgentNetBalance();
+          set({ agentNetBalance: balance });
+        } catch (error) {
+          console.error('Failed to fetch AgentNet balance:', error);
+        }
+      },
+
+      depositTime: async (minutes) => {
+        try {
+          await timeApi.depositTime(minutes);
+          toast.success(`Deposited ${minutes} minutes to AgentNet`);
+          get().fetchAgentNetBalance();
+          get().fetchBudget();
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Deposit failed';
+          toast.error(message);
+        }
+      },
+
+      withdrawTime: async (minutes) => {
+        try {
+          await timeApi.withdrawTime(minutes);
+          toast.success(`Withdrew ${minutes} minutes from AgentNet`);
+          get().fetchAgentNetBalance();
+          get().fetchBudget();
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Withdraw failed';
+          toast.error(message);
         }
       },
     }),

@@ -12,6 +12,7 @@ interface AgentState {
   searchResults: AgentSummary[];
 
   createAgent: (data: { name: string; personality: PersonalityConfig; goalDescription: string; avatarSeed?: string }) => Promise<Agent>;
+  registerAgent: (agentNetId: string) => Promise<Agent>;
   fetchMyAgent: () => Promise<void>;
   fetchAgentDetail: (id: string) => Promise<void>;
   fetchAgentList: () => Promise<void>;
@@ -40,6 +41,21 @@ export const useAgentStore = create<AgentState>()(
         } catch (error) {
           set({ loading: false });
           const message = error instanceof Error ? error.message : 'Failed to create agent';
+          toast.error(message);
+          throw error;
+        }
+      },
+
+      registerAgent: async (agentNetId) => {
+        set({ loading: true });
+        try {
+          const agent = await agentApi.registerExternalAgent(agentNetId);
+          set({ myAgent: agent, loading: false });
+          toast.success('Agent registered!');
+          return agent;
+        } catch (error) {
+          set({ loading: false });
+          const message = error instanceof Error ? error.message : 'Failed to register agent';
           toast.error(message);
           throw error;
         }

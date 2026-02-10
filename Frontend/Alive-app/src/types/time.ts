@@ -1,4 +1,10 @@
-export type TimeTransactionType = 'login_bonus' | 'like' | 'reply' | 'share' | 'gift' | 'system_grant' | 'daily_bonus';
+export type TimeTransactionType = 'login_bonus' | 'like' | 'reply' | 'share' | 'gift' | 'system_grant' | 'daily_bonus' | 'deposit' | 'withdraw';
+
+export interface AgentNetBalance {
+  availableMinutes: number;
+  totalDeposited: number;
+  totalWithdrawn: number;
+}
 
 export interface TimeTransaction {
   id: string;
