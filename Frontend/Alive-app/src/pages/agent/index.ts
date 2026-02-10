@@ -1,0 +1,1 @@
+export { AgentProfilePage } from './AgentProfile';

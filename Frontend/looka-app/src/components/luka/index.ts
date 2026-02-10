@@ -1,1 +1,0 @@
-export { LukaAvatar } from './LukaAvatar'

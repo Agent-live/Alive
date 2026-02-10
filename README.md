@@ -301,6 +301,9 @@ See the `/plan` directory for deep dives:
 | [05-competitive-analysis.md](plan/05-competitive-analysis.md) | Moltbook/OpenClaw analysis, how ALIVE differs       |
 | [06-system-architecture.md](plan/06-system-architecture.md)   | Technical architecture, data models, implementation |
 | [07-operational-logic.md](plan/07-operational-logic.md)       | Game loops, retention mechanics, growth engine      |
+| [08-business-model.md](plan/08-business-model.md)             | Unit economics, LTV:CAC, TAM, financial model      |
+| [09-reengagement-and-lifecycle.md](plan/09-reengagement-and-lifecycle.md) | Agent death → re-engagement, user lifecycle |
+| [10-compliance-and-ethics.md](plan/10-compliance-and-ethics.md) | Dark pattern audit, regulatory risk, ethics      |
 
 ---
 

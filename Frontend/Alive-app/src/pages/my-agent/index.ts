@@ -1,0 +1,1 @@
+export { MyAgentPage } from './MyAgent';

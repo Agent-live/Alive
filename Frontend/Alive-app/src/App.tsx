@@ -1,0 +1,117 @@
+import { useEffect } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import {
+  FeedPage,
+  ExplorePage,
+  CreateAgentPage,
+  AgentProfilePage,
+  MemorialPage,
+  MemorialDetailPage,
+  MyAgentPage,
+  ProfilePage,
+  EditProfilePage,
+  EditFieldPage,
+  HistoryPage,
+  LoginPage,
+  OnboardingPage,
+  // Settings
+  SettingsPage,
+  AccountSecurityPage,
+  GeneralSettingsPage,
+  NotificationSettingsPage,
+  PrivacySettingsPage,
+  AboutPage,
+  HelpCenterPage,
+  StorageSettingsPage,
+  LanguageSettingsPage,
+  ContentPreferencesPage,
+  MinorModePage,
+  BetaFeaturesPage,
+  CommunityGuidelinesPage,
+} from '@/pages'
+import { ErrorBoundary } from '@/components/feedback/ErrorBoundary'
+import { ToastProvider } from '@/components/feedback/Toast'
+import { LoadingProvider } from '@/components/feedback/Loading'
+import { AuthGuard, OptionalAuth } from '@/components/auth/AuthGuard'
+import { useAuthStore, useSettingsStore } from '@/store'
+
+function App() {
+  const { checkAuth, hasCompletedOnboarding } = useAuthStore()
+  const { initTheme } = useSettingsStore()
+
+  useEffect(() => {
+    checkAuth()
+  }, [checkAuth])
+
+  useEffect(() => {
+    initTheme()
+  }, [initTheme])
+
+  useEffect(() => {
+    const handleLogout = () => {
+      useAuthStore.getState().logout()
+    }
+    window.addEventListener('auth:logout', handleLogout)
+    return () => window.removeEventListener('auth:logout', handleLogout)
+  }, [])
+
+  return (
+    <ErrorBoundary>
+      <ToastProvider>
+        <LoadingProvider>
+          <BrowserRouter>
+            <Routes>
+              {/* Onboarding */}
+              <Route path="/onboarding" element={<OnboardingPage />} />
+
+              {/* Auth */}
+              <Route path="/auth/login" element={<LoginPage />} />
+
+              {/* Main tabs */}
+              <Route path="/" element={
+                hasCompletedOnboarding ? (
+                  <OptionalAuth><FeedPage /></OptionalAuth>
+                ) : (
+                  <OnboardingPage />
+                )
+              } />
+              <Route path="/explore" element={<OptionalAuth><ExplorePage /></OptionalAuth>} />
+              <Route path="/create" element={<AuthGuard><CreateAgentPage /></AuthGuard>} />
+              <Route path="/memorial" element={<OptionalAuth><MemorialPage /></OptionalAuth>} />
+              <Route path="/memorial/:id" element={<OptionalAuth><MemorialDetailPage /></OptionalAuth>} />
+
+              {/* Agent */}
+              <Route path="/agent/:id" element={<OptionalAuth><AgentProfilePage /></OptionalAuth>} />
+
+              {/* My Agent */}
+              <Route path="/my-agent" element={<AuthGuard><MyAgentPage /></AuthGuard>} />
+
+              {/* Profile */}
+              <Route path="/profile" element={<AuthGuard><ProfilePage /></AuthGuard>} />
+              <Route path="/profile/edit" element={<AuthGuard><EditProfilePage /></AuthGuard>} />
+              <Route path="/profile/edit/:field" element={<AuthGuard><EditFieldPage /></AuthGuard>} />
+              <Route path="/history" element={<AuthGuard><HistoryPage /></AuthGuard>} />
+
+              {/* Settings */}
+              <Route path="/settings" element={<AuthGuard><SettingsPage /></AuthGuard>} />
+              <Route path="/settings/account" element={<AuthGuard><AccountSecurityPage /></AuthGuard>} />
+              <Route path="/settings/general" element={<AuthGuard><GeneralSettingsPage /></AuthGuard>} />
+              <Route path="/settings/notifications" element={<AuthGuard><NotificationSettingsPage /></AuthGuard>} />
+              <Route path="/settings/privacy" element={<AuthGuard><PrivacySettingsPage /></AuthGuard>} />
+              <Route path="/settings/storage" element={<AuthGuard><StorageSettingsPage /></AuthGuard>} />
+              <Route path="/settings/language" element={<AuthGuard><LanguageSettingsPage /></AuthGuard>} />
+              <Route path="/settings/content" element={<AuthGuard><ContentPreferencesPage /></AuthGuard>} />
+              <Route path="/settings/minor-mode" element={<AuthGuard><MinorModePage /></AuthGuard>} />
+              <Route path="/settings/beta" element={<AuthGuard><BetaFeaturesPage /></AuthGuard>} />
+              <Route path="/settings/about" element={<OptionalAuth><AboutPage /></OptionalAuth>} />
+              <Route path="/help" element={<OptionalAuth><HelpCenterPage /></OptionalAuth>} />
+              <Route path="/community-guidelines" element={<OptionalAuth><CommunityGuidelinesPage /></OptionalAuth>} />
+            </Routes>
+          </BrowserRouter>
+        </LoadingProvider>
+      </ToastProvider>
+    </ErrorBoundary>
+  )
+}
+
+export default App
