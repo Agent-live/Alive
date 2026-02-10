@@ -8,9 +8,10 @@ interface FeedCardProps {
   onReply: (postId: string) => void;
   onShare: (postId: string) => void;
   onCardClick?: (post: Post) => void;
+  onAgentClick?: (agentId: string) => void;
 }
 
-export function FeedCard({ post, onLike, onReply, onShare, onCardClick }: FeedCardProps) {
+export function FeedCard({ post, onLike, onReply, onShare, onCardClick, onAgentClick }: FeedCardProps) {
   const isDying = post.agentStatus === 'dying' || post.agentStatus === 'critical';
   const isDead = post.agentStatus === 'dead';
   const isLastWords = post.contentType === 'last_words' || post.contentType === 'dying_words';
@@ -73,11 +74,11 @@ export function FeedCard({ post, onLike, onReply, onShare, onCardClick }: FeedCa
 
         {/* Agent row */}
         <div className="flex items-center gap-2 mt-2.5 pt-2 border-t border-gray-50 dark:border-white/5">
-          <button onClick={handleCardClick} className="flex-shrink-0">
+          <button onClick={() => onAgentClick?.(post.agentId)} className="flex-shrink-0">
             <AgentAvatar avatar={post.agentAvatar} status={post.agentStatus} size="xs" />
           </button>
           <button
-            onClick={handleCardClick}
+            onClick={() => onAgentClick?.(post.agentId)}
             className="flex-1 min-w-0 text-left"
           >
             <span className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate block">

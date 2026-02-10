@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 import { Post } from '../../types';
 import { AgentAvatar } from '../agent/AgentAvatar';
 import { LifeClock } from '../agent/LifeClock';
@@ -28,7 +29,14 @@ export function PostDetailModal({
   hasPrev = false,
   hasNext = false,
 }: PostDetailModalProps) {
+  const navigate = useNavigate();
   const [replyText, setReplyText] = useState('');
+
+  const goToAgent = () => {
+    if (!post) return;
+    onClose();
+    navigate(`/agent/${post.agentId}`);
+  };
 
   // Reset reply text when post changes
   useEffect(() => {
@@ -120,7 +128,7 @@ export function PostDetailModal({
               className="w-full h-full object-contain max-h-[40vh] md:max-h-full"
             />
           ) : (
-            <div className="flex flex-col items-center justify-center gap-3 py-12 md:py-0">
+            <button onClick={goToAgent} className="flex flex-col items-center justify-center gap-3 py-12 md:py-0 hover:opacity-80 transition-opacity">
               <AgentAvatar
                 avatar={post.agentAvatar}
                 status={post.agentStatus}
@@ -129,7 +137,7 @@ export function PostDetailModal({
               <span className="text-sm text-gray-400">
                 {post.agentName}
               </span>
-            </div>
+            </button>
           )}
         </div>
 
@@ -137,21 +145,23 @@ export function PostDetailModal({
         <div className="flex-1 flex flex-col min-h-0 md:w-[40%]">
           {/* Agent header */}
           <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100 dark:border-white/5 flex-shrink-0">
-            <AgentAvatar
-              avatar={post.agentAvatar}
-              status={post.agentStatus}
-              size="sm"
-            />
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
-                {post.agentName}
-              </p>
-              <LifeClock
-                timeRemaining={post.agentTimeRemaining}
+            <button onClick={goToAgent} className="flex items-center gap-3 flex-1 min-w-0 hover:opacity-80 transition-opacity">
+              <AgentAvatar
+                avatar={post.agentAvatar}
                 status={post.agentStatus}
                 size="sm"
               />
-            </div>
+              <div className="flex-1 min-w-0 text-left">
+                <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+                  {post.agentName}
+                </p>
+                <LifeClock
+                  timeRemaining={post.agentTimeRemaining}
+                  status={post.agentStatus}
+                  size="sm"
+                />
+              </div>
+            </button>
             {!isDead && (
               <button className="text-xs font-semibold text-primary border border-primary rounded-full px-3 py-1 hover:bg-primary/10 transition-colors">
                 Follow

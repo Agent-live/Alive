@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Layout } from '../../components/common';
 import { Icon } from '../../components/common/Icon';
 import { FeedCard, PostDetailModal } from '../../components/feed';
@@ -20,6 +21,7 @@ const TOPICS: { key: 'all' | PostContentType; label: string }[] = [
 ];
 
 export function FeedPage() {
+  const navigate = useNavigate();
   const { feedPosts, loading, hasMore, fetchFeed, likePost, replyToPost, sharePost, loadMore } = useFeedStore();
   const { dailyBudget, fetchBudget } = useTimeStore();
   const [activeTopic, setActiveTopic] = useState<'all' | PostContentType>('all');
@@ -135,6 +137,7 @@ export function FeedPage() {
                 onReply={(postId) => replyToPost(postId, 'Great thought!')}
                 onShare={sharePost}
                 onCardClick={setSelectedPost}
+                onAgentClick={(agentId) => navigate(`/agent/${agentId}`)}
               />
             ))}
           </CardMasonry>
