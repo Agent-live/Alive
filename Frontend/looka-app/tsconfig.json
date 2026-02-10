@@ -1,0 +1,49 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src"],
+  "exclude": [
+    "src/components/ui",
+    "src/components/magic",
+    "src/components/providers",
+    "src/components/ai-summary.tsx",
+    "src/components/app-sidebar.tsx",
+    "src/components/avatar-upload-dialog.tsx",
+    "src/components/breadcrumb.tsx",
+    "src/components/theme-toggle.tsx",
+    "src/components/TaskQueueDialog.tsx",
+    "src/components/reactbits/BgBallpit.tsx",
+    "src/components/reactbits/BgColorBends.tsx",
+    "src/components/reactbits/BgFloatingLines.tsx",
+    "src/components/reactbits/BgGridScan.tsx",
+    "src/components/reactbits/NumberTicker.tsx",
+    "src/components/reactbits/OTPInput.tsx",
+    "src/components/reactbits/Ribbons.tsx",
+    "src/components/reactbits/SpotlightCard.tsx",
+    "src/components/reactbits/SplashCursor.tsx",
+    "src/hooks",
+    "src/lib",
+    "src/store",
+    "src/api"
+  ],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}

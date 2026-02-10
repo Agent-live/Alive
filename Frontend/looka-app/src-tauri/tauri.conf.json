@@ -1,0 +1,71 @@
+{
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build",
+    "devPath": "http://localhost:3000",
+    "distDir": "../dist"
+  },
+  "package": {
+    "productName": "LOOKA",
+    "version": "0.1.0"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": false,
+      "shell": {
+        "all": false,
+        "open": true
+      },
+      "window": {
+        "all": false,
+        "close": true,
+        "hide": true,
+        "show": true,
+        "maximize": true,
+        "minimize": true,
+        "unmaximize": true,
+        "unminimize": true,
+        "startDragging": true
+      }
+    },
+    "bundle": {
+      "active": true,
+      "targets": "all",
+      "identifier": "com.looka.app",
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ],
+      "category": "Lifestyle",
+      "shortDescription": "AI-Native Fashion Creation & Commerce Platform",
+      "longDescription": "LOOKA is a consumer-facing fashion platform that allows anyone to turn ideas into wearable, producible garments.",
+      "macOS": {
+        "minimumSystemVersion": "10.15"
+      },
+      "windows": {
+        "wix": null,
+        "nsis": null
+      }
+    },
+    "security": {
+      "csp": null
+    },
+    "windows": [
+      {
+        "fullscreen": false,
+        "resizable": true,
+        "title": "LOOKA",
+        "width": 430,
+        "height": 932,
+        "minWidth": 375,
+        "minHeight": 667,
+        "center": true,
+        "decorations": true,
+        "transparent": false
+      }
+    ]
+  }
+}
