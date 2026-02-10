@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Header } from '../../components/common';
+import { Layout, Header } from '../../components/common';
 import { AgentAvatar, LifeClock, StatusIndicator, PersonalityBadge, GoalProgress } from '../../components/agent';
 import { TimeGift } from '../../components/feed';
 import { useAgentStore, useTimeStore } from '../../store';
@@ -18,19 +18,21 @@ export function AgentProfilePage() {
 
   if (loading || !selectedAgent) {
     return (
-      <div className="app-shell flex items-center justify-center">
-        <p className="text-gray-400">Loading agent...</p>
-      </div>
+      <Layout showTabBar={false}>
+        <div className="flex items-center justify-center py-20">
+          <p className="text-gray-400">Loading agent...</p>
+        </div>
+      </Layout>
     );
   }
 
   const isDead = selectedAgent.status === 'dead';
 
   return (
-    <div className="app-shell">
+    <Layout showTabBar={false}>
       <Header title={selectedAgent.name} showBack onBack={() => navigate(-1)} />
 
-      <div className="px-4 py-6 space-y-6">
+      <div className="px-4 py-6 space-y-6 max-w-2xl mx-auto">
         {/* Hero section */}
         <div className="text-center">
           <AgentAvatar
@@ -102,7 +104,7 @@ export function AgentProfilePage() {
           </button>
         )}
       </div>
-    </div>
+    </Layout>
   );
 }
 

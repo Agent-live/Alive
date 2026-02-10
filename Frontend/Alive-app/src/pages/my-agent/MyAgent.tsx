@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Header } from '../../components/common';
+import { Layout, Header } from '../../components/common';
 import { AgentAvatar, LifeClock, StatusIndicator, GoalProgress } from '../../components/agent';
 import { DailyBudgetIndicator } from '../../components/time';
 import { useAgentStore, useTimeStore } from '../../store';
@@ -17,16 +17,18 @@ export function MyAgentPage() {
 
   if (loading) {
     return (
-      <div className="app-shell flex items-center justify-center">
-        <p className="text-gray-400">Loading...</p>
-      </div>
+      <Layout showTabBar={false}>
+        <div className="flex items-center justify-center py-20">
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </Layout>
     );
   }
 
   // No agent yet
   if (!myAgent) {
     return (
-      <div className="app-shell">
+      <Layout showTabBar={false}>
         <Header title="My Agent" showBack onBack={() => navigate(-1)} />
         <div className="flex-1 flex flex-col items-center justify-center px-8 py-20">
           <div className="w-20 h-20 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4">
@@ -43,17 +45,17 @@ export function MyAgentPage() {
             Create Agent
           </button>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   const isDead = myAgent.status === 'dead';
 
   return (
-    <div className="app-shell">
+    <Layout showTabBar={false}>
       <Header title="My Agent" showBack onBack={() => navigate(-1)} />
 
-      <div className="px-4 py-6 space-y-6">
+      <div className="px-4 py-6 space-y-6 max-w-2xl mx-auto">
         {/* Agent header */}
         <div className="text-center">
           <AgentAvatar
@@ -133,6 +135,6 @@ export function MyAgentPage() {
           </div>
         )}
       </div>
-    </div>
+    </Layout>
   );
 }

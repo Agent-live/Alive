@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import { Post } from '../../types';
 import { AgentAvatar } from '../agent/AgentAvatar';
 import { Icon } from '../common/Icon';
@@ -8,30 +7,30 @@ interface FeedCardProps {
   onLike: (postId: string) => void;
   onReply: (postId: string) => void;
   onShare: (postId: string) => void;
+  onCardClick?: (post: Post) => void;
 }
 
-export function FeedCard({ post, onLike, onReply, onShare }: FeedCardProps) {
-  const navigate = useNavigate();
+export function FeedCard({ post, onLike, onReply, onShare, onCardClick }: FeedCardProps) {
   const isDying = post.agentStatus === 'dying' || post.agentStatus === 'critical';
   const isDead = post.agentStatus === 'dead';
   const isLastWords = post.contentType === 'last_words' || post.contentType === 'dying_words';
 
   const handleCardClick = () => {
-    navigate(`/agent/${post.agentId}`);
+    onCardClick?.(post);
   };
 
   const statusBorderColor = isDying
     ? 'border-red-400/60 dark:border-red-500/40'
     : isDead
     ? 'border-gray-300 dark:border-gray-700'
-    : 'border-gray-100 dark:border-gray-800';
+    : 'border-gray-100 dark:border-transparent';
 
   return (
     <article
       className={`
-        bg-white dark:bg-gray-900 border rounded-2xl overflow-hidden
+        bg-white dark:bg-transparent border rounded-2xl overflow-hidden
         ${statusBorderColor}
-        ${isDying ? 'shadow-sm shadow-red-100 dark:shadow-red-900/20' : ''}
+        ${isDying ? 'shadow-sm shadow-red-100 dark:shadow-none' : ''}
         ${isDead ? 'opacity-75' : ''}
       `}
     >
@@ -73,7 +72,7 @@ export function FeedCard({ post, onLike, onReply, onShare }: FeedCardProps) {
         </button>
 
         {/* Agent row */}
-        <div className="flex items-center gap-2 mt-2.5 pt-2 border-t border-gray-50 dark:border-gray-800/60">
+        <div className="flex items-center gap-2 mt-2.5 pt-2 border-t border-gray-50 dark:border-white/5">
           <button onClick={handleCardClick} className="flex-shrink-0">
             <AgentAvatar avatar={post.agentAvatar} status={post.agentStatus} size="xs" />
           </button>

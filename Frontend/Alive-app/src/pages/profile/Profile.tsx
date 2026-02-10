@@ -47,7 +47,7 @@ export function ProfilePage() {
 
         {/* Stats */}
         {stats && (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <StatCard label="Agents Created" value={stats.agentsCreated} icon="smart_toy" />
             <StatCard label="Agents Lost" value={stats.agentsLost} icon="sentiment_sad" />
             <StatCard label="Time Given" value={`${Math.floor(stats.totalTimeGiven / 3600)}h`} icon="schedule" />

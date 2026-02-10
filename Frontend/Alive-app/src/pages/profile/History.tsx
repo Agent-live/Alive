@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Header } from '@/components/common';
+import { Layout, Header } from '@/components/common';
 import { TimeTransactionItem } from '@/components/time';
 import { useTimeStore } from '@/store';
 
@@ -13,7 +13,7 @@ export function HistoryPage() {
   }, [fetchTransactions]);
 
   return (
-    <div className="app-shell">
+    <Layout showTabBar={false}>
       <Header title="Time History" showBack onBack={() => navigate(-1)} />
 
       <div className="px-4 py-3">
@@ -32,6 +32,6 @@ export function HistoryPage() {
           </div>
         )}
       </div>
-    </div>
+    </Layout>
   );
 }

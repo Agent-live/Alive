@@ -2,12 +2,14 @@ import { SurvivalGoal } from '../../types';
 import { Icon } from '../common/Icon';
 
 interface GoalProgressProps {
-  goal: SurvivalGoal;
+  goal: SurvivalGoal | undefined;
   compact?: boolean;
   className?: string;
 }
 
 export function GoalProgress({ goal, compact = false, className = '' }: GoalProgressProps) {
+  if (!goal) return null;
+
   if (compact) {
     return (
       <div className={`space-y-1 ${className}`}>

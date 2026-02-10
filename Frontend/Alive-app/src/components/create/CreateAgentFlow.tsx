@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PersonalityConfig } from '../../types';
+import { Icon } from '../common/Icon';
 import { PersonalityStep } from './PersonalityStep';
 import { GoalStep } from './GoalStep';
 import { AestheticStep } from './AestheticStep';
@@ -47,12 +48,12 @@ export function CreateAgentFlow({ onComplete, onCancel }: CreateAgentFlowProps) 
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950">
+    <div className="min-h-screen">
       {/* Progress bar */}
-      <div className="sticky top-0 z-10 bg-white/80 dark:bg-gray-950/80 backdrop-blur-sm px-4 pt-4 pb-2">
+      <div className="sticky top-0 z-10 header-blur px-4 pt-4 pb-2">
         <div className="flex items-center gap-2 mb-3">
-          <button onClick={prev} className="text-gray-400 hover:text-gray-600">
-            <span className="material-symbols-rounded text-xl">arrow_back</span>
+          <button onClick={prev} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+            <Icon name="arrow_back" size={20} />
           </button>
           <div className="flex-1">
             <div className="flex gap-1">

@@ -4,6 +4,7 @@ export { Card } from './Card'
 export { Badge } from './Badge'
 export { Input, Textarea } from './Input'
 export { TabBar } from './TabBar'
+export { SideNav } from './SideNav'
 export { Header } from './Header'
 export { Layout } from './Layout'
 

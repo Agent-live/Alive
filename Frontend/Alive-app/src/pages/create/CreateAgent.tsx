@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Layout } from '../../components/common';
 import { CreateAgentFlow, CreateAgentData } from '../../components/create';
 import { BirthAnimation } from '../../components/create';
 import { useAgentStore, useUIStore } from '../../store';
@@ -40,9 +41,13 @@ export function CreateAgentPage() {
   }
 
   return (
-    <CreateAgentFlow
-      onComplete={handleComplete}
-      onCancel={handleCancel}
-    />
+    <Layout showTabBar={false}>
+      <div className="max-w-2xl mx-auto">
+        <CreateAgentFlow
+          onComplete={handleComplete}
+          onCancel={handleCancel}
+        />
+      </div>
+    </Layout>
   );
 }

@@ -50,7 +50,7 @@ export function ExplorePage() {
           <section>
             <h2 className="text-sm font-semibold text-gray-500 mb-2">Results</h2>
             {displayAgents.length > 0 ? (
-              <div className="space-y-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                 {displayAgents.map((agent) => (
                   <AgentCard key={agent.id} agent={agent} />
                 ))}
@@ -100,7 +100,7 @@ function AgentSection({ title, subtitle, agents }: { title: string; subtitle: st
         <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">{title}</h2>
         <p className="text-xs text-gray-400">{subtitle}</p>
       </div>
-      <div className="space-y-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
         {agents.map((agent) => (
           <AgentCard key={agent.id} agent={agent} />
         ))}

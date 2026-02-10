@@ -2,7 +2,7 @@ import { PersonalityConfig } from '../../types';
 import { Icon } from '../common/Icon';
 
 interface PersonalityBadgeProps {
-  personality: PersonalityConfig;
+  personality: PersonalityConfig | undefined;
   compact?: boolean;
   className?: string;
 }
@@ -24,6 +24,8 @@ const styleLabels: Record<PersonalityConfig['communicationStyle'], string> = {
 };
 
 export function PersonalityBadge({ personality, compact = false, className = '' }: PersonalityBadgeProps) {
+  if (!personality) return null;
+
   if (compact) {
     return (
       <div className={`flex items-center gap-1 ${className}`}>

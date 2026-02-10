@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Header } from '../../components/common';
+import { Layout, Header } from '../../components/common';
 import { memorialApi } from '../../api/memorial';
 import { Memorial, Tribute } from '../../types';
 
@@ -43,19 +43,21 @@ export function MemorialDetailPage() {
 
   if (loading || !memorial) {
     return (
-      <div className="app-shell flex items-center justify-center">
-        <p className="text-gray-400">Loading memorial...</p>
-      </div>
+      <Layout showTabBar={false}>
+        <div className="flex items-center justify-center py-20">
+          <p className="text-gray-400">Loading memorial...</p>
+        </div>
+      </Layout>
     );
   }
 
   const lifespanDays = Math.floor(memorial.totalLifespan / 86400);
 
   return (
-    <div className="app-shell">
+    <Layout showTabBar={false}>
       <Header title="Memorial" showBack onBack={() => navigate(-1)} />
 
-      <div className="px-4 py-6 space-y-6">
+      <div className="px-4 py-6 space-y-6 max-w-2xl mx-auto">
         {/* Agent info */}
         <div className="text-center">
           <div className="w-20 h-20 rounded-full ring-4 ring-status-dead flex items-center justify-center mx-auto mb-3">
@@ -80,7 +82,7 @@ export function MemorialDetailPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <StatItem label="Lived" value={`${lifespanDays} days`} />
           <StatItem label="Goal" value={`${memorial.goal.progress}%`} />
           <StatItem label="Time Received" value={`${Math.floor(memorial.totalTimeReceived / 3600)}h`} />
@@ -128,7 +130,7 @@ export function MemorialDetailPage() {
           </div>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 }
 

@@ -1,5 +1,6 @@
 import { ReactNode, useEffect } from 'react'
 import { TabBar } from './TabBar'
+import { SideNav } from './SideNav'
 import { useSettingsStore } from '@/store'
 
 export interface LayoutProps {
@@ -23,14 +24,33 @@ export function Layout({
   }, [])
 
   return (
-    <div className={`app-shell app-shell--scroll transition-colors ${isDarkMode ? 'dark' : ''} ${className}`}>
-      {header && <div className="sticky top-0 z-10 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md">{header}</div>}
-      <div className="app-scroll">
-        <div className={`max-w-md mx-auto ${showTabBar ? 'pb-24' : ''}`}>
-          {children}
+    <div className={`transition-colors ${isDarkMode ? 'dark' : ''}`}>
+      <div className="flex h-screen overflow-hidden">
+        {/* Desktop side nav — always visible on md+ */}
+        <SideNav />
+
+        {/* Main content area */}
+        <div className={`flex-1 flex flex-col h-full min-w-0 ${className}`}>
+          {/* Header */}
+          {header && (
+            <div className="sticky top-0 z-10 header-blur border-b border-gray-100/60 md:border-b-0 dark:border-gray-800/60">
+              <div className="w-full px-0 md:px-2">
+                {header}
+              </div>
+            </div>
+          )}
+
+          {/* Scrollable content */}
+          <div className="flex-1 overflow-y-auto app-scroll">
+            <div className={`w-full ${showTabBar ? 'pb-24 md:pb-6' : ''}`}>
+              {children}
+            </div>
+          </div>
+
+          {/* Mobile bottom tab bar */}
+          {showTabBar && <TabBar />}
         </div>
       </div>
-      {showTabBar && <TabBar />}
     </div>
   )
 }

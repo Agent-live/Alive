@@ -21,13 +21,13 @@ export function TabBar() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 border-t border-black/[0.06] dark:border-gray-800"
+      className="fixed bottom-0 left-0 right-0 z-50 border-t border-black/[0.06] dark:border-gray-800 md:hidden"
       style={{
         backgroundColor: 'var(--tabbar-bg, #FFFFFF)',
         paddingBottom: 'env(safe-area-inset-bottom, 0px)'
       }}
     >
-      <div className="max-w-md mx-auto px-4 py-2">
+      <div className="px-4 py-2">
         <div className="flex justify-between items-center">
           {tabs.map((tab) => {
             const isActive = tab.path === '/'

@@ -57,7 +57,7 @@ export function MemorialPage() {
             <p className="text-gray-400">Loading memorials...</p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {memorials.map((memorial) => (
               <MemorialCard key={memorial.id} memorial={memorial} />
             ))}

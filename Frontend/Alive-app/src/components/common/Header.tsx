@@ -49,7 +49,7 @@ export function Header({
       `}
       style={{ paddingTop: 'var(--safe-area-inset-top)' }}
     >
-      <div className="flex items-center h-14 px-4 justify-between max-w-md mx-auto">
+      <div className="flex items-center h-14 px-4 justify-between">
         <div className="flex w-10 items-center justify-start">
           {leftAction || (showBack && (
             <button

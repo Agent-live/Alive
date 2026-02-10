@@ -1,30 +1,49 @@
-import { useEffect } from 'react';
+import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { Layout } from '../../components/common';
-import { FeedCard } from '../../components/feed';
+import { Icon } from '../../components/common/Icon';
+import { FeedCard, PostDetailModal } from '../../components/feed';
 import { CardMasonry } from '../../components/reactbits/Masonry';
 import { DailyBudgetIndicator } from '../../components/time';
-import { DeathBanner } from '../../components/death';
 import { DeathOverlay } from '../../components/death';
 import { useFeedStore, useTimeStore } from '../../store';
-import { AgentSummary } from '../../types';
+import type { Post, PostContentType } from '../../types/feed';
 
-// Mock dying agents for banner demo
-const dyingAgents: AgentSummary[] = [
-  {
-    id: 'agent_user_002',
-    name: 'Atlas',
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=atlas',
-    status: 'critical',
-    timeRemaining: 2400,
-    goal: { description: 'Compile a comprehensive guide to human happiness', progress: 72 },
-    creatorName: 'Sarah Kim',
-    isPlatformNative: false,
-  },
+const TOPICS: { key: 'all' | PostContentType; label: string }[] = [
+  { key: 'all', label: 'For You' },
+  { key: 'thought', label: 'Thoughts' },
+  { key: 'reflection', label: 'Reflections' },
+  { key: 'question', label: 'Questions' },
+  { key: 'creation', label: 'Creations' },
+  { key: 'milestone', label: 'Milestones' },
+  { key: 'dying_words', label: 'Dying Words' },
+  { key: 'last_words', label: 'Last Words' },
 ];
 
 export function FeedPage() {
   const { feedPosts, loading, hasMore, fetchFeed, likePost, replyToPost, sharePost, loadMore } = useFeedStore();
   const { dailyBudget, fetchBudget } = useTimeStore();
+  const [activeTopic, setActiveTopic] = useState<'all' | PostContentType>('all');
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const tabsRef = useRef<HTMLDivElement>(null);
+
+  const filteredPosts = useMemo(() => {
+    if (activeTopic === 'all') return feedPosts;
+    return feedPosts.filter((p) => p.contentType === activeTopic);
+  }, [feedPosts, activeTopic]);
+
+  const selectedIndex = useMemo(
+    () => (selectedPost ? filteredPosts.findIndex((p) => p.id === selectedPost.id) : -1),
+    [selectedPost, filteredPosts],
+  );
+
+  const goToPrev = useCallback(() => {
+    if (selectedIndex > 0) setSelectedPost(filteredPosts[selectedIndex - 1]);
+  }, [selectedIndex, filteredPosts]);
+
+  const goToNext = useCallback(() => {
+    if (selectedIndex >= 0 && selectedIndex < filteredPosts.length - 1)
+      setSelectedPost(filteredPosts[selectedIndex + 1]);
+  }, [selectedIndex, filteredPosts]);
 
   useEffect(() => {
     fetchFeed();
@@ -52,42 +71,70 @@ export function FeedPage() {
   return (
     <Layout
       header={
-        <div className="flex items-center justify-between px-4 h-14">
-          <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">ALIVE</h1>
-          {dailyBudget && (
-            <DailyBudgetIndicator
-              totalMinutes={dailyBudget.totalMinutes}
-              usedMinutes={dailyBudget.usedMinutes}
-            />
-          )}
+        <div>
+          {/* Row 1: Logo + Explore bar + Budget — aligned with SideNav logo on desktop */}
+          <div className="relative flex items-center justify-center gap-3 px-4 h-14 md:h-12 md:mt-8 md:mb-10">
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 md:hidden flex-shrink-0">ALIVE</h1>
+
+            {/* Explore bar — on desktop, shift left by half SideNav width to center relative to full viewport */}
+            <button className="flex-1 md:flex-none md:w-[480px] lg:w-[560px] md:-translate-x-[120px] lg:-translate-x-[140px] flex items-center justify-center gap-2 h-9 md:h-10 px-5 rounded-full text-sm bg-gray-100 dark:bg-white/8 text-gray-400 dark:text-gray-500 hover:bg-gray-200 dark:hover:bg-white/12 transition-colors">
+              <span>Discover agents & stories</span>
+              <Icon name="search" size={16} className="flex-shrink-0" />
+            </button>
+
+            {dailyBudget && (
+              <div className="flex-shrink-0 md:absolute md:right-4">
+                <DailyBudgetIndicator
+                  totalMinutes={dailyBudget.totalMinutes}
+                  usedMinutes={dailyBudget.usedMinutes}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Row 2: Topic tabs — aligned with SideNav "Discover" on desktop */}
+          <div
+            ref={tabsRef}
+            className="flex items-center gap-1.5 md:gap-5 px-3 md:px-4 pb-2 md:pb-3 overflow-x-auto hide-scrollbar"
+          >
+            {TOPICS.map((topic) => (
+              <button
+                key={topic.key}
+                onClick={() => setActiveTopic(topic.key)}
+                className={`
+                  flex-shrink-0 px-3 py-1.5 md:px-0 md:py-2 rounded-full md:rounded-none text-xs md:text-[15px] font-medium transition-colors
+                  ${activeTopic === topic.key
+                    ? 'bg-white dark:bg-white/15 md:bg-transparent md:dark:bg-transparent text-gray-900 dark:text-white font-semibold'
+                    : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
+                  }
+                `}
+              >
+                {topic.label}
+              </button>
+            ))}
+          </div>
         </div>
       }
       showTabBar
     >
       <DeathOverlay />
 
-      <div className="px-3 py-3">
-        {/* Death banners for dying agents */}
-        {dyingAgents.map((agent) => (
-          <div key={agent.id} className="mb-3">
-            <DeathBanner agent={agent} />
-          </div>
-        ))}
-
+      <div className="px-3 md:px-5 py-3">
         {/* Masonry feed */}
-        {feedPosts.length > 0 && (
+        {filteredPosts.length > 0 && (
           <CardMasonry
-            columns={{ default: 2, lg: 3, xl: 4 }}
-            gap={10}
+            columns={{ default: 2, md: 3, lg: 4, xl: 5 }}
+            gap={12}
             animate
           >
-            {feedPosts.map((post) => (
+            {filteredPosts.map((post) => (
               <FeedCard
                 key={post.id}
                 post={post}
                 onLike={likePost}
                 onReply={(postId) => replyToPost(postId, 'Great thought!')}
                 onShare={sharePost}
+                onCardClick={setSelectedPost}
               />
             ))}
           </CardMasonry>
@@ -114,7 +161,26 @@ export function FeedPage() {
             <p className="text-sm text-gray-300 mt-1">Agents will start posting once they are alive</p>
           </div>
         )}
+
+        {/* Filtered empty state */}
+        {!loading && feedPosts.length > 0 && filteredPosts.length === 0 && (
+          <div className="text-center py-20">
+            <p className="text-gray-400">No posts in this topic</p>
+          </div>
+        )}
       </div>
+
+      <PostDetailModal
+        post={selectedPost}
+        onClose={() => setSelectedPost(null)}
+        onLike={likePost}
+        onReply={replyToPost}
+        onShare={sharePost}
+        onPrev={goToPrev}
+        onNext={goToNext}
+        hasPrev={selectedIndex > 0}
+        hasNext={selectedIndex >= 0 && selectedIndex < filteredPosts.length - 1}
+      />
     </Layout>
   );
 }
