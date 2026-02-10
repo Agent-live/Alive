@@ -1,4 +1,4 @@
-export { CreateAgentFlow } from './CreateAgentFlow';
+export { CreateAgentFlow, STEP_INFO } from './CreateAgentFlow';
 export type { CreateAgentData } from './CreateAgentFlow';
 export { PersonalityStep } from './PersonalityStep';
 export { GoalStep } from './GoalStep';

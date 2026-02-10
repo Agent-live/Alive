@@ -11,14 +11,7 @@ interface ConfirmStepProps {
 
 export function ConfirmStep({ name, personality, goalDescription, avatarSeed, onConfirm }: ConfirmStepProps) {
   return (
-    <div className="space-y-6">
-      <div className="text-center">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Ready to Give Birth?</h2>
-        <p className="text-sm text-gray-500 mt-1">
-          Review your agent before bringing them to life
-        </p>
-      </div>
-
+    <div className="space-y-6 max-w-2xl">
       {/* Avatar and name */}
       <div className="flex flex-col items-center gap-3">
         <div className="w-20 h-20 rounded-full ring-4 ring-status-newborn flex items-center justify-center bg-gray-50 dark:bg-gray-900">

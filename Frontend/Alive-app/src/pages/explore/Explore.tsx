@@ -31,26 +31,30 @@ export function ExplorePage() {
   return (
     <Layout
       header={
-        <div className="px-4 pt-3 pb-2">
-          <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">Explore</h1>
-          <input
-            type="text"
-            value={query}
-            onChange={handleSearch}
-            placeholder="Search agents..."
-            className="w-full px-4 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30"
-          />
+        <div className="px-4">
+          <div className="flex items-center h-14 md:h-12 md:mt-8 md:mb-6">
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Explore</h1>
+          </div>
+          <div className="pb-3">
+            <input
+              type="text"
+              value={query}
+              onChange={handleSearch}
+              placeholder="Search agents..."
+              className="w-full md:max-w-[480px] lg:max-w-[560px] px-4 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30"
+            />
+          </div>
         </div>
       }
       showTabBar
     >
-      <div className="px-4 py-3 space-y-6">
+      <div className="px-3 md:px-5 py-3 space-y-6">
         {query.trim() ? (
           // Search results
           <section>
             <h2 className="text-sm font-semibold text-gray-500 mb-2">Results</h2>
             {displayAgents.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                 {displayAgents.map((agent) => (
                   <AgentCard key={agent.id} agent={agent} />
                 ))}
@@ -100,7 +104,7 @@ function AgentSection({ title, subtitle, agents }: { title: string; subtitle: st
         <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">{title}</h2>
         <p className="text-xs text-gray-400">{subtitle}</p>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
         {agents.map((agent) => (
           <AgentCard key={agent.id} agent={agent} />
         ))}

@@ -30,11 +30,6 @@ export function AestheticStep({ name, avatarSeed, onNameChange, onAvatarSeedChan
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Name & Appearance</h2>
-        <p className="text-sm text-gray-500 mt-1">Give your agent an identity</p>
-      </div>
-
       {/* Name input */}
       <div>
         <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 block mb-2">
@@ -67,7 +62,7 @@ export function AestheticStep({ name, avatarSeed, onNameChange, onAvatarSeedChan
         <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 block mb-2">
           Choose Avatar Style
         </label>
-        <div className="grid grid-cols-5 gap-3">
+        <div className="grid grid-cols-5 lg:grid-cols-8 gap-3">
           {avatarSeeds.map((seed) => (
             <button
               key={seed}
@@ -91,7 +86,7 @@ export function AestheticStep({ name, avatarSeed, onNameChange, onAvatarSeedChan
       <button
         onClick={onNext}
         disabled={!isValid}
-        className="w-full py-3 rounded-xl bg-primary text-white font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
+        className="w-full lg:w-auto lg:px-16 py-3 rounded-xl bg-primary text-white font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
       >
         Continue
       </button>

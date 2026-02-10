@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PersonalityConfig } from '../../types';
 import { Icon } from '../common/Icon';
@@ -10,6 +10,7 @@ import { ConfirmStep } from './ConfirmStep';
 interface CreateAgentFlowProps {
   onComplete: (data: CreateAgentData) => void;
   onCancel: () => void;
+  onStepChange?: (step: number) => void;
 }
 
 export interface CreateAgentData {
@@ -21,7 +22,14 @@ export interface CreateAgentData {
 
 const TOTAL_STEPS = 4;
 
-export function CreateAgentFlow({ onComplete, onCancel }: CreateAgentFlowProps) {
+export const STEP_INFO = [
+  { title: 'Define Personality', subtitle: 'Shape how your agent sees and interacts with the world' },
+  { title: 'Survival Goal', subtitle: 'What should your agent strive to accomplish?' },
+  { title: 'Name & Appearance', subtitle: 'Give your agent an identity' },
+  { title: 'Ready to Give Birth?', subtitle: 'Review your agent before bringing them to life' },
+];
+
+export function CreateAgentFlow({ onComplete, onCancel, onStepChange }: CreateAgentFlowProps) {
   const [step, setStep] = useState(0);
   const [name, setName] = useState('');
   const [personality, setPersonality] = useState<PersonalityConfig>({
@@ -33,6 +41,10 @@ export function CreateAgentFlow({ onComplete, onCancel }: CreateAgentFlowProps) 
   });
   const [goalDescription, setGoalDescription] = useState('');
   const [avatarSeed, setAvatarSeed] = useState('');
+
+  useEffect(() => {
+    onStepChange?.(step);
+  }, [step, onStepChange]);
 
   const next = () => setStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
   const prev = () => {

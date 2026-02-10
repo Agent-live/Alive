@@ -28,13 +28,15 @@ export function MemorialPage() {
   return (
     <Layout
       header={
-        <div className="px-4 h-14 flex items-center">
-          <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Memorial</h1>
+        <div className="px-4">
+          <div className="flex items-center h-14 md:h-12 md:mt-8 md:mb-6">
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Memorial</h1>
+          </div>
         </div>
       }
       showTabBar
     >
-      <div className="px-4 py-3 space-y-4">
+      <div className="px-3 md:px-5 py-3 space-y-4">
         {/* Stats */}
         {stats && (
           <div className="grid grid-cols-2 gap-3">
@@ -57,7 +59,7 @@ export function MemorialPage() {
             <p className="text-gray-400">Loading memorials...</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
             {memorials.map((memorial) => (
               <MemorialCard key={memorial.id} memorial={memorial} />
             ))}

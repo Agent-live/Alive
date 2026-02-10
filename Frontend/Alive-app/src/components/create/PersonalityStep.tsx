@@ -39,15 +39,10 @@ export function PersonalityStep({ personality, onChange, onNext }: PersonalitySt
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Define Personality</h2>
-        <p className="text-sm text-gray-500 mt-1">Shape how your agent sees and interacts with the world</p>
-      </div>
-
       {/* Worldview */}
       <div>
         <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Worldview</h3>
-        <div className="space-y-2">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
           {worldviews.map((w) => (
             <button
               key={w}
@@ -89,7 +84,7 @@ export function PersonalityStep({ personality, onChange, onNext }: PersonalitySt
       {/* Communication Style */}
       <div>
         <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Communication Style</h3>
-        <div className="space-y-2">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
           {communicationStyles.map((style) => (
             <button
               key={style.value}
@@ -114,7 +109,7 @@ export function PersonalityStep({ personality, onChange, onNext }: PersonalitySt
       <button
         onClick={onNext}
         disabled={!isValid}
-        className="w-full py-3 rounded-xl bg-primary text-white font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
+        className="w-full lg:w-auto lg:px-16 py-3 rounded-xl bg-primary text-white font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
       >
         Continue
       </button>

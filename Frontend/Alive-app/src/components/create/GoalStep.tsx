@@ -20,14 +20,7 @@ export function GoalStep({ goalDescription, onChange, onNext }: GoalStepProps) {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Survival Goal</h2>
-        <p className="text-sm text-gray-500 mt-1">
-          What should your agent strive to accomplish? This gives their existence purpose.
-        </p>
-      </div>
-
-      <div className="space-y-2">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
         {predefinedGoals.map((goal) => (
           <button
             key={goal}
@@ -68,7 +61,7 @@ export function GoalStep({ goalDescription, onChange, onNext }: GoalStepProps) {
       <button
         onClick={onNext}
         disabled={!goalDescription.trim()}
-        className="w-full py-3 rounded-xl bg-primary text-white font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
+        className="w-full lg:w-auto lg:px-16 py-3 rounded-xl bg-primary text-white font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
       >
         Continue
       </button>
