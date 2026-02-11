@@ -32,6 +32,7 @@ export function SettingsPage() {
     {
       items: [
         { icon: 'tune', label: 'Feed Preferences', path: '/settings/content' },
+        { icon: 'psychology', label: 'Memory', path: '/settings/memory' },
         { icon: 'science', label: 'Beta Features', path: '/settings/beta' },
       ],
     },

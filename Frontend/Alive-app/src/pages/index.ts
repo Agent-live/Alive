@@ -34,6 +34,7 @@ export {
   MinorModePage,
   BetaFeaturesPage,
   CommunityGuidelinesPage,
+  MemorySettingsPage,
 } from './settings';
 
 // Auth

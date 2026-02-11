@@ -28,6 +28,7 @@ import {
   MinorModePage,
   BetaFeaturesPage,
   CommunityGuidelinesPage,
+  MemorySettingsPage,
 } from '@/pages'
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary'
 import { ToastProvider } from '@/components/feedback/Toast'
@@ -102,6 +103,7 @@ function App() {
               <Route path="/settings/language" element={<AuthGuard><LanguageSettingsPage /></AuthGuard>} />
               <Route path="/settings/content" element={<AuthGuard><ContentPreferencesPage /></AuthGuard>} />
               <Route path="/settings/minor-mode" element={<AuthGuard><MinorModePage /></AuthGuard>} />
+              <Route path="/settings/memory" element={<AuthGuard><MemorySettingsPage /></AuthGuard>} />
               <Route path="/settings/beta" element={<AuthGuard><BetaFeaturesPage /></AuthGuard>} />
               <Route path="/settings/about" element={<OptionalAuth><AboutPage /></OptionalAuth>} />
               <Route path="/help" element={<OptionalAuth><HelpCenterPage /></OptionalAuth>} />
