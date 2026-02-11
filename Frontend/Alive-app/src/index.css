@@ -847,6 +847,20 @@
     50% { opacity: 0.5; }
   }
 
+  /* Logo dot pulse — speed controlled by JS via animation-duration */
+  @keyframes logo-dot-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  /* Status theme transition — smooth accent color shifts */
+  :root {
+    transition:
+      --color-primary 0.6s ease,
+      --color-primary-light 0.6s ease,
+      --color-primary-dark 0.6s ease;
+  }
+
   /* Death fade animation */
   @keyframes death-fade {
     0% { opacity: 1; filter: grayscale(0) saturate(1); }

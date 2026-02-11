@@ -12,12 +12,15 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   hasCompletedOnboarding: boolean;
+  showLoginModal: boolean;
 
   login: (phone: string, code: string) => Promise<boolean>;
   logout: () => void;
   checkAuth: () => Promise<void>;
   updateUser: (data: Partial<User>) => Promise<void>;
   setOnboardingComplete: (completed: boolean) => void;
+  openLoginModal: () => void;
+  closeLoginModal: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -28,6 +31,7 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isLoading: false,
       hasCompletedOnboarding: false,
+      showLoginModal: false,
 
       login: async (phone, code) => {
         set({ isLoading: true });
@@ -88,6 +92,9 @@ export const useAuthStore = create<AuthState>()(
       setOnboardingComplete: (completed) => {
         set({ hasCompletedOnboarding: completed });
       },
+
+      openLoginModal: () => set({ showLoginModal: true }),
+      closeLoginModal: () => set({ showLoginModal: false }),
     }),
     {
       name: 'auth-storage',

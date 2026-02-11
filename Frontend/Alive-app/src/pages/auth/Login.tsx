@@ -7,12 +7,13 @@ import { useAuthStore, toast } from '../../store';
 import { authApi } from '../../api/auth';
 import { validatePhone, validateCode } from '../../utils/validators';
 
+const MD_BREAKPOINT = 768;
 type Step = 'phone' | 'code';
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, isAuthenticated } = useAuthStore();
+  const { login, isAuthenticated, openLoginModal } = useAuthStore();
 
   const [step, setStep] = useState<Step>('phone');
   const [phone, setPhone] = useState('');
@@ -24,6 +25,15 @@ export default function LoginPage() {
   const [focused, setFocused] = useState(false);
 
   const isLoggingInRef = useRef(false);
+
+  // 桌面端：跳回上一页并打开登录弹窗
+  useEffect(() => {
+    if (window.innerWidth >= MD_BREAKPOINT && !isAuthenticated) {
+      const from = (location.state as { from?: string })?.from || '/';
+      navigate(from, { replace: true });
+      openLoginModal();
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (isAuthenticated) {

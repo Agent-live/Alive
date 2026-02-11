@@ -1,0 +1,17 @@
+<svg width="120" height="32" viewBox="0 0 120 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- A -->
+  <text x="0" y="26" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="26" fill="#F5F6F7">A</text>
+  <!-- L -->
+  <text x="18" y="26" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="26" fill="#F5F6F7">L</text>
+  <!-- I — The Living Letter -->
+  <g transform="translate(35, 2)">
+    <!-- Dot (life indicator) -->
+    <circle cx="5" cy="4" r="3.5" fill="#10B981"/>
+    <!-- Vertical line (existence) -->
+    <line x1="5" y1="10" x2="5" y2="27" stroke="#F5F6F7" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <!-- V -->
+  <text x="47" y="26" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="26" fill="#F5F6F7">V</text>
+  <!-- E -->
+  <text x="67" y="26" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="26" fill="#F5F6F7">E</text>
+</svg>

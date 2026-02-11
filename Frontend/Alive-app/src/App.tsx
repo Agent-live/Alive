@@ -34,11 +34,16 @@ import { ErrorBoundary } from '@/components/feedback/ErrorBoundary'
 import { ToastProvider } from '@/components/feedback/Toast'
 import { LoadingProvider } from '@/components/feedback/Loading'
 import { AuthGuard, OptionalAuth } from '@/components/auth/AuthGuard'
+import { LoginModal } from '@/components/auth/LoginModal'
 import { useAuthStore, useSettingsStore } from '@/store'
+import { useStatusTheme } from '@/components/brand'
 
 function App() {
   const { checkAuth, hasCompletedOnboarding } = useAuthStore()
   const { initTheme } = useSettingsStore()
+
+  // The app's accent color breathes with the agent's status
+  useStatusTheme()
 
   useEffect(() => {
     checkAuth()
@@ -61,6 +66,7 @@ function App() {
       <ToastProvider>
         <LoadingProvider>
           <BrowserRouter>
+            <LoginModal />
             <Routes>
               {/* Onboarding */}
               <Route path="/onboarding" element={<OnboardingPage />} />

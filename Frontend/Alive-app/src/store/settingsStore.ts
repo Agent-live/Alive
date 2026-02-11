@@ -9,6 +9,9 @@ interface SettingsState {
   themeMode: ThemeMode
   isDarkMode: boolean
 
+  // 状态主题：根据 agent 生存状态改变全局主题色
+  statusThemeEnabled: boolean
+
   // 字体大小
   fontSize: FontSize
 
@@ -18,6 +21,7 @@ interface SettingsState {
   // 操作方法
   setThemeMode: (mode: ThemeMode) => void
   toggleDarkMode: () => void
+  setStatusThemeEnabled: (enabled: boolean) => void
   setFontSize: (size: FontSize) => void
   clearCache: () => Promise<void>
   initTheme: () => void
@@ -61,6 +65,7 @@ export const useSettingsStore = create<SettingsState>()(
     (set, get) => ({
       themeMode: 'light',
       isDarkMode: false,
+      statusThemeEnabled: false,
       fontSize: 'standard',
       cacheSize: 23.5, // MB
 
@@ -74,6 +79,10 @@ export const useSettingsStore = create<SettingsState>()(
 
         set({ themeMode: mode, isDarkMode: isDark })
         applyTheme(isDark)
+      },
+
+      setStatusThemeEnabled: (enabled) => {
+        set({ statusThemeEnabled: enabled })
       },
 
       toggleDarkMode: () => {
@@ -140,6 +149,7 @@ export const useSettingsStore = create<SettingsState>()(
       name: 'settings-storage',
       partialize: (state) => ({
         themeMode: state.themeMode,
+        statusThemeEnabled: state.statusThemeEnabled,
         fontSize: state.fontSize,
       }),
     }

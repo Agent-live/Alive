@@ -9,16 +9,18 @@ interface AuthGuardProps {
   redirectTo?: string;
 }
 
+const MD_BREAKPOINT = 768;
+
 /**
  * 认证守卫组件
- * 用于保护需要登录才能访问的页面
+ * 桌面端弹窗登录，移动端跳转登录页
  */
 export function AuthGuard({
   children,
   fallback,
   redirectTo = '/auth/login',
 }: AuthGuardProps) {
-  const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
+  const { isAuthenticated, isLoading, checkAuth, openLoginModal } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -28,13 +30,19 @@ export function AuthGuard({
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      // 保存当前路径，登录后跳转回来
-      navigate(redirectTo, {
-        replace: true,
-        state: { from: location.pathname },
-      });
+      const isDesktop = window.innerWidth >= MD_BREAKPOINT;
+      if (isDesktop) {
+        // 桌面端：弹窗登录
+        openLoginModal();
+      } else {
+        // 移动端：保存当前路径，登录后跳转回来
+        navigate(redirectTo, {
+          replace: true,
+          state: { from: location.pathname },
+        });
+      }
     }
-  }, [isLoading, isAuthenticated, navigate, redirectTo, location.pathname]);
+  }, [isLoading, isAuthenticated, navigate, redirectTo, location.pathname, openLoginModal]);
 
   // 加载中
   if (isLoading) {

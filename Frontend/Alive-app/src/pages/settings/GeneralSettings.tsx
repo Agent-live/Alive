@@ -8,6 +8,8 @@ export function GeneralSettingsPage() {
   const {
     isDarkMode,
     toggleDarkMode,
+    statusThemeEnabled,
+    setStatusThemeEnabled,
     fontSize,
     setFontSize,
     cacheSize,
@@ -55,6 +57,18 @@ export function GeneralSettingsPage() {
                   <span className="text-[15px] text-gray-800 dark:text-gray-200">Dark Mode</span>
                 </div>
                 <Toggle checked={isDarkMode} onChange={toggleDarkMode} />
+              </div>
+
+              {/* Status theme */}
+              <div className="flex items-center justify-between px-4 py-3.5 border-b border-gray-100 dark:border-gray-700/50">
+                <div className="flex items-center gap-4">
+                  <Icon name="palette" size={22} className="text-gray-500 dark:text-gray-400" />
+                  <div>
+                    <span className="text-[15px] text-gray-800 dark:text-gray-200">Status Theme</span>
+                    <p className="text-xs text-gray-400 mt-0.5">Theme color follows agent status</p>
+                  </div>
+                </div>
+                <Toggle checked={statusThemeEnabled} onChange={() => setStatusThemeEnabled(!statusThemeEnabled)} />
               </div>
 
               {/* Font size */}

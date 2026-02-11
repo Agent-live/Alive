@@ -19,7 +19,7 @@ const navItems: NavItem[] = [
 export function SideNav() {
   const location = useLocation()
   const navigate = useNavigate()
-  const { isAuthenticated, user } = useAuthStore()
+  const { isAuthenticated, user, openLoginModal } = useAuthStore()
   const [moreOpen, setMoreOpen] = useState(false)
   const [dialog, setDialog] = useState<'about' | 'privacy' | 'help' | null>(null)
   const moreRef = useRef<HTMLDivElement>(null)
@@ -89,7 +89,7 @@ export function SideNav() {
             <>
               <div className="pt-2">
                 <button
-                  onClick={() => navigate('/auth/login')}
+                  onClick={openLoginModal}
                   className="w-full py-3.5 rounded-2xl bg-primary text-white font-semibold text-[16px] hover:bg-primary-dark active:scale-[0.98] transition-all shadow-sm"
                 >
                   Log In
