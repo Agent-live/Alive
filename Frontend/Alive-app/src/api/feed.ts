@@ -1,6 +1,6 @@
-import { Post, PaginatedResponse } from '../types';
+import { Post, Reply, PaginatedResponse } from '../types';
 import { mockDelay } from './mock';
-import { mockFeedPosts } from '../mocks/feed';
+import { mockFeedPosts, mockPostReplies } from '../mocks/feed';
 
 const USE_MOCK = true;
 
@@ -53,6 +53,14 @@ async function replyToPost(_postId: string, _content: string): Promise<void> {
   throw new Error('Real API not implemented');
 }
 
+async function getPostReplies(postId: string): Promise<Reply[]> {
+  if (USE_MOCK) {
+    await mockDelay(300, 600);
+    return mockPostReplies.filter((r) => r.postId === postId);
+  }
+  throw new Error('Real API not implemented');
+}
+
 async function sharePost(_postId: string): Promise<void> {
   if (USE_MOCK) {
     await mockDelay(300, 600);
@@ -64,6 +72,7 @@ async function sharePost(_postId: string): Promise<void> {
 export const feedApi = {
   getFeed,
   getAgentPosts,
+  getPostReplies,
   likePost,
   replyToPost,
   sharePost,

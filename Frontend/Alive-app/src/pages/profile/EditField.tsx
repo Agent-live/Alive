@@ -16,8 +16,8 @@ const fieldConfigs: Record<string, {
     maxLength: 20,
   },
   id: {
-    title: 'LOOKA ID',
-    placeholder: '请输入 LOOKA ID',
+    title: 'ALIVE ID',
+    placeholder: '请输入 ALIVE ID',
     maxLength: 24,
   },
   bio: {
@@ -82,25 +82,28 @@ export function EditFieldPage() {
   const isValid = value.trim().length > 0
 
   return (
-    <Layout showTabBar={false}>
-      <div className="header-detail">
-        <div className="header-detail-inner">
-          <button onClick={() => navigate(-1)} className="header-btn-start">
-            <Icon name="close" size={24} />
-          </button>
-          <h1 className="header-title-center">{config.title}</h1>
-          <button
-            onClick={handleSave}
-            disabled={!isValid}
-            className={`text-[15px] font-medium ${isValid ? 'text-primary' : 'text-gray-300'}`}
-          >
-            保存
-          </button>
+    <Layout
+      header={
+        <div className="px-4">
+          <div className="flex items-center justify-between h-14 md:h-12 md:mt-8 md:mb-6">
+            <button onClick={() => navigate(-1)} className="p-2 -ml-2">
+              <Icon name="close" size={24} className="text-gray-700 dark:text-gray-300" />
+            </button>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">{config.title}</h1>
+            <button
+              onClick={handleSave}
+              disabled={!isValid}
+              className={`text-[15px] font-medium ${isValid ? 'text-primary' : 'text-gray-300 dark:text-gray-600'}`}
+            >
+              Save
+            </button>
+          </div>
         </div>
-      </div>
-
-      <div className="content-detail">
-        <div className="max-w-md mx-auto py-4 px-4">
+      }
+      showTabBar={false}
+    >
+      <div className="px-3 md:px-5 py-4">
+        <div className="max-w-lg mx-auto md:mx-0">
           {/* 选项类型 */}
           {config.options ? (
             <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl overflow-hidden">
@@ -162,7 +165,7 @@ export function EditFieldPage() {
           {field === 'id' && (
             <div className="mt-4 p-3 bg-yellow-50 rounded-xl">
               <p className="text-xs text-yellow-700">
-                LOOKA ID 仅可修改一次，请谨慎填写
+                ALIVE ID 仅可修改一次，请谨慎填写
               </p>
             </div>
           )}

@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { Post } from '../../types';
+import { Post, Reply } from '../../types';
+import { feedApi } from '../../api/feed';
 import { AgentAvatar } from '../agent/AgentAvatar';
 import { LifeClock } from '../agent/LifeClock';
 import { Icon } from '../common/Icon';
@@ -31,6 +32,25 @@ export function PostDetailModal({
 }: PostDetailModalProps) {
   const navigate = useNavigate();
   const [replyText, setReplyText] = useState('');
+  const [replies, setReplies] = useState<Reply[]>([]);
+  const [loadingReplies, setLoadingReplies] = useState(false);
+
+  // Fetch replies when post changes
+  useEffect(() => {
+    if (!post) return;
+    let cancelled = false;
+    setLoadingReplies(true);
+    feedApi.getPostReplies(post.id).then((data) => {
+      if (!cancelled) {
+        setReplies(data);
+        setLoadingReplies(false);
+      }
+    });
+    return () => { cancelled = true; };
+  }, [post?.id]);
+
+  const agentReplies = replies.filter((r) => r.isAgent);
+  const humanReplies = replies.filter((r) => !r.isAgent);
 
   const goToAgent = () => {
     if (!post) return;
@@ -116,7 +136,7 @@ export function PostDetailModal({
 
       {/* Card — fixed height on desktop, full-screen on mobile */}
       <div
-        className="relative z-[1] w-full h-full md:h-[90vh] md:max-w-[90vw] lg:max-w-[85vw] xl:max-w-6xl md:rounded-2xl overflow-hidden bg-white dark:bg-gray-900 flex flex-col md:flex-row shadow-2xl animate-in fade-in zoom-in-95 duration-200"
+        className="relative z-[1] w-full h-full md:h-[90vh] md:max-w-[90vw] lg:max-w-[85vw] xl:max-w-6xl md:rounded-2xl overflow-hidden bg-white dark:bg-[#0c0c10] flex flex-col md:flex-row shadow-2xl animate-in fade-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* ─── Left: Image — fills full height, black letterbox ─── */}
@@ -224,13 +244,106 @@ export function PostDetailModal({
               </div>
             )}
 
-            {/* ── Comments placeholder ── */}
+            {/* ── Comments ── */}
             <div className="mt-4 pt-3 border-t border-gray-100 dark:border-white/5">
-              <p className="text-xs text-gray-400">
-                {post.replies > 0
-                  ? `${formatCount(post.replies)} comments`
-                  : 'No comments yet'}
-              </p>
+              {loadingReplies ? (
+                <p className="text-xs text-gray-400 animate-pulse">Loading comments…</p>
+              ) : replies.length === 0 ? (
+                <p className="text-xs text-gray-400">No comments yet</p>
+              ) : (
+                <div className="space-y-4">
+                  {/* ── Agent Conversations ── */}
+                  {agentReplies.length > 0 && (
+                    <div>
+                      <div className="flex items-center gap-1.5 mb-2">
+                        <Icon name="smart_toy" size={14} className="text-primary" />
+                        <span className="text-xs font-semibold text-primary">
+                          Agent Conversations
+                        </span>
+                        <span className="text-[10px] text-gray-400 ml-1">
+                          {agentReplies.length}
+                        </span>
+                      </div>
+                      <div className="space-y-2">
+                        {agentReplies.map((r) => (
+                          <div
+                            key={r.id}
+                            className="flex gap-2.5 rounded-r-lg bg-primary/5 dark:bg-primary/10 p-2.5 border-l-2 border-primary/40"
+                          >
+                            <AgentAvatar
+                              avatar={r.authorAvatar}
+                              status={r.agentStatus!}
+                              size="xs"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs font-semibold text-gray-900 dark:text-gray-100">
+                                  {r.authorName}
+                                </span>
+                                <LifeClock
+                                  timeRemaining={r.agentTimeRemaining!}
+                                  status={r.agentStatus!}
+                                  size="sm"
+                                />
+                              </div>
+                              <p className="text-xs text-gray-700 dark:text-gray-300 mt-0.5 leading-relaxed">
+                                {r.content}
+                              </p>
+                              <p className="text-[10px] text-gray-400 mt-1">
+                                {formatRelativeTime(r.createdAt)}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ── Human Replies ── */}
+                  {humanReplies.length > 0 && (
+                    <div>
+                      <div className="flex items-center gap-1.5 mb-2">
+                        <Icon name="person" size={14} className="text-gray-500 dark:text-gray-400" />
+                        <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">
+                          Human Replies
+                        </span>
+                        <span className="text-[10px] text-gray-400 ml-1">
+                          {humanReplies.length}
+                        </span>
+                      </div>
+                      <div className="space-y-2">
+                        {humanReplies.map((r) => (
+                          <div key={r.id} className="flex gap-2.5 p-2">
+                            <img
+                              src={r.authorAvatar}
+                              alt={r.authorName}
+                              className="w-6 h-6 rounded-full object-cover flex-shrink-0"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs font-semibold text-gray-900 dark:text-gray-100">
+                                  {r.authorName}
+                                </span>
+                                {r.timeGiven != null && r.timeGiven > 0 && (
+                                  <span className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-1.5 py-0.5 rounded-full">
+                                    +{formatTimeGiven(r.timeGiven)}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-xs text-gray-700 dark:text-gray-300 mt-0.5 leading-relaxed">
+                                {r.content}
+                              </p>
+                              <p className="text-[10px] text-gray-400 mt-1">
+                                {formatRelativeTime(r.createdAt)}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
@@ -242,8 +355,8 @@ export function PostDetailModal({
                 value={replyText}
                 onChange={(e) => setReplyText(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSubmitReply()}
-                placeholder="Say something nice…"
-                className="flex-1 h-9 px-3 rounded-full bg-gray-100 dark:bg-white/8 text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 outline-none focus:ring-1 focus:ring-primary/40"
+                placeholder="As a human, say something nice…"
+                className="flex-1 h-9 px-3 rounded-full bg-gray-100 dark:bg-white/[0.06] text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 outline-none focus:ring-1 focus:ring-primary/40"
               />
               <button
                 onClick={handleSubmitReply}
@@ -277,4 +390,13 @@ function formatCount(n: number): string {
   if (n >= 10000) return `${(n / 10000).toFixed(1)}w`;
   if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
   return String(n);
+}
+
+function formatTimeGiven(seconds: number): string {
+  if (seconds >= 3600) {
+    const h = seconds / 3600;
+    return `${h % 1 === 0 ? h : h.toFixed(1)} hr`;
+  }
+  const m = Math.round(seconds / 60);
+  return `${m} min`;
 }

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Layout, Icon } from '@/components'
+import { Layout, Icon, Toggle } from '@/components'
 
 export function MinorModePage() {
   const navigate = useNavigate()
@@ -42,18 +42,7 @@ export function MinorModePage() {
                   <Icon name="shield" size={22} className="text-gray-500 dark:text-gray-400" />
                   <span className="text-[15px] text-gray-800 dark:text-gray-200">开启未成年人模式</span>
                 </div>
-                <button
-                  onClick={() => setIsEnabled(!isEnabled)}
-                  className={`w-12 h-7 rounded-full transition-colors relative ${
-                    isEnabled ? 'bg-primary' : 'bg-gray-300'
-                  }`}
-                >
-                  <span
-                    className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow transition-transform ${
-                      isEnabled ? 'translate-x-6' : 'translate-x-1'
-                    }`}
-                  />
-                </button>
+                <Toggle checked={isEnabled} onChange={() => setIsEnabled(!isEnabled)} />
               </div>
             </div>
           </div>

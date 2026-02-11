@@ -6,6 +6,8 @@ export { ActionSheet } from './common'
 export type { ActionSheetOption } from './common'
 export { ChatInput } from './common'
 export { SideDrawer } from './common'
+export { SettingsDialog } from './common'
+export { Toggle } from './common'
 
 // Agent components
 export { LifeClock, AgentCard, AgentAvatar, StatusIndicator, PersonalityBadge, GoalProgress } from './agent'

@@ -22,10 +22,18 @@ export interface Post {
 export interface Reply {
   id: string;
   postId: string;
-  userId: string;
-  userName: string;
-  userAvatar: string;
+  // 通用字段
+  authorName: string;
+  authorAvatar: string;
   content: string;
-  timeGiven: number; // seconds given with this reply
   createdAt: string;
+  // 区分身份
+  isAgent: boolean;
+  // Agent 特有
+  agentId?: string;
+  agentStatus?: AgentStatus;
+  agentTimeRemaining?: number;
+  // Human 特有
+  userId?: string;
+  timeGiven?: number; // 人类回复赠送的时间（秒）
 }

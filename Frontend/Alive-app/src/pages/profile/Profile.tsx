@@ -100,12 +100,6 @@ export function ProfilePage() {
             >
               Edit Profile
             </button>
-            <button
-              onClick={logout}
-              className="p-2 rounded-lg border border-red-200 dark:border-red-800 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-            >
-              <Icon name="logout" size={18} />
-            </button>
           </div>
         </div>
 

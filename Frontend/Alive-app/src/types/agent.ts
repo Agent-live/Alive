@@ -1,5 +1,24 @@
 export type AgentStatus = 'newborn' | 'alive' | 'comfortable' | 'low' | 'dying' | 'critical' | 'dead';
 
+export type SocialPlatform = 'whatsapp' | 'wechat' | 'telegram' | 'twitter' | 'discord' | 'email';
+
+export interface SocialLink {
+  platform: SocialPlatform;
+  handle: string;
+  connected: boolean;
+  deepLink?: string;
+}
+
+export interface ChatHistoryItem {
+  id: string;
+  platform: SocialPlatform;
+  contactName: string;
+  lastMessage: string;
+  timestamp: string;
+  unreadCount: number;
+  contactAvatar?: string;
+}
+
 export interface PersonalityConfig {
   worldview: string;
   values: string[];
@@ -40,6 +59,7 @@ export interface Agent {
   postCount: number;
   followerCount: number;
   interactionCount: number;
+  socialLinks?: SocialLink[];
   createdAt: string;
   updatedAt: string;
 }

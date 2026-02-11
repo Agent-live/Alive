@@ -11,6 +11,7 @@ interface SettingItem {
 }
 
 interface SettingSection {
+  title?: string
   items: SettingItem[]
 }
 
@@ -21,30 +22,23 @@ export function SettingsPage() {
   const settingSections: SettingSection[] = [
     {
       items: [
-        { icon: 'manage_accounts', label: '账号与安全', path: '/settings/account' },
-        { icon: 'settings', label: '通用设置', path: '/settings/general' },
-        { icon: 'notifications', label: '消息通知', path: '/settings/notifications' },
-        { icon: 'translate', label: '语言与翻译', path: '/settings/language' },
-        { icon: 'lock', label: '隐私设置', path: '/settings/privacy' },
+        { icon: 'manage_accounts', label: 'Account & Security', path: '/settings/account' },
+        { icon: 'settings', label: 'General', path: '/settings/general' },
+        { icon: 'notifications', label: 'Notifications', path: '/settings/notifications' },
+        { icon: 'translate', label: 'Language', path: '/settings/language' },
+        { icon: 'lock', label: 'Privacy', path: '/settings/privacy' },
       ],
     },
     {
       items: [
-        { icon: 'storage', label: '存储空间', path: '/settings/storage' },
-        { icon: 'tune', label: '内容偏好', path: '/settings/content' },
-        { icon: 'location_on', label: '收货地址', path: '/address' },
-        { icon: 'child_care', label: '未成年人模式', path: '/settings/minor-mode', value: '未开启' },
+        { icon: 'tune', label: 'Feed Preferences', path: '/settings/content' },
+        { icon: 'science', label: 'Beta Features', path: '/settings/beta' },
       ],
     },
     {
       items: [
-        { icon: 'science', label: '体验新功能', path: '/settings/beta' },
-      ],
-    },
-    {
-      items: [
-        { icon: 'help_outline', label: '帮助中心', path: '/help' },
-        { icon: 'info', label: '关于 LOOKA', path: '/settings/about' },
+        { icon: 'help_outline', label: 'Help Center', path: '/help' },
+        { icon: 'info', label: 'About ALIVE', path: '/settings/about' },
       ],
     },
   ]
@@ -63,30 +57,34 @@ export function SettingsPage() {
   }
 
   return (
-    <Layout showTabBar={false}>
-      {/* Header */}
-      <header className="header-detail">
-        <div className="header-detail-inner">
-          <button onClick={() => navigate(-1)} className="header-btn-start">
-            <Icon name="arrow_back_ios" size={20} className="text-gray-600 dark:text-gray-300" />
-          </button>
-          <h1 className="header-title-center">设置</h1>
-          <div className="w-10" />
+    <Layout
+      header={
+        <div className="px-4">
+          <div className="flex items-center h-14 md:h-12 md:mt-8 md:mb-6">
+            <button onClick={() => navigate(-1)} className="p-2 -ml-2">
+              <Icon name="arrow_back_ios" size={20} className="text-gray-700 dark:text-gray-300" />
+            </button>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 flex-1 text-center md:text-left">
+              Settings
+            </h1>
+            <div className="w-10 md:hidden" />
+          </div>
         </div>
-      </header>
-
-      <div className="content-detail ">
-        <div className="max-w-md mx-auto py-2">
+      }
+      showTabBar={false}
+    >
+      <div className="px-3 md:px-5 py-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {settingSections.map((section, sectionIndex) => (
             <div
               key={sectionIndex}
-              className="mx-4 mb-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl overflow-hidden"
+              className="bg-gray-50 dark:bg-gray-800/50 rounded-xl overflow-hidden"
             >
               {section.items.map((item, itemIndex) => (
                 <button
                   key={itemIndex}
                   onClick={() => handleItemClick(item)}
-                  className="w-full flex items-center gap-4 px-4 py-3.5 active:bg-gray-100 dark:active:bg-gray-700/50 transition-colors border-b border-gray-100 dark:border-gray-700/50 last:border-b-0"
+                  className="w-full flex items-center gap-4 px-4 py-3.5 active:bg-gray-100 dark:active:bg-gray-700/50 hover:bg-gray-100/60 dark:hover:bg-gray-700/30 transition-colors border-b border-gray-100 dark:border-gray-700/50 last:border-b-0"
                 >
                   <Icon name={item.icon} size={22} className="text-gray-500 dark:text-gray-400" />
                   <span className="flex-1 text-left text-[15px] text-gray-800 dark:text-gray-200">
@@ -101,13 +99,13 @@ export function SettingsPage() {
             </div>
           ))}
 
-          {/* 退出登录按钮 */}
-          <div className="mx-4 mt-6 mb-8">
+          {/* Logout — spans full width on desktop */}
+          <div className="md:col-span-2 mt-3 mb-4">
             <button
               onClick={handleLogout}
-              className="w-full py-3.5 bg-gray-50 dark:bg-gray-800/50 rounded-xl text-red-500 font-medium text-[15px] active:bg-gray-100 dark:active:bg-gray-700/50 transition-colors"
+              className="w-full py-3.5 bg-gray-50 dark:bg-gray-800/50 rounded-xl text-red-500 font-medium text-[15px] active:bg-gray-100 dark:active:bg-gray-700/50 hover:bg-gray-100/60 dark:hover:bg-gray-700/30 transition-colors"
             >
-              退出登录
+              Log Out
             </button>
           </div>
         </div>

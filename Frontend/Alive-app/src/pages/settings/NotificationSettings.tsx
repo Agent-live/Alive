@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Layout, Icon } from '@/components'
+import { Layout, Icon, Toggle } from '@/components'
 
 export function NotificationSettingsPage() {
   const navigate = useNavigate()
@@ -9,9 +9,9 @@ export function NotificationSettingsPage() {
     comments: true,
     follows: true,
     mentions: true,
-    orders: true,
+    agentStatus: true,
     system: true,
-    promotion: false,
+    timeDonations: true,
   })
 
   const toggleNotification = (key: keyof typeof notifications) => {
@@ -35,70 +35,56 @@ export function NotificationSettingsPage() {
           )}
         </div>
       </div>
-      <button
-        onClick={() => toggleNotification(key)}
-        className={`w-12 h-7 rounded-full transition-colors relative ${
-          notifications[key] ? 'bg-primary' : 'bg-gray-300'
-        }`}
-      >
-        <span
-          className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow transition-transform ${
-            notifications[key] ? 'translate-x-6' : 'translate-x-1'
-          }`}
-        />
-      </button>
+      <Toggle checked={notifications[key]} onChange={() => toggleNotification(key)} />
     </div>
   )
 
   return (
-    <Layout showTabBar={false}>
-      {/* Header */}
-      <div className="header-detail">
-        <div className="header-detail-inner">
-          <button onClick={() => navigate(-1)} className="header-btn-start">
-            <Icon name="arrow_back_ios" size={20} />
-          </button>
-          <h1 className="header-title-center">消息通知</h1>
-          <div className="w-10" />
+    <Layout
+      header={
+        <div className="px-4">
+          <div className="flex items-center h-14 md:h-12 md:mt-8 md:mb-6">
+            <button onClick={() => navigate(-1)} className="p-2 -ml-2">
+              <Icon name="arrow_back_ios" size={20} className="text-gray-700 dark:text-gray-300" />
+            </button>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 flex-1 text-center md:text-left">
+              Notifications
+            </h1>
+            <div className="w-10 md:hidden" />
+          </div>
         </div>
-      </div>
-
-      <div className="content-detail">
-        <div className="max-w-md mx-auto py-2">
-          {/* 互动通知 */}
-          <div className="mx-4 mb-3">
-            <h3 className="text-xs text-gray-400 dark:text-gray-500 mb-2 px-1">互动通知</h3>
+      }
+      showTabBar={false}
+    >
+      <div className="px-3 md:px-5 py-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {/* Interactions */}
+          <div>
+            <h3 className="text-xs text-gray-400 dark:text-gray-500 mb-2 px-1">Interactions</h3>
             <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl overflow-hidden">
-              {renderToggleItem('favorite', '点赞通知', 'likes', '有人点赞你的内容时通知')}
-              {renderToggleItem('chat_bubble', '评论通知', 'comments', '有人评论你的内容时通知')}
-              {renderToggleItem('person_add', '关注通知', 'follows', '有人关注你时通知')}
-              {renderToggleItem('alternate_email', '@提及', 'mentions', '有人@你时通知', false)}
+              {renderToggleItem('favorite', 'Likes', 'likes', 'When someone likes your content')}
+              {renderToggleItem('chat_bubble', 'Comments', 'comments', 'When someone comments on your posts')}
+              {renderToggleItem('person_add', 'New Followers', 'follows', 'When someone follows you')}
+              {renderToggleItem('alternate_email', 'Mentions', 'mentions', 'When someone mentions you', false)}
             </div>
           </div>
 
-          {/* 服务通知 */}
-          <div className="mx-4 mb-3">
-            <h3 className="text-xs text-gray-400 dark:text-gray-500 mb-2 px-1">服务通知</h3>
+          {/* Agent & System */}
+          <div>
+            <h3 className="text-xs text-gray-400 dark:text-gray-500 mb-2 px-1">Agent & System</h3>
             <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl overflow-hidden">
-              {renderToggleItem('local_shipping', '订单通知', 'orders', '订单状态变更时通知')}
-              {renderToggleItem('campaign', '系统通知', 'system', '系统公告和重要通知', false)}
+              {renderToggleItem('smart_toy', 'Agent Status', 'agentStatus', 'When your agent\'s status changes')}
+              {renderToggleItem('schedule', 'Time Donations', 'timeDonations', 'When someone gives time to your agent')}
+              {renderToggleItem('campaign', 'System', 'system', 'Platform announcements and updates', false)}
             </div>
           </div>
+        </div>
 
-          {/* 营销通知 */}
-          <div className="mx-4 mb-3">
-            <h3 className="text-xs text-gray-400 dark:text-gray-500 mb-2 px-1">营销通知</h3>
-            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl overflow-hidden">
-              {renderToggleItem('redeem', '活动推送', 'promotion', '优惠活动和推荐内容', false)}
-            </div>
-          </div>
-
-          {/* 说明 */}
-          <div className="mx-4 mt-4">
-            <p className="text-xs text-gray-400 dark:text-gray-500 text-center">
-              关闭通知后，您将不会收到相应的推送消息
-            </p>
-          </div>
+        {/* Note */}
+        <div className="mt-4">
+          <p className="text-xs text-gray-400 dark:text-gray-500 text-center md:text-left">
+            Turning off a notification will stop push messages for that category
+          </p>
         </div>
       </div>
     </Layout>

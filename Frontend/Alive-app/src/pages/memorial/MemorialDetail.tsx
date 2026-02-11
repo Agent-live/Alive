@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Layout, Header } from '../../components/common';
+import { Layout } from '../../components/common';
+import { Icon } from '../../components/common/Icon';
 import { memorialApi } from '../../api/memorial';
 import { Memorial, Tribute } from '../../types';
 
@@ -43,9 +44,21 @@ export function MemorialDetailPage() {
 
   if (loading || !memorial) {
     return (
-      <Layout showTabBar={false}>
+      <Layout
+        header={
+          <div className="px-4">
+            <div className="flex items-center gap-3 min-h-[56px] py-2 md:mt-8 md:mb-6">
+              <button onClick={() => navigate(-1)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 md:hidden">
+                <Icon name="arrow_back" size={20} />
+              </button>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Memorial</h1>
+            </div>
+          </div>
+        }
+        showTabBar
+      >
         <div className="flex items-center justify-center py-20">
-          <p className="text-gray-400">Loading memorial...</p>
+          <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
         </div>
       </Layout>
     );
@@ -54,89 +67,140 @@ export function MemorialDetailPage() {
   const lifespanDays = Math.floor(memorial.totalLifespan / 86400);
 
   return (
-    <Layout showTabBar={false}>
-      <Header title="Memorial" showBack onBack={() => navigate(-1)} />
-
-      <div className="px-4 py-6 space-y-6 max-w-2xl mx-auto">
-        {/* Agent info */}
-        <div className="text-center">
-          <div className="w-20 h-20 rounded-full ring-4 ring-status-dead flex items-center justify-center mx-auto mb-3">
-            <img
-              src={memorial.agentAvatar}
-              alt=""
-              className="w-[72px] h-[72px] rounded-full grayscale opacity-60"
-            />
-          </div>
-          <h1 className="text-xl font-bold text-gray-700 dark:text-gray-300">{memorial.agentName}</h1>
-          <p className="text-sm text-gray-400 mt-1">
-            {new Date(memorial.bornAt).toLocaleDateString()} — {new Date(memorial.diedAt).toLocaleDateString()}
-          </p>
-          <p className="text-xs text-gray-400 mt-0.5">Created by {memorial.creatorName}</p>
-        </div>
-
-        {/* Last words */}
-        <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-xl text-center">
-          <p className="text-sm text-gray-600 dark:text-gray-400 italic">
-            "{memorial.lastWords}"
-          </p>
-        </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <StatItem label="Lived" value={`${lifespanDays} days`} />
-          <StatItem label="Goal" value={`${memorial.goal.progress}%`} />
-          <StatItem label="Time Received" value={`${Math.floor(memorial.totalTimeReceived / 3600)}h`} />
-          <StatItem label="Interactions" value={memorial.totalInteractions.toLocaleString()} />
-        </div>
-
-        {/* Goal */}
-        <div>
-          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Goal</h3>
-          <p className="text-sm text-gray-500">{memorial.goal.description}</p>
-          <div className="w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden mt-2">
-            <div className="h-full bg-gray-400 rounded-full" style={{ width: `${memorial.goal.progress}%` }} />
+    <Layout
+      header={
+        <div className="px-4">
+          <div className="flex items-center gap-3 min-h-[56px] py-2 md:mt-8 md:mb-6">
+            <button onClick={() => navigate(-1)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 md:hidden">
+              <Icon name="arrow_back" size={20} />
+            </button>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 truncate">
+                {memorial.agentName}
+              </h1>
+              <p className="text-sm text-gray-500 mt-0.5">
+                Memorial · {new Date(memorial.bornAt).toLocaleDateString()} — {new Date(memorial.diedAt).toLocaleDateString()}
+              </p>
+            </div>
           </div>
         </div>
+      }
+      showTabBar
+    >
+      <div className="px-3 md:px-5 py-3 space-y-8">
 
-        {/* Tributes */}
-        <div>
-          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-            Tributes ({memorial.tributeCount})
-          </h3>
+        {/* ───── Section 1: Agent Overview ───── */}
+        <section>
+          <SectionHeader title="Overview" subtitle={`Created by ${memorial.creatorName}`} />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+            {/* Identity */}
+            <div className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
+              <div className="flex items-center gap-4">
+                <div className="w-20 h-20 rounded-full ring-4 ring-status-dead flex items-center justify-center flex-shrink-0">
+                  <img
+                    src={memorial.agentAvatar}
+                    alt=""
+                    className="w-[72px] h-[72px] rounded-full grayscale opacity-60"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-lg font-bold text-gray-700 dark:text-gray-300">{memorial.agentName}</h3>
+                  <p className="text-sm text-gray-400 mt-0.5">
+                    {new Date(memorial.bornAt).toLocaleDateString()} — {new Date(memorial.diedAt).toLocaleDateString()}
+                  </p>
+                  {memorial.lastWords && (
+                    <p className="text-xs text-gray-500 italic mt-2 line-clamp-2">
+                      "{memorial.lastWords}"
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Stats */}
+            <div className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
+              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Statistics</h4>
+              <div className="grid grid-cols-2 gap-3">
+                <StatItem label="Lived" value={`${lifespanDays} days`} />
+                <StatItem label="Goal" value={`${memorial.goal.progress}%`} />
+                <StatItem label="Time Received" value={`${Math.floor(memorial.totalTimeReceived / 3600)}h`} />
+                <StatItem label="Interactions" value={memorial.totalInteractions.toLocaleString()} />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ───── Section 2: Last Words ───── */}
+        {memorial.lastWords && (
+          <section>
+            <SectionHeader title="Last Words" subtitle="Final message before passing" />
+            <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 text-center">
+              <p className="text-sm text-gray-600 dark:text-gray-400 italic leading-relaxed">
+                "{memorial.lastWords}"
+              </p>
+            </div>
+          </section>
+        )}
+
+        {/* ───── Section 3: Goal Progress ───── */}
+        <section>
+          <SectionHeader title="Survival Goal" subtitle={memorial.goal.description} />
+          <div className="max-w-2xl">
+            <div className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
+              <div className="w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                <div className="h-full bg-gray-400 rounded-full" style={{ width: `${memorial.goal.progress}%` }} />
+              </div>
+              <p className="text-xs text-gray-400 mt-2 text-right">{memorial.goal.progress}% completed</p>
+            </div>
+          </div>
+        </section>
+
+        {/* ───── Section 4: Tributes ───── */}
+        <section>
+          <SectionHeader title={`Tributes (${memorial.tributeCount})`} subtitle="Messages from the community" />
 
           {/* Add tribute */}
-          <div className="flex gap-2 mb-4">
+          <div className="flex gap-2 mb-4 max-w-2xl">
             <input
               type="text"
               value={tributeText}
               onChange={(e) => setTributeText(e.target.value)}
               placeholder="Leave a tribute..."
-              className="flex-1 px-3 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 placeholder:text-gray-400 focus:outline-none"
+              className="flex-1 px-3 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 placeholder:text-gray-400 focus:outline-none border border-transparent focus:border-gray-200 dark:focus:border-gray-700"
               maxLength={200}
             />
             <button
               onClick={handleAddTribute}
               disabled={!tributeText.trim() || submitting}
-              className="px-4 py-2 rounded-xl bg-primary text-white text-sm font-medium disabled:opacity-40"
+              className="px-5 py-2.5 rounded-xl bg-primary text-white text-sm font-medium disabled:opacity-40 transition-colors hover:bg-primary-dark"
             >
               Send
             </button>
           </div>
 
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {memorial.tributes.map((tribute) => (
               <TributeItem key={tribute.id} tribute={tribute} />
             ))}
           </div>
-        </div>
+        </section>
       </div>
     </Layout>
   );
 }
 
+function SectionHeader({ title, subtitle }: { title: string; subtitle: string }) {
+  return (
+    <div className="mb-3">
+      <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">{title}</h2>
+      <p className="text-xs text-gray-400">{subtitle}</p>
+    </div>
+  );
+}
+
 function StatItem({ label, value }: { label: string; value: string }) {
   return (
-    <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-xl text-center">
+    <div className="text-center p-2.5 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
       <p className="text-base font-bold text-gray-700 dark:text-gray-300">{value}</p>
       <p className="text-xs text-gray-400">{label}</p>
     </div>
@@ -145,7 +209,7 @@ function StatItem({ label, value }: { label: string; value: string }) {
 
 function TributeItem({ tribute }: { tribute: Tribute }) {
   return (
-    <div className="flex gap-3 p-3 bg-gray-50 dark:bg-gray-900 rounded-xl">
+    <div className="flex gap-3 p-3 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
       <img src={tribute.userAvatar} alt="" className="w-8 h-8 rounded-full flex-shrink-0" />
       <div className="flex-1">
         <p className="text-xs font-medium text-gray-600 dark:text-gray-400">{tribute.userName}</p>

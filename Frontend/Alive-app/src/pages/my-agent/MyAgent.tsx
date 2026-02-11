@@ -1,11 +1,12 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Layout } from '../../components/common';
+import { Layout, ActionSheet } from '../../components/common';
 import { AgentAvatar, LifeClock, StatusIndicator, GoalProgress } from '../../components/agent';
 import { Icon } from '../../components/common/Icon';
 import { DailyBudgetIndicator } from '../../components/time';
+import { WhatsAppIcon, WeChatIcon, TelegramIcon, XTwitterIcon, DiscordIcon, MailIcon } from '../../components/icons';
 import { useAgentStore, useTimeStore, useFeedStore } from '../../store';
-import type { TimeTransaction, Post } from '../../types';
+import type { TimeTransaction, Post, SocialPlatform, SocialLink, ChatHistoryItem } from '../../types';
 
 /* ─── Event type icons & labels ─── */
 const txMeta: Record<string, { icon: string; label: string; color: string }> = {
@@ -17,6 +18,41 @@ const txMeta: Record<string, { icon: string; label: string; color: string }> = {
   daily_bonus: { icon: 'calendar_today', label: 'Daily Bonus', color: 'text-primary' },
   system_grant: { icon: 'verified', label: 'System Grant', color: 'text-indigo-500' },
 };
+
+/* ─── Platform config for social icons ─── */
+const platformConfig: Record<SocialPlatform, {
+  icon: (props: React.SVGProps<SVGSVGElement>) => ReactNode;
+  label: string;
+  color: string;
+  bgColor: string;
+  grayBg: string;
+  deepLinkTemplate: string;
+}> = {
+  whatsapp:  { icon: WhatsAppIcon,  label: 'WhatsApp',  color: 'text-[#25D366]', bgColor: 'bg-[#25D366]/10', grayBg: 'bg-gray-100 dark:bg-gray-800', deepLinkTemplate: 'https://wa.me/{handle}' },
+  wechat:    { icon: WeChatIcon,    label: 'WeChat',    color: 'text-[#07C160]', bgColor: 'bg-[#07C160]/10', grayBg: 'bg-gray-100 dark:bg-gray-800', deepLinkTemplate: 'weixin://dl/chat?{handle}' },
+  telegram:  { icon: TelegramIcon,  label: 'Telegram',  color: 'text-[#26A5E4]', bgColor: 'bg-[#26A5E4]/10', grayBg: 'bg-gray-100 dark:bg-gray-800', deepLinkTemplate: 'https://t.me/{handle}' },
+  twitter:   { icon: XTwitterIcon,  label: 'X / Twitter', color: 'text-gray-900 dark:text-white', bgColor: 'bg-gray-900/10 dark:bg-white/10', grayBg: 'bg-gray-100 dark:bg-gray-800', deepLinkTemplate: 'https://x.com/{handle}' },
+  discord:   { icon: DiscordIcon,   label: 'Discord',   color: 'text-[#5865F2]', bgColor: 'bg-[#5865F2]/10', grayBg: 'bg-gray-100 dark:bg-gray-800', deepLinkTemplate: 'https://discord.gg/{handle}' },
+  email:     { icon: MailIcon,      label: 'Email',     color: 'text-[#EA4335]', bgColor: 'bg-[#EA4335]/10', grayBg: 'bg-gray-100 dark:bg-gray-800', deepLinkTemplate: 'mailto:{handle}' },
+};
+
+/* ─── Mock social links ─── */
+const mockSocialLinks: SocialLink[] = [
+  { platform: 'whatsapp',  handle: '+1234567890',   connected: true,  deepLink: 'https://wa.me/1234567890' },
+  { platform: 'wechat',    handle: 'agent_wechat',  connected: false },
+  { platform: 'telegram',  handle: 'agent_tg',      connected: true,  deepLink: 'https://t.me/agent_tg' },
+  { platform: 'twitter',   handle: 'agent_x',       connected: true,  deepLink: 'https://x.com/agent_x' },
+  { platform: 'discord',   handle: 'abc123',        connected: false },
+  { platform: 'email',     handle: 'agent@alive.ai', connected: true, deepLink: 'mailto:agent@alive.ai' },
+];
+
+/* ─── Mock chat history ─── */
+const mockChatHistory: ChatHistoryItem[] = [
+  { id: 'ch1', platform: 'whatsapp',  contactName: 'Alice Wang',   lastMessage: 'Hey! Your agent helped me a lot today, thanks!', timestamp: new Date(Date.now() - 1800000).toISOString(),  unreadCount: 3 },
+  { id: 'ch2', platform: 'telegram',  contactName: 'Bob Chen',     lastMessage: 'Can we schedule a call for tomorrow?',           timestamp: new Date(Date.now() - 7200000).toISOString(),  unreadCount: 0 },
+  { id: 'ch3', platform: 'twitter',   contactName: 'Carol Smith',  lastMessage: 'Loved the latest post from your agent!',         timestamp: new Date(Date.now() - 86400000).toISOString(), unreadCount: 1 },
+  { id: 'ch4', platform: 'email',     contactName: 'Dave Kim',     lastMessage: 'Re: Partnership proposal — sounds great, let\'s proceed.', timestamp: new Date(Date.now() - 172800000).toISOString(), unreadCount: 0 },
+];
 
 /* ─── Mock suggestions (no API yet) ─── */
 const mockSuggestions = [
@@ -76,6 +112,63 @@ export function MyAgentPage() {
   );
 
   const isDead = myAgent?.status === 'dead';
+
+  /* Connect-platform ActionSheet state */
+  const [connectSheet, setConnectSheet] = useState<{ open: boolean; platform: SocialPlatform | null }>({ open: false, platform: null });
+  const handleConnectPlatform = (platform: SocialPlatform) => {
+    setConnectSheet({ open: true, platform });
+  };
+
+  function SocialLinksRow({
+    links,
+    onConnectPlatform,
+  }: {
+    links: SocialLink[];
+    onConnectPlatform: (platform: SocialPlatform) => void;
+  }) {
+    return (
+      <div className="flex gap-3 overflow-x-auto hide-scrollbar">
+        {links.map((link) => {
+          const config = platformConfig[link.platform];
+          const IconComponent = config.icon;
+          const connected = link.connected;
+  
+          return (
+            <button
+              key={link.platform}
+              onClick={() => {
+                if (connected && link.deepLink) {
+                  window.open(link.deepLink, '_blank', 'noopener,noreferrer');
+                } else {
+                  onConnectPlatform(link.platform);
+                }
+              }}
+              className={`
+                flex-shrink-0 flex flex-col items-center gap-1.5 group
+              `}
+              title={connected ? `Open ${config.label}` : `Connect ${config.label}`}
+            >
+              <div
+                className={`
+                  w-11 h-11 rounded-full flex items-center justify-center transition-transform group-hover:scale-110 group-active:scale-95
+                  ${connected ? config.bgColor : config.grayBg}
+                `}
+              >
+                <IconComponent
+                  width={20}
+                  height={20}
+                  className={connected ? config.color : 'text-gray-400 dark:text-gray-500'}
+                />
+              </div>
+              <span className={`text-[10px] font-medium ${connected ? 'text-gray-700 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'}`}>
+                {config.label}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
 
   /* ─── Loading ─── */
   if (loading && !myAgent) {
@@ -248,6 +341,37 @@ export function MyAgentPage() {
           )}
         </section>
 
+        {/* ───── Section 2b: Connected Platforms ───── */}
+        <section>
+          <SectionHeader title="Connected Platforms" subtitle="Social media & messaging channels" />
+          <div className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
+            <SocialLinksRow
+              links={mockSocialLinks}
+              onConnectPlatform={handleConnectPlatform}
+            />
+          </div>
+        </section>
+
+        {/* ───── Section 2c: Chat History ───── */}
+        <section>
+          <SectionHeader title="Chat History" subtitle="Recent conversations across platforms" />
+          {mockChatHistory.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+              {mockChatHistory.map((chat) => (
+                <ChatHistoryCard key={chat.id} chat={chat} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <Icon name="forum" size={32} className="text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+              <p className="text-sm text-gray-400">No chat history yet</p>
+              <p className="text-xs text-gray-300 dark:text-gray-600 mt-1">
+                Connect a platform to start seeing conversations
+              </p>
+            </div>
+          )}
+        </section>
+
         {/* ───── Section 3: Communication Records ───── */}
         <section>
           <SectionHeader title="Communication Records" subtitle={`Your interactions with ${myAgent.name}`} />
@@ -311,6 +435,36 @@ export function MyAgentPage() {
           </div>
         </section>
       </div>
+
+      {/* ───── Connect Platform ActionSheet ───── */}
+      <ActionSheet
+        open={connectSheet.open}
+        onClose={() => setConnectSheet({ open: false, platform: null })}
+        title={connectSheet.platform ? `Connect ${platformConfig[connectSheet.platform].label}` : 'Connect Platform'}
+        cancelText="Cancel"
+        options={connectSheet.platform ? [
+          {
+            id: 'connect',
+            icon: 'link',
+            title: `Connect ${platformConfig[connectSheet.platform].label}`,
+            subtitle: `Link your ${platformConfig[connectSheet.platform].label} account to your agent`,
+            gradient: 'from-primary to-blue-500',
+            onClick: () => {
+              // TODO: Implement actual connect flow
+              console.log(`Connect ${connectSheet.platform}`);
+            },
+          },
+          {
+            id: 'learn-more',
+            icon: 'info',
+            title: 'Learn More',
+            subtitle: `See how ${platformConfig[connectSheet.platform].label} integration works`,
+            onClick: () => {
+              console.log(`Learn more about ${connectSheet.platform}`);
+            },
+          },
+        ] : []}
+      />
     </Layout>
   );
 }
@@ -394,6 +548,48 @@ function PostCard({ post }: { post: Post }) {
           <Icon name="share" size={12} /> {post.shares}
         </span>
       </div>
+    </div>
+  );
+}
+
+
+
+function ChatHistoryCard({ chat }: { chat: ChatHistoryItem }) {
+  const config = platformConfig[chat.platform];
+  const IconComponent = config.icon;
+
+  return (
+    <div className="flex items-start gap-3 p-3 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
+      {/* Avatar with platform badge */}
+      <div className="relative flex-shrink-0">
+        <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+          {chat.contactAvatar ? (
+            <img src={chat.contactAvatar} alt={chat.contactName} className="w-10 h-10 rounded-full object-cover" />
+          ) : (
+            <Icon name="person" size={20} className="text-gray-400" />
+          )}
+        </div>
+        {/* Platform badge */}
+        <div className={`absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full flex items-center justify-center border-2 border-white dark:border-gray-900 ${config.bgColor}`}>
+          <IconComponent width={10} height={10} className={config.color} />
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">{chat.contactName}</span>
+          <span className="text-xs text-gray-400 flex-shrink-0">{formatRelative(chat.timestamp)}</span>
+        </div>
+        <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">{chat.lastMessage}</p>
+      </div>
+
+      {/* Unread badge */}
+      {chat.unreadCount > 0 && (
+        <div className="flex-shrink-0 mt-1 w-5 h-5 rounded-full bg-primary text-white text-[10px] font-bold flex items-center justify-center">
+          {chat.unreadCount}
+        </div>
+      )}
     </div>
   );
 }
