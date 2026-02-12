@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store'
 import { GoogleIcon, AppleIcon, WeChatIcon, XTwitterIcon } from '../icons'
 import { Loader2Icon } from '../icons'
@@ -37,6 +38,7 @@ const providers: { id: SocialLoginProvider; label: string; icon: typeof GoogleIc
 ]
 
 export function SocialLoginButtons({ compact = false, onSuccess }: SocialLoginButtonsProps) {
+  const { t } = useTranslation()
   const { socialLogin } = useAuthStore()
   const [loadingProvider, setLoadingProvider] = useState<SocialLoginProvider | null>(null)
 
@@ -106,7 +108,7 @@ export function SocialLoginButtons({ compact = false, onSuccess }: SocialLoginBu
             ) : (
               <IconComp width={iconSize} height={iconSize} />
             )}
-            Continue with {p.label}
+            {t('auth.continueWith', { provider: p.label })}
           </button>
         )
       })}
@@ -115,11 +117,12 @@ export function SocialLoginButtons({ compact = false, onSuccess }: SocialLoginBu
 }
 
 export function LoginDivider({ compact = false }: { compact?: boolean }) {
+  const { t } = useTranslation()
   const py = compact ? 'py-3' : 'py-4'
   return (
     <div className={`flex items-center gap-3 ${py}`}>
       <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
-      <span className="text-xs text-gray-400 font-medium">or</span>
+      <span className="text-xs text-gray-400 font-medium">{t('common.or')}</span>
       <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
     </div>
   )

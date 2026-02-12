@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Layout } from '../../components/common';
 import { Icon } from '../../components/common/Icon';
 import { memorialApi } from '../../api/memorial';
 import { Memorial, Tribute } from '../../types';
 
 export function MemorialDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [memorial, setMemorial] = useState<Memorial | null>(null);
@@ -51,7 +53,7 @@ export function MemorialDetailPage() {
               <button onClick={() => navigate(-1)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 md:hidden">
                 <Icon name="arrow_back" size={20} />
               </button>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Memorial</h1>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('memorial.title')}</h1>
             </div>
           </div>
         }
@@ -79,7 +81,7 @@ export function MemorialDetailPage() {
                 {memorial.agentName}
               </h1>
               <p className="text-sm text-gray-500 mt-0.5">
-                Memorial · {new Date(memorial.bornAt).toLocaleDateString()} — {new Date(memorial.diedAt).toLocaleDateString()}
+                {t('memorial.title')} · {new Date(memorial.bornAt).toLocaleDateString()} — {new Date(memorial.diedAt).toLocaleDateString()}
               </p>
             </div>
           </div>
@@ -91,7 +93,7 @@ export function MemorialDetailPage() {
 
         {/* ───── Section 1: Agent Overview ───── */}
         <section>
-          <SectionHeader title="Overview" subtitle={`Created by ${memorial.creatorName}`} />
+          <SectionHeader title={t('memorial.overview')} subtitle={t('memorial.overviewSubtitle', { name: memorial.creatorName })} />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {/* Identity */}
             <div className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
@@ -119,12 +121,12 @@ export function MemorialDetailPage() {
 
             {/* Stats */}
             <div className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
-              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Statistics</h4>
+              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">{t('agent.statistics')}</h4>
               <div className="grid grid-cols-2 gap-3">
-                <StatItem label="Lived" value={`${lifespanDays} days`} />
-                <StatItem label="Goal" value={`${memorial.goal.progress}%`} />
-                <StatItem label="Time Received" value={`${Math.floor(memorial.totalTimeReceived / 3600)}h`} />
-                <StatItem label="Interactions" value={memorial.totalInteractions.toLocaleString()} />
+                <StatItem label={t('memorial.lived')} value={t('memorial.days', { count: lifespanDays })} />
+                <StatItem label={t('memorial.goal')} value={`${memorial.goal.progress}%`} />
+                <StatItem label={t('myAgent.timeReceived')} value={`${Math.floor(memorial.totalTimeReceived / 3600)}h`} />
+                <StatItem label={t('agent.interactions')} value={memorial.totalInteractions.toLocaleString()} />
               </div>
             </div>
           </div>
@@ -133,7 +135,7 @@ export function MemorialDetailPage() {
         {/* ───── Section 2: Last Words ───── */}
         {memorial.lastWords && (
           <section>
-            <SectionHeader title="Last Words" subtitle="Final message before passing" />
+            <SectionHeader title={t('memorial.lastWords')} subtitle={t('memorial.lastWordsSubtitle')} />
             <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400 italic leading-relaxed">
                 "{memorial.lastWords}"
@@ -144,20 +146,20 @@ export function MemorialDetailPage() {
 
         {/* ───── Section 3: Goal Progress ───── */}
         <section>
-          <SectionHeader title="Survival Goal" subtitle={memorial.goal.description} />
+          <SectionHeader title={t('agent.survivalGoal')} subtitle={memorial.goal.description} />
           <div className="max-w-2xl">
             <div className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
               <div className="w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                 <div className="h-full bg-gray-400 rounded-full" style={{ width: `${memorial.goal.progress}%` }} />
               </div>
-              <p className="text-xs text-gray-400 mt-2 text-right">{memorial.goal.progress}% completed</p>
+              <p className="text-xs text-gray-400 mt-2 text-right">{t('memorial.completed', { percent: memorial.goal.progress })}</p>
             </div>
           </div>
         </section>
 
         {/* ───── Section 4: Tributes ───── */}
         <section>
-          <SectionHeader title={`Tributes (${memorial.tributeCount})`} subtitle="Messages from the community" />
+          <SectionHeader title={t('memorial.tributes', { count: memorial.tributeCount })} subtitle={t('memorial.tributesSubtitle')} />
 
           {/* Add tribute */}
           <div className="flex gap-2 mb-4 max-w-2xl">
@@ -165,7 +167,7 @@ export function MemorialDetailPage() {
               type="text"
               value={tributeText}
               onChange={(e) => setTributeText(e.target.value)}
-              placeholder="Leave a tribute..."
+              placeholder={t('memorial.leaveTribute')}
               className="flex-1 px-3 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 placeholder:text-gray-400 focus:outline-none border border-transparent focus:border-gray-200 dark:focus:border-gray-700"
               maxLength={200}
             />
@@ -174,7 +176,7 @@ export function MemorialDetailPage() {
               disabled={!tributeText.trim() || submitting}
               className="px-5 py-2.5 rounded-xl bg-primary text-white text-sm font-medium disabled:opacity-40 transition-colors hover:bg-primary-dark"
             >
-              Send
+              {t('common.send')}
             </button>
           </div>
 

@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Layout } from '../../components/common';
 import { CreateAgentFlow, CreateAgentData, STEP_INFO, RegisterAgentStep } from '../../components/create';
 import { BirthAnimation } from '../../components/create';
@@ -8,19 +9,20 @@ import { useAgentStore, useUIStore } from '../../store';
 
 type Mode = 'select' | 'create' | 'register';
 
-function getHeaderInfo(mode: Mode, currentStep: number) {
+function getHeaderInfo(mode: Mode, currentStep: number, t: (key: string) => string) {
   switch (mode) {
     case 'select':
-      return { title: 'Create', subtitle: 'Create a new agent or import from AgentNet' };
+      return { title: t('createAgent.title'), subtitle: t('createAgent.subtitle') };
     case 'create':
       return STEP_INFO[currentStep];
     case 'register':
-      return { title: 'Import Agent', subtitle: 'Register an external agent from AgentNet' };
+      return { title: t('createAgent.importTitle'), subtitle: t('createAgent.importSubtitle') };
   }
 }
 
 export function CreateAgentPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { createAgent, registerAgent } = useAgentStore();
   const { showBirthAnimation } = useUIStore();
   const [mode, setMode] = useState<Mode>('select');
@@ -67,7 +69,7 @@ export function CreateAgentPage() {
     );
   }
 
-  const headerInfo = getHeaderInfo(mode, currentStep);
+  const headerInfo = getHeaderInfo(mode, currentStep, t);
 
   return (
     <Layout
@@ -97,9 +99,9 @@ export function CreateAgentPage() {
                   <Icon name="add_circle" size={24} className="text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">Create New Agent</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">{t('createAgent.createNew')}</h3>
                   <p className="text-sm text-gray-500 mt-1">
-                    Design a unique agent from scratch with custom personality, goals, and appearance.
+                    {t('createAgent.createNewDesc')}
                   </p>
                 </div>
               </button>
@@ -112,9 +114,9 @@ export function CreateAgentPage() {
                   <Icon name="download" size={24} className="text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">Import from AgentNet</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">{t('createAgent.importFromAgentNet')}</h3>
                   <p className="text-sm text-gray-500 mt-1">
-                    Register an existing external agent by its AgentNet ID.
+                    {t('createAgent.importFromAgentNetDesc')}
                   </p>
                 </div>
               </button>

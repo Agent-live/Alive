@@ -1,0 +1,275 @@
+可以实现！OpenClaw 原生就支持这个能力
+
+  根据代码分析，OpenClaw 已经内置了多 Agent 共享单一容器、各自独立 memory 和个性化配置的架构。以下是具体实现方式：
+
+  ---
+  核心机制：agents.list 配置
+
+  在 ~/.openclaw/config.json 中定义多个 agent，它们共享同一个 Gateway 进程，但各自拥有隔离的 workspace、memory、session：
+
+  {
+    "agents": {
+      "list": [
+        {
+          "id": "bot-alice",
+          "name": "Alice",
+          "default": true,
+          "model": "claude-sonnet-4-5-20250929",
+          "identity": "你是一个专业的客服助手...",
+          "skills": ["search", "calendar"]
+        },
+        {
+          "id": "bot-bob",
+          "name": "Bob",
+          "model": "claude-opus-4-6",
+          "identity": "你是一个技术专家...",
+          "skills": ["code-review", "debug"]
+        }
+      ]
+    }
+  }
+
+  每个 Bot 的隔离范围
+  ┌───────────────┬─────────────────────────────────────────────────────────────┐
+  │     资源      │                          隔离方式                           │
+  ├───────────────┼─────────────────────────────────────────────────────────────┤
+  │ Memory (RAG)  │ ~/.openclaw/agents/<agentId>/memory/ — 独立的 SQLite 向量库 │
+  ├───────────────┼─────────────────────────────────────────────────────────────┤
+  │ Session       │ ~/.openclaw/agents/<agentId>/sessions.json — 独立的会话存储 │
+  ├───────────────┼─────────────────────────────────────────────────────────────┤
+  │ Workspace     │ ~/.openclaw/workspace-<agentId>/ — 独立的工作目录           │
+  ├───────────────┼─────────────────────────────────────────────────────────────┤
+  │ 对话记录      │ ~/.openclaw/agents/<agentId>/sessions/<sessionId>.jsonl     │
+  ├───────────────┼─────────────────────────────────────────────────────────────┤
+  │ 模型选择      │ 每个 agent 可以用不同的 model/provider                      │
+  ├───────────────┼─────────────────────────────────────────────────────────────┤
+  │ 技能/工具     │ 每个 agent 可以配置不同的 skills 白名单                     │
+  ├───────────────┼─────────────────────────────────────────────────────────────┤
+  │ 人设/Identity │ 每个 agent 有独立的 identity 字段                           │
+  └───────────────┴─────────────────────────────────────────────────────────────┘
+  消息路由：通过 Bindings 分配到不同 Bot
+
+  {
+    "bindings": [
+      {
+        "channel": "whatsapp",
+        "peer": { "kind": "phone", "id": "+861xxxx" },
+        "agentId": "bot-alice"
+      },
+      {
+        "channel": "telegram",
+        "agentId": "bot-bob"
+      },
+      {
+        "channel": "slack",
+        "guildId": "T12345",
+        "agentId": "bot-alice"
+      }
+    ]
+  }
+
+  不同的渠道/用户/群组可以路由到不同的 bot，未匹配的走 default agent。
+
+  Docker 单容器部署
+
+  # 一个容器，一个 Gateway 进程，承载所有 bot
+  docker run -d \
+    -v ~/.openclaw:/home/node/.openclaw \
+    -p 18789:18789 \
+    openclaw/openclaw
+
+  所有 agent 共享同一个 Gateway 进程和端口，通过 session key 格式 agent:<agentId>:<channel>:<peer> 做隔离路由。
+
+  ---
+  总结
+
+  完全可以实现，而且不需要额外开发：
+
+  1. 在 config.json 的 agents.list 中定义多个 bot
+  2. 每个 bot 自动获得独立的 memory、session、workspace
+  3. 通过 bindings 配置消息路由规则
+  4. 单容器/单进程运行，共享 Gateway
+
+  如果你需要我帮你生成一个具体的多 bot 配置文件，或者有更细节的需求（比如某些 bot 之间共享部分 memory），可以告诉我。
+
+✻ Sautéed for 2m 20s
+
+❯ 能够包装成以恶搞服务呢，还有如何保证bot能够在对应特定的容器中行动呢 
+
+⏺ 让我深入了解一下 Gateway 服务化和 Agent 沙箱隔离的具体实现。
+
+⏺ Explore(Explore gateway service & sandbox)
+  ⎿  Done (40 tool uses · 99.8k tokens · 1m 13s)                    
+                                                 
+⏺ 1. 包装成服务 — Gateway 本身就是一个服务                                                                                                                  
+                                                                                                    
+  OpenClaw 的 Gateway 已经是一个完整的 HTTP/WebSocket 服务，支持多种标准 API 接入方式：                                                                     
+                                                                                                                                                            
+  启动服务                                                                                                                                                  
+                                                                                                                                                            
+  # 直接启动                                                                                                                                                
+  openclaw gateway
+                                                                                                                                                            
+  # Docker 部署                                                                                                                                             
+  docker run -d \                                                                                                                                           
+    -v ~/.openclaw:/home/node/.openclaw \
+    -p 18789:18789 \
+    -e OPENCLAW_GATEWAY_TOKEN=your-secret-token \
+    openclaw/openclaw gateway
+
+  对外暴露的 API 接口
+  ┌───────────────┬───────────────────────────┬─────────────────────────────────┐
+  │     接口      │           路径            │              用途               │
+  ├───────────────┼───────────────────────────┼─────────────────────────────────┤
+  │ OpenAI 兼容   │ POST /v1/chat/completions │ 直接替代 OpenAI，支持 streaming │
+  ├───────────────┼───────────────────────────┼─────────────────────────────────┤
+  │ OpenResponses │ POST /v1/responses        │ 结构化响应，支持工具调用        │
+  ├───────────────┼───────────────────────────┼─────────────────────────────────┤
+  │ Webhook       │ POST /hooks/agent         │ 外部系统推送消息给指定 bot      │
+  ├───────────────┼───────────────────────────┼─────────────────────────────────┤
+  │ 唤醒          │ POST /hooks/wake          │ 唤醒指定 agent                  │
+  ├───────────────┼───────────────────────────┼─────────────────────────────────┤
+  │ 工具调用      │ POST /tools/invoke        │ 直接调用 agent 的工具           │
+  ├───────────────┼───────────────────────────┼─────────────────────────────────┤
+  │ WebSocket RPC │ ws://host:18789           │ 实时双向通信（完整控制）        │
+  └───────────────┴───────────────────────────┴─────────────────────────────────┘
+  外部调用示例
+
+  # 向指定 bot 发消息（OpenAI 兼容格式）
+  curl -X POST http://localhost:18789/v1/chat/completions \
+    -H "Authorization: Bearer your-secret-token" \
+    -H "X-OpenClaw-Agent-Id: bot-alice" \
+    -H "X-OpenClaw-Session-Key: user-123" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "model": "claude-sonnet-4-5-20250929",
+      "messages": [{"role": "user", "content": "你好"}]
+    }'
+
+  # 通过 webhook 触发特定 agent
+  curl -X POST http://localhost:18789/hooks/agent \
+    -H "Authorization: Bearer your-secret-token" \
+    -d '{"agentId": "bot-bob", "message": "执行日报任务"}'
+
+  ---
+  2. 保证 Bot 在对应的容器中行动 — Sandbox 沙箱机制
+
+  OpenClaw 提供了三层隔离粒度，通过 sandbox 配置确保每个 bot 只能在自己的容器中行动：
+
+  Sandbox Scope 三种级别
+
+  ┌─────────────────────────────────────────────────┐
+  │  scope: "session"   最严格                        │
+  │  每个会话一个独立容器，完全隔离                       │
+  │  容器名: sandbox-botAlice-session123              │
+  ├─────────────────────────────────────────────────┤
+  │  scope: "agent"     推荐                          │
+  │  每个 agent 一个容器，同 agent 的会话共享            │
+  │  容器名: sandbox-botAlice                         │
+  ├─────────────────────────────────────────────────┤
+  │  scope: "shared"    最宽松                        │
+  │  所有 agent 共享一个容器                            │
+  └─────────────────────────────────────────────────┘
+
+  配置示例
+
+  {
+    "agents": {
+      "list": [
+        {
+          "id": "bot-alice",
+          "name": "Alice 客服",
+          "model": "claude-sonnet-4-5-20250929",
+          "identity": "你是一个友好的客服助手...",
+          "sandbox": {
+            "enabled": true,
+            "scope": "agent",              // 每个 agent 独立容器
+            "image": "node:22-slim",       // 自定义 Docker 镜像
+            "readOnlyRoot": true,          // 只读根文件系统
+            "network": "none",             // 网络隔离
+            "memory": "512m",              // 内存限制
+            "cpuShares": 512,
+            "workspace": { "access": "rw" } // workspace 读写权限
+          },
+          "tools": {
+            "allow": ["search", "memory"], // 只允许这些工具
+            "deny": ["exec", "browser"]    // 禁止执行命令和浏览器
+          }
+        },
+        {
+          "id": "bot-bob",
+          "name": "Bob 开发者",
+          "model": "claude-opus-4-6",
+          "identity": "你是一个资深开发工程师...",
+          "sandbox": {
+            "enabled": true,
+            "scope": "agent",
+            "image": "openclaw/sandbox-dev:latest",
+            "network": "bridge",           // 允许网络访问
+            "memory": "2g",
+            "workspace": { "access": "rw" }
+          },
+          "tools": {
+            "profile": "coding"            // 使用编码工具集
+          }
+        }
+      ]
+    }
+  }
+
+  隔离保障机制
+
+  Gateway 进程 (单容器 / 宿主机)
+  │
+  ├── Bot Alice 的 Docker 沙箱容器
+  │   ├── 文件系统: ~/.openclaw/workspace-bot-alice/ (隔离挂载)
+  │   ├── Memory DB: agents/bot-alice/memory.db (独立)
+  │   ├── Sessions: agents/bot-alice/sessions.json (独立)
+  │   ├── 网络: none (完全隔离)
+  │   ├── 工具: 仅 search, memory
+  │   └── 资源: 512MB RAM, 512 CPU shares
+  │
+  ├── Bot Bob 的 Docker 沙箱容器
+  │   ├── 文件系统: ~/.openclaw/workspace-bot-bob/ (隔离挂载)
+  │   ├── Memory DB: agents/bot-bob/memory.db (独立)
+  │   ├── Sessions: agents/bot-bob/sessions.json (独立)
+  │   ├── 网络: bridge (可联网)
+  │   ├── 工具: coding profile (完整开发工具)
+  │   └── 资源: 2GB RAM, 默认 CPU
+  │
+  └── 消息路由层
+      ├── WhatsApp 用户 → Bot Alice
+      ├── Telegram 开发群 → Bot Bob
+      └── Slack #support → Bot Alice
+
+  安全加固选项
+
+  {
+    "sandbox": {
+      "readOnlyRoot": true,        // 只读根文件系统
+      "capDrop": ["ALL"],          // 丢弃所有 Linux capabilities
+      "seccomp": "default",        // Seccomp 安全策略
+      "pidsLimit": 100,            // 最大进程数
+      "ulimits": {                 // 资源限制
+        "nofile": { "soft": 1024, "hard": 2048 }
+      }
+    }
+  }
+
+  ---
+  总结
+  ┌──────────────┬────────────────────────────────────────────────────┐
+  │     需求     │                      实现方式                      │
+  ├──────────────┼────────────────────────────────────────────────────┤
+  │ 包装成服务   │ Gateway 已是 HTTP/WS 服务，支持 OpenAI 兼容 API    │
+  ├──────────────┼────────────────────────────────────────────────────┤
+  │ Bot 隔离     │ sandbox.scope: "agent" — 每个 bot 独立 Docker 容器 │
+  ├──────────────┼────────────────────────────────────────────────────┤
+  │ Memory 隔离  │ 自动按 agentId 分离，无需额外配置                  │
+  ├──────────────┼────────────────────────────────────────────────────┤
+  │ 工具权限控制 │ tools.allow/deny 限制每个 bot 可用工具             │
+  ├──────────────┼────────────────────────────────────────────────────┤
+  │ 资源限制     │ Docker 级别的 CPU/内存/网络/进程数限制             │
+  ├──────────────┼────────────────────────────────────────────────────┤
+  │ 消息路由     │ bindings 配置将不同渠道/用户路由到对应 bot         │
+  └──────────────┴────────────────────────────────────────────────────┘

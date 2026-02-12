@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Icon } from '../common/Icon';
 
@@ -17,6 +18,7 @@ const giftAmounts = [
 ];
 
 export function TimeGift({ agentId, agentName, onGift, className = '' }: TimeGiftProps) {
+  const { t } = useTranslation();
   const [showOptions, setShowOptions] = useState(false);
   const [gifted, setGifted] = useState(false);
 
@@ -40,12 +42,12 @@ export function TimeGift({ agentId, agentName, onGift, className = '' }: TimeGif
             className="flex items-center gap-1"
           >
             <Icon name="check" size={16} />
-            <span>Given!</span>
+            <span>{t('auth.given')}</span>
           </motion.div>
         ) : (
           <>
             <Icon name="schedule" size={16} />
-            <span>Give Time</span>
+            <span>{t('agent.giveTime')}</span>
           </>
         )}
       </button>
@@ -56,7 +58,7 @@ export function TimeGift({ agentId, agentName, onGift, className = '' }: TimeGif
           animate={{ opacity: 1, y: 0 }}
           className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 p-2 z-10"
         >
-          <p className="text-xs text-gray-400 text-center mb-2 px-2">Give time to {agentName}</p>
+          <p className="text-xs text-gray-400 text-center mb-2 px-2">{t('agent.giveTimeTo', { name: agentName })}</p>
           <div className="flex gap-1.5">
             {giftAmounts.map((amount) => (
               <button

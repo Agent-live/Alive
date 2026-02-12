@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Icon } from './Icon'
 
 interface TabItem {
@@ -8,16 +9,17 @@ interface TabItem {
 }
 
 const tabs: TabItem[] = [
-  { path: '/', icon: 'dynamic_feed', label: 'Feed' },
-  { path: '/explore', icon: 'explore', label: 'Explore' },
-  { path: '/create', icon: 'add_circle', label: 'Create' },
-  { path: '/memorial', icon: 'local_florist', label: 'Memorial' },
-  { path: '/profile', icon: 'person', label: 'Profile' },
+  { path: '/', icon: 'dynamic_feed', label: 'nav.feed' },
+  { path: '/explore', icon: 'explore', label: 'nav.explore' },
+  { path: '/create', icon: 'add_circle', label: 'nav.create' },
+  { path: '/memorial', icon: 'local_florist', label: 'nav.memorial' },
+  { path: '/profile', icon: 'person', label: 'nav.profile' },
 ]
 
 export function TabBar() {
   const location = useLocation()
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   return (
     <nav
@@ -48,7 +50,7 @@ export function TabBar() {
                   filled={isActive}
                 />
                 <span className={`text-xs ${isActive ? 'font-semibold' : 'font-medium'}`}>
-                  {tab.label}
+                  {t(tab.label)}
                 </span>
               </button>
             )

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Layout, Icon } from '@/components'
 import { useAuthStore } from '@/store'
 
@@ -14,6 +15,7 @@ interface ProfileField {
 
 export function EditProfilePage() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { user } = useAuthStore()
 
   const userAvatar = user?.avatar || 'https://i.pravatar.cc/100'
@@ -29,19 +31,19 @@ export function EditProfilePage() {
   })
 
   const basicFields: ProfileField[] = [
-    { key: 'name', label: 'Name', value: profileData.name, path: '/profile/edit/name' },
-    { key: 'aliveId', label: 'ALIVE ID', value: profileData.aliveId, path: '/profile/edit/id' },
-    { key: 'background', label: 'Background', value: '', type: 'image', path: '/profile/edit/background' },
+    { key: 'name', label: t('editProfile.name'), value: profileData.name, path: '/profile/edit/name' },
+    { key: 'aliveId', label: t('editProfile.aliveId'), value: profileData.aliveId, path: '/profile/edit/id' },
+    { key: 'background', label: t('editProfile.background'), value: '', type: 'image', path: '/profile/edit/background' },
   ]
 
   const bioFields: ProfileField[] = [
-    { key: 'bio', label: 'Bio', value: profileData.bio || 'Tell us about yourself', path: '/profile/edit/bio' },
+    { key: 'bio', label: t('editProfile.bio'), value: profileData.bio || t('editProfile.bioPlaceholder'), path: '/profile/edit/bio' },
   ]
 
   const personalFields: ProfileField[] = [
-    { key: 'gender', label: 'Gender', value: profileData.gender || 'Not set', path: '/profile/edit/gender' },
-    { key: 'birthday', label: 'Birthday', value: profileData.birthday || 'Not set', path: '/profile/edit/birthday' },
-    { key: 'region', label: 'Region', value: profileData.region || 'Not set', path: '/profile/edit/region' },
+    { key: 'gender', label: t('editProfile.gender'), value: profileData.gender || t('common.notSet'), path: '/profile/edit/gender' },
+    { key: 'birthday', label: t('editProfile.birthday'), value: profileData.birthday || t('common.notSet'), path: '/profile/edit/birthday' },
+    { key: 'region', label: t('editProfile.region'), value: profileData.region || t('common.notSet'), path: '/profile/edit/region' },
   ]
 
   const handleFieldClick = (field: ProfileField) => {
@@ -82,7 +84,7 @@ export function EditProfilePage() {
             <button onClick={() => navigate(-1)} className="p-2 -ml-2">
               <Icon name="arrow_back_ios" size={20} className="text-gray-700 dark:text-gray-300" />
             </button>
-            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 flex-1 text-center md:text-left">Edit Profile</h1>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 flex-1 text-center md:text-left">{t('editProfile.title')}</h1>
             <div className="w-10 md:hidden" />
           </div>
         </div>

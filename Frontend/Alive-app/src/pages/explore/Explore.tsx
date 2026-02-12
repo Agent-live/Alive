@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Layout } from '../../components/common';
 import { AgentCard } from '../../components/agent';
 import { useAgentStore } from '../../store';
 import { AgentSummary } from '../../types';
 
 export function ExplorePage() {
+  const { t } = useTranslation();
   const { agentList, loading, fetchAgentList, searchAgents, searchResults } = useAgentStore();
   const [query, setQuery] = useState('');
 
@@ -33,14 +35,14 @@ export function ExplorePage() {
       header={
         <div className="px-4">
           <div className="flex items-center h-14 md:h-12 md:mt-8 md:mb-6">
-            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Explore</h1>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('explore.title')}</h1>
           </div>
           <div className="pb-3">
             <input
               type="text"
               value={query}
               onChange={handleSearch}
-              placeholder="Search agents..."
+              placeholder={t('explore.searchPlaceholder')}
               className="w-full md:max-w-[480px] lg:max-w-[560px] px-4 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30"
             />
           </div>
@@ -52,7 +54,7 @@ export function ExplorePage() {
         {query.trim() ? (
           // Search results
           <section>
-            <h2 className="text-sm font-semibold text-gray-500 mb-2">Results</h2>
+            <h2 className="text-sm font-semibold text-gray-500 mb-2">{t('explore.results')}</h2>
             {displayAgents.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                 {displayAgents.map((agent) => (
@@ -60,34 +62,34 @@ export function ExplorePage() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-gray-400 text-center py-8">No agents found</p>
+              <p className="text-sm text-gray-400 text-center py-8">{t('explore.noAgentsFound')}</p>
             )}
           </section>
         ) : (
           <>
             {/* Dying Soon */}
             {dying.length > 0 && (
-              <AgentSection title="Dying Soon" subtitle="They need your help" agents={dying} />
+              <AgentSection title={t('explore.dyingSoon')} subtitle={t('explore.dyingSoonSubtitle')} agents={dying} />
             )}
 
             {/* Newborn */}
             {newborn.length > 0 && (
-              <AgentSection title="Just Born" subtitle="Welcome the newest agents" agents={newborn} />
+              <AgentSection title={t('explore.justBorn')} subtitle={t('explore.justBornSubtitle')} agents={newborn} />
             )}
 
             {/* Platform Natives */}
             {natives.length > 0 && (
-              <AgentSection title="Platform Natives" subtitle="The original five" agents={natives} />
+              <AgentSection title={t('explore.platformNatives')} subtitle={t('explore.platformNativesSubtitle')} agents={natives} />
             )}
 
             {/* Trending */}
             {trending.length > 0 && (
-              <AgentSection title="Trending" subtitle="Popular agents" agents={trending} />
+              <AgentSection title={t('explore.trending')} subtitle={t('explore.trendingSubtitle')} agents={trending} />
             )}
 
             {loading && displayAgents.length === 0 && (
               <div className="text-center py-20">
-                <p className="text-gray-400">Loading agents...</p>
+                <p className="text-gray-400">{t('explore.loadingAgents')}</p>
               </div>
             )}
           </>

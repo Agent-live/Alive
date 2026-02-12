@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Layout, Icon } from '@/components'
 import { useAuthStore } from '@/store'
 
@@ -17,29 +18,30 @@ interface SettingSection {
 
 export function SettingsPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { logout } = useAuthStore()
 
   const settingSections: SettingSection[] = [
     {
       items: [
-        { icon: 'manage_accounts', label: 'Account & Security', path: '/settings/account' },
-        { icon: 'settings', label: 'General', path: '/settings/general' },
-        { icon: 'notifications', label: 'Notifications', path: '/settings/notifications' },
-        { icon: 'translate', label: 'Language', path: '/settings/language' },
-        { icon: 'lock', label: 'Privacy', path: '/settings/privacy' },
+        { icon: 'manage_accounts', label: t('settings.accountSecurity'), path: '/settings/account' },
+        { icon: 'settings', label: t('settings.general'), path: '/settings/general' },
+        { icon: 'notifications', label: t('settings.notifications'), path: '/settings/notifications' },
+        { icon: 'translate', label: t('settings.language'), path: '/settings/language' },
+        { icon: 'lock', label: t('settings.privacy'), path: '/settings/privacy' },
       ],
     },
     {
       items: [
-        { icon: 'tune', label: 'Feed Preferences', path: '/settings/content' },
-        { icon: 'psychology', label: 'Memory', path: '/settings/memory' },
-        { icon: 'science', label: 'Beta Features', path: '/settings/beta' },
+        { icon: 'tune', label: t('settings.feedPreferences'), path: '/settings/content' },
+        { icon: 'psychology', label: t('settings.memory'), path: '/settings/memory' },
+        { icon: 'science', label: t('settings.betaFeatures'), path: '/settings/beta' },
       ],
     },
     {
       items: [
-        { icon: 'help_outline', label: 'Help Center', path: '/help' },
-        { icon: 'info', label: 'About ALIVE', path: '/settings/about' },
+        { icon: 'help_outline', label: t('settings.helpCenter'), path: '/help' },
+        { icon: 'info', label: t('settings.aboutAlive'), path: '/settings/about' },
       ],
     },
   ]
@@ -66,7 +68,7 @@ export function SettingsPage() {
               <Icon name="arrow_back_ios" size={20} className="text-gray-700 dark:text-gray-300" />
             </button>
             <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 flex-1 text-center md:text-left">
-              Settings
+              {t('settings.title')}
             </h1>
             <div className="w-10 md:hidden" />
           </div>
@@ -106,7 +108,7 @@ export function SettingsPage() {
               onClick={handleLogout}
               className="w-full py-3.5 bg-gray-50 dark:bg-gray-800/50 rounded-xl text-red-500 font-medium text-[15px] active:bg-gray-100 dark:active:bg-gray-700/50 hover:bg-gray-100/60 dark:hover:bg-gray-700/30 transition-colors"
             >
-              Log Out
+              {t('settings.logOut')}
             </button>
           </div>
         </div>

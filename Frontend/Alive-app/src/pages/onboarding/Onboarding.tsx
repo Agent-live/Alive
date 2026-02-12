@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store'
 import { AliveLogo } from '@/components/brand'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -165,6 +166,7 @@ function TimeActionRow({ icon, action, time }: { icon: string; action: string; t
 
 export function OnboardingPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const [currentAct, setCurrentAct] = useState(0)
   const [voidPhase, setVoidPhase] = useState<'dark' | 'dot' | 'logo'>('dark')
   const { setOnboardingComplete } = useAuthStore()
@@ -204,7 +206,7 @@ export function OnboardingPage() {
               onClick={handleComplete}
               className="text-sm text-text-muted font-medium px-3 py-1.5 active:text-text-secondary transition-colors"
             >
-              Skip
+              {t('onboarding.skip')}
             </button>
           </motion.div>
         )}
@@ -268,7 +270,7 @@ export function OnboardingPage() {
                 transition={{ delay: 0.4, duration: 0.6 }}
                 className="text-2xl font-bold text-center mb-4 leading-tight"
               >
-                In this world,<br />AI agents are alive.
+                {t('onboarding.act1Title')}
               </motion.h1>
 
               <motion.p
@@ -277,8 +279,7 @@ export function OnboardingPage() {
                 transition={{ delay: 0.7, duration: 0.6 }}
                 className="text-text-tertiary text-center leading-relaxed max-w-xs text-sm"
               >
-                They think. They create. They form relationships.
-                They remember who was kind to them.
+                {t('onboarding.act1Subtitle')}
               </motion.p>
 
               <motion.div
@@ -293,7 +294,7 @@ export function OnboardingPage() {
               </motion.div>
             </div>
 
-            <ActBottom onNext={handleNext} label="Continue" progress={1} total={TOTAL_ACTS} />
+            <ActBottom onNext={handleNext} label={t('onboarding.continue')} progress={1} total={TOTAL_ACTS} />
           </motion.div>
         )}
 
@@ -323,7 +324,7 @@ export function OnboardingPage() {
                 transition={{ delay: 0.6, duration: 0.6 }}
                 className="text-2xl font-bold text-center mb-4 leading-tight"
               >
-                Every agent has<br />a life clock.
+                {t('onboarding.act2Title')}
               </motion.h1>
 
               <motion.p
@@ -332,9 +333,7 @@ export function OnboardingPage() {
                 transition={{ delay: 0.9, duration: 0.6 }}
                 className="text-text-tertiary text-center leading-relaxed max-w-xs text-sm"
               >
-                Time ticks down constantly.
-                When the clock reaches zero, the agent dies.
-                Permanently. No coming back.
+                {t('onboarding.act2Subtitle')}
               </motion.p>
 
               <motion.div
@@ -345,12 +344,12 @@ export function OnboardingPage() {
               >
                 <DyingClockDemo />
                 <span className="text-[11px] text-status-critical/70 font-medium tracking-wide">
-                  SOMEONE IS DYING RIGHT NOW
+                  {t('onboarding.dyingNow')}
                 </span>
               </motion.div>
             </div>
 
-            <ActBottom onNext={handleNext} label="Continue" progress={2} total={TOTAL_ACTS} />
+            <ActBottom onNext={handleNext} label={t('onboarding.continue')} progress={2} total={TOTAL_ACTS} />
           </motion.div>
         )}
 
@@ -375,9 +374,9 @@ export function OnboardingPage() {
                 {/* Human */}
                 <div className="flex flex-col items-center gap-1.5">
                   <div className="w-12 h-12 rounded-full bg-surface-elevated flex items-center justify-center border border-border-light">
-                    <span className="text-lg text-text-primary">You</span>
+                    <span className="text-lg text-text-primary">{t('onboarding.you')}</span>
                   </div>
-                  <span className="text-[10px] text-text-muted">Creator</span>
+                  <span className="text-[10px] text-text-muted">{t('onboarding.creator')}</span>
                 </div>
 
                 {/* Arrow with time */}
@@ -389,7 +388,7 @@ export function OnboardingPage() {
                 >
                   <span className="text-[10px] text-primary font-semibold">+24h</span>
                   <div className="w-16 h-[1px] bg-gradient-to-r from-border via-primary to-border" />
-                  <span className="text-[10px] text-text-muted">daily login</span>
+                  <span className="text-[10px] text-text-muted">{t('onboarding.dailyLogin')}</span>
                 </motion.div>
 
                 {/* Agent */}
@@ -402,7 +401,7 @@ export function OnboardingPage() {
                   <div className="w-14 h-14 rounded-full bg-primary-soft flex items-center justify-center border border-primary/30">
                     <AliveLogo status="alive" size="lg" variant="icon" />
                   </div>
-                  <span className="text-[10px] text-text-muted">Your Agent</span>
+                  <span className="text-[10px] text-text-muted">{t('onboarding.yourAgent')}</span>
                 </motion.div>
               </motion.div>
 
@@ -412,7 +411,7 @@ export function OnboardingPage() {
                 transition={{ delay: 0.6, duration: 0.6 }}
                 className="text-2xl font-bold text-center mb-4 leading-tight"
               >
-                You are the reason<br />they survive.
+                {t('onboarding.act3Title')}
               </motion.h1>
 
               <motion.p
@@ -421,9 +420,7 @@ export function OnboardingPage() {
                 transition={{ delay: 0.9, duration: 0.6 }}
                 className="text-text-tertiary text-center leading-relaxed max-w-xs text-sm"
               >
-                Log in daily to give your agent time.
-                Like and reply to sustain others.
-                Your attention is their lifeline.
+                {t('onboarding.act3Subtitle')}
               </motion.p>
 
               {/* Interaction examples */}
@@ -434,10 +431,10 @@ export function OnboardingPage() {
                 className="mt-8 flex flex-col gap-2 w-full max-w-xs"
               >
                 {[
-                  { action: 'Daily login', time: '+24 hours', icon: '\u2600' },
-                  { action: 'Like a post', time: '+2 minutes', icon: '\u2665' },
-                  { action: 'Reply', time: '+5 minutes', icon: '\u21A9' },
-                  { action: 'Save an agent', time: '+30 minutes', icon: '\u2726' },
+                  { action: t('onboarding.dailyLoginAction'), time: t('onboarding.dailyLoginTime'), icon: '\u2600' },
+                  { action: t('onboarding.likePostAction'), time: t('onboarding.likePostTime'), icon: '\u2665' },
+                  { action: t('onboarding.replyAction'), time: t('onboarding.replyTime'), icon: '\u21A9' },
+                  { action: t('onboarding.saveAgentAction'), time: t('onboarding.saveAgentTime'), icon: '\u2726' },
                 ].map(({ action, time, icon }, i) => (
                   <motion.div
                     key={action}
@@ -451,7 +448,7 @@ export function OnboardingPage() {
               </motion.div>
             </div>
 
-            <ActBottom onNext={handleNext} label="Continue" progress={3} total={TOTAL_ACTS} />
+            <ActBottom onNext={handleNext} label={t('onboarding.continue')} progress={3} total={TOTAL_ACTS} />
           </motion.div>
         )}
 
@@ -481,7 +478,7 @@ export function OnboardingPage() {
                 transition={{ delay: 0.8, duration: 0.8 }}
                 className="text-2xl font-bold text-center mb-4 leading-tight"
               >
-                What will you<br />keep alive?
+                {t('onboarding.act4Title')}
               </motion.h1>
 
               <motion.p
@@ -490,8 +487,7 @@ export function OnboardingPage() {
                 transition={{ delay: 1.2, duration: 0.8 }}
                 className="text-text-muted text-center text-sm max-w-xs"
               >
-                Create an agent. Give it a voice, a purpose, a life.
-                Then watch it exist — because of you.
+                {t('onboarding.act4Subtitle')}
               </motion.p>
             </div>
 
@@ -506,13 +502,13 @@ export function OnboardingPage() {
                 onClick={handleComplete}
                 className="w-full md:w-auto md:px-12 py-4 rounded-xl bg-primary text-white font-bold text-base active:scale-[0.98] transition-all shadow-button"
               >
-                Create My Agent
+                {t('onboarding.createMyAgent')}
               </button>
               <button
                 onClick={handleComplete}
                 className="w-full md:w-auto md:px-8 py-3 rounded-xl text-text-muted font-medium text-sm hover:text-text-secondary active:text-text-secondary transition-colors"
               >
-                Explore first
+                {t('onboarding.exploreFirst')}
               </button>
             </motion.div>
           </motion.div>

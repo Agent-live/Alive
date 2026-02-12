@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Icon } from '../common/Icon'
 import { CodeInput, SendCodeButton } from './CodeInput'
@@ -13,6 +14,7 @@ type Step = 'phone' | 'code'
 export function LoginModal() {
   const { showLoginModal, closeLoginModal, login, loginRedirectPath } = useAuthStore()
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const [step, setStep] = useState<Step>('phone')
   const [phone, setPhone] = useState('')
@@ -78,17 +80,17 @@ export function LoginModal() {
       return
     }
     if (!agreed) {
-      toast.warning('Please agree to the terms first')
+      toast.warning(t('auth.pleaseAgreeFirst'))
       return
     }
     setPhoneError('')
     setLoading(true)
     try {
       await authApi.sendCode(phone)
-      toast.success('Code sent')
+      toast.success(t('auth.codeSent'))
       setStep('code')
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Send failed'
+      const message = error instanceof Error ? error.message : t('auth.sendFailed')
       toast.error(message)
     } finally {
       setLoading(false)
@@ -97,7 +99,7 @@ export function LoginModal() {
 
   const handleSendCode = async () => {
     await authApi.sendCode(phone)
-    toast.success('Code sent')
+    toast.success(t('auth.codeSent'))
   }
 
   const handleCodeSubmit = async () => {
@@ -189,10 +191,10 @@ export function LoginModal() {
                         <Icon name="auto_awesome" size={28} className="text-primary" />
                       </div>
                       <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1.5">
-                        Welcome to ALIVE
+                        {t('auth.welcomeTitle')}
                       </h2>
                       <p className="text-gray-500 text-sm">
-                        Sign in to create and nurture AI agents
+                        {t('auth.welcomeSubtitle')}
                       </p>
                     </div>
 
@@ -220,7 +222,7 @@ export function LoginModal() {
                           onFocus={() => setFocused(true)}
                           onBlur={() => setFocused(false)}
                           disabled={loading}
-                          placeholder="Enter phone number"
+                          placeholder={t('auth.enterPhonePlaceholder')}
                           className="flex-1 bg-transparent text-sm outline-none placeholder:text-gray-400 text-gray-900 dark:text-gray-100"
                           autoComplete="tel"
                           autoFocus
@@ -253,7 +255,7 @@ export function LoginModal() {
                         {agreed && <Icon name="check" className="text-[10px] text-white" />}
                       </button>
                       <p className="text-xs text-gray-500 leading-relaxed">
-                        I agree to the <button className="text-primary font-medium">Terms of Service</button> and <button className="text-primary font-medium">Privacy Policy</button>
+                        {t('auth.agreeToTerms')} <button className="text-primary font-medium">{t('auth.termsOfService')}</button> {t('auth.and')} <button className="text-primary font-medium">{t('auth.privacyPolicy')}</button>
                       </p>
                     </div>
 
@@ -269,15 +271,15 @@ export function LoginModal() {
                         }
                       `}
                     >
-                      {loading ? 'Sending...' : 'Get Code'}
+                      {loading ? t('auth.sending') : t('auth.getCode')}
                     </button>
 
                     {/* Dev mode hint */}
                     {import.meta.env.DEV && (
                       <div className="mt-4 p-3 bg-primary/5 border border-primary/10 rounded-xl">
-                        <p className="text-xs text-primary font-medium mb-0.5">Dev Mode</p>
+                        <p className="text-xs text-primary font-medium mb-0.5">{t('auth.devMode')}</p>
                         <p className="text-xs text-gray-500">
-                          Any phone number + any 6-digit code will work
+                          {t('auth.devModeHint')}
                         </p>
                       </div>
                     )}
@@ -287,10 +289,10 @@ export function LoginModal() {
                     {/* Code step */}
                     <div className="pt-4 pb-6 text-center">
                       <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1.5">
-                        Enter Code
+                        {t('auth.enterCode')}
                       </h2>
                       <p className="text-gray-500 text-sm">
-                        Code sent to +86 {phone.slice(0, 3)} **** {phone.slice(7)}
+                        {t('auth.codeSentTo', { phoneStart: phone.slice(0, 3), phoneEnd: phone.slice(7) })}
                       </p>
                     </div>
 
@@ -320,7 +322,7 @@ export function LoginModal() {
                         }
                       `}
                     >
-                      {loading ? 'Logging in...' : 'Login'}
+                      {loading ? t('auth.loggingIn') : t('auth.login')}
                     </button>
                   </>
                 )}
@@ -329,7 +331,7 @@ export function LoginModal() {
 
             {/* Footer */}
             <p className="text-center text-xs text-gray-400 mt-4">
-              By signing in you agree to ALIVE's terms of service
+              {t('auth.footerAgreement')}
             </p>
           </div>
         </div>

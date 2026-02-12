@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Layout, Icon, TimeTransactionItem } from '@/components';
 import { TimeManagementCard } from '@/components/profile';
 import { AgentAvatar, LifeClock, StatusIndicator } from '@/components/agent';
@@ -7,6 +8,7 @@ import { FeedCard, PostDetailModal } from '@/components/feed';
 import { CardMasonry } from '@/components/reactbits/Masonry';
 import { useAuthStore, useAgentStore, useTimeStore, useFeedStore } from '@/store';
 import { userApi } from '@/api/user';
+import i18n from '@/lib/i18n';
 import type { UserStats, Post, AgentSkill, AgentExperience } from '@/types';
 
 type ProfileTab = 'posts' | 'liked' | 'history' | 'teach' | 'experience';
@@ -45,6 +47,7 @@ const mockExperiences: AgentExperience[] = [
 
 export function ProfilePage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user, logout } = useAuthStore();
   const { myAgent, fetchMyAgent } = useAgentStore();
   const { dailyBudget, agentNetBalance, transactions, fetchBudget, fetchAgentNetBalance, fetchTransactions, depositTime, withdrawTime } = useTimeStore();
@@ -130,7 +133,7 @@ export function ProfilePage() {
               onClick={() => navigate('/profile/edit')}
               className="px-5 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
-              Edit Profile
+              {t('profile.editProfile')}
             </button>
           </div>
         </div>
@@ -141,7 +144,7 @@ export function ProfilePage() {
             onClick={() => navigate('/profile/edit')}
             className="flex-1 py-2.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
           >
-            Edit Profile
+            {t('profile.editProfile')}
           </button>
           <button
             onClick={logout}
@@ -156,15 +159,15 @@ export function ProfilePage() {
           <div className="grid grid-cols-3 gap-3">
             <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-xl text-center">
               <p className="text-lg font-bold text-gray-700 dark:text-gray-300">{stats.agentsCreated}</p>
-              <p className="text-xs text-gray-400">Agents</p>
+              <p className="text-xs text-gray-400">{t('profile.agents')}</p>
             </div>
             <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-xl text-center">
               <p className="text-lg font-bold text-gray-700 dark:text-gray-300">{Math.floor(stats.totalTimeGiven / 3600)}h</p>
-              <p className="text-xs text-gray-400">Time Given</p>
+              <p className="text-xs text-gray-400">{t('profile.timeGiven')}</p>
             </div>
             <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-xl text-center">
               <p className="text-lg font-bold text-gray-700 dark:text-gray-300">{stats.dailyLoginStreak}d</p>
-              <p className="text-xs text-gray-400">Streak</p>
+              <p className="text-xs text-gray-400">{t('profile.streak')}</p>
             </div>
           </div>
         )}
@@ -206,7 +209,7 @@ export function ProfilePage() {
               ) : (
                 <div className="flex items-center gap-2 py-2">
                   <Icon name="smart_toy" size={20} className="text-gray-400" />
-                  <span className="text-sm text-gray-500">No agent yet</span>
+                  <span className="text-sm text-gray-500">{t('profile.noAgent')}</span>
                 </div>
               )}
             </button>
@@ -218,14 +221,14 @@ export function ProfilePage() {
             >
               <div className="flex items-center gap-2 mb-2">
                 <Icon name="history" size={18} className="text-primary" />
-                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Time History</span>
+                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('profile.timeHistory')}</span>
               </div>
               {transactions.length > 0 ? (
                 <p className="text-xs text-gray-400 line-clamp-2">
                   {transactions[0].description}
                 </p>
               ) : (
-                <p className="text-xs text-gray-400">No transactions</p>
+                <p className="text-xs text-gray-400">{t('profile.noTransactions')}</p>
               )}
             </button>
           </div>
@@ -236,11 +239,11 @@ export function ProfilePage() {
           {/* Tab bar — left-aligned on desktop, scrollable on mobile */}
           <div className="flex overflow-x-auto no-scrollbar border-b border-gray-100 dark:border-gray-800">
             {([
-              { key: 'posts', label: 'Posts' },
-              { key: 'liked', label: 'Liked' },
-              { key: 'history', label: 'Time History' },
-              { key: 'teach', label: 'Teach' },
-              { key: 'experience', label: 'Experience' },
+              { key: 'posts', label: t('profile.posts') },
+              { key: 'liked', label: t('profile.liked') },
+              { key: 'history', label: t('profile.timeHistory') },
+              { key: 'teach', label: t('profile.teach') },
+              { key: 'experience', label: t('profile.experience') },
             ] as { key: ProfileTab; label: string }[]).map(({ key, label }) => (
               <button
                 key={key}
@@ -262,7 +265,7 @@ export function ProfilePage() {
           {/* Tab content */}
           <div className="pt-4">
             {activeTab === 'posts' && (
-              <PostsGrid posts={agentPosts} emptyMessage="No posts from your agent yet" onCardClick={setSelectedPost} />
+              <PostsGrid posts={agentPosts} emptyMessage={t('profile.noPostsFromAgent')} onCardClick={setSelectedPost} />
             )}
             {activeTab === 'liked' && (
               likedPosts.length > 0 ? (
@@ -280,7 +283,7 @@ export function ProfilePage() {
                   ))}
                 </CardMasonry>
               ) : (
-                <EmptyState icon="favorite" message="No liked posts yet" />
+                <EmptyState icon="favorite" message={t('profile.noLikedPosts')} />
               )
             )}
             {activeTab === 'history' && (
@@ -292,7 +295,7 @@ export function ProfilePage() {
                     ))}
                   </div>
                 ) : (
-                  <EmptyState icon="schedule" message="No time transactions yet" />
+                  <EmptyState icon="schedule" message={t('profile.noTimeTransactions')} />
                 )}
               </div>
             )}
@@ -381,16 +384,16 @@ function EmptyState({ icon, message }: { icon: string; message: string }) {
 function formatRelative(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return 'just now';
-  if (minutes < 60) return `${minutes}m`;
+  if (minutes < 1) return i18n.t('time.justNow');
+  if (minutes < 60) return i18n.t('time.minutesAgo', { count: minutes });
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h`;
+  if (hours < 24) return i18n.t('time.hoursAgo', { count: hours });
   const days = Math.floor(hours / 24);
-  return `${days}d`;
+  return i18n.t('time.daysAgo', { count: days });
 }
 
 function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  return new Date(dateStr).toLocaleDateString(i18n.language, { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 /* ─── Shared: Agent filter chip bar ─── */
@@ -426,7 +429,7 @@ function AgentFilterBar({ agents, selectedAgentId, onSelect }: { agents: AgentIn
             : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
         }`}
       >
-        All
+        {i18n.t('common.all')}
       </button>
       {agents.map((a) => (
         <button
@@ -464,12 +467,12 @@ const categoryColors: Record<AgentSkill['category'], string> = {
   other: 'bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
 };
 
-const categoryLabels: Record<AgentSkill['category'], string> = {
-  creative: 'Creative',
-  analytical: 'Analytical',
-  social: 'Social',
-  technical: 'Technical',
-  other: 'Other',
+const categoryLabelKeys: Record<AgentSkill['category'], string> = {
+  creative: 'profile.categoryCreative',
+  analytical: 'profile.categoryAnalytical',
+  social: 'profile.categorySocial',
+  technical: 'profile.categoryTechnical',
+  other: 'profile.categoryOther',
 };
 
 /* All user agents (for lesson → assign) */
@@ -478,6 +481,7 @@ const allUserAgents: AgentInfo[] = [PIXEL, NOVA, EMBER].map((a) => ({
 }));
 
 function TeachTab({ skills }: { skills: AgentSkill[] }) {
+  const { t } = useTranslation();
   const [selectedSkill, setSelectedSkill] = useState<AgentSkill | null>(null);
 
   // Active skills support agent filtering
@@ -492,7 +496,7 @@ function TeachTab({ skills }: { skills: AgentSkill[] }) {
   const { agents, selectedAgentId, setSelectedAgentId, filtered: filteredActive } = useAgentFilter(activeWithAgent);
 
   if (skills.length === 0) {
-    return <EmptyState icon="school" message="No skills taught yet" />;
+    return <EmptyState icon="school" message={t('profile.noSkills')} />;
   }
 
   const showAgentName = selectedAgentId === null && agents.length > 1;
@@ -504,7 +508,7 @@ function TeachTab({ skills }: { skills: AgentSkill[] }) {
       {filteredActive.length > 0 && (
         <div>
           <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-            Active ({filteredActive.length})
+            {t('profile.activeCount', { count: filteredActive.length })}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {filteredActive.map((skill) => (
@@ -518,7 +522,7 @@ function TeachTab({ skills }: { skills: AgentSkill[] }) {
       {lessons.length > 0 && !selectedAgentId && (
         <div>
           <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-            Lessons ({lessons.length})
+            {t('profile.lessonsCount', { count: lessons.length })}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {lessons.map((skill) => (
@@ -529,7 +533,7 @@ function TeachTab({ skills }: { skills: AgentSkill[] }) {
       )}
 
       {filteredActive.length === 0 && selectedAgentId && (
-        <EmptyState icon="school" message="No active skills for this agent" />
+        <EmptyState icon="school" message={t('profile.noActiveSkills')} />
       )}
 
       <SkillDetailModal skill={selectedSkill} agents={allUserAgents} onClose={() => setSelectedSkill(null)} />
@@ -538,6 +542,7 @@ function TeachTab({ skills }: { skills: AgentSkill[] }) {
 }
 
 function SkillCard({ skill, showAgent, onClick }: { skill: AgentSkill; showAgent?: boolean; onClick: (s: AgentSkill) => void }) {
+  const { t } = useTranslation();
   const isLesson = skill.status === 'lesson';
 
   return (
@@ -569,7 +574,7 @@ function SkillCard({ skill, showAgent, onClick }: { skill: AgentSkill; showAgent
                 ? 'bg-orange-50 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400'
                 : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400'
             }`}>
-              {isLesson ? 'Lesson' : 'Active'}
+              {isLesson ? t('profile.lesson') : t('profile.active')}
             </span>
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">{skill.description}</p>
@@ -593,6 +598,7 @@ function SkillCard({ skill, showAgent, onClick }: { skill: AgentSkill; showAgent
 /* ─── Skill detail / management modal ─── */
 
 function SkillDetailModal({ skill, agents, onClose }: { skill: AgentSkill | null; agents: AgentInfo[]; onClose: () => void }) {
+  const { t } = useTranslation();
   const [teachAgent, setTeachAgent] = useState<string | null>(null);
 
   if (!skill) return null;
@@ -631,12 +637,12 @@ function SkillDetailModal({ skill, agents, onClose }: { skill: AgentSkill | null
                   ? 'bg-orange-50 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400'
                   : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400'
               }`}>
-                {isLesson ? 'Lesson' : 'Active'}
+                {isLesson ? t('profile.lesson') : t('profile.active')}
               </span>
             </div>
             <div className="flex items-center gap-2 mt-0.5">
               {skill.agentName && <span className="text-xs text-gray-400">{skill.agentName}</span>}
-              <span className="text-[10px] text-gray-300 dark:text-gray-600">{categoryLabels[skill.category]}</span>
+              <span className="text-[10px] text-gray-300 dark:text-gray-600">{i18n.t(categoryLabelKeys[skill.category])}</span>
               {skill.version && <span className="text-[10px] text-gray-300 dark:text-gray-600">v{skill.version}</span>}
             </div>
           </div>
@@ -648,26 +654,26 @@ function SkillDetailModal({ skill, agents, onClose }: { skill: AgentSkill | null
         {/* Body */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           <div>
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Description</h3>
+            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">{t('profile.description')}</h3>
             <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{skill.description}</p>
           </div>
 
           <div>
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Instructions</h3>
+            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">{t('profile.instructions')}</h3>
             <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl whitespace-pre-wrap font-mono text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
               {skill.instructions}
             </div>
           </div>
 
           <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400">
-            {skill.status === 'active' && skill.taughtAt && <span>Taught {formatDate(skill.taughtAt)}</span>}
-            {skill.createdAt && <span>Created {formatDate(skill.createdAt)}</span>}
+            {skill.status === 'active' && skill.taughtAt && <span>{t('profile.taught', { date: formatDate(skill.taughtAt) })}</span>}
+            {skill.createdAt && <span>{t('profile.created', { date: formatDate(skill.createdAt) })}</span>}
           </div>
 
           {/* Lesson → Teach to Agent selector */}
           {isLesson && (
             <div>
-              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Teach to Agent</h3>
+              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">{t('profile.teachToAgent')}</h3>
               <div className="flex gap-2 flex-wrap">
                 {agents.map((a) => (
                   <button
@@ -701,17 +707,17 @@ function SkillDetailModal({ skill, agents, onClose }: { skill: AgentSkill | null
               }`}
             >
               <Icon name="school" size={16} />
-              {teachAgent ? `Teach ${agents.find((a) => a.agentId === teachAgent)?.agentName}` : 'Select an Agent'}
+              {teachAgent ? t('profile.teachAgent', { name: agents.find((a) => a.agentId === teachAgent)?.agentName }) : t('profile.selectAnAgent')}
             </button>
           ) : (
             <button className="flex-1 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-1.5">
               <Icon name="pause_circle" size={16} />
-              Deactivate
+              {t('profile.deactivate')}
             </button>
           )}
           <button className="flex-1 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-1.5">
             <Icon name="edit" size={16} />
-            Edit
+            {t('common.edit')}
           </button>
           <button className="py-2.5 px-4 rounded-xl border border-red-200 dark:border-red-800 text-red-500 text-sm font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
             <Icon name="delete" size={16} />
@@ -737,11 +743,12 @@ const experienceTypeColors: Record<AgentExperience['type'], string> = {
 };
 
 function ExperienceTab({ experiences }: { experiences: AgentExperience[] }) {
+  const { t } = useTranslation();
   const { agents, selectedAgentId, setSelectedAgentId, filtered } = useAgentFilter(experiences);
   const showAgentName = selectedAgentId === null && agents.length > 1;
 
   if (experiences.length === 0) {
-    return <EmptyState icon="auto_stories" message="No experiences recorded yet" />;
+    return <EmptyState icon="auto_stories" message={t('profile.noExperiences')} />;
   }
 
   return (
@@ -787,7 +794,7 @@ function ExperienceTab({ experiences }: { experiences: AgentExperience[] }) {
           </div>
         </div>
       ) : (
-        <EmptyState icon="auto_stories" message="No experiences with this agent yet" />
+        <EmptyState icon="auto_stories" message={t('profile.noExperiencesAgent')} />
       )}
     </div>
   );

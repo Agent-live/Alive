@@ -1,75 +1,86 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Layout, Icon } from '@/components'
 
-// 字段配置
+// Field configuration with i18n keys (resolved at render time via t())
 const fieldConfigs: Record<string, {
-  title: string
-  placeholder: string
+  titleKey: string
+  placeholderKey: string
   maxLength?: number
   multiline?: boolean
-  options?: { value: string; label: string }[]
+  options?: { value: string; labelKey: string }[]
 }> = {
   name: {
-    title: '名字',
-    placeholder: '请输入你的名字',
+    titleKey: 'editField.name',
+    placeholderKey: 'editField.namePlaceholder',
     maxLength: 20,
   },
   id: {
-    title: 'ALIVE ID',
-    placeholder: '请输入 ALIVE ID',
+    titleKey: 'editField.aliveId',
+    placeholderKey: 'editField.aliveIdPlaceholder',
     maxLength: 24,
   },
   bio: {
-    title: '简介',
-    placeholder: '介绍一下自己吧',
+    titleKey: 'editField.bio',
+    placeholderKey: 'editField.bioPlaceholder',
     maxLength: 100,
     multiline: true,
   },
   gender: {
-    title: '性别',
-    placeholder: '',
+    titleKey: 'editField.gender',
+    placeholderKey: '',
     options: [
-      { value: 'female', label: '女' },
-      { value: 'male', label: '男' },
-      { value: 'other', label: '其他' },
-      { value: 'private', label: '保密' },
+      { value: 'female', labelKey: 'editField.female' },
+      { value: 'male', labelKey: 'editField.male' },
+      { value: 'other', labelKey: 'editField.other' },
+      { value: 'private', labelKey: 'editField.private' },
     ],
   },
   birthday: {
-    title: '生日',
-    placeholder: '选择生日',
+    titleKey: 'editField.birthday',
+    placeholderKey: 'editField.birthdayPlaceholder',
   },
   region: {
-    title: '地区',
-    placeholder: '选择地区',
+    titleKey: 'editField.region',
+    placeholderKey: 'editField.regionPlaceholder',
   },
   occupation: {
-    title: '职业',
-    placeholder: '请输入你的职业',
+    titleKey: 'editField.occupation',
+    placeholderKey: 'editField.occupationPlaceholder',
     maxLength: 20,
   },
   school: {
-    title: '学校',
-    placeholder: '请输入你的学校',
+    titleKey: 'editField.school',
+    placeholderKey: 'editField.schoolPlaceholder',
     maxLength: 30,
   },
 }
 
 export function EditFieldPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { field } = useParams<{ field: string }>()
   const [searchParams] = useSearchParams()
   const initialValue = searchParams.get('value') || ''
 
   const [value, setValue] = useState(initialValue)
-  const config = field ? fieldConfigs[field] : null
+  const rawConfig = field ? fieldConfigs[field] : null
+
+  // Resolve i18n keys to translated strings
+  const config = rawConfig ? {
+    title: t(rawConfig.titleKey),
+    placeholder: rawConfig.placeholderKey ? t(rawConfig.placeholderKey) : '',
+    maxLength: rawConfig.maxLength,
+    multiline: rawConfig.multiline,
+    options: rawConfig.options?.map((opt) => ({ value: opt.value, label: t(opt.labelKey) })),
+  } : null
 
   useEffect(() => {
-    if (!config) {
+    if (!rawConfig) {
       navigate(-1)
     }
-  }, [config, navigate])
+  }, [rawConfig, navigate])
 
   if (!config) return null
 
@@ -95,7 +106,7 @@ export function EditFieldPage() {
               disabled={!isValid}
               className={`text-[15px] font-medium ${isValid ? 'text-primary' : 'text-gray-300 dark:text-gray-600'}`}
             >
-              Save
+              {t('common.save')}
             </button>
           </div>
         </div>
@@ -165,7 +176,7 @@ export function EditFieldPage() {
           {field === 'id' && (
             <div className="mt-4 p-3 bg-yellow-50 rounded-xl">
               <p className="text-xs text-yellow-700">
-                ALIVE ID 仅可修改一次，请谨慎填写
+                {t('editField.aliveIdWarning')}
               </p>
             </div>
           )}

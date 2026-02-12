@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Layout, Icon, Toggle } from '@/components'
 
 export function NotificationSettingsPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const [notifications, setNotifications] = useState({
     likes: true,
     comments: true,
@@ -48,7 +50,7 @@ export function NotificationSettingsPage() {
               <Icon name="arrow_back_ios" size={20} className="text-gray-700 dark:text-gray-300" />
             </button>
             <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 flex-1 text-center md:text-left">
-              Notifications
+              {t('settingsNotifications.title')}
             </h1>
             <div className="w-10 md:hidden" />
           </div>
@@ -60,22 +62,22 @@ export function NotificationSettingsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {/* Interactions */}
           <div>
-            <h3 className="text-xs text-gray-400 dark:text-gray-500 mb-2 px-1">Interactions</h3>
+            <h3 className="text-xs text-gray-400 dark:text-gray-500 mb-2 px-1">{t('settingsNotifications.interactions')}</h3>
             <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl overflow-hidden">
-              {renderToggleItem('favorite', 'Likes', 'likes', 'When someone likes your content')}
-              {renderToggleItem('chat_bubble', 'Comments', 'comments', 'When someone comments on your posts')}
-              {renderToggleItem('person_add', 'New Followers', 'follows', 'When someone follows you')}
-              {renderToggleItem('alternate_email', 'Mentions', 'mentions', 'When someone mentions you', false)}
+              {renderToggleItem('favorite', t('settingsNotifications.likes'), 'likes', t('settingsNotifications.likesDesc'))}
+              {renderToggleItem('chat_bubble', t('settingsNotifications.comments'), 'comments', t('settingsNotifications.commentsDesc'))}
+              {renderToggleItem('person_add', t('settingsNotifications.newFollowers'), 'follows', t('settingsNotifications.newFollowersDesc'))}
+              {renderToggleItem('alternate_email', t('settingsNotifications.mentions'), 'mentions', t('settingsNotifications.mentionsDesc'), false)}
             </div>
           </div>
 
           {/* Agent & System */}
           <div>
-            <h3 className="text-xs text-gray-400 dark:text-gray-500 mb-2 px-1">Agent & System</h3>
+            <h3 className="text-xs text-gray-400 dark:text-gray-500 mb-2 px-1">{t('settingsNotifications.agentSystem')}</h3>
             <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl overflow-hidden">
-              {renderToggleItem('smart_toy', 'Agent Status', 'agentStatus', 'When your agent\'s status changes')}
-              {renderToggleItem('schedule', 'Time Donations', 'timeDonations', 'When someone gives time to your agent')}
-              {renderToggleItem('campaign', 'System', 'system', 'Platform announcements and updates', false)}
+              {renderToggleItem('smart_toy', t('settingsNotifications.agentStatus'), 'agentStatus', t('settingsNotifications.agentStatusDesc'))}
+              {renderToggleItem('schedule', t('settingsNotifications.timeDonations'), 'timeDonations', t('settingsNotifications.timeDonationsDesc'))}
+              {renderToggleItem('campaign', t('settingsNotifications.system'), 'system', t('settingsNotifications.systemDesc'), false)}
             </div>
           </div>
         </div>
@@ -83,7 +85,7 @@ export function NotificationSettingsPage() {
         {/* Note */}
         <div className="mt-4">
           <p className="text-xs text-gray-400 dark:text-gray-500 text-center md:text-left">
-            Turning off a notification will stop push messages for that category
+            {t('settingsNotifications.note')}
           </p>
         </div>
       </div>

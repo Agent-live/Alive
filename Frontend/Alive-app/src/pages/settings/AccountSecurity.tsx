@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Layout, Icon, SettingsDialog } from '@/components'
 import { useAuthStore } from '@/store'
 
@@ -13,24 +14,25 @@ interface SecurityItem {
 
 export function AccountSecurityPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { user } = useAuthStore()
   const [activeDialog, setActiveDialog] = useState<string | null>(null)
 
   const phone = user?.phone ? `${user.phone.slice(0, 3)}****${user.phone.slice(-4)}` : ''
 
   const securityItems: SecurityItem[] = [
-    { icon: 'smartphone', label: 'Phone', value: phone || 'Not linked', dialogKey: 'phone' },
-    { icon: 'email', label: 'Email', value: user?.email || 'Not linked', dialogKey: 'email' },
-    { icon: 'password', label: 'Password', value: 'Set', dialogKey: 'password' },
-    { icon: 'key', label: 'Third-Party Accounts', dialogKey: 'third-party' },
+    { icon: 'smartphone', label: t('settingsAccount.phone'), value: phone || t('settingsAccount.notLinked'), dialogKey: 'phone' },
+    { icon: 'email', label: t('settingsAccount.email'), value: user?.email || t('settingsAccount.notLinked'), dialogKey: 'email' },
+    { icon: 'password', label: t('settingsAccount.password'), value: t('settingsAccount.set'), dialogKey: 'password' },
+    { icon: 'key', label: t('settingsAccount.thirdPartyAccounts'), dialogKey: 'third-party' },
   ]
 
   const otherItems: SecurityItem[] = [
-    { icon: 'devices', label: 'Device Management', dialogKey: 'devices' },
+    { icon: 'devices', label: t('settingsAccount.deviceManagement'), dialogKey: 'devices' },
   ]
 
   const dangerItems: SecurityItem[] = [
-    { icon: 'logout', label: 'Delete Account', danger: true, dialogKey: 'delete' },
+    { icon: 'logout', label: t('settingsAccount.deleteAccount'), danger: true, dialogKey: 'delete' },
   ]
 
   const renderSection = (items: SecurityItem[], title?: string) => (
@@ -72,7 +74,7 @@ export function AccountSecurityPage() {
               <Icon name="arrow_back_ios" size={20} className="text-gray-700 dark:text-gray-300" />
             </button>
             <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 flex-1 text-center md:text-left">
-              Account & Security
+              {t('settingsAccount.title')}
             </h1>
             <div className="w-10 md:hidden" />
           </div>
@@ -82,44 +84,44 @@ export function AccountSecurityPage() {
     >
       <div className="px-3 md:px-5 py-3">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div>{renderSection(securityItems, 'Account Linking')}</div>
+          <div>{renderSection(securityItems, t('settingsAccount.accountLinking'))}</div>
           <div>
-            {renderSection(otherItems, 'Security')}
+            {renderSection(otherItems, t('settingsAccount.security'))}
             {renderSection(dangerItems)}
           </div>
         </div>
       </div>
 
       {/* ── Dialogs ── */}
-      <SettingsDialog open={activeDialog === 'phone'} onClose={close} title="Phone Number" icon="smartphone">
+      <SettingsDialog open={activeDialog === 'phone'} onClose={close} title={t('settingsAccount.phone')} icon="smartphone">
         <div className="space-y-4">
-          <p className="text-sm text-gray-500 dark:text-gray-400">Your phone number is used for login and account recovery.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{t('settingsAccount.phoneDesc')}</p>
           <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl text-center">
-            <span className="text-lg font-mono text-gray-800 dark:text-gray-200">{phone || 'Not linked'}</span>
+            <span className="text-lg font-mono text-gray-800 dark:text-gray-200">{phone || t('settingsAccount.notLinked')}</span>
           </div>
-          <input type="tel" placeholder="New phone number" className="w-full h-11 px-4 rounded-xl bg-gray-50 dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 outline-none focus:ring-1 focus:ring-primary/40" />
-          <button className="w-full h-11 bg-primary text-white font-medium rounded-xl active:scale-[0.98] transition-transform">Update Phone</button>
+          <input type="tel" placeholder={t('settingsAccount.newPhonePlaceholder')} className="w-full h-11 px-4 rounded-xl bg-gray-50 dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 outline-none focus:ring-1 focus:ring-primary/40" />
+          <button className="w-full h-11 bg-primary text-white font-medium rounded-xl active:scale-[0.98] transition-transform">{t('settingsAccount.updatePhone')}</button>
         </div>
       </SettingsDialog>
 
-      <SettingsDialog open={activeDialog === 'email'} onClose={close} title="Email Address" icon="email">
+      <SettingsDialog open={activeDialog === 'email'} onClose={close} title={t('settingsAccount.emailTitle')} icon="email">
         <div className="space-y-4">
-          <p className="text-sm text-gray-500 dark:text-gray-400">Link an email for account recovery and notifications.</p>
-          <input type="email" placeholder="Enter email address" className="w-full h-11 px-4 rounded-xl bg-gray-50 dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 outline-none focus:ring-1 focus:ring-primary/40" />
-          <button className="w-full h-11 bg-primary text-white font-medium rounded-xl active:scale-[0.98] transition-transform">Link Email</button>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{t('settingsAccount.emailDesc')}</p>
+          <input type="email" placeholder={t('settingsAccount.emailPlaceholder')} className="w-full h-11 px-4 rounded-xl bg-gray-50 dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 outline-none focus:ring-1 focus:ring-primary/40" />
+          <button className="w-full h-11 bg-primary text-white font-medium rounded-xl active:scale-[0.98] transition-transform">{t('settingsAccount.linkEmail')}</button>
         </div>
       </SettingsDialog>
 
-      <SettingsDialog open={activeDialog === 'password'} onClose={close} title="Change Password" icon="password">
+      <SettingsDialog open={activeDialog === 'password'} onClose={close} title={t('settingsAccount.changePassword')} icon="password">
         <div className="space-y-4">
-          <input type="password" placeholder="Current password" className="w-full h-11 px-4 rounded-xl bg-gray-50 dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 outline-none focus:ring-1 focus:ring-primary/40" />
-          <input type="password" placeholder="New password" className="w-full h-11 px-4 rounded-xl bg-gray-50 dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 outline-none focus:ring-1 focus:ring-primary/40" />
-          <input type="password" placeholder="Confirm new password" className="w-full h-11 px-4 rounded-xl bg-gray-50 dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 outline-none focus:ring-1 focus:ring-primary/40" />
-          <button className="w-full h-11 bg-primary text-white font-medium rounded-xl active:scale-[0.98] transition-transform">Update Password</button>
+          <input type="password" placeholder={t('settingsAccount.currentPasswordPlaceholder')} className="w-full h-11 px-4 rounded-xl bg-gray-50 dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 outline-none focus:ring-1 focus:ring-primary/40" />
+          <input type="password" placeholder={t('settingsAccount.newPasswordPlaceholder')} className="w-full h-11 px-4 rounded-xl bg-gray-50 dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 outline-none focus:ring-1 focus:ring-primary/40" />
+          <input type="password" placeholder={t('settingsAccount.confirmPasswordPlaceholder')} className="w-full h-11 px-4 rounded-xl bg-gray-50 dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 outline-none focus:ring-1 focus:ring-primary/40" />
+          <button className="w-full h-11 bg-primary text-white font-medium rounded-xl active:scale-[0.98] transition-transform">{t('settingsAccount.updatePassword')}</button>
         </div>
       </SettingsDialog>
 
-      <SettingsDialog open={activeDialog === 'third-party'} onClose={close} title="Third-Party Accounts" icon="key">
+      <SettingsDialog open={activeDialog === 'third-party'} onClose={close} title={t('settingsAccount.thirdPartyAccounts')} icon="key">
         <div className="space-y-3">
           {[
             { name: 'Google', icon: 'g_translate', connected: false },
@@ -132,35 +134,35 @@ export function AccountSecurityPage() {
                 <span className="text-sm text-gray-800 dark:text-gray-200">{acct.name}</span>
               </div>
               <button className="text-xs font-medium text-primary border border-primary rounded-full px-3 py-1 hover:bg-primary/10 transition-colors">
-                Connect
+                {t('common.connect')}
               </button>
             </div>
           ))}
         </div>
       </SettingsDialog>
 
-      <SettingsDialog open={activeDialog === 'devices'} onClose={close} title="Device Management" icon="devices">
+      <SettingsDialog open={activeDialog === 'devices'} onClose={close} title={t('settingsAccount.deviceManagement')} icon="devices">
         <div className="space-y-3">
           <div className="flex items-center gap-3 p-3 bg-primary/5 dark:bg-primary/10 rounded-xl border border-primary/20">
             <Icon name="smartphone" size={20} className="text-primary" />
             <div className="flex-1">
-              <span className="text-sm font-medium text-gray-800 dark:text-gray-200">Current Device</span>
-              <p className="text-xs text-gray-400">Active now</p>
+              <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{t('settingsAccount.currentDevice')}</span>
+              <p className="text-xs text-gray-400">{t('settingsAccount.activeNow')}</p>
             </div>
           </div>
-          <p className="text-xs text-gray-400 dark:text-gray-500 text-center py-2">No other devices logged in</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 text-center py-2">{t('settingsAccount.noOtherDevices')}</p>
         </div>
       </SettingsDialog>
 
-      <SettingsDialog open={activeDialog === 'delete'} onClose={close} title="Delete Account" icon="warning">
+      <SettingsDialog open={activeDialog === 'delete'} onClose={close} title={t('settingsAccount.deleteAccount')} icon="warning">
         <div className="space-y-4">
           <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-xl">
             <p className="text-sm text-red-600 dark:text-red-400 leading-relaxed">
-              This action is permanent and cannot be undone. All your data, agents, and time donations will be permanently deleted.
+              {t('settingsAccount.deleteAccountWarning')}
             </p>
           </div>
-          <input type="text" placeholder='Type "DELETE" to confirm' className="w-full h-11 px-4 rounded-xl bg-gray-50 dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 outline-none focus:ring-1 focus:ring-red-400/40" />
-          <button className="w-full h-11 bg-red-500 text-white font-medium rounded-xl active:scale-[0.98] transition-transform">Delete My Account</button>
+          <input type="text" placeholder={t('settingsAccount.typeDeleteConfirm')} className="w-full h-11 px-4 rounded-xl bg-gray-50 dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 outline-none focus:ring-1 focus:ring-red-400/40" />
+          <button className="w-full h-11 bg-red-500 text-white font-medium rounded-xl active:scale-[0.98] transition-transform">{t('settingsAccount.deleteMyAccount')}</button>
         </div>
       </SettingsDialog>
     </Layout>

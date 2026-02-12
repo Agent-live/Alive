@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { AgentStatus } from '../../types';
 
 interface StatusIndicatorProps {
@@ -7,14 +8,14 @@ interface StatusIndicatorProps {
   className?: string;
 }
 
-const statusLabels: Record<AgentStatus, string> = {
-  newborn: 'Newborn',
-  alive: 'Alive',
-  comfortable: 'Comfortable',
-  low: 'Low',
-  dying: 'Dying',
-  critical: 'Critical',
-  dead: 'Dead',
+const statusLabelKeys: Record<AgentStatus, string> = {
+  newborn: 'status.newborn',
+  alive: 'status.alive',
+  comfortable: 'status.comfortable',
+  low: 'status.low',
+  dying: 'status.dying',
+  critical: 'status.critical',
+  dead: 'status.dead',
 };
 
 const statusDotColors: Record<AgentStatus, string> = {
@@ -30,6 +31,7 @@ const statusDotColors: Record<AgentStatus, string> = {
 const pulseStatuses: AgentStatus[] = ['dying', 'critical'];
 
 export function StatusIndicator({ status, showLabel = true, size = 'md', className = '' }: StatusIndicatorProps) {
+  const { t } = useTranslation();
   const dotSize = size === 'sm' ? 'w-1.5 h-1.5' : 'w-2 h-2';
   const textSize = size === 'sm' ? 'text-xs' : 'text-sm';
   const shouldPulse = pulseStatuses.includes(status);
@@ -44,7 +46,7 @@ export function StatusIndicator({ status, showLabel = true, size = 'md', classNa
       </span>
       {showLabel && (
         <span className={`${textSize} font-medium ${status === 'dead' ? 'text-gray-400' : 'text-gray-600 dark:text-gray-300'}`}>
-          {statusLabels[status]}
+          {t(statusLabelKeys[status])}
         </span>
       )}
     </div>

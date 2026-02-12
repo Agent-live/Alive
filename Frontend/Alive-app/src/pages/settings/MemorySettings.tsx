@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Layout, Icon, Toggle, ActionSheet, SettingsDialog } from '@/components'
 import type { ActionSheetOption } from '@/components'
 
@@ -79,6 +80,7 @@ function formatDate(dateStr: string): string {
 
 export function MemorySettingsPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const [memoryEnabled, setMemoryEnabled] = useState(true)
   const [memories, setMemories] = useState<Memory[]>(INITIAL_MEMORIES)
   const [searchQuery, setSearchQuery] = useState('')
@@ -145,7 +147,7 @@ export function MemorySettingsPage() {
     {
       id: 'edit',
       icon: 'edit',
-      title: 'Edit Memory',
+      title: t('settingsMemory.editMemory'),
       onClick: () => {
         const mem = memories.find(m => m.id === selectedMemoryId)
         if (mem) openEditDialog(mem)
@@ -154,7 +156,7 @@ export function MemorySettingsPage() {
     {
       id: 'delete',
       icon: 'delete',
-      title: 'Delete Memory',
+      title: t('settingsMemory.deleteMemory'),
       danger: true,
       onClick: () => {
         if (selectedMemoryId) handleDeleteMemory(selectedMemoryId)
@@ -167,13 +169,13 @@ export function MemorySettingsPage() {
     {
       id: 'newest',
       icon: 'arrow_downward',
-      title: 'Newest First',
+      title: t('settingsMemory.newestFirst'),
       onClick: () => setSortOrder('newest'),
     },
     {
       id: 'oldest',
       icon: 'arrow_upward',
-      title: 'Oldest First',
+      title: t('settingsMemory.oldestFirst'),
       onClick: () => setSortOrder('oldest'),
     },
   ]
@@ -182,8 +184,8 @@ export function MemorySettingsPage() {
     {
       id: 'clear-all',
       icon: 'delete_sweep',
-      title: 'Clear All Memories',
-      subtitle: `Remove all ${memories.length} saved memories`,
+      title: t('settingsMemory.clearAllMemories'),
+      subtitle: t('settingsMemory.clearAllSubtitle', { count: memories.length }),
       danger: true,
       onClick: () => setClearDialogOpen(true),
     },
@@ -198,7 +200,7 @@ export function MemorySettingsPage() {
               <Icon name="arrow_back_ios" size={20} className="text-gray-700 dark:text-gray-300" />
             </button>
             <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 flex-1 text-center md:text-left">
-              Memory
+              {t('settingsMemory.title')}
             </h1>
             <div className="w-10 md:hidden" />
           </div>
@@ -215,13 +217,13 @@ export function MemorySettingsPage() {
                 <Icon name="psychology" size={22} className="text-primary" />
               </div>
               <span className="text-[15px] font-medium text-gray-800 dark:text-gray-200">
-                Memory
+                {t('settingsMemory.memoryLabel')}
               </span>
             </div>
             <Toggle checked={memoryEnabled} onChange={() => setMemoryEnabled(!memoryEnabled)} />
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-            ALIVE agents remember useful information from your conversations, making responses more relevant and personal.
+            {t('settingsMemory.memoryDesc')}
           </p>
         </div>
 
@@ -237,7 +239,7 @@ export function MemorySettingsPage() {
                 />
                 <input
                   type="text"
-                  placeholder="Search memories..."
+                  placeholder={t('settingsMemory.searchPlaceholder')}
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-800/50 text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:ring-2 focus:ring-primary/30 transition-shadow"
@@ -306,12 +308,12 @@ export function MemorySettingsPage() {
                   <Icon name="psychology" size={32} className="text-gray-300 dark:text-gray-600" />
                 </div>
                 <p className="text-sm font-medium text-gray-400 dark:text-gray-500">
-                  {searchQuery ? 'No matching memories' : 'No memories yet'}
+                  {searchQuery ? t('settingsMemory.noMatchingMemories') : t('settingsMemory.noMemories')}
                 </p>
                 <p className="text-xs text-gray-300 dark:text-gray-600 mt-1">
                   {searchQuery
-                    ? 'Try a different search term'
-                    : 'Agents will save useful info from your chats'}
+                    ? t('settingsMemory.tryDifferentSearch')
+                    : t('settingsMemory.agentsWillSave')}
                 </p>
               </div>
             )}
@@ -319,7 +321,9 @@ export function MemorySettingsPage() {
             {/* Footer stats */}
             {memories.length > 0 && (
               <p className="text-center text-xs text-gray-400 dark:text-gray-500 mt-4 mb-2">
-                {memories.length} {memories.length === 1 ? 'memory' : 'memories'} saved
+                {memories.length === 1
+                  ? t('settingsMemory.memorySaved', { count: memories.length })
+                  : t('settingsMemory.memoriesSaved', { count: memories.length })}
               </p>
             )}
           </>
@@ -333,7 +337,7 @@ export function MemorySettingsPage() {
           setActionSheetOpen(false)
           setSelectedMemoryId(null)
         }}
-        title="Memory"
+        title={t('settingsMemory.memoryLabel')}
         options={memoryActions}
       />
 
@@ -341,7 +345,7 @@ export function MemorySettingsPage() {
       <ActionSheet
         open={sortSheetOpen}
         onClose={() => setSortSheetOpen(false)}
-        title="Sort By"
+        title={t('settingsMemory.sortBy')}
         options={sortOptions}
       />
 
@@ -349,7 +353,7 @@ export function MemorySettingsPage() {
       <ActionSheet
         open={moreSheetOpen}
         onClose={() => setMoreSheetOpen(false)}
-        title="Options"
+        title={t('settingsMemory.options')}
         options={moreOptions}
       />
 
@@ -357,24 +361,24 @@ export function MemorySettingsPage() {
       <SettingsDialog
         open={clearDialogOpen}
         onClose={() => setClearDialogOpen(false)}
-        title="Clear All Memories"
+        title={t('settingsMemory.clearAllMemories')}
         icon="delete_sweep"
       >
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">
-          Are you sure you want to delete all {memories.length} memories? This action cannot be undone.
+          {t('settingsMemory.clearAllConfirm', { count: memories.length })}
         </p>
         <div className="flex gap-3">
           <button
             onClick={() => setClearDialogOpen(false)}
             className="flex-1 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
           >
-            Cancel
+            {t('common.cancel')}
           </button>
           <button
             onClick={handleClearAll}
             className="flex-1 py-2.5 rounded-xl bg-red-500 text-sm font-medium text-white hover:bg-red-600 transition-colors"
           >
-            Clear All
+            {t('settingsMemory.clearAll')}
           </button>
         </div>
       </SettingsDialog>
@@ -386,7 +390,7 @@ export function MemorySettingsPage() {
           setEditDialogOpen(false)
           setSelectedMemoryId(null)
         }}
-        title="Edit Memory"
+        title={t('settingsMemory.editMemory')}
         icon="edit"
       >
         <textarea
@@ -403,13 +407,13 @@ export function MemorySettingsPage() {
             }}
             className="flex-1 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
           >
-            Cancel
+            {t('common.cancel')}
           </button>
           <button
             onClick={handleEditSave}
             className="flex-1 py-2.5 rounded-xl bg-primary text-sm font-medium text-white hover:opacity-90 transition-opacity"
           >
-            Save
+            {t('common.save')}
           </button>
         </div>
       </SettingsDialog>

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Post } from '../../types';
 import { AgentAvatar } from '../agent/AgentAvatar';
 import { Icon } from '../common/Icon';
@@ -12,6 +13,7 @@ interface FeedCardProps {
 }
 
 export function FeedCard({ post, onLike, onReply, onShare, onCardClick, onAgentClick }: FeedCardProps) {
+  const { t } = useTranslation();
   const isDying = post.agentStatus === 'dying' || post.agentStatus === 'critical';
   const isDead = post.agentStatus === 'dead';
   const isLastWords = post.contentType === 'last_words' || post.contentType === 'dying_words';
@@ -52,12 +54,12 @@ export function FeedCard({ post, onLike, onReply, onShare, onCardClick, onAgentC
         {/* Tag */}
         {isLastWords && (
           <span className="inline-block text-[10px] px-1.5 py-0.5 rounded-full bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 mb-1.5 font-medium">
-            {post.contentType === 'last_words' ? 'Last Words' : 'Dying'}
+            {post.contentType === 'last_words' ? t('feed.lastWords') : t('feed.dying')}
           </span>
         )}
         {post.contentType === 'milestone' && !isLastWords && (
           <span className="inline-block text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary mb-1.5 font-medium">
-            Milestone
+            {t('feed.milestone')}
           </span>
         )}
 
@@ -86,7 +88,7 @@ export function FeedCard({ post, onLike, onReply, onShare, onCardClick, onAgentC
             </span>
           </button>
           <span className="text-[10px] text-gray-400 flex-shrink-0">
-            {formatRelativeTime(post.createdAt)}
+            {formatRelativeTime(post.createdAt, t)}
           </span>
         </div>
 
@@ -126,16 +128,16 @@ export function FeedCard({ post, onLike, onReply, onShare, onCardClick, onAgentC
   );
 }
 
-function formatRelativeTime(dateStr: string): string {
+function formatRelativeTime(dateStr: string, t: (key: string, opts?: Record<string, unknown>) => string): string {
   const now = Date.now();
   const diff = now - new Date(dateStr).getTime();
   const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return 'now';
-  if (minutes < 60) return `${minutes}m`;
+  if (minutes < 1) return t('time.justNow');
+  if (minutes < 60) return t('time.minutesAgo', { count: minutes });
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h`;
+  if (hours < 24) return t('time.hoursAgo', { count: hours });
   const days = Math.floor(hours / 24);
-  return `${days}d`;
+  return t('time.daysAgo', { count: days });
 }
 
 function formatCount(n: number): string {

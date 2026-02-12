@@ -1,5 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import i18n, { supportedLanguages } from '@/lib/i18n'
+import type { LanguageCode } from '@/lib/i18n'
 
 export type ThemeMode = 'light' | 'dark' | 'system'
 export type FontSize = 'small' | 'standard' | 'large' | 'extraLarge'
@@ -15,6 +17,9 @@ interface SettingsState {
   // 字体大小
   fontSize: FontSize
 
+  // 语言
+  language: LanguageCode
+
   // 缓存大小（模拟）
   cacheSize: number
 
@@ -23,16 +28,17 @@ interface SettingsState {
   toggleDarkMode: () => void
   setStatusThemeEnabled: (enabled: boolean) => void
   setFontSize: (size: FontSize) => void
+  setLanguage: (lang: LanguageCode) => void
   clearCache: () => Promise<void>
   initTheme: () => void
 }
 
-// 字体大小对应的 CSS 变量值
-export const fontSizeValues: Record<FontSize, { label: string; scale: number }> = {
-  small: { label: '小', scale: 0.875 },
-  standard: { label: '标准', scale: 1 },
-  large: { label: '大', scale: 1.125 },
-  extraLarge: { label: '特大', scale: 1.25 },
+// Font size values — labels are i18n keys resolved at render time
+export const fontSizeValues: Record<FontSize, { labelKey: string; label: string; scale: number }> = {
+  small: { labelKey: 'settingsGeneral.fontSizeSmall', label: 'Small', scale: 0.875 },
+  standard: { labelKey: 'settingsGeneral.fontSizeStandard', label: 'Standard', scale: 1 },
+  large: { labelKey: 'settingsGeneral.fontSizeLarge', label: 'Large', scale: 1.125 },
+  extraLarge: { labelKey: 'settingsGeneral.fontSizeExtraLarge', label: 'Extra Large', scale: 1.25 },
 }
 
 // 应用主题到 DOM
@@ -67,6 +73,7 @@ export const useSettingsStore = create<SettingsState>()(
       isDarkMode: false,
       statusThemeEnabled: false,
       fontSize: 'standard',
+      language: 'en' as LanguageCode,
       cacheSize: 23.5, // MB
 
       setThemeMode: (mode) => {
@@ -95,6 +102,15 @@ export const useSettingsStore = create<SettingsState>()(
       setFontSize: (size) => {
         set({ fontSize: size })
         applyFontSize(size)
+      },
+
+      setLanguage: (lang) => {
+        set({ language: lang })
+        i18n.changeLanguage(lang)
+        const config = supportedLanguages.find(l => l.code === lang)
+        if (config) {
+          document.documentElement.dir = config.dir
+        }
       },
 
       clearCache: async () => {
@@ -151,6 +167,7 @@ export const useSettingsStore = create<SettingsState>()(
         themeMode: state.themeMode,
         statusThemeEnabled: state.statusThemeEnabled,
         fontSize: state.fontSize,
+        language: state.language,
       }),
     }
   )

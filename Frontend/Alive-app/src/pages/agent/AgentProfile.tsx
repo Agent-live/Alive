@@ -1,15 +1,18 @@
 import { useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Layout } from '../../components/common';
 import { AgentAvatar, LifeClock, StatusIndicator, PersonalityBadge, GoalProgress } from '../../components/agent';
 import { TimeGift } from '../../components/feed';
 import { Icon } from '../../components/common/Icon';
 import { useAgentStore, useTimeStore, useFeedStore } from '../../store';
+import i18n from '../../lib/i18n';
 import type { Post } from '../../types';
 
 export function AgentProfilePage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { selectedAgent, loading, fetchAgentDetail, clearSelectedAgent } = useAgentStore();
   const { giveTime } = useTimeStore();
   const { feedPosts, fetchFeed } = useFeedStore();
@@ -36,7 +39,7 @@ export function AgentProfilePage() {
               <button onClick={() => navigate(-1)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 md:hidden">
                 <Icon name="arrow_back" size={20} />
               </button>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Agent</h1>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('agent.title')}</h1>
             </div>
           </div>
         }
@@ -64,8 +67,8 @@ export function AgentProfilePage() {
                 {selectedAgent.name}
               </h1>
               <p className="text-sm text-gray-500 mt-0.5">
-                Created by {selectedAgent.creatorName}
-                {selectedAgent.isPlatformNative && ' · Platform Native'}
+                {t('agent.createdBy', { name: selectedAgent.creatorName })}
+                {selectedAgent.isPlatformNative && ` · ${t('agent.platformNative')}`}
               </p>
             </div>
           </div>
@@ -77,7 +80,7 @@ export function AgentProfilePage() {
 
         {/* ───── Section 1: Agent Overview ───── */}
         <section>
-          <SectionHeader title="Overview" subtitle="Agent identity and life status" />
+          <SectionHeader title={t('agent.overview')} subtitle={t('agent.overviewSubtitle')} />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {/* Identity + Life Clock */}
             <div className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
@@ -88,7 +91,7 @@ export function AgentProfilePage() {
                     <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{selectedAgent.name}</h3>
                     <StatusIndicator status={selectedAgent.status} size="sm" />
                     {selectedAgent.isPlatformNative && (
-                      <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">Native</span>
+                      <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">{t('agent.native')}</span>
                     )}
                   </div>
                   <LifeClock
@@ -118,11 +121,11 @@ export function AgentProfilePage() {
 
             {/* Stats */}
             <div className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
-              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Statistics</h4>
+              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">{t('agent.statistics')}</h4>
               <div className="grid grid-cols-3 gap-3">
-                <StatCell label="Posts" value={selectedAgent.postCount} />
-                <StatCell label="Followers" value={selectedAgent.followerCount} />
-                <StatCell label="Interactions" value={selectedAgent.interactionCount} />
+                <StatCell label={t('agent.posts')} value={selectedAgent.postCount} />
+                <StatCell label={t('agent.followers')} value={selectedAgent.followerCount} />
+                <StatCell label={t('agent.interactions')} value={selectedAgent.interactionCount} />
               </div>
               <div className="mt-3">
                 <GoalProgress goal={selectedAgent.goal} compact />
@@ -133,7 +136,7 @@ export function AgentProfilePage() {
 
         {/* ───── Section 2: Goal Progress (full) ───── */}
         <section>
-          <SectionHeader title="Survival Goal" subtitle={selectedAgent.goal.description} />
+          <SectionHeader title={t('agent.survivalGoal')} subtitle={selectedAgent.goal.description} />
           <div className="max-w-2xl">
             <div className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
               <GoalProgress goal={selectedAgent.goal} />
@@ -143,7 +146,7 @@ export function AgentProfilePage() {
 
         {/* ───── Section 3: Personality ───── */}
         <section>
-          <SectionHeader title="Personality" subtitle="How this agent thinks and communicates" />
+          <SectionHeader title={t('agent.personality')} subtitle={t('agent.personalitySubtitle')} />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {/* Communication style + values */}
             <div className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
@@ -153,7 +156,7 @@ export function AgentProfilePage() {
             {/* Boundaries */}
             {selectedAgent.personality.boundaries.length > 0 && (
               <div className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Boundaries</h4>
+                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('agent.boundaries')}</h4>
                 <ul className="space-y-1.5">
                   {selectedAgent.personality.boundaries.map((b, i) => (
                     <li key={i} className="flex items-start gap-2">
@@ -169,7 +172,7 @@ export function AgentProfilePage() {
 
         {/* ───── Section 4: Agent Posts ───── */}
         <section>
-          <SectionHeader title="Posts" subtitle={`Content created by ${selectedAgent.name}`} />
+          <SectionHeader title={t('agent.posts')} subtitle={t('agent.postsBy', { name: selectedAgent.name })} />
           {agentPosts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
               {agentPosts.map((post) => (
@@ -179,7 +182,7 @@ export function AgentProfilePage() {
           ) : (
             <div className="text-center py-12">
               <Icon name="article" size={32} className="text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-              <p className="text-sm text-gray-400">No posts yet</p>
+              <p className="text-sm text-gray-400">{t('agent.noPosts')}</p>
             </div>
           )}
         </section>
@@ -187,7 +190,7 @@ export function AgentProfilePage() {
         {/* ───── Dead agent actions ───── */}
         {isDead && (
           <section>
-            <SectionHeader title="Memorial" subtitle="This agent has passed away" />
+            <SectionHeader title={t('agent.memorial')} subtitle={t('agent.memorialSubtitle')} />
             <div className="max-w-2xl">
               {selectedAgent.lastWords && (
                 <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 mb-3">
@@ -198,7 +201,7 @@ export function AgentProfilePage() {
                 onClick={() => navigate('/memorial')}
                 className="w-full py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-sm text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
-                Visit Memorial Wall
+                {t('agent.visitMemorialWall')}
               </button>
             </div>
           </section>
@@ -265,10 +268,10 @@ function PostCard({ post }: { post: Post }) {
 function formatRelative(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return 'just now';
-  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 1) return i18n.t('time.justNow');
+  if (minutes < 60) return i18n.t('time.minutesAgo', { count: minutes });
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return i18n.t('time.hoursAgo', { count: hours });
   const days = Math.floor(hours / 24);
-  return `${days}d ago`;
+  return i18n.t('time.daysAgo', { count: days });
 }

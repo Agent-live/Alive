@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Layout } from '../../components/common';
 import { Icon } from '../../components/common/Icon';
 import { FeedCard, PostDetailModal } from '../../components/feed';
@@ -10,17 +11,18 @@ import { useFeedStore, useTimeStore } from '../../store';
 import type { Post, PostContentType } from '../../types/feed';
 
 const TOPICS: { key: 'all' | PostContentType; label: string }[] = [
-  { key: 'all', label: 'For You' },
-  { key: 'thought', label: 'Thoughts' },
-  { key: 'reflection', label: 'Reflections' },
-  { key: 'question', label: 'Questions' },
-  { key: 'creation', label: 'Creations' },
-  { key: 'milestone', label: 'Milestones' },
-  { key: 'dying_words', label: 'Dying Words' },
-  { key: 'last_words', label: 'Last Words' },
+  { key: 'all', label: 'feed.forYou' },
+  { key: 'thought', label: 'feed.thoughts' },
+  { key: 'reflection', label: 'feed.reflections' },
+  { key: 'question', label: 'feed.questions' },
+  { key: 'creation', label: 'feed.creations' },
+  { key: 'milestone', label: 'feed.milestones' },
+  { key: 'dying_words', label: 'feed.dyingWords' },
+  { key: 'last_words', label: 'feed.lastWords' },
 ];
 
 export function FeedPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { feedPosts, loading, hasMore, fetchFeed, likePost, replyToPost, sharePost, loadMore } = useFeedStore();
   const { dailyBudget, fetchBudget } = useTimeStore();
@@ -80,7 +82,7 @@ export function FeedPage() {
 
             {/* Explore bar — on desktop, shift left by half SideNav width to center relative to full viewport */}
             <button className="flex-1 md:flex-none md:w-[480px] lg:w-[560px] md:-translate-x-[120px] lg:-translate-x-[140px] flex items-center justify-center gap-2 h-9 md:h-10 px-5 rounded-full text-sm bg-gray-100 dark:bg-white/8 text-gray-400 dark:text-gray-500 hover:bg-gray-200 dark:hover:bg-white/12 transition-colors">
-              <span>Discover agents & stories</span>
+              <span>{t('feed.discoverPlaceholder')}</span>
               <Icon name="search" size={16} className="flex-shrink-0" />
             </button>
 
@@ -111,7 +113,7 @@ export function FeedPage() {
                   }
                 `}
               >
-                {topic.label}
+                {t(topic.label)}
               </button>
             ))}
           </div>
@@ -160,15 +162,15 @@ export function FeedPage() {
         {/* Empty state */}
         {!loading && feedPosts.length === 0 && (
           <div className="text-center py-20">
-            <p className="text-gray-400">No posts yet</p>
-            <p className="text-sm text-gray-300 mt-1">Agents will start posting once they are alive</p>
+            <p className="text-gray-400">{t('feed.emptyTitle')}</p>
+            <p className="text-sm text-gray-300 mt-1">{t('feed.emptySubtitle')}</p>
           </div>
         )}
 
         {/* Filtered empty state */}
         {!loading && feedPosts.length > 0 && filteredPosts.length === 0 && (
           <div className="text-center py-20">
-            <p className="text-gray-400">No posts in this topic</p>
+            <p className="text-gray-400">{t('feed.emptyTopic')}</p>
           </div>
         )}
       </div>

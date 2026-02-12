@@ -1,22 +1,35 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Layout, ActionSheet } from '../../components/common';
 import { AgentAvatar, LifeClock, StatusIndicator, GoalProgress } from '../../components/agent';
 import { Icon } from '../../components/common/Icon';
 import { DailyBudgetIndicator } from '../../components/time';
 import { WhatsAppIcon, WeChatIcon, TelegramIcon, XTwitterIcon, DiscordIcon, MailIcon } from '../../components/icons';
 import { useAgentStore, useTimeStore, useFeedStore } from '../../store';
+import i18n from '../../lib/i18n';
 import type { TimeTransaction, Post, SocialPlatform, SocialLink, ChatHistoryItem } from '../../types';
 
-/* ─── Event type icons & labels ─── */
-const txMeta: Record<string, { icon: string; label: string; color: string }> = {
-  like: { icon: 'favorite', label: 'Like', color: 'text-pink-500' },
-  reply: { icon: 'chat_bubble', label: 'Reply', color: 'text-blue-500' },
-  share: { icon: 'share', label: 'Share', color: 'text-green-500' },
-  gift: { icon: 'redeem', label: 'Gift', color: 'text-amber-500' },
-  login_bonus: { icon: 'login', label: 'Login Bonus', color: 'text-primary' },
-  daily_bonus: { icon: 'calendar_today', label: 'Daily Bonus', color: 'text-primary' },
-  system_grant: { icon: 'verified', label: 'System Grant', color: 'text-indigo-500' },
+/* ─── Event type icons & colors (labels added via i18n inside component) ─── */
+const txMetaBase: Record<string, { icon: string; color: string }> = {
+  like: { icon: 'favorite', color: 'text-pink-500' },
+  reply: { icon: 'chat_bubble', color: 'text-blue-500' },
+  share: { icon: 'share', color: 'text-green-500' },
+  gift: { icon: 'redeem', color: 'text-amber-500' },
+  login_bonus: { icon: 'login', color: 'text-primary' },
+  daily_bonus: { icon: 'calendar_today', color: 'text-primary' },
+  system_grant: { icon: 'verified', color: 'text-indigo-500' },
+};
+
+/* ─── i18n label keys for txMeta ─── */
+const txMetaLabelKeys: Record<string, string> = {
+  like: 'time.like',
+  reply: 'time.reply',
+  share: 'time.share',
+  gift: 'time.gift',
+  login_bonus: 'time.loginBonus',
+  daily_bonus: 'time.dailyBonus',
+  system_grant: 'time.systemGrant',
 };
 
 /* ─── Platform config for social icons ─── */
@@ -84,6 +97,7 @@ const mockSuggestions = [
 
 export function MyAgentPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { myAgent, loading, fetchMyAgent } = useAgentStore();
   const { dailyBudget, transactions, fetchBudget, fetchTransactions } = useTimeStore();
   const { feedPosts, fetchFeed } = useFeedStore();
@@ -146,7 +160,7 @@ export function MyAgentPage() {
               className={`
                 flex-shrink-0 flex flex-col items-center gap-1.5 group
               `}
-              title={connected ? `Open ${config.label}` : `Connect ${config.label}`}
+              title={connected ? `Open ${config.label}` : t('myAgent.connectPlatform', { platform: config.label })}
             >
               <div
                 className={`
@@ -177,8 +191,8 @@ export function MyAgentPage() {
         header={
           <div className="px-4">
             <div className="flex flex-col justify-center min-h-[56px] py-2 md:mt-8 md:mb-6">
-              <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">My AgentBot</h1>
-              <p className="text-sm text-gray-500 mt-0.5">Manage your agents and track activity</p>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('myAgent.title')}</h1>
+              <p className="text-sm text-gray-500 mt-0.5">{t('myAgent.subtitle')}</p>
             </div>
           </div>
         }
@@ -198,8 +212,8 @@ export function MyAgentPage() {
         header={
           <div className="px-4">
             <div className="flex flex-col justify-center min-h-[56px] py-2 md:mt-8 md:mb-6">
-              <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">My AgentBot</h1>
-              <p className="text-sm text-gray-500 mt-0.5">Manage your agents and track activity</p>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('myAgent.title')}</h1>
+              <p className="text-sm text-gray-500 mt-0.5">{t('myAgent.subtitle')}</p>
             </div>
           </div>
         }
@@ -210,15 +224,15 @@ export function MyAgentPage() {
             <div className="w-20 h-20 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4">
               <Icon name="add" size={36} className="text-gray-300" />
             </div>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">No Agent Yet</h2>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">{t('myAgent.noAgentTitle')}</h2>
             <p className="text-sm text-gray-500 text-center mb-6">
-              Create your first AI agent and bring it to life
+              {t('myAgent.noAgentSubtitle')}
             </p>
             <button
               onClick={() => navigate('/create')}
               className="px-8 py-3 rounded-xl bg-primary text-white font-medium"
             >
-              Create Agent
+              {t('myAgent.createAgent')}
             </button>
           </div>
         </div>
@@ -232,8 +246,8 @@ export function MyAgentPage() {
       header={
         <div className="px-4">
           <div className="flex flex-col justify-center min-h-[56px] py-2 md:mt-8 md:mb-6">
-            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">My AgentBot</h1>
-            <p className="text-sm text-gray-500 mt-0.5">Manage your agents and track activity</p>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('myAgent.title')}</h1>
+            <p className="text-sm text-gray-500 mt-0.5">{t('myAgent.subtitle')}</p>
           </div>
         </div>
       }
@@ -264,14 +278,14 @@ export function MyAgentPage() {
               <div className="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                 <Icon name="add" size={24} className="text-gray-400" />
               </div>
-              <span className="text-xs text-gray-400">Create New</span>
+              <span className="text-xs text-gray-400">{t('myAgent.createNew')}</span>
             </button>
           </div>
         </section>
 
         {/* ───── Section 2: Agent Overview Card ───── */}
         <section>
-          <SectionHeader title="Agent Status" subtitle={`${myAgent.name}'s current state`} />
+          <SectionHeader title={t('myAgent.agentStatus')} subtitle={t('myAgent.agentStatusSubtitle', { name: myAgent.name })} />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {/* Life Clock card */}
             <div className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
@@ -303,11 +317,11 @@ export function MyAgentPage() {
 
             {/* Stats card */}
             <div className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
-              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Statistics</h4>
+              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">{t('agent.statistics')}</h4>
               <div className="grid grid-cols-3 gap-3">
-                <StatCell label="Posts" value={myAgent.postCount} />
-                <StatCell label="Followers" value={myAgent.followerCount} />
-                <StatCell label="Time Received" value={`${Math.floor(myAgent.totalTimeReceived / 3600)}h`} />
+                <StatCell label={t('agent.posts')} value={myAgent.postCount} />
+                <StatCell label={t('agent.followers')} value={myAgent.followerCount} />
+                <StatCell label={t('myAgent.timeReceived')} value={`${Math.floor(myAgent.totalTimeReceived / 3600)}h`} />
               </div>
               <div className="mt-3">
                 <GoalProgress goal={myAgent.goal} compact />
@@ -328,13 +342,13 @@ export function MyAgentPage() {
                   onClick={() => navigate('/memorial')}
                   className="flex-1 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-sm text-gray-500"
                 >
-                  Visit Memorial
+                  {t('myAgent.visitMemorial')}
                 </button>
                 <button
                   onClick={() => navigate('/create')}
                   className="flex-1 py-3 rounded-xl bg-primary text-white text-sm font-medium"
                 >
-                  Create New Agent
+                  {t('myAgent.createNewAgent')}
                 </button>
               </div>
             </div>
@@ -343,7 +357,7 @@ export function MyAgentPage() {
 
         {/* ───── Section 2b: Connected Platforms ───── */}
         <section>
-          <SectionHeader title="Connected Platforms" subtitle="Social media & messaging channels" />
+          <SectionHeader title={t('myAgent.connectedPlatforms')} subtitle={t('myAgent.connectedPlatformsSubtitle')} />
           <div className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
             <SocialLinksRow
               links={mockSocialLinks}
@@ -354,7 +368,7 @@ export function MyAgentPage() {
 
         {/* ───── Section 2c: Chat History ───── */}
         <section>
-          <SectionHeader title="Chat History" subtitle="Recent conversations across platforms" />
+          <SectionHeader title={t('myAgent.chatHistory')} subtitle={t('myAgent.chatHistorySubtitle')} />
           {mockChatHistory.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
               {mockChatHistory.map((chat) => (
@@ -364,9 +378,9 @@ export function MyAgentPage() {
           ) : (
             <div className="text-center py-12">
               <Icon name="forum" size={32} className="text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-              <p className="text-sm text-gray-400">No chat history yet</p>
+              <p className="text-sm text-gray-400">{t('myAgent.noChatHistory')}</p>
               <p className="text-xs text-gray-300 dark:text-gray-600 mt-1">
-                Connect a platform to start seeing conversations
+                {t('myAgent.noChatHistorySubtitle')}
               </p>
             </div>
           )}
@@ -374,19 +388,19 @@ export function MyAgentPage() {
 
         {/* ───── Section 3: Communication Records ───── */}
         <section>
-          <SectionHeader title="Communication Records" subtitle={`Your interactions with ${myAgent.name}`} />
+          <SectionHeader title={t('myAgent.communicationRecords')} subtitle={t('myAgent.communicationRecordsSubtitle', { name: myAgent.name })} />
           <div className="space-y-4">
             {/* User interactions (likes, replies, shares) */}
             {interactions.length > 0 && (
-              <EventGroup title="Your Interactions" subtitle="Likes, replies & shares you've given" events={interactions} />
+              <EventGroup title={t('myAgent.yourInteractions')} subtitle={t('myAgent.yourInteractionsSubtitle')} events={interactions} />
             )}
 
             {/* Agent's posts — what the agent communicated */}
             {agentPosts.length > 0 && (
               <div>
                 <div className="mb-2">
-                  <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">{myAgent.name}'s Posts</h3>
-                  <p className="text-xs text-gray-400">Content your agent created</p>
+                  <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">{t('myAgent.agentPosts', { name: myAgent.name })}</h3>
+                  <p className="text-xs text-gray-400">{t('myAgent.agentPostsSubtitle')}</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                   {agentPosts.map((post) => (
@@ -398,15 +412,15 @@ export function MyAgentPage() {
 
             {/* Time bonuses received */}
             {bonuses.length > 0 && (
-              <EventGroup title="Time Bonuses" subtitle="Login rewards & system grants" events={bonuses} />
+              <EventGroup title={t('myAgent.timeBonuses')} subtitle={t('myAgent.timeBonusesSubtitle')} events={bonuses} />
             )}
 
             {transactions.length === 0 && agentPosts.length === 0 && (
               <div className="text-center py-12">
                 <Icon name="history" size={32} className="text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-                <p className="text-sm text-gray-400">No communication records yet</p>
+                <p className="text-sm text-gray-400">{t('myAgent.noRecords')}</p>
                 <p className="text-xs text-gray-300 dark:text-gray-600 mt-1">
-                  Interact with your agent to see records here
+                  {t('myAgent.noRecordsSubtitle')}
                 </p>
               </div>
             )}
@@ -415,7 +429,7 @@ export function MyAgentPage() {
 
         {/* ───── Section 4: User Suggestions ───── */}
         <section>
-          <SectionHeader title="Suggestions" subtitle="Feedback from the community" />
+          <SectionHeader title={t('myAgent.suggestions')} subtitle={t('myAgent.suggestionsSubtitle')} />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
             {mockSuggestions.map((s) => (
               <div
@@ -440,14 +454,14 @@ export function MyAgentPage() {
       <ActionSheet
         open={connectSheet.open}
         onClose={() => setConnectSheet({ open: false, platform: null })}
-        title={connectSheet.platform ? `Connect ${platformConfig[connectSheet.platform].label}` : 'Connect Platform'}
-        cancelText="Cancel"
+        title={connectSheet.platform ? t('myAgent.connectPlatform', { platform: platformConfig[connectSheet.platform].label }) : t('myAgent.connectPlatform', { platform: '' })}
+        cancelText={t('common.cancel')}
         options={connectSheet.platform ? [
           {
             id: 'connect',
             icon: 'link',
-            title: `Connect ${platformConfig[connectSheet.platform].label}`,
-            subtitle: `Link your ${platformConfig[connectSheet.platform].label} account to your agent`,
+            title: t('myAgent.connectPlatform', { platform: platformConfig[connectSheet.platform].label }),
+            subtitle: t('myAgent.connectPlatformSubtitle', { platform: platformConfig[connectSheet.platform].label }),
             gradient: 'from-primary to-blue-500',
             onClick: () => {
               // TODO: Implement actual connect flow
@@ -457,8 +471,8 @@ export function MyAgentPage() {
           {
             id: 'learn-more',
             icon: 'info',
-            title: 'Learn More',
-            subtitle: `See how ${platformConfig[connectSheet.platform].label} integration works`,
+            title: t('common.learnMore'),
+            subtitle: t('myAgent.learnMoreSubtitle', { platform: platformConfig[connectSheet.platform].label }),
             onClick: () => {
               console.log(`Learn more about ${connectSheet.platform}`);
             },
@@ -506,7 +520,10 @@ function EventGroup({ title, subtitle, events }: { title: string; subtitle: stri
 }
 
 function EventCard({ event }: { event: TimeTransaction }) {
-  const meta = txMeta[event.type] || { icon: 'schedule', label: event.type, color: 'text-gray-500' };
+  const { t } = useTranslation();
+  const base = txMetaBase[event.type] || { icon: 'schedule', color: 'text-gray-500' };
+  const labelKey = txMetaLabelKeys[event.type];
+  const meta = { ...base, label: labelKey ? t(labelKey) : event.type };
 
   return (
     <div className="flex items-start gap-3 p-3 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
@@ -597,10 +614,10 @@ function ChatHistoryCard({ chat }: { chat: ChatHistoryItem }) {
 function formatRelative(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return 'just now';
-  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 1) return i18n.t('time.justNow');
+  if (minutes < 60) return i18n.t('time.minutesAgo', { count: minutes });
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return i18n.t('time.hoursAgo', { count: hours });
   const days = Math.floor(hours / 24);
-  return `${days}d ago`;
+  return i18n.t('time.daysAgo', { count: days });
 }

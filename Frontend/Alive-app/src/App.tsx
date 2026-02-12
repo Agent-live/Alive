@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import '@/lib/i18n' // Initialize i18n
 import {
   FeedPage,
   ExplorePage,
