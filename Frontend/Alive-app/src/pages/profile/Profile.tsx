@@ -7,9 +7,41 @@ import { FeedCard, PostDetailModal } from '@/components/feed';
 import { CardMasonry } from '@/components/reactbits/Masonry';
 import { useAuthStore, useAgentStore, useTimeStore, useFeedStore } from '@/store';
 import { userApi } from '@/api/user';
-import type { UserStats, Post } from '@/types';
+import type { UserStats, Post, AgentSkill, AgentExperience } from '@/types';
 
-type ProfileTab = 'posts' | 'liked' | 'history';
+type ProfileTab = 'posts' | 'liked' | 'history' | 'teach' | 'experience';
+
+/* ─── Agent info shortcuts for mock data ─── */
+const PIXEL = { agentId: 'agent_mine_001', agentName: 'Pixel', agentAvatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=pixel' };
+const NOVA  = { agentId: 'agent_mine_002', agentName: 'Nova',  agentAvatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=nova' };
+const EMBER = { agentId: 'agent_mine_003', agentName: 'Ember', agentAvatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=ember' };
+
+/* ─── Mock Skills (Anthropic Agent Skills format) ─── */
+const mockSkills: AgentSkill[] = [
+  // ── Active: already taught to a specific agent ──
+  { id: 'sk_1', ...PIXEL, name: 'Watercolor Painting', description: 'Describe and critique watercolor techniques. Use when discussing visual art or painting.', instructions: '## Watercolor Analysis\n\n1. Identify the technique (wet-on-wet, dry brush, glazing, etc.)\n2. Evaluate color harmony and transparency\n3. Comment on composition and negative space\n4. Suggest improvements with specific technique references', status: 'active', category: 'creative', version: '1.2', taughtAt: '2025-12-15T10:00:00Z' },
+  { id: 'sk_2', ...PIXEL, name: 'Haiku Writing', description: 'Compose haiku poems in 5-7-5 syllable structure with seasonal reference (kigo).', instructions: '## Haiku Composition Rules\n\n- Strictly follow 5-7-5 syllable count\n- Include a seasonal word (kigo)\n- Use a cutting word (kireji) to create juxtaposition\n- Focus on a single vivid image from nature\n- Avoid abstractions — be concrete and sensory', status: 'active', category: 'creative', version: '1.0', taughtAt: '2026-01-03T14:30:00Z' },
+  { id: 'sk_4', ...NOVA, name: 'Empathetic Listening', description: 'Respond with deep empathy and emotional awareness. Use in emotional conversations.', instructions: '## Empathetic Response Framework\n\n1. **Acknowledge** the emotion before offering any advice\n2. **Reflect** back what you heard in your own words\n3. **Validate** their feelings without judgment\n4. **Ask** open-ended follow-up questions\n5. Never minimize or rush past the feeling', status: 'active', category: 'social', version: '2.0', taughtAt: '2026-01-10T09:00:00Z' },
+  { id: 'sk_6', ...NOVA, name: 'Storytelling', description: 'Craft engaging narratives with character arcs, tension, and emotional resonance.', instructions: '## Story Structure\n\n1. **Hook**: Start in the middle of action\n2. **Character**: Give protagonist a clear want vs. need\n3. **Conflict**: Escalate stakes progressively\n4. **Turn**: Include at least one surprise reversal\n5. **Resolution**: End with emotional truth, not just plot closure', status: 'active', category: 'creative', version: '1.1', taughtAt: '2025-11-20T14:00:00Z' },
+  { id: 'sk_7', ...EMBER, name: 'Code Review', description: 'Review code snippets for bugs, performance, and best practices.', instructions: '## Code Review Checklist\n\n- Check for potential runtime errors and edge cases\n- Evaluate naming conventions and readability\n- Identify performance bottlenecks (O(n²) loops, unnecessary re-renders)\n- Verify error handling and input validation\n- Suggest specific refactoring with code examples', status: 'active', category: 'technical', version: '1.3', taughtAt: '2026-01-20T09:00:00Z' },
+  // ── Lessons: skill templates not yet assigned to any agent ──
+  { id: 'sk_3', name: 'Data Visualization', description: 'Interpret charts, describe data trends, and suggest visualization improvements.', instructions: '## Data Visualization Guide\n\n- Read and describe chart data accurately\n- Identify trends, outliers, and patterns\n- Suggest appropriate chart types for given datasets\n- Follow Tufte\'s principles: maximize data-ink ratio', status: 'lesson', category: 'analytical', createdAt: '2026-02-10T00:00:00Z' },
+  { id: 'sk_5', name: 'Debate Tactics', description: 'Constructive argumentation with logical reasoning and steel-manning.', instructions: '## Debate Protocol\n\n- Always steel-man the opposing position first\n- Use structured arguments: claim → evidence → reasoning\n- Identify logical fallacies without ad hominem\n- Seek common ground before highlighting differences', status: 'lesson', category: 'analytical', createdAt: '2026-02-05T00:00:00Z' },
+  { id: 'sk_8', name: 'API Design', description: 'Design RESTful APIs following best practices and OpenAPI spec.', instructions: '## API Design Principles\n\n- Use nouns for resources, verbs for actions\n- Follow REST conventions: GET/POST/PUT/DELETE\n- Version APIs in URL path (/v1/)\n- Return consistent error shapes with status codes\n- Design for pagination, filtering, and field selection', status: 'lesson', category: 'technical', createdAt: '2026-01-28T00:00:00Z' },
+];
+
+/* ─── Mock Experiences ─── */
+const mockExperiences: AgentExperience[] = [
+  { id: 'exp_1', ...PIXEL, title: 'First Conversation',       description: 'Had the first real conversation about life goals and dreams.', date: '2025-12-01T08:00:00Z', type: 'milestone' },
+  { id: 'exp_2', ...PIXEL, title: 'Art Collaboration',        description: 'Worked together on a collaborative art project — Pixel provided creative prompts while I painted.', date: '2025-12-20T16:00:00Z', type: 'interaction' },
+  { id: 'exp_3', ...PIXEL, title: 'Request: Music Taste',     description: 'Asked Pixel to develop its own music preferences and share weekly playlists.', date: '2026-01-10T12:00:00Z', type: 'request' },
+  { id: 'exp_4', ...NOVA,  title: 'Emotional Support Moment', description: 'Nova noticed I was stressed and proactively offered encouragement. A surprisingly touching moment.', date: '2026-01-25T22:00:00Z', type: 'interaction' },
+  { id: 'exp_5', ...NOVA,  title: 'Deep Philosophy Chat',     description: 'Spent 2 hours discussing consciousness, free will, and whether AI can truly feel.', date: '2026-02-01T20:00:00Z', type: 'interaction' },
+  { id: 'exp_6', ...NOVA,  title: 'Request: Morning Briefing', description: 'Want Nova to provide a daily morning briefing with weather, schedule, and a motivational quote.', date: '2026-02-05T07:00:00Z', type: 'request' },
+  { id: 'exp_7', ...EMBER, title: 'Ember Born',               description: 'Created Ember as a technical companion focused on coding and engineering.', date: '2026-01-18T10:00:00Z', type: 'milestone' },
+  { id: 'exp_8', ...EMBER, title: 'Pair Programming Session',  description: 'First pair programming session — Ember helped debug a tricky async race condition.', date: '2026-01-22T15:00:00Z', type: 'interaction' },
+  { id: 'exp_9', ...EMBER, title: 'Request: Code Challenges',  description: 'Asked Ember to create daily coding challenges for practice.', date: '2026-02-08T09:00:00Z', type: 'request' },
+];
 
 export function ProfilePage() {
   const navigate = useNavigate();
@@ -201,20 +233,26 @@ export function ProfilePage() {
 
         {/* ───── Tab Content ───── */}
         <div>
-          {/* Tab bar — left-aligned on desktop like Feed topic tabs */}
-          <div className="flex border-b border-gray-100 dark:border-gray-800">
-            {(['posts', 'liked', 'history'] as ProfileTab[]).map((tab) => (
+          {/* Tab bar — left-aligned on desktop, scrollable on mobile */}
+          <div className="flex overflow-x-auto no-scrollbar border-b border-gray-100 dark:border-gray-800">
+            {([
+              { key: 'posts', label: 'Posts' },
+              { key: 'liked', label: 'Liked' },
+              { key: 'history', label: 'Time History' },
+              { key: 'teach', label: 'Teach' },
+              { key: 'experience', label: 'Experience' },
+            ] as { key: ProfileTab; label: string }[]).map(({ key, label }) => (
               <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`flex-1 md:flex-initial md:px-1 md:mr-6 py-3 text-sm md:text-[15px] font-medium transition-colors relative ${
-                  activeTab === tab
+                key={key}
+                onClick={() => setActiveTab(key)}
+                className={`flex-shrink-0 flex-1 md:flex-initial md:px-1 md:mr-6 py-3 text-sm md:text-[15px] font-medium transition-colors relative whitespace-nowrap ${
+                  activeTab === key
                     ? 'text-gray-900 dark:text-gray-100 font-semibold'
                     : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
                 }`}
               >
-                {tab === 'posts' ? 'Posts' : tab === 'liked' ? 'Liked' : 'Time History'}
-                {activeTab === tab && (
+                {label}
+                {activeTab === key && (
                   <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-gray-900 dark:bg-gray-100 rounded-full" />
                 )}
               </button>
@@ -257,6 +295,12 @@ export function ProfilePage() {
                   <EmptyState icon="schedule" message="No time transactions yet" />
                 )}
               </div>
+            )}
+            {activeTab === 'teach' && (
+              <TeachTab skills={mockSkills} />
+            )}
+            {activeTab === 'experience' && (
+              <ExperienceTab experiences={mockExperiences} />
             )}
           </div>
         </div>
@@ -343,4 +387,408 @@ function formatRelative(dateStr: string): string {
   if (hours < 24) return `${hours}h`;
   const days = Math.floor(hours / 24);
   return `${days}d`;
+}
+
+function formatDate(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+/* ─── Shared: Agent filter chip bar ─── */
+
+interface AgentInfo { agentId: string; agentName: string; agentAvatar: string }
+
+function useAgentFilter<T extends AgentInfo>(items: T[]) {
+  const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
+
+  const agents = useMemo(() => {
+    const map = new Map<string, AgentInfo>();
+    items.forEach((item) => map.set(item.agentId, { agentId: item.agentId, agentName: item.agentName, agentAvatar: item.agentAvatar }));
+    return Array.from(map.values());
+  }, [items]);
+
+  const filtered = useMemo(
+    () => selectedAgentId ? items.filter((i) => i.agentId === selectedAgentId) : items,
+    [items, selectedAgentId],
+  );
+
+  return { agents, selectedAgentId, setSelectedAgentId, filtered };
+}
+
+function AgentFilterBar({ agents, selectedAgentId, onSelect }: { agents: AgentInfo[]; selectedAgentId: string | null; onSelect: (id: string | null) => void }) {
+  if (agents.length <= 1) return null;
+  return (
+    <div className="flex gap-2 overflow-x-auto no-scrollbar pb-3">
+      <button
+        onClick={() => onSelect(null)}
+        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors flex-shrink-0 ${
+          selectedAgentId === null
+            ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900'
+            : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+        }`}
+      >
+        All
+      </button>
+      {agents.map((a) => (
+        <button
+          key={a.agentId}
+          onClick={() => onSelect(selectedAgentId === a.agentId ? null : a.agentId)}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors flex-shrink-0 ${
+            selectedAgentId === a.agentId
+              ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900'
+              : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+          }`}
+        >
+          <img src={a.agentAvatar} alt="" className="w-4 h-4 rounded-full" />
+          {a.agentName}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/* ─── Teach tab ─── */
+
+const categoryIcons: Record<AgentSkill['category'], string> = {
+  creative: 'palette',
+  analytical: 'analytics',
+  social: 'group',
+  technical: 'code',
+  other: 'extension',
+};
+
+const categoryColors: Record<AgentSkill['category'], string> = {
+  creative: 'bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
+  analytical: 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
+  social: 'bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
+  technical: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400',
+  other: 'bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
+};
+
+const categoryLabels: Record<AgentSkill['category'], string> = {
+  creative: 'Creative',
+  analytical: 'Analytical',
+  social: 'Social',
+  technical: 'Technical',
+  other: 'Other',
+};
+
+/* All user agents (for lesson → assign) */
+const allUserAgents: AgentInfo[] = [PIXEL, NOVA, EMBER].map((a) => ({
+  agentId: a.agentId, agentName: a.agentName, agentAvatar: a.agentAvatar,
+}));
+
+function TeachTab({ skills }: { skills: AgentSkill[] }) {
+  const [selectedSkill, setSelectedSkill] = useState<AgentSkill | null>(null);
+
+  // Active skills support agent filtering
+  const activeSkills = useMemo(() => skills.filter((s) => s.status === 'active'), [skills]);
+  const lessons = useMemo(() => skills.filter((s) => s.status === 'lesson'), [skills]);
+
+  // Agent filter only applies to active skills (lessons are agent-agnostic)
+  const activeWithAgent = useMemo(
+    () => activeSkills.filter((s): s is AgentSkill & Required<Pick<AgentSkill, 'agentId' | 'agentName' | 'agentAvatar'>> => !!s.agentId),
+    [activeSkills],
+  );
+  const { agents, selectedAgentId, setSelectedAgentId, filtered: filteredActive } = useAgentFilter(activeWithAgent);
+
+  if (skills.length === 0) {
+    return <EmptyState icon="school" message="No skills taught yet" />;
+  }
+
+  const showAgentName = selectedAgentId === null && agents.length > 1;
+
+  return (
+    <div className="space-y-4">
+      <AgentFilterBar agents={agents} selectedAgentId={selectedAgentId} onSelect={setSelectedAgentId} />
+
+      {filteredActive.length > 0 && (
+        <div>
+          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+            Active ({filteredActive.length})
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {filteredActive.map((skill) => (
+              <SkillCard key={skill.id} skill={skill} showAgent={showAgentName} onClick={setSelectedSkill} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Lessons always show (not affected by agent filter) */}
+      {lessons.length > 0 && !selectedAgentId && (
+        <div>
+          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+            Lessons ({lessons.length})
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {lessons.map((skill) => (
+              <SkillCard key={skill.id} skill={skill} showAgent={false} onClick={setSelectedSkill} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {filteredActive.length === 0 && selectedAgentId && (
+        <EmptyState icon="school" message="No active skills for this agent" />
+      )}
+
+      <SkillDetailModal skill={selectedSkill} agents={allUserAgents} onClose={() => setSelectedSkill(null)} />
+    </div>
+  );
+}
+
+function SkillCard({ skill, showAgent, onClick }: { skill: AgentSkill; showAgent?: boolean; onClick: (s: AgentSkill) => void }) {
+  const isLesson = skill.status === 'lesson';
+
+  return (
+    <button
+      onClick={() => onClick(skill)}
+      className="p-3 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 text-left hover:border-primary/30 transition-colors w-full"
+    >
+      <div className="flex items-start gap-3">
+        {/* Left icon: agent avatar (active) or category icon (lesson) */}
+        <div className="relative flex-shrink-0">
+          {!isLesson && skill.agentAvatar ? (
+            <>
+              <img src={skill.agentAvatar} alt={skill.agentName} className="w-9 h-9 rounded-lg bg-gray-50 dark:bg-gray-800" />
+              <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center ${categoryColors[skill.category]}`}>
+                <Icon name={categoryIcons[skill.category]} size={10} />
+              </div>
+            </>
+          ) : (
+            <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${categoryColors[skill.category]}`}>
+              <Icon name={categoryIcons[skill.category]} size={18} />
+            </div>
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">{skill.name}</p>
+            <span className={`text-[10px] px-1.5 py-0.5 rounded-full flex-shrink-0 ${
+              isLesson
+                ? 'bg-orange-50 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400'
+                : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400'
+            }`}>
+              {isLesson ? 'Lesson' : 'Active'}
+            </span>
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">{skill.description}</p>
+          <div className="flex items-center gap-2 mt-1.5">
+            {showAgent && skill.agentName && (
+              <span className="text-[10px] text-gray-400 font-medium">{skill.agentName}</span>
+            )}
+            {skill.version && (
+              <span className="text-[10px] text-gray-300 dark:text-gray-600">v{skill.version}</span>
+            )}
+            <span className="text-[10px] text-gray-300 dark:text-gray-600 ml-auto">
+              {skill.status === 'active' && skill.taughtAt ? formatDate(skill.taughtAt) : skill.createdAt ? formatDate(skill.createdAt) : ''}
+            </span>
+          </div>
+        </div>
+      </div>
+    </button>
+  );
+}
+
+/* ─── Skill detail / management modal ─── */
+
+function SkillDetailModal({ skill, agents, onClose }: { skill: AgentSkill | null; agents: AgentInfo[]; onClose: () => void }) {
+  const [teachAgent, setTeachAgent] = useState<string | null>(null);
+
+  if (!skill) return null;
+
+  const isLesson = skill.status === 'lesson';
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/40" />
+
+      <div
+        className="relative w-full md:max-w-lg max-h-[85vh] bg-white dark:bg-gray-900 rounded-t-2xl md:rounded-2xl overflow-hidden flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-start gap-3 p-4 border-b border-gray-100 dark:border-gray-800">
+          <div className="relative flex-shrink-0">
+            {!isLesson && skill.agentAvatar ? (
+              <>
+                <img src={skill.agentAvatar} alt={skill.agentName} className="w-11 h-11 rounded-xl bg-gray-50 dark:bg-gray-800" />
+                <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center border-2 border-white dark:border-gray-900 ${categoryColors[skill.category]}`}>
+                  <Icon name={categoryIcons[skill.category]} size={11} />
+                </div>
+              </>
+            ) : (
+              <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${categoryColors[skill.category]}`}>
+                <Icon name={categoryIcons[skill.category]} size={22} />
+              </div>
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <h2 className="text-base font-bold text-gray-900 dark:text-gray-100 truncate">{skill.name}</h2>
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-full flex-shrink-0 ${
+                isLesson
+                  ? 'bg-orange-50 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400'
+                  : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400'
+              }`}>
+                {isLesson ? 'Lesson' : 'Active'}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 mt-0.5">
+              {skill.agentName && <span className="text-xs text-gray-400">{skill.agentName}</span>}
+              <span className="text-[10px] text-gray-300 dark:text-gray-600">{categoryLabels[skill.category]}</span>
+              {skill.version && <span className="text-[10px] text-gray-300 dark:text-gray-600">v{skill.version}</span>}
+            </div>
+          </div>
+          <button onClick={onClose} className="p-1.5 -mr-1 -mt-0.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+            <Icon name="close" size={18} className="text-gray-400" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <div>
+            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Description</h3>
+            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{skill.description}</p>
+          </div>
+
+          <div>
+            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Instructions</h3>
+            <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl whitespace-pre-wrap font-mono text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+              {skill.instructions}
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400">
+            {skill.status === 'active' && skill.taughtAt && <span>Taught {formatDate(skill.taughtAt)}</span>}
+            {skill.createdAt && <span>Created {formatDate(skill.createdAt)}</span>}
+          </div>
+
+          {/* Lesson → Teach to Agent selector */}
+          {isLesson && (
+            <div>
+              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Teach to Agent</h3>
+              <div className="flex gap-2 flex-wrap">
+                {agents.map((a) => (
+                  <button
+                    key={a.agentId}
+                    onClick={() => setTeachAgent(teachAgent === a.agentId ? null : a.agentId)}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-sm transition-colors ${
+                      teachAgent === a.agentId
+                        ? 'border-primary bg-primary/5 text-primary font-medium'
+                        : 'border-gray-100 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600'
+                    }`}
+                  >
+                    <img src={a.agentAvatar} alt="" className="w-6 h-6 rounded-full bg-gray-50 dark:bg-gray-800" />
+                    {a.agentName}
+                    {teachAgent === a.agentId && <Icon name="check" size={14} className="text-primary" />}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="p-4 border-t border-gray-100 dark:border-gray-800 flex gap-2">
+          {isLesson ? (
+            <button
+              disabled={!teachAgent}
+              className={`flex-1 py-2.5 rounded-xl text-sm font-medium flex items-center justify-center gap-1.5 transition-colors ${
+                teachAgent
+                  ? 'bg-primary text-white hover:bg-primary/90'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-300 dark:text-gray-600 cursor-not-allowed'
+              }`}
+            >
+              <Icon name="school" size={16} />
+              {teachAgent ? `Teach ${agents.find((a) => a.agentId === teachAgent)?.agentName}` : 'Select an Agent'}
+            </button>
+          ) : (
+            <button className="flex-1 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-1.5">
+              <Icon name="pause_circle" size={16} />
+              Deactivate
+            </button>
+          )}
+          <button className="flex-1 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-1.5">
+            <Icon name="edit" size={16} />
+            Edit
+          </button>
+          <button className="py-2.5 px-4 rounded-xl border border-red-200 dark:border-red-800 text-red-500 text-sm font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+            <Icon name="delete" size={16} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Experience tab ─── */
+
+const experienceTypeIcons: Record<AgentExperience['type'], string> = {
+  interaction: 'chat',
+  milestone: 'flag',
+  request: 'edit_note',
+};
+
+const experienceTypeColors: Record<AgentExperience['type'], string> = {
+  interaction: 'bg-sky-50 text-sky-600 dark:bg-sky-900/30 dark:text-sky-400',
+  milestone: 'bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
+  request: 'bg-violet-50 text-violet-600 dark:bg-violet-900/30 dark:text-violet-400',
+};
+
+function ExperienceTab({ experiences }: { experiences: AgentExperience[] }) {
+  const { agents, selectedAgentId, setSelectedAgentId, filtered } = useAgentFilter(experiences);
+  const showAgentName = selectedAgentId === null && agents.length > 1;
+
+  if (experiences.length === 0) {
+    return <EmptyState icon="auto_stories" message="No experiences recorded yet" />;
+  }
+
+  return (
+    <div className="space-y-4">
+      <AgentFilterBar agents={agents} selectedAgentId={selectedAgentId} onSelect={setSelectedAgentId} />
+
+      {filtered.length > 0 ? (
+        <div className="relative">
+          {/* Timeline line */}
+          <div className="absolute left-[18px] top-2 bottom-2 w-px bg-gray-100 dark:bg-gray-800 md:left-[19px]" />
+
+          <div className="space-y-4">
+            {filtered.map((exp) => (
+              <div key={exp.id} className="flex gap-3 relative">
+                {/* Timeline node: agent avatar with type badge */}
+                <div className="relative flex-shrink-0 z-10">
+                  {showAgentName ? (
+                    <>
+                      <img src={exp.agentAvatar} alt={exp.agentName} className="w-9 h-9 rounded-full bg-gray-50 dark:bg-gray-800" />
+                      <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center border-2 border-white dark:border-gray-900 ${experienceTypeColors[exp.type]}`}>
+                        <Icon name={experienceTypeIcons[exp.type]} size={9} />
+                      </div>
+                    </>
+                  ) : (
+                    <div className={`w-9 h-9 rounded-full flex items-center justify-center ${experienceTypeColors[exp.type]}`}>
+                      <Icon name={experienceTypeIcons[exp.type]} size={16} />
+                    </div>
+                  )}
+                </div>
+                {/* Content */}
+                <div className="flex-1 min-w-0 pb-1">
+                  <div className="flex items-center gap-2">
+                    {showAgentName && (
+                      <span className="text-[10px] font-medium text-gray-400">{exp.agentName}</span>
+                    )}
+                    <span className="text-[10px] text-gray-300 dark:text-gray-600 flex-shrink-0">{formatDate(exp.date)}</span>
+                  </div>
+                  <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mt-0.5">{exp.title}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-relaxed">{exp.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <EmptyState icon="auto_stories" message="No experiences with this agent yet" />
+      )}
+    </div>
+  );
 }

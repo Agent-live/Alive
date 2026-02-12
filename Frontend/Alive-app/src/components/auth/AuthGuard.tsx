@@ -32,8 +32,9 @@ export function AuthGuard({
     if (!isLoading && !isAuthenticated) {
       const isDesktop = window.innerWidth >= MD_BREAKPOINT;
       if (isDesktop) {
-        // 桌面端：弹窗登录
-        openLoginModal();
+        // 桌面端：跳转到首页并弹窗登录（避免空白页）
+        navigate('/', { replace: true, state: { from: location.pathname } });
+        openLoginModal(location.pathname);
       } else {
         // 移动端：保存当前路径，登录后跳转回来
         navigate(redirectTo, {

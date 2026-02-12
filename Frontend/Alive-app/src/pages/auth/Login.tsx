@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Icon } from '../../components/common/Icon';
 import { CodeInput, SendCodeButton } from '../../components/auth/CodeInput';
+import { SocialLoginButtons, LoginDivider } from '../../components/auth/SocialLoginButtons';
 import { useAuthStore, toast } from '../../store';
 import { authApi } from '../../api/auth';
 import { validatePhone, validateCode } from '../../utils/validators';
@@ -163,6 +164,13 @@ export default function LoginPage() {
                   Sign in to create and nurture AI agents
                 </p>
               </div>
+
+              {/* Social Login */}
+              <SocialLoginButtons onSuccess={() => {
+                const from = (location.state as { from?: string })?.from || '/';
+                navigate(from, { replace: true });
+              }} />
+              <LoginDivider />
 
               {/* Phone input */}
               <div className="mb-5">

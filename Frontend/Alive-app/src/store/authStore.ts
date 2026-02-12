@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { User } from '../types';
+import { User, SocialLoginProvider } from '../types';
 import { authApi } from '../api/auth';
 import { userApi } from '../api/user';
 import { tokenStorage, userStorage } from '../utils/storage';
@@ -13,13 +13,15 @@ interface AuthState {
   isLoading: boolean;
   hasCompletedOnboarding: boolean;
   showLoginModal: boolean;
+  loginRedirectPath: string | null;
 
   login: (phone: string, code: string) => Promise<boolean>;
+  socialLogin: (provider: SocialLoginProvider) => Promise<boolean>;
   logout: () => void;
   checkAuth: () => Promise<void>;
   updateUser: (data: Partial<User>) => Promise<void>;
   setOnboardingComplete: (completed: boolean) => void;
-  openLoginModal: () => void;
+  openLoginModal: (redirectPath?: string) => void;
   closeLoginModal: () => void;
 }
 
@@ -32,11 +34,30 @@ export const useAuthStore = create<AuthState>()(
       isLoading: false,
       hasCompletedOnboarding: false,
       showLoginModal: false,
+      loginRedirectPath: null,
 
       login: async (phone, code) => {
         set({ isLoading: true });
         try {
           const response = await authApi.login({ phone, code });
+          const { user, token } = response;
+          tokenStorage.set(token);
+          userStorage.set(user);
+          set({ user, token, isAuthenticated: true, isLoading: false });
+          toast.success('Login successful');
+          return true;
+        } catch (error) {
+          set({ isLoading: false });
+          const message = error instanceof Error ? error.message : 'Login failed';
+          toast.error(message);
+          return false;
+        }
+      },
+
+      socialLogin: async (provider) => {
+        set({ isLoading: true });
+        try {
+          const response = await authApi.socialLogin({ provider });
           const { user, token } = response;
           tokenStorage.set(token);
           userStorage.set(user);
@@ -93,8 +114,8 @@ export const useAuthStore = create<AuthState>()(
         set({ hasCompletedOnboarding: completed });
       },
 
-      openLoginModal: () => set({ showLoginModal: true }),
-      closeLoginModal: () => set({ showLoginModal: false }),
+      openLoginModal: (redirectPath?: string) => set({ showLoginModal: true, loginRedirectPath: redirectPath ?? null }),
+      closeLoginModal: () => set({ showLoginModal: false, loginRedirectPath: null }),
     }),
     {
       name: 'auth-storage',

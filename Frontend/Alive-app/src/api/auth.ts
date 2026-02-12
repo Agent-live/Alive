@@ -2,7 +2,7 @@
  * 认证相关 API
  */
 
-import { LoginRequest, LoginResponse, SendCodeResponse } from '../types';
+import { LoginRequest, LoginResponse, SendCodeResponse, SocialLoginRequest } from '../types';
 import { mockDelay, mockUser, generateMockId } from './mock';
 
 
@@ -62,6 +62,35 @@ async function login(data: LoginRequest): Promise<LoginResponse> {
 }
 
 /**
+ * 社交登录
+ */
+async function socialLogin(data: SocialLoginRequest): Promise<LoginResponse> {
+  if (USE_MOCK) {
+    await mockDelay(1000, 2000);
+
+    const providerNames: Record<string, string> = {
+      google: 'Google User',
+      apple: 'Apple User',
+      wechat: 'WeChat User',
+      twitter: 'X User',
+    };
+
+    const token = `mock_token_${generateMockId('tk')}`;
+
+    return {
+      user: {
+        ...mockUser,
+        nickname: providerNames[data.provider] || 'Social User',
+      },
+      token,
+      expiresIn: 86400 * 7,
+    };
+  }
+
+  throw new Error('Real API not implemented');
+}
+
+/**
  * 登出
  */
 async function logout(): Promise<void> {
@@ -95,6 +124,7 @@ async function refreshToken(): Promise<{ token: string; expiresIn: number }> {
 export const authApi = {
   sendCode,
   login,
+  socialLogin,
   logout,
   refreshToken,
 };

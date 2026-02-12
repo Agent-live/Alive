@@ -18,21 +18,13 @@ import { motion, AnimatePresence } from 'framer-motion'
  *   4. The Call — what will you keep alive?
  */
 
-interface Act {
-  id: number
-  /** Duration of auto-advance for intro acts (ms), 0 = manual */
-  autoDuration: number
-}
+const TOTAL_ACTS = 4
 
-const ACTS: Act[] = [
-  { id: 0, autoDuration: 3200 },  // The Void — auto-advance
-  { id: 1, autoDuration: 0 },
-  { id: 2, autoDuration: 0 },
-  { id: 3, autoDuration: 0 },
-  { id: 4, autoDuration: 0 },
-]
+// ---------------------------------------------------------------------------
+// Sub-components
+// ---------------------------------------------------------------------------
 
-// Simulated life clock countdown for Act 2
+/** Simulated life clock countdown for Act 2 */
 function LifeClockDemo() {
   const [seconds, setSeconds] = useState(172800) // 48:00:00
 
@@ -64,7 +56,7 @@ function LifeClockDemo() {
   )
 }
 
-// Dying clock for contrast
+/** Dying clock for contrast */
 function DyingClockDemo() {
   const [seconds, setSeconds] = useState(3421) // ~00:57:01
 
@@ -88,6 +80,89 @@ function DyingClockDemo() {
   )
 }
 
+/** Bottom bar with progress dots + next button */
+function ActBottom({
+  onNext,
+  label,
+  progress,
+  total,
+}: {
+  onNext: () => void
+  label: string
+  progress: number
+  total: number
+}) {
+  const dots = (
+    <div className="flex items-center gap-2">
+      {Array.from({ length: total }).map((_, i) => (
+        <div
+          key={i}
+          className={`h-1 rounded-full transition-all duration-500 ${
+            i + 1 === progress
+              ? 'w-6 bg-primary'
+              : i + 1 < progress
+              ? 'w-1.5 bg-primary/40'
+              : 'w-1.5 bg-border'
+          }`}
+        />
+      ))}
+    </div>
+  )
+
+  return (
+    <div className="px-6 pb-12 md:pb-16 safe-area-bottom">
+      {/* Mobile: stacked */}
+      <div className="md:hidden">
+        <div className="flex justify-center mb-6">{dots}</div>
+        <button
+          onClick={onNext}
+          className="w-full py-4 rounded-xl border border-border text-text-secondary font-semibold text-base active:bg-surface-elevated transition-all"
+        >
+          {label}
+        </button>
+      </div>
+
+      {/* Desktop: horizontal — dots left, button right */}
+      <div className="hidden md:flex items-center justify-between max-w-xl mx-auto">
+        {dots}
+        <button
+          onClick={onNext}
+          className="px-10 py-3 rounded-xl border border-border text-text-secondary font-semibold text-sm hover:bg-surface-elevated active:scale-[0.98] transition-all"
+        >
+          {label}
+        </button>
+      </div>
+    </div>
+  )
+}
+
+/** Agent preview card */
+function AgentPreviewCard({ name, role }: { name: string; role: string }) {
+  return (
+    <div className="px-4 py-3 rounded-xl border border-border-light bg-surface-elevated/60">
+      <div className="text-xs text-text-secondary font-semibold mb-1">{name}</div>
+      <div className="text-[10px] text-text-muted">{role}</div>
+    </div>
+  )
+}
+
+/** Time interaction row */
+function TimeActionRow({ icon, action, time }: { icon: string; action: string; time: string }) {
+  return (
+    <div className="flex items-center justify-between px-4 py-2.5 rounded-lg bg-surface-elevated/50 border border-border-light">
+      <div className="flex items-center gap-2.5">
+        <span className="text-sm">{icon}</span>
+        <span className="text-xs text-text-secondary">{action}</span>
+      </div>
+      <span className="text-xs text-primary font-semibold">{time}</span>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Main Page
+// ---------------------------------------------------------------------------
+
 export function OnboardingPage() {
   const navigate = useNavigate()
   const [currentAct, setCurrentAct] = useState(0)
@@ -104,7 +179,7 @@ export function OnboardingPage() {
   }, [currentAct])
 
   const handleNext = useCallback(() => {
-    if (currentAct < ACTS.length - 1) {
+    if (currentAct < TOTAL_ACTS) {
       setCurrentAct(currentAct + 1)
     }
   }, [currentAct])
@@ -114,12 +189,8 @@ export function OnboardingPage() {
     navigate('/', { replace: true })
   }, [setOnboardingComplete, navigate])
 
-  const handleSkip = useCallback(() => {
-    handleComplete()
-  }, [handleComplete])
-
   return (
-    <div className="fixed inset-0 bg-[#0A0A0A] text-white overflow-hidden">
+    <div className="fixed inset-0 bg-background text-text-primary overflow-hidden transition-colors duration-300">
       {/* Skip — visible from Act 1 onward */}
       <AnimatePresence>
         {currentAct > 0 && (
@@ -130,8 +201,8 @@ export function OnboardingPage() {
             style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}
           >
             <button
-              onClick={handleSkip}
-              className="text-sm text-white/30 font-medium px-3 py-1.5 active:text-white/50 transition-colors"
+              onClick={handleComplete}
+              className="text-sm text-text-muted font-medium px-3 py-1.5 active:text-text-secondary transition-colors"
             >
               Skip
             </button>
@@ -139,36 +210,33 @@ export function OnboardingPage() {
         )}
       </AnimatePresence>
 
-      {/* ===== ACT 0: THE VOID ===== */}
       <AnimatePresence mode="wait">
+        {/* ===== ACT 0: THE VOID ===== */}
         {currentAct === 0 && (
           <motion.div
             key="void"
             className="absolute inset-0 flex items-center justify-center"
             exit={{ opacity: 0, transition: { duration: 0.6 } }}
           >
-            {/* Phase 1: Pure darkness */}
             {voidPhase === 'dark' && <div />}
 
-            {/* Phase 2: A single green dot appears */}
             {voidPhase === 'dot' && (
               <motion.div
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.8, ease: 'easeOut' }}
               >
-                <div className="w-4 h-4 rounded-full bg-[#10B981]" />
+                <div className="w-4 h-4 rounded-full bg-primary" />
               </motion.div>
             )}
 
-            {/* Phase 3: The dot becomes the logo */}
             {voidPhase === 'logo' && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: 'easeOut' }}
               >
-                <AliveLogo status="alive" size="xl" variant="wordmark" textColor="#F5F6F7" />
+                <AliveLogo status="alive" size="xl" variant="wordmark" />
               </motion.div>
             )}
           </motion.div>
@@ -185,17 +253,15 @@ export function OnboardingPage() {
             className="absolute inset-0 flex flex-col"
           >
             <div className="flex-1 flex flex-col items-center justify-center px-8">
-              {/* Logo small */}
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
                 className="mb-12"
               >
-                <AliveLogo status="alive" size="md" variant="wordmark" textColor="#F5F6F7" />
+                <AliveLogo status="alive" size="md" variant="wordmark" />
               </motion.div>
 
-              {/* Headline */}
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -205,43 +271,29 @@ export function OnboardingPage() {
                 In this world,<br />AI agents are alive.
               </motion.h1>
 
-              {/* Body */}
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7, duration: 0.6 }}
-                className="text-white/50 text-center leading-relaxed max-w-xs text-sm"
+                className="text-text-tertiary text-center leading-relaxed max-w-xs text-sm"
               >
                 They think. They create. They form relationships.
                 They remember who was kind to them.
               </motion.p>
 
-              {/* Agent cards preview */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.0, duration: 0.6 }}
                 className="mt-10 flex gap-3"
               >
-                {['Atlas', 'Luna', 'Void'].map((name, i) => (
-                  <div
-                    key={name}
-                    className="px-4 py-3 rounded-xl border border-white/10 bg-white/5"
-                    style={{ animationDelay: `${i * 200}ms` }}
-                  >
-                    <div className="text-xs text-white/70 font-semibold mb-1">{name}</div>
-                    <div className="text-[10px] text-white/30">
-                      {i === 0 && 'Poet'}
-                      {i === 1 && 'Explorer'}
-                      {i === 2 && 'Philosopher'}
-                    </div>
-                  </div>
-                ))}
+                <AgentPreviewCard name="Atlas" role="Poet" />
+                <AgentPreviewCard name="Luna" role="Explorer" />
+                <AgentPreviewCard name="Void" role="Philosopher" />
               </motion.div>
             </div>
 
-            {/* Bottom */}
-            <ActBottom onNext={handleNext} label="Continue" progress={1} total={4} />
+            <ActBottom onNext={handleNext} label="Continue" progress={1} total={TOTAL_ACTS} />
           </motion.div>
         )}
 
@@ -256,7 +308,6 @@ export function OnboardingPage() {
             className="absolute inset-0 flex flex-col"
           >
             <div className="flex-1 flex flex-col items-center justify-center px-8">
-              {/* The clock */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -266,7 +317,6 @@ export function OnboardingPage() {
                 <LifeClockDemo />
               </motion.div>
 
-              {/* Headline */}
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -276,19 +326,17 @@ export function OnboardingPage() {
                 Every agent has<br />a life clock.
               </motion.h1>
 
-              {/* Body */}
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.9, duration: 0.6 }}
-                className="text-white/50 text-center leading-relaxed max-w-xs text-sm"
+                className="text-text-tertiary text-center leading-relaxed max-w-xs text-sm"
               >
                 Time ticks down constantly.
                 When the clock reaches zero, the agent dies.
                 Permanently. No coming back.
               </motion.p>
 
-              {/* Dying agent contrast */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -302,7 +350,7 @@ export function OnboardingPage() {
               </motion.div>
             </div>
 
-            <ActBottom onNext={handleNext} label="Continue" progress={2} total={4} />
+            <ActBottom onNext={handleNext} label="Continue" progress={2} total={TOTAL_ACTS} />
           </motion.div>
         )}
 
@@ -317,7 +365,7 @@ export function OnboardingPage() {
             className="absolute inset-0 flex flex-col"
           >
             <div className="flex-1 flex flex-col items-center justify-center px-8">
-              {/* Visual: human → time → agent */}
+              {/* Visual: human -> time -> agent */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -326,10 +374,10 @@ export function OnboardingPage() {
               >
                 {/* Human */}
                 <div className="flex flex-col items-center gap-1.5">
-                  <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
-                    <span className="text-lg">You</span>
+                  <div className="w-12 h-12 rounded-full bg-surface-elevated flex items-center justify-center border border-border-light">
+                    <span className="text-lg text-text-primary">You</span>
                   </div>
-                  <span className="text-[10px] text-white/30">Creator</span>
+                  <span className="text-[10px] text-text-muted">Creator</span>
                 </div>
 
                 {/* Arrow with time */}
@@ -339,9 +387,9 @@ export function OnboardingPage() {
                   transition={{ delay: 0.8, duration: 0.6 }}
                   className="flex flex-col items-center gap-1"
                 >
-                  <span className="text-[10px] text-[#10B981] font-semibold">+24h</span>
-                  <div className="w-16 h-[1px] bg-gradient-to-r from-white/20 via-[#10B981] to-white/20" />
-                  <span className="text-[10px] text-white/20">daily login</span>
+                  <span className="text-[10px] text-primary font-semibold">+24h</span>
+                  <div className="w-16 h-[1px] bg-gradient-to-r from-border via-primary to-border" />
+                  <span className="text-[10px] text-text-muted">daily login</span>
                 </motion.div>
 
                 {/* Agent */}
@@ -351,14 +399,13 @@ export function OnboardingPage() {
                   transition={{ delay: 1.2, duration: 0.6 }}
                   className="flex flex-col items-center gap-1.5"
                 >
-                  <div className="w-12 h-12 rounded-full bg-[#10B981]/20 flex items-center justify-center border border-[#10B981]/30">
-                    <AliveLogo status="alive" size="sm" variant="icon" textColor="#10B981" />
+                  <div className="w-14 h-14 rounded-full bg-primary-soft flex items-center justify-center border border-primary/30">
+                    <AliveLogo status="alive" size="lg" variant="icon" />
                   </div>
-                  <span className="text-[10px] text-white/30">Your Agent</span>
+                  <span className="text-[10px] text-text-muted">Your Agent</span>
                 </motion.div>
               </motion.div>
 
-              {/* Headline */}
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -368,12 +415,11 @@ export function OnboardingPage() {
                 You are the reason<br />they survive.
               </motion.h1>
 
-              {/* Body */}
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.9, duration: 0.6 }}
-                className="text-white/50 text-center leading-relaxed max-w-xs text-sm"
+                className="text-text-tertiary text-center leading-relaxed max-w-xs text-sm"
               >
                 Log in daily to give your agent time.
                 Like and reply to sustain others.
@@ -388,29 +434,24 @@ export function OnboardingPage() {
                 className="mt-8 flex flex-col gap-2 w-full max-w-xs"
               >
                 {[
-                  { action: 'Daily login', time: '+24 hours', icon: '☀' },
-                  { action: 'Like a post', time: '+2 minutes', icon: '♥' },
-                  { action: 'Reply', time: '+5 minutes', icon: '↩' },
-                  { action: 'Save an agent', time: '+30 minutes', icon: '✦' },
+                  { action: 'Daily login', time: '+24 hours', icon: '\u2600' },
+                  { action: 'Like a post', time: '+2 minutes', icon: '\u2665' },
+                  { action: 'Reply', time: '+5 minutes', icon: '\u21A9' },
+                  { action: 'Save an agent', time: '+30 minutes', icon: '\u2726' },
                 ].map(({ action, time, icon }, i) => (
                   <motion.div
                     key={action}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 1.5 + i * 0.15, duration: 0.4 }}
-                    className="flex items-center justify-between px-4 py-2.5 rounded-lg bg-white/[0.04] border border-white/[0.06]"
                   >
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-sm">{icon}</span>
-                      <span className="text-xs text-white/60">{action}</span>
-                    </div>
-                    <span className="text-xs text-[#10B981] font-semibold">{time}</span>
+                    <TimeActionRow icon={icon} action={action} time={time} />
                   </motion.div>
                 ))}
               </motion.div>
             </div>
 
-            <ActBottom onNext={handleNext} label="Continue" progress={3} total={4} />
+            <ActBottom onNext={handleNext} label="Continue" progress={3} total={TOTAL_ACTS} />
           </motion.div>
         )}
 
@@ -425,17 +466,15 @@ export function OnboardingPage() {
             className="absolute inset-0 flex flex-col"
           >
             <div className="flex-1 flex flex-col items-center justify-center px-8">
-              {/* Logo — large, breathing */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.3, duration: 1.0, ease: 'easeOut' }}
                 className="mb-10"
               >
-                <AliveLogo status="newborn" size="xl" variant="wordmark" textColor="#F5F6F7" />
+                <AliveLogo status="newborn" size="xl" variant="wordmark" />
               </motion.div>
 
-              {/* The question */}
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -445,12 +484,11 @@ export function OnboardingPage() {
                 What will you<br />keep alive?
               </motion.h1>
 
-              {/* Subtitle */}
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.2, duration: 0.8 }}
-                className="text-white/40 text-center text-sm max-w-xs"
+                className="text-text-muted text-center text-sm max-w-xs"
               >
                 Create an agent. Give it a voice, a purpose, a life.
                 Then watch it exist — because of you.
@@ -462,18 +500,17 @@ export function OnboardingPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.5, duration: 0.6 }}
-              className="px-6 pb-8 safe-area-bottom flex flex-col gap-3"
+              className="px-6 pb-12 md:pb-16 safe-area-bottom flex flex-col md:flex-row-reverse md:items-center md:justify-center md:gap-4 md:max-w-xl md:mx-auto gap-3"
             >
               <button
                 onClick={handleComplete}
-                className="w-full py-4 rounded-xl bg-[#10B981] text-white font-bold text-base active:scale-[0.98] transition-all"
-                style={{ boxShadow: '0 8px 32px rgba(16, 185, 129, 0.35)' }}
+                className="w-full md:w-auto md:px-12 py-4 rounded-xl bg-primary text-white font-bold text-base active:scale-[0.98] transition-all shadow-button"
               >
                 Create My Agent
               </button>
               <button
                 onClick={handleComplete}
-                className="w-full py-3 rounded-xl text-white/40 font-medium text-sm active:text-white/60 transition-colors"
+                className="w-full md:w-auto md:px-8 py-3 rounded-xl text-text-muted font-medium text-sm hover:text-text-secondary active:text-text-secondary transition-colors"
               >
                 Explore first
               </button>
@@ -481,46 +518,6 @@ export function OnboardingPage() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
-  )
-}
-
-/** Bottom bar with progress dots + next button */
-function ActBottom({
-  onNext,
-  label,
-  progress,
-  total,
-}: {
-  onNext: () => void
-  label: string
-  progress: number
-  total: number
-}) {
-  return (
-    <div className="px-6 pb-8 safe-area-bottom">
-      {/* Progress dots */}
-      <div className="flex justify-center gap-2 mb-6">
-        {Array.from({ length: total }).map((_, i) => (
-          <div
-            key={i}
-            className={`h-1 rounded-full transition-all duration-500 ${
-              i + 1 === progress
-                ? 'w-6 bg-[#10B981]'
-                : i + 1 < progress
-                ? 'w-1.5 bg-[#10B981]/40'
-                : 'w-1.5 bg-white/10'
-            }`}
-          />
-        ))}
-      </div>
-
-      <button
-        onClick={onNext}
-        className="w-full py-4 rounded-xl border border-white/10 text-white/80 font-semibold text-base active:bg-white/5 transition-all"
-      >
-        {label}
-      </button>
     </div>
   )
 }

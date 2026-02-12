@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Icon } from '../common/Icon'
 import { CodeInput, SendCodeButton } from './CodeInput'
+import { SocialLoginButtons, LoginDivider } from './SocialLoginButtons'
 import { useAuthStore, toast } from '@/store'
 import { authApi } from '@/api/auth'
 import { validatePhone, validateCode } from '@/utils/validators'
@@ -9,7 +11,8 @@ import { validatePhone, validateCode } from '@/utils/validators'
 type Step = 'phone' | 'code'
 
 export function LoginModal() {
-  const { showLoginModal, closeLoginModal, login } = useAuthStore()
+  const { showLoginModal, closeLoginModal, login, loginRedirectPath } = useAuthStore()
+  const navigate = useNavigate()
 
   const [step, setStep] = useState<Step>('phone')
   const [phone, setPhone] = useState('')
@@ -21,6 +24,13 @@ export function LoginModal() {
   const [focused, setFocused] = useState(false)
 
   const isLoggingInRef = useRef(false)
+
+  const handleLoginSuccess = () => {
+    if (loginRedirectPath) {
+      navigate(loginRedirectPath, { replace: true })
+    }
+    closeLoginModal()
+  }
 
   // Reset state when modal closes
   useEffect(() => {
@@ -103,7 +113,7 @@ export function LoginModal() {
     try {
       const success = await login(phone, code)
       if (success) {
-        closeLoginModal()
+        handleLoginSuccess()
       }
     } finally {
       setLoading(false)
@@ -138,7 +148,7 @@ export function LoginModal() {
       {/* Modal */}
       <div className="fixed inset-0 z-[101] flex items-center justify-center p-4">
         <div
-          className="relative w-full max-w-[420px] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 duration-200"
+          className="relative w-full max-w-[520px] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 duration-200"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
@@ -185,6 +195,10 @@ export function LoginModal() {
                         Sign in to create and nurture AI agents
                       </p>
                     </div>
+
+                    {/* Social Login */}
+                    <SocialLoginButtons compact onSuccess={handleLoginSuccess} />
+                    <LoginDivider compact />
 
                     {/* Phone input */}
                     <div className="mb-4">

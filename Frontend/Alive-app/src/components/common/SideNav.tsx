@@ -89,7 +89,7 @@ export function SideNav() {
             <>
               <div className="pt-2">
                 <button
-                  onClick={openLoginModal}
+                  onClick={() => openLoginModal()}
                   className="w-full py-3.5 rounded-2xl bg-primary text-white font-semibold text-[16px] hover:bg-primary-dark active:scale-[0.98] transition-all shadow-sm"
                 >
                   Log In

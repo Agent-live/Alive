@@ -16,11 +16,14 @@ interface AliveLogoProps {
 }
 
 const SIZES = {
-  sm: { height: 20, fontSize: 16, dotR: 2.5, lineW: 1.5, lineH: 10 },
-  md: { height: 28, fontSize: 22, dotR: 3.5, lineW: 2, lineH: 14 },
-  lg: { height: 40, fontSize: 32, dotR: 5, lineW: 2.5, lineH: 20 },
-  xl: { height: 56, fontSize: 44, dotR: 7, lineW: 3, lineH: 28 },
+  sm: { height: 20, fontSize: 16, dotR: 1.8, lineW: 2 },
+  md: { height: 28, fontSize: 22, dotR: 2.5, lineW: 2.8 },
+  lg: { height: 40, fontSize: 32, dotR: 3.5, lineW: 4 },
+  xl: { height: 56, fontSize: 44, dotR: 5, lineW: 5.5 },
 };
+
+/** Plus Jakarta Sans 800 cap-height ratio */
+const CAP_HEIGHT_RATIO = 0.65;
 
 /**
  * ALIVE Logo — "The Living I"
@@ -54,9 +57,15 @@ export function AliveLogo({
   if (variant === 'icon') {
     const iconSize = s.height;
     const cx = iconSize / 2;
-    const dotCy = s.dotR + 1;
-    const lineTop = dotCy + s.dotR + 3;
-    const lineBottom = iconSize - 2;
+    const dotTop = s.dotR + 1 - s.dotR; // = 1
+    const rawLineBottom = iconSize * 0.65;
+    const rawDotCy = s.dotR + 1;
+    const rawLineTop = rawDotCy + s.dotR + 3;
+    const contentH = rawLineBottom - dotTop;
+    const offset = (iconSize - contentH) / 2 - dotTop;
+    const dotCy = rawDotCy + offset;
+    const lineTop = rawLineTop + offset;
+    const lineBottom = rawLineBottom + offset;
 
     return (
       <svg
@@ -110,9 +119,25 @@ export function AliveLogo({
   }
 
   // Wordmark variant: A L [I] V E
-  // The I is rendered as SVG inline, the rest as text
-  const iWidth = s.dotR * 2 + 4;
+  // The I is rendered as SVG inline, the rest as text.
+  //
+  // Key: the line height must match the font's cap height, and the
+  // line bottom must sit on the text baseline. In an inline-flex
+  // items-baseline container, a replaced element (SVG) with no text
+  // uses its bottom margin edge as the baseline. So with
+  // marginBottom=0, the SVG bottom = text baseline. The line
+  // extends from (dot + gap) to svgH, spanning exactly capHeight.
+
+  const capHeight = Math.round(s.fontSize * CAP_HEIGHT_RATIO);
+  const dotDiam = s.dotR * 2;
+  const dotGap = Math.round(s.dotR * 0.5);
+  const svgH = dotDiam + dotGap + capHeight;
+  const iWidth = Math.max(dotDiam + 4, s.lineW + 6);
   const letterSpacing = s.fontSize * 0.06;
+
+  const dotCy = s.dotR * 0.7;
+  const lineY1 = dotDiam + dotGap;
+  const lineY2 = svgH;
 
   return (
     <span
@@ -137,13 +162,13 @@ export function AliveLogo({
       {/* I — The Living Letter */}
       <svg
         width={iWidth}
-        height={s.height}
-        viewBox={`0 0 ${iWidth} ${s.height}`}
+        height={svgH}
+        viewBox={`0 0 ${iWidth} ${svgH}`}
         fill="none"
         style={{
           display: 'inline-block',
           verticalAlign: 'baseline',
-          marginBottom: -s.height * 0.18,
+          marginBottom: 0,
           marginLeft: letterSpacing * 0.5,
           marginRight: letterSpacing * 0.5,
         }}
@@ -152,7 +177,7 @@ export function AliveLogo({
         {theme.logoDotVisible && (
           <circle
             cx={iWidth / 2}
-            cy={s.dotR + 0.5}
+            cy={dotCy}
             r={s.dotR}
             fill={theme.accent}
             style={{
@@ -165,9 +190,9 @@ export function AliveLogo({
         {/* Vertical line or flatline */}
         <line
           x1={isDead ? 1 : iWidth / 2}
-          y1={isDead ? s.height * 0.55 : s.dotR * 2 + 3}
+          y1={isDead ? svgH * 0.55 : lineY1}
           x2={isDead ? iWidth - 1 : iWidth / 2}
-          y2={isDead ? s.height * 0.55 : s.height - 1}
+          y2={isDead ? svgH * 0.55 : lineY2}
           stroke={isDead ? '#6B7280' : color}
           strokeWidth={s.lineW}
           strokeLinecap="round"

@@ -26,7 +26,7 @@ export const mockUser: User = {
   id: 'user_001',
   phone: '13800138000',
   nickname: 'ALIVE Explorer',
-  avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200',
+  avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=alive-explorer',
   email: 'user@example.com',
   gender: 'female',
   agentId: 'agent_mine_001',

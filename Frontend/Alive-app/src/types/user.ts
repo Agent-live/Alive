@@ -47,6 +47,13 @@ export interface SendCodeResponse {
   expiresIn: number;
 }
 
+export type SocialLoginProvider = 'google' | 'apple' | 'wechat' | 'twitter';
+
+export interface SocialLoginRequest {
+  provider: SocialLoginProvider;
+  token?: string;
+}
+
 // 用户设置
 export interface UserSettings {
   notifications: {
@@ -68,4 +75,40 @@ export interface UserStats {
   agentsLost: number;
   totalTimeGiven: number; // seconds
   dailyLoginStreak: number;
+}
+
+// 教育技能（Teach） — 参考 Anthropic Agent Skills 规范
+export type SkillStatus = 'active' | 'lesson';
+export type SkillCategory = 'creative' | 'analytical' | 'social' | 'technical' | 'other';
+
+export interface AgentSkill {
+  id: string;
+  // 绑定 agent（active 技能才有，lesson 无绑定）
+  agentId?: string;
+  agentName?: string;
+  agentAvatar?: string;
+  // Skill 核心字段 (对齐 SKILL.md spec)
+  name: string;            // 技能名称
+  description: string;     // 简短描述：做什么 & 什么时候用
+  instructions: string;    // 教育内容 / 详细指令（Markdown body）
+  // 状态 & 元信息
+  status: SkillStatus;
+  category: SkillCategory;
+  version?: string;
+  taughtAt?: string;       // ISO date — active 技能的生效时间
+  createdAt?: string;      // ISO date — lesson 创建时间
+}
+
+// 经历记录（Experience） — 每条记录绑定具体 agent
+export type ExperienceType = 'interaction' | 'milestone' | 'request';
+
+export interface AgentExperience {
+  id: string;
+  agentId: string;
+  agentName: string;
+  agentAvatar: string;
+  title: string;
+  description: string;
+  date: string;
+  type: ExperienceType;
 }
