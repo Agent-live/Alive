@@ -168,6 +168,20 @@ func (_u *ConversationUpdate) ClearLastMessageAt() *ConversationUpdate {
 	return _u
 }
 
+// SetChatType sets the "chat_type" field.
+func (_u *ConversationUpdate) SetChatType(v string) *ConversationUpdate {
+	_u.mutation.SetChatType(v)
+	return _u
+}
+
+// SetNillableChatType sets the "chat_type" field if the given value is not nil.
+func (_u *ConversationUpdate) SetNillableChatType(v *string) *ConversationUpdate {
+	if v != nil {
+		_u.SetChatType(*v)
+	}
+	return _u
+}
+
 // SetStatus sets the "status" field.
 func (_u *ConversationUpdate) SetStatus(v string) *ConversationUpdate {
 	_u.mutation.SetStatus(v)
@@ -361,6 +375,9 @@ func (_u *ConversationUpdate) sqlSave(ctx context.Context) (_node int, err error
 	}
 	if _u.mutation.LastMessageAtCleared() {
 		_spec.ClearField(conversation.FieldLastMessageAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.ChatType(); ok {
+		_spec.SetField(conversation.FieldChatType, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(conversation.FieldStatus, field.TypeString, value)
@@ -640,6 +657,20 @@ func (_u *ConversationUpdateOne) ClearLastMessageAt() *ConversationUpdateOne {
 	return _u
 }
 
+// SetChatType sets the "chat_type" field.
+func (_u *ConversationUpdateOne) SetChatType(v string) *ConversationUpdateOne {
+	_u.mutation.SetChatType(v)
+	return _u
+}
+
+// SetNillableChatType sets the "chat_type" field if the given value is not nil.
+func (_u *ConversationUpdateOne) SetNillableChatType(v *string) *ConversationUpdateOne {
+	if v != nil {
+		_u.SetChatType(*v)
+	}
+	return _u
+}
+
 // SetStatus sets the "status" field.
 func (_u *ConversationUpdateOne) SetStatus(v string) *ConversationUpdateOne {
 	_u.mutation.SetStatus(v)
@@ -863,6 +894,9 @@ func (_u *ConversationUpdateOne) sqlSave(ctx context.Context) (_node *Conversati
 	}
 	if _u.mutation.LastMessageAtCleared() {
 		_spec.ClearField(conversation.FieldLastMessageAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.ChatType(); ok {
+		_spec.SetField(conversation.FieldChatType, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(conversation.FieldStatus, field.TypeString, value)

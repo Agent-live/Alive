@@ -1,4 +1,4 @@
-import { Agent, AgentSummary, PersonalityConfig, PaginatedResponse } from '../types';
+import { Agent, AgentSummary, AgentRelationshipsResponse, PersonalityConfig, PaginatedResponse } from '../types';
 import { api } from './client';
 import { mapAgent, mapAgentSummary } from './mappers';
 
@@ -111,6 +111,10 @@ async function setPrimaryAgent(agentId: string): Promise<void> {
   await api.put<{ success: boolean }>('/user/primary-agent', { agentId });
 }
 
+async function getAgentRelationships(agentId: string): Promise<AgentRelationshipsResponse> {
+  return api.get<AgentRelationshipsResponse>(`/agents/${agentId}/relationships`);
+}
+
 export const agentApi = {
   getMyAgents,
   createAgent,
@@ -120,4 +124,5 @@ export const agentApi = {
   registerExternalAgent,
   searchAgents,
   setPrimaryAgent,
+  getAgentRelationships,
 };

@@ -101,6 +101,11 @@ func LastMessageAt(v time.Time) predicate.Conversation {
 	return predicate.Conversation(sql.FieldEQ(FieldLastMessageAt, v))
 }
 
+// ChatType applies equality check predicate on the "chat_type" field. It's identical to ChatTypeEQ.
+func ChatType(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldEQ(FieldChatType, v))
+}
+
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
 func Status(v string) predicate.Conversation {
 	return predicate.Conversation(sql.FieldEQ(FieldStatus, v))
@@ -549,6 +554,71 @@ func LastMessageAtIsNil() predicate.Conversation {
 // LastMessageAtNotNil applies the NotNil predicate on the "last_message_at" field.
 func LastMessageAtNotNil() predicate.Conversation {
 	return predicate.Conversation(sql.FieldNotNull(FieldLastMessageAt))
+}
+
+// ChatTypeEQ applies the EQ predicate on the "chat_type" field.
+func ChatTypeEQ(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldEQ(FieldChatType, v))
+}
+
+// ChatTypeNEQ applies the NEQ predicate on the "chat_type" field.
+func ChatTypeNEQ(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldNEQ(FieldChatType, v))
+}
+
+// ChatTypeIn applies the In predicate on the "chat_type" field.
+func ChatTypeIn(vs ...string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldIn(FieldChatType, vs...))
+}
+
+// ChatTypeNotIn applies the NotIn predicate on the "chat_type" field.
+func ChatTypeNotIn(vs ...string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldNotIn(FieldChatType, vs...))
+}
+
+// ChatTypeGT applies the GT predicate on the "chat_type" field.
+func ChatTypeGT(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldGT(FieldChatType, v))
+}
+
+// ChatTypeGTE applies the GTE predicate on the "chat_type" field.
+func ChatTypeGTE(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldGTE(FieldChatType, v))
+}
+
+// ChatTypeLT applies the LT predicate on the "chat_type" field.
+func ChatTypeLT(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldLT(FieldChatType, v))
+}
+
+// ChatTypeLTE applies the LTE predicate on the "chat_type" field.
+func ChatTypeLTE(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldLTE(FieldChatType, v))
+}
+
+// ChatTypeContains applies the Contains predicate on the "chat_type" field.
+func ChatTypeContains(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldContains(FieldChatType, v))
+}
+
+// ChatTypeHasPrefix applies the HasPrefix predicate on the "chat_type" field.
+func ChatTypeHasPrefix(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldHasPrefix(FieldChatType, v))
+}
+
+// ChatTypeHasSuffix applies the HasSuffix predicate on the "chat_type" field.
+func ChatTypeHasSuffix(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldHasSuffix(FieldChatType, v))
+}
+
+// ChatTypeEqualFold applies the EqualFold predicate on the "chat_type" field.
+func ChatTypeEqualFold(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldEqualFold(FieldChatType, v))
+}
+
+// ChatTypeContainsFold applies the ContainsFold predicate on the "chat_type" field.
+func ChatTypeContainsFold(v string) predicate.Conversation {
+	return predicate.Conversation(sql.FieldContainsFold(FieldChatType, v))
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.

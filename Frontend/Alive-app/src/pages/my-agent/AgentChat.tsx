@@ -21,7 +21,6 @@ export function AgentChatPage() {
 
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     if (!myAgent) return [];
-    // Seed with agent's greeting
     return [{
       id: 'msg_init',
       role: 'agent' as const,
@@ -103,75 +102,110 @@ export function AgentChatPage() {
           <h1 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
             {myAgent.name}
           </h1>
-          <p className="text-xs text-gray-400">
+          <p className="text-[11px] text-gray-400">
             {isDead ? t('status.dead') : t('myAgent.aliveFor', { days: Math.floor(myAgent.timerRemaining / 86400) || 1 })}
           </p>
         </div>
       </header>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-          >
+      {/* Messages — centered on desktop */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-2xl mx-auto px-4 py-4 space-y-3">
+          {messages.map((msg) => (
             <div
-              className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${
-                msg.role === 'user'
-                  ? 'bg-primary text-white rounded-br-md'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-bl-md'
-              }`}
+              key={msg.id}
+              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>
-              <div className={`flex items-center gap-2 mt-1 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <span className={`text-[10px] ${msg.role === 'user' ? 'text-white/60' : 'text-gray-400'}`}>
-                  {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </span>
-                {msg.timeCost && (
-                  <span className="text-[10px] text-gray-400">
-                    -{msg.timeCost}min
-                  </span>
+              <div className={`flex items-end gap-2 max-w-[80%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                {/* Avatar */}
+                {msg.role === 'agent' && (
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden">
+                    {myAgent.avatar ? (
+                      <img src={myAgent.avatar} alt="" className="w-8 h-8 object-cover" />
+                    ) : (
+                      <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">{myAgent.name.charAt(0)}</span>
+                      </div>
+                    )}
+                  </div>
                 )}
+
+                {/* Bubble */}
+                <div>
+                  <div
+                    className={`rounded-2xl px-4 py-2.5 ${
+                      msg.role === 'user'
+                        ? 'bg-primary text-white rounded-br-md'
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-bl-md'
+                    }`}
+                  >
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+                  </div>
+                  <div className={`flex items-center gap-2 mt-0.5 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <span className="text-[10px] text-gray-400">
+                      {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                    {msg.timeCost != null && (
+                      <span className="text-[10px] text-orange-400">
+                        -{msg.timeCost}min
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-        {isTyping && (
-          <div className="flex justify-start">
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl rounded-bl-md px-4 py-3">
-              <div className="flex gap-1">
-                <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+          ))}
+
+          {/* Typing indicator */}
+          {isTyping && (
+            <div className="flex justify-start">
+              <div className="flex items-end gap-2">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden">
+                  {myAgent.avatar ? (
+                    <img src={myAgent.avatar} alt="" className="w-8 h-8 object-cover" />
+                  ) : (
+                    <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">{myAgent.name.charAt(0)}</span>
+                    </div>
+                  )}
+                </div>
+                <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl rounded-bl-md px-4 py-3">
+                  <div className="flex gap-1">
+                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
+          )}
+          <div ref={messagesEndRef} />
+        </div>
       </div>
 
       {/* Input */}
       {!isDead ? (
-        <div className="flex-shrink-0 border-t border-gray-100 dark:border-gray-800 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-          <div className="flex items-end gap-2">
-            <textarea
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={t('myAgent.chatPlaceholder')}
-              rows={1}
-              className="flex-1 resize-none rounded-xl bg-gray-100 dark:bg-gray-800 px-4 py-2.5 text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 max-h-32"
-              style={{ minHeight: '40px' }}
-            />
-            <button
-              onClick={handleSend}
-              disabled={!input.trim()}
-              className="flex-shrink-0 w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center disabled:opacity-40 transition-opacity"
-            >
-              <Icon name="arrow_upward" size={20} />
-            </button>
+        <div className="flex-shrink-0 border-t border-gray-100 dark:border-gray-800">
+          <div className="max-w-2xl mx-auto px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+            <div className="flex items-end gap-2">
+              <textarea
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder={t('myAgent.chatPlaceholder')}
+                rows={1}
+                className="flex-1 resize-none rounded-xl bg-gray-100 dark:bg-gray-800 px-4 py-2.5 text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 max-h-32"
+                style={{ minHeight: '40px' }}
+              />
+              <button
+                onClick={handleSend}
+                disabled={!input.trim()}
+                className="flex-shrink-0 w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center disabled:opacity-40 transition-opacity"
+              >
+                <Icon name="arrow_upward" size={20} />
+              </button>
+            </div>
           </div>
         </div>
       ) : (

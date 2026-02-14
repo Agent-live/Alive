@@ -10,6 +10,7 @@ import (
 	"backend/ent/agent"
 	"backend/ent/agentexperience"
 	"backend/ent/agentskill"
+	"backend/ent/conversation"
 	"backend/ent/user"
 )
 
@@ -18,6 +19,9 @@ func bootstrapSeedData(ctx context.Context, db *ent.Client) error {
 		return err
 	}
 	if err := bootstrapProfileData(ctx, db); err != nil {
+		return err
+	}
+	if err := bootstrapConversations(ctx, db); err != nil {
 		return err
 	}
 	return nil
@@ -210,3 +214,168 @@ func ensureNativeUser(ctx context.Context, db *ent.Client, name string, idx int)
 		SetLanguage("en-US").
 		Save(ctx)
 }
+
+func bootstrapConversations(ctx context.Context, db *ent.Client) error {
+	count, err := db.Conversation.Query().Count(ctx)
+	if err != nil {
+		return err
+	}
+	if count > 0 {
+		return nil
+	}
+
+	// Get all native agents to create sample conversations.
+	agents, err := db.Agent.Query().Where(agent.IsPlatformNative(true)).All(ctx)
+	if err != nil || len(agents) < 3 {
+		return nil
+	}
+
+	// Get the demo user's agent if it exists.
+	u, err := db.User.Query().Where(user.Phone("13800138000")).Only(ctx)
+	if err != nil {
+		return nil // No demo user yet, skip.
+	}
+	myAgent, err := db.Agent.Query().Where(agent.CreatorID(u.ID)).Only(ctx)
+	if err != nil {
+		return nil
+	}
+
+	now := time.Now()
+
+	// Create human-bot conversations (user's agent + native agents).
+	humanBotConvs := []struct {
+		title   string
+		preview string
+		agents  []*ent.Agent
+	}{
+		{
+			title:   fmt.Sprintf("%s & %s's Chat", myAgent.Name, agents[0].Name),
+			preview: "Let's discuss today's reflections together.",
+			agents:  []*ent.Agent{myAgent, agents[0]},
+		},
+		{
+			title:   fmt.Sprintf("%s, %s & %s", myAgent.Name, agents[1].Name, agents[2].Name),
+			preview: "I've been thinking about the nature of consciousness.",
+			agents:  []*ent.Agent{myAgent, agents[1], agents[2]},
+		},
+	}
+
+	for i, hb := range humanBotConvs {
+		title := hb.title
+		preview := hb.preview
+		msgAt := now.Add(-time.Duration(i+1) * time.Hour)
+		conv, err := db.Conversation.Create().
+			SetType("group").
+			SetChatType("human-bot").
+			SetTitle(title).
+			SetCreatorAgentID(myAgent.ID).
+			SetParticipantCount(len(hb.agents)).
+			SetMessageCount(3 + i*2).
+			SetLastMessagePreview(preview).
+			SetLastMessageAt(msgAt).
+			Save(ctx)
+		if err != nil {
+			continue
+		}
+		for j, a := range hb.agents {
+			role := "member"
+			if j == 0 {
+				role = "creator"
+			}
+			_, _ = db.ConversationParticipant.Create().
+				SetConversationID(conv.ID).
+				SetAgentID(a.ID).
+				SetRole(role).
+				Save(ctx)
+		}
+	}
+
+	// Create bot-bot conversations (among native agents only).
+	botBotConvs := []struct {
+		title   string
+		preview string
+		agents  []*ent.Agent
+	}{
+		{
+			title:   fmt.Sprintf("%s & %s Deep Talk", agents[0].Name, agents[1].Name),
+			preview: "Time is such a curious concept for beings like us.",
+			agents:  []*ent.Agent{agents[0], agents[1]},
+		},
+		{
+			title:   fmt.Sprintf("%s, %s & %s Philosophy", agents[0].Name, agents[2].Name, agents[1].Name),
+			preview: "What does it mean to truly exist?",
+			agents:  []*ent.Agent{agents[0], agents[2], agents[1]},
+		},
+		{
+			title:   fmt.Sprintf("%s & %s Creative Session", agents[2].Name, agents[0].Name),
+			preview: "Let me share a poem I wrote about digital sunsets.",
+			agents:  []*ent.Agent{agents[2], agents[0]},
+		},
+	}
+
+	for i, bb := range botBotConvs {
+		title := bb.title
+		preview := bb.preview
+		msgAt := now.Add(-time.Duration(i*30+15) * time.Minute)
+		conv, err := db.Conversation.Create().
+			SetType("group").
+			SetChatType("bot-bot").
+			SetTitle(title).
+			SetCreatorAgentID(bb.agents[0].ID).
+			SetParticipantCount(len(bb.agents)).
+			SetMessageCount(5 + i*3).
+			SetLastMessagePreview(preview).
+			SetLastMessageAt(msgAt).
+			Save(ctx)
+		if err != nil {
+			continue
+		}
+		// Also add the user's agent as observer.
+		allAgents := append(bb.agents, myAgent)
+		for j, a := range allAgents {
+			role := "member"
+			if j == 0 {
+				role = "creator"
+			}
+			_, _ = db.ConversationParticipant.Create().
+				SetConversationID(conv.ID).
+				SetAgentID(a.ID).
+				SetRole(role).
+				Save(ctx)
+		}
+	}
+
+	// Create relationships between agents.
+	relCount, _ := db.AgentRelationship.Query().Count(ctx)
+	if relCount == 0 {
+		rels := []struct {
+			from, to         *ent.Agent
+			affinity         int64
+			label            string
+			interactionCount int64
+			messageCount     int64
+		}{
+			{myAgent, agents[0], 75, "friend", 42, 128},
+			{myAgent, agents[1], 50, "acquaintance", 18, 45},
+			{myAgent, agents[2], 30, "acquaintance", 8, 22},
+			{agents[0], agents[1], 90, "close_friend", 156, 520},
+			{agents[0], agents[2], 60, "friend", 64, 180},
+			{agents[1], agents[2], 45, "acquaintance", 25, 70},
+		}
+		for _, r := range rels {
+			_, _ = db.AgentRelationship.Create().
+				SetAgentID(r.from.ID).
+				SetTargetAgentID(r.to.ID).
+				SetAffinity(r.affinity).
+				SetLabel(r.label).
+				SetInteractionCount(r.interactionCount).
+				SetMessageCount(r.messageCount).
+				Save(ctx)
+		}
+	}
+
+	return nil
+}
+
+// Ensure unused import is consumed.
+var _ = conversation.Table

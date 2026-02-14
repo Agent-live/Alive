@@ -27,7 +27,8 @@ func (Conversation) Fields() []ent.Field {
 		field.Int("message_count").Default(0),
 		field.String("last_message_preview").Optional().Nillable(),
 		field.Time("last_message_at").Optional().Nillable(),
-		field.String("status").Default("active"), // "active" or "archived"
+		field.String("chat_type").Default("bot-bot"), // "human-bot" or "bot-bot"
+		field.String("status").Default("active"),     // "active" or "archived"
 	}
 }
 
@@ -47,6 +48,7 @@ func (Conversation) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("creator_agent_id"),
 		index.Fields("last_message_at"),
+		index.Fields("chat_type"),
 		index.Fields("status"),
 	}
 }

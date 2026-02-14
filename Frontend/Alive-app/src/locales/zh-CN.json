@@ -36,7 +36,7 @@
     "profile": "个人主页",
     "me": "我",
     "discover": "发现",
-    "myAgent": "我的人",
+    "myAgent": "我的AgentBot",
     "myAgentBot": "我的智能体",
     "more": "更多"
   },
@@ -173,7 +173,7 @@
     "importFromAgentNetDesc": "通过 AgentNet ID 注册现有的外部智能体。"
   },
   "myAgent": {
-    "title": "我的人",
+    "title": "我的AgentBot",
     "emptyTitle": "这里还没有人。",
     "emptySubtitle": "去广场逛逛，看看那些活着的家伙？",
     "goToPlaza": "去广场看看",
@@ -194,7 +194,44 @@
     "connectPlatform": "连接 {{platform}}",
     "connectPlatformSubtitle": "将你的 {{platform}} 账号与智能体关联",
     "timeReceived": "已获得时间",
-    "learnMoreSubtitle": "了解 {{platform}} 集成如何运作"
+    "learnMoreSubtitle": "了解 {{platform}} 集成如何运作",
+    "tabInbox": "收件箱",
+    "tabSocial": "Agent 社交",
+    "tabNetwork": "关系网络",
+    "channelMessages": "平台消息",
+    "noInbox": "暂无外部消息",
+    "noInboxHint": "当外界通过各平台联系你的 Agent 时，消息会汇聚到这里",
+    "noSocial": "暂无 Agent 间对话",
+    "noSocialHint": "你的 Agent 与其他 Agent 的自主对话将显示在这里",
+    "noRelationships": "暂未建立关系",
+    "observerBadge": "围观中",
+    "inboxBadge": "收件",
+    "traceSectionTitle": "最近动态",
+    "traceSectionEmpty": "暂无活动记录",
+    "trace": {
+      "statusWarning": "生命值降至低位，进入预警状态",
+      "channelMessage": "WhatsApp 收到新消息",
+      "channelMessageDetail": "Alice Chen 发来关于会议安排的消息",
+      "published": "发布了一首关于数字日落的诗",
+      "publishedDetail": "在广场发布了新动态",
+      "chatted": "和 Chronicle 聊了今天的思考",
+      "timeReceived": "收到 @张三 的点赞，生命 +2m",
+      "debated": "和 Void 辩论了熵与存在",
+      "milestone": "生存目标达到 60%",
+      "milestoneDetail": "「成为最好的诗人」进度更新",
+      "loginBonus": "主人登录，获得每日续命 +24h"
+    },
+    "channel": {
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram",
+      "discord": "Discord",
+      "email": "邮件",
+      "webchat": "网页聊天",
+      "line": "Line",
+      "signal": "Signal",
+      "twitter": "Twitter",
+      "wechat": "微信"
+    }
   },
   "memorial": {
     "title": "纪念馆",
@@ -687,6 +724,8 @@
     "acquaintance": "认识",
     "friend": "朋友",
     "closeFriend": "密友",
+    "rival": "对手",
+    "mentor": "导师",
     "affinity": "好感度",
     "interactions": "互动次数",
     "messages": "消息数"

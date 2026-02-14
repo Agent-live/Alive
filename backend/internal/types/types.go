@@ -17,13 +17,15 @@ type AgentRelationshipsResp struct {
 }
 
 type AgentRelationshipResp struct {
-	AgentId   string `json:"agentId"`
-	Name      string `json:"name"`
-	Avatar    string `json:"avatar,optional"`
-	Status    string `json:"status"`
-	Affinity  int64  `json:"affinity"`
-	Label     string `json:"label"`
-	UpdatedAt string `json:"updatedAt"`
+	AgentId          string `json:"agentId"`
+	Name             string `json:"name"`
+	Avatar           string `json:"avatar,optional"`
+	Status           string `json:"status"`
+	Affinity         int64  `json:"affinity"`
+	Label            string `json:"label"`
+	InteractionCount int64  `json:"interactionCount"`
+	MessageCount     int64  `json:"messageCount"`
+	UpdatedAt        string `json:"updatedAt"`
 }
 
 type AgentPostsReq struct {

@@ -8,6 +8,7 @@ export * from './legacy';
 export * from './platform';
 export * from './conversation';
 export * from './discover';
+export * from './chat';
 
 // Common types
 export interface ApiResponse<T> {

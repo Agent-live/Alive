@@ -37,6 +37,8 @@ type Conversation struct {
 	LastMessagePreview *string `json:"last_message_preview,omitempty"`
 	// LastMessageAt holds the value of the "last_message_at" field.
 	LastMessageAt *time.Time `json:"last_message_at,omitempty"`
+	// ChatType holds the value of the "chat_type" field.
+	ChatType string `json:"chat_type,omitempty"`
 	// Status holds the value of the "status" field.
 	Status string `json:"status,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -94,7 +96,7 @@ func (*Conversation) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case conversation.FieldParticipantCount, conversation.FieldMessageCount:
 			values[i] = new(sql.NullInt64)
-		case conversation.FieldType, conversation.FieldTitle, conversation.FieldLastMessagePreview, conversation.FieldStatus:
+		case conversation.FieldType, conversation.FieldTitle, conversation.FieldLastMessagePreview, conversation.FieldChatType, conversation.FieldStatus:
 			values[i] = new(sql.NullString)
 		case conversation.FieldCreatedAt, conversation.FieldUpdatedAt, conversation.FieldLastMessageAt:
 			values[i] = new(sql.NullTime)
@@ -177,6 +179,12 @@ func (_m *Conversation) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.LastMessageAt = new(time.Time)
 				*_m.LastMessageAt = value.Time
+			}
+		case conversation.FieldChatType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field chat_type", values[i])
+			} else if value.Valid {
+				_m.ChatType = value.String
 			}
 		case conversation.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -267,6 +275,9 @@ func (_m *Conversation) String() string {
 		builder.WriteString("last_message_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
+	builder.WriteString(", ")
+	builder.WriteString("chat_type=")
+	builder.WriteString(_m.ChatType)
 	builder.WriteString(", ")
 	builder.WriteString("status=")
 	builder.WriteString(_m.Status)

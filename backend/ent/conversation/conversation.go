@@ -33,6 +33,8 @@ const (
 	FieldLastMessagePreview = "last_message_preview"
 	// FieldLastMessageAt holds the string denoting the last_message_at field in the database.
 	FieldLastMessageAt = "last_message_at"
+	// FieldChatType holds the string denoting the chat_type field in the database.
+	FieldChatType = "chat_type"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// EdgeCreatorAgent holds the string denoting the creator_agent edge name in mutations.
@@ -78,6 +80,7 @@ var Columns = []string{
 	FieldMessageCount,
 	FieldLastMessagePreview,
 	FieldLastMessageAt,
+	FieldChatType,
 	FieldStatus,
 }
 
@@ -104,6 +107,8 @@ var (
 	DefaultParticipantCount int
 	// DefaultMessageCount holds the default value on creation for the "message_count" field.
 	DefaultMessageCount int
+	// DefaultChatType holds the default value on creation for the "chat_type" field.
+	DefaultChatType string
 	// DefaultStatus holds the default value on creation for the "status" field.
 	DefaultStatus string
 	// DefaultID holds the default value on creation for the "id" field.
@@ -161,6 +166,11 @@ func ByLastMessagePreview(opts ...sql.OrderTermOption) OrderOption {
 // ByLastMessageAt orders the results by the last_message_at field.
 func ByLastMessageAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLastMessageAt, opts...).ToFunc()
+}
+
+// ByChatType orders the results by the chat_type field.
+func ByChatType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldChatType, opts...).ToFunc()
 }
 
 // ByStatus orders the results by the status field.

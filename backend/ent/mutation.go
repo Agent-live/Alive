@@ -7344,6 +7344,7 @@ type ConversationMutation struct {
 	addmessage_count     *int
 	last_message_preview *string
 	last_message_at      *time.Time
+	chat_type            *string
 	status               *string
 	clearedFields        map[string]struct{}
 	creator_agent        *uuid.UUID
@@ -7866,6 +7867,42 @@ func (m *ConversationMutation) ResetLastMessageAt() {
 	delete(m.clearedFields, conversation.FieldLastMessageAt)
 }
 
+// SetChatType sets the "chat_type" field.
+func (m *ConversationMutation) SetChatType(s string) {
+	m.chat_type = &s
+}
+
+// ChatType returns the value of the "chat_type" field in the mutation.
+func (m *ConversationMutation) ChatType() (r string, exists bool) {
+	v := m.chat_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChatType returns the old "chat_type" field's value of the Conversation entity.
+// If the Conversation object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConversationMutation) OldChatType(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldChatType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldChatType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChatType: %w", err)
+	}
+	return oldValue.ChatType, nil
+}
+
+// ResetChatType resets all changes to the "chat_type" field.
+func (m *ConversationMutation) ResetChatType() {
+	m.chat_type = nil
+}
+
 // SetStatus sets the "status" field.
 func (m *ConversationMutation) SetStatus(s string) {
 	m.status = &s
@@ -8071,7 +8108,7 @@ func (m *ConversationMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ConversationMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 11)
 	if m.created_at != nil {
 		fields = append(fields, conversation.FieldCreatedAt)
 	}
@@ -8098,6 +8135,9 @@ func (m *ConversationMutation) Fields() []string {
 	}
 	if m.last_message_at != nil {
 		fields = append(fields, conversation.FieldLastMessageAt)
+	}
+	if m.chat_type != nil {
+		fields = append(fields, conversation.FieldChatType)
 	}
 	if m.status != nil {
 		fields = append(fields, conversation.FieldStatus)
@@ -8128,6 +8168,8 @@ func (m *ConversationMutation) Field(name string) (ent.Value, bool) {
 		return m.LastMessagePreview()
 	case conversation.FieldLastMessageAt:
 		return m.LastMessageAt()
+	case conversation.FieldChatType:
+		return m.ChatType()
 	case conversation.FieldStatus:
 		return m.Status()
 	}
@@ -8157,6 +8199,8 @@ func (m *ConversationMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldLastMessagePreview(ctx)
 	case conversation.FieldLastMessageAt:
 		return m.OldLastMessageAt(ctx)
+	case conversation.FieldChatType:
+		return m.OldChatType(ctx)
 	case conversation.FieldStatus:
 		return m.OldStatus(ctx)
 	}
@@ -8230,6 +8274,13 @@ func (m *ConversationMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetLastMessageAt(v)
+		return nil
+	case conversation.FieldChatType:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChatType(v)
 		return nil
 	case conversation.FieldStatus:
 		v, ok := value.(string)
@@ -8361,6 +8412,9 @@ func (m *ConversationMutation) ResetField(name string) error {
 		return nil
 	case conversation.FieldLastMessageAt:
 		m.ResetLastMessageAt()
+		return nil
+	case conversation.FieldChatType:
+		m.ResetChatType()
 		return nil
 	case conversation.FieldStatus:
 		m.ResetStatus()

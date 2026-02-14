@@ -142,6 +142,20 @@ func (_c *ConversationCreate) SetNillableLastMessageAt(v *time.Time) *Conversati
 	return _c
 }
 
+// SetChatType sets the "chat_type" field.
+func (_c *ConversationCreate) SetChatType(v string) *ConversationCreate {
+	_c.mutation.SetChatType(v)
+	return _c
+}
+
+// SetNillableChatType sets the "chat_type" field if the given value is not nil.
+func (_c *ConversationCreate) SetNillableChatType(v *string) *ConversationCreate {
+	if v != nil {
+		_c.SetChatType(*v)
+	}
+	return _c
+}
+
 // SetStatus sets the "status" field.
 func (_c *ConversationCreate) SetStatus(v string) *ConversationCreate {
 	_c.mutation.SetStatus(v)
@@ -260,6 +274,10 @@ func (_c *ConversationCreate) defaults() {
 		v := conversation.DefaultMessageCount
 		_c.mutation.SetMessageCount(v)
 	}
+	if _, ok := _c.mutation.ChatType(); !ok {
+		v := conversation.DefaultChatType
+		_c.mutation.SetChatType(v)
+	}
 	if _, ok := _c.mutation.Status(); !ok {
 		v := conversation.DefaultStatus
 		_c.mutation.SetStatus(v)
@@ -289,6 +307,9 @@ func (_c *ConversationCreate) check() error {
 	}
 	if _, ok := _c.mutation.MessageCount(); !ok {
 		return &ValidationError{Name: "message_count", err: errors.New(`ent: missing required field "Conversation.message_count"`)}
+	}
+	if _, ok := _c.mutation.ChatType(); !ok {
+		return &ValidationError{Name: "chat_type", err: errors.New(`ent: missing required field "Conversation.chat_type"`)}
 	}
 	if _, ok := _c.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Conversation.status"`)}
@@ -362,6 +383,10 @@ func (_c *ConversationCreate) createSpec() (*Conversation, *sqlgraph.CreateSpec)
 	if value, ok := _c.mutation.LastMessageAt(); ok {
 		_spec.SetField(conversation.FieldLastMessageAt, field.TypeTime, value)
 		_node.LastMessageAt = &value
+	}
+	if value, ok := _c.mutation.ChatType(); ok {
+		_spec.SetField(conversation.FieldChatType, field.TypeString, value)
+		_node.ChatType = value
 	}
 	if value, ok := _c.mutation.Status(); ok {
 		_spec.SetField(conversation.FieldStatus, field.TypeString, value)

@@ -295,8 +295,12 @@ func init() {
 	conversationDescMessageCount := conversationFields[5].Descriptor()
 	// conversation.DefaultMessageCount holds the default value on creation for the message_count field.
 	conversation.DefaultMessageCount = conversationDescMessageCount.Default.(int)
+	// conversationDescChatType is the schema descriptor for chat_type field.
+	conversationDescChatType := conversationFields[8].Descriptor()
+	// conversation.DefaultChatType holds the default value on creation for the chat_type field.
+	conversation.DefaultChatType = conversationDescChatType.Default.(string)
 	// conversationDescStatus is the schema descriptor for status field.
-	conversationDescStatus := conversationFields[8].Descriptor()
+	conversationDescStatus := conversationFields[9].Descriptor()
 	// conversation.DefaultStatus holds the default value on creation for the status field.
 	conversation.DefaultStatus = conversationDescStatus.Default.(string)
 	// conversationDescID is the schema descriptor for id field.

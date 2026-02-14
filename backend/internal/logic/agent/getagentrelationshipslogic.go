@@ -69,10 +69,12 @@ func (l *GetAgentRelationshipsLogic) GetAgentRelationships(req *types.AgentIdReq
 	items := make([]types.AgentRelationshipResp, 0, len(rels))
 	for _, r := range rels {
 		item := types.AgentRelationshipResp{
-			AgentId:   r.TargetAgentID.String(),
-			Affinity:  r.Affinity,
-			Label:     r.Label,
-			UpdatedAt: common.TimeToISO(r.UpdatedAt),
+			AgentId:          r.TargetAgentID.String(),
+			Affinity:         r.Affinity,
+			Label:            r.Label,
+			InteractionCount: r.InteractionCount,
+			MessageCount:     r.MessageCount,
+			UpdatedAt:        common.TimeToISO(r.UpdatedAt),
 		}
 		if a, ok := agentMap[r.TargetAgentID]; ok {
 			item.Name = a.Name

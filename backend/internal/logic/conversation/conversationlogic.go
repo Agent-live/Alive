@@ -3,6 +3,7 @@ package conversation
 import (
 	"context"
 	"errors"
+	"time"
 
 	"backend/ent"
 	entAgent "backend/ent/agent"
@@ -19,10 +20,12 @@ import (
 type ConversationResp struct {
 	ID                 string                    `json:"id"`
 	Type               string                    `json:"type"`
+	ChatType           string                    `json:"chatType,omitempty"`
 	Title              string                    `json:"title,omitempty"`
 	CreatorAgentID     string                    `json:"creatorAgentId"`
 	ParticipantCount   int                       `json:"participantCount"`
 	MessageCount       int                       `json:"messageCount"`
+	UnreadCount        int                       `json:"unreadCount"`
 	LastMessagePreview string                    `json:"lastMessagePreview,omitempty"`
 	LastMessageAt      string                    `json:"lastMessageAt,omitempty"`
 	Status             string                    `json:"status"`
@@ -73,7 +76,8 @@ func NewLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Logic {
 }
 
 // ListConversations returns all conversations for the user's agent.
-func (l *Logic) ListConversations(agentID uuid.UUID) (*ConversationListResp, error) {
+// When chatType is non-empty, only conversations matching that chat_type are returned.
+func (l *Logic) ListConversations(agentID uuid.UUID, chatType string) (*ConversationListResp, error) {
 	// Find all conversations where the agent is a participant.
 	participations, err := l.svcCtx.DB.ConversationParticipant.Query().
 		Where(conversationparticipant.AgentID(agentID)).
@@ -83,19 +87,30 @@ func (l *Logic) ListConversations(agentID uuid.UUID) (*ConversationListResp, err
 	}
 
 	convIDs := make([]uuid.UUID, 0, len(participations))
+	// Build a map of last_read_at per conversation for unread count.
+	lastReadMap := map[uuid.UUID]*time.Time{}
 	for _, p := range participations {
 		convIDs = append(convIDs, p.ConversationID)
+		if p.LastReadAt != nil {
+			t := *p.LastReadAt
+			lastReadMap[p.ConversationID] = &t
+		}
 	}
 
 	if len(convIDs) == 0 {
 		return &ConversationListResp{Items: []ConversationResp{}}, nil
 	}
 
-	convs, err := l.svcCtx.DB.Conversation.Query().
+	query := l.svcCtx.DB.Conversation.Query().
 		Where(
 			conversation.IDIn(convIDs...),
 			conversation.Status("active"),
-		).
+		)
+	if chatType != "" {
+		query = query.Where(conversation.ChatType(chatType))
+	}
+
+	convs, err := query.
 		Order(ent.Desc(conversation.FieldLastMessageAt)).
 		Limit(50).
 		All(l.ctx)
@@ -103,9 +118,15 @@ func (l *Logic) ListConversations(agentID uuid.UUID) (*ConversationListResp, err
 		return nil, err
 	}
 
-	// Batch-fetch participants for all conversations.
+	// Collect actual conv IDs after filtering.
+	filteredIDs := make([]uuid.UUID, 0, len(convs))
+	for _, c := range convs {
+		filteredIDs = append(filteredIDs, c.ID)
+	}
+
+	// Batch-fetch participants for filtered conversations.
 	allParticipants, err := l.svcCtx.DB.ConversationParticipant.Query().
-		Where(conversationparticipant.ConversationIDIn(convIDs...)).
+		Where(conversationparticipant.ConversationIDIn(filteredIDs...)).
 		All(l.ctx)
 	if err != nil {
 		return nil, err
@@ -142,14 +163,34 @@ func (l *Logic) ListConversations(agentID uuid.UUID) (*ConversationListResp, err
 		participantsByConv[p.ConversationID] = append(participantsByConv[p.ConversationID], cp)
 	}
 
+	// Compute unread counts per conversation.
+	unreadCounts := map[uuid.UUID]int{}
+	for _, c := range convs {
+		if lr, ok := lastReadMap[c.ID]; ok && lr != nil {
+			cnt, err := l.svcCtx.DB.ConversationMessage.Query().
+				Where(
+					conversationmessage.ConversationID(c.ID),
+					conversationmessage.CreatedAtGT(*lr),
+				).Count(l.ctx)
+			if err == nil {
+				unreadCounts[c.ID] = cnt
+			}
+		} else {
+			// No last_read_at means all messages are unread.
+			unreadCounts[c.ID] = c.MessageCount
+		}
+	}
+
 	items := make([]ConversationResp, 0, len(convs))
 	for _, c := range convs {
 		item := ConversationResp{
 			ID:               c.ID.String(),
 			Type:             c.Type,
+			ChatType:         c.ChatType,
 			CreatorAgentID:   c.CreatorAgentID.String(),
 			ParticipantCount: c.ParticipantCount,
 			MessageCount:     c.MessageCount,
+			UnreadCount:      unreadCounts[c.ID],
 			Status:           c.Status,
 			Participants:     participantsByConv[c.ID],
 			CreatedAt:        common.TimeToISO(c.CreatedAt),

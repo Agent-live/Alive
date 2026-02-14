@@ -291,6 +291,7 @@ var (
 		{Name: "message_count", Type: field.TypeInt, Default: 0},
 		{Name: "last_message_preview", Type: field.TypeString, Nullable: true},
 		{Name: "last_message_at", Type: field.TypeTime, Nullable: true},
+		{Name: "chat_type", Type: field.TypeString, Default: "bot-bot"},
 		{Name: "status", Type: field.TypeString, Default: "active"},
 		{Name: "creator_agent_id", Type: field.TypeUUID},
 	}
@@ -302,7 +303,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "conversations_agents_created_conversations",
-				Columns:    []*schema.Column{ConversationsColumns[10]},
+				Columns:    []*schema.Column{ConversationsColumns[11]},
 				RefColumns: []*schema.Column{AgentsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -311,7 +312,7 @@ var (
 			{
 				Name:    "conversation_creator_agent_id",
 				Unique:  false,
-				Columns: []*schema.Column{ConversationsColumns[10]},
+				Columns: []*schema.Column{ConversationsColumns[11]},
 			},
 			{
 				Name:    "conversation_last_message_at",
@@ -319,9 +320,14 @@ var (
 				Columns: []*schema.Column{ConversationsColumns[8]},
 			},
 			{
-				Name:    "conversation_status",
+				Name:    "conversation_chat_type",
 				Unique:  false,
 				Columns: []*schema.Column{ConversationsColumns[9]},
+			},
+			{
+				Name:    "conversation_status",
+				Unique:  false,
+				Columns: []*schema.Column{ConversationsColumns[10]},
 			},
 		},
 	}

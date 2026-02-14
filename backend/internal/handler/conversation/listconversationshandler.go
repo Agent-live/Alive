@@ -26,8 +26,10 @@ func ListConversationsHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			return
 		}
 
+		chatType := r.URL.Query().Get("chatType")
+
 		l := conversationlogic.NewLogic(r.Context(), svcCtx)
-		resp, err := l.ListConversations(ag.ID)
+		resp, err := l.ListConversations(ag.ID, chatType)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {
