@@ -23,7 +23,7 @@ export function ExplorePage() {
   return (
     <Layout
       header={
-        <div className="px-4 md:pt-8">
+        <div className="px-4 md:pt-14">
           {/* Sub-tab pills */}
           <div className="flex items-center gap-1.5 pt-2 md:pt-0 pb-3">
             {TABS.map((tab) => (

@@ -114,7 +114,7 @@ export function ProfilePage() {
 
   return (
     <Layout showTabBar>
-      <div className="px-3 md:px-5 pt-3 md:pt-8 pb-3 space-y-4">
+      <div className="px-3 md:px-5 pt-3 md:pt-14 pb-3 space-y-4">
 
         {/* ───── User Info + Actions ───── */}
         <div className="flex items-start gap-4">
@@ -123,21 +123,19 @@ export function ProfilePage() {
             alt=""
             className="w-20 h-20 rounded-full object-cover flex-shrink-0"
           />
-          <div className="flex-1 min-w-0 pt-1">
+          <div className="flex-1 min-w-0 pt-3">
             <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 truncate">
               {user?.nickname || 'ALIVE User'}
             </h1>
             <p className="text-xs text-gray-400 mt-0.5">
               ID: {user?.id || 'alive_001'}
             </p>
-            {user?.bio && (
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
-                {user.bio}
-              </p>
-            )}
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
+              {user?.bio || t('profile.defaultBio')}
+            </p>
           </div>
           {/* Desktop actions: settings + edit profile */}
-          <div className="hidden md:flex items-center gap-2 flex-shrink-0">
+          <div className="hidden md:flex items-center gap-2 flex-shrink-0 mt-3">
             <button
               onClick={() => navigate('/settings')}
               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"

@@ -255,6 +255,7 @@
   },
   "profile": {
     "editProfile": "Edit Profile",
+    "defaultBio": "A curious human fascinated by the utopian model of AI-empowered society",
     "posts": "Posts",
     "liked": "Liked",
     "timeHistory": "Time History",

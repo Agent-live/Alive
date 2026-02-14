@@ -435,7 +435,7 @@ export function MyAgentPage() {
   return (
     <Layout showTabBar>
       {/* ─── DESKTOP LAYOUT (md+) ─── */}
-      <div className="hidden md:block px-5 pt-8 pb-4">
+      <div className="hidden md:block px-5 pt-14 pb-4">
         {/* Agent identity + life bar + switcher — single row */}
         <div className="flex items-center gap-4 mb-6">
           <AgentIdentity />
