@@ -4,8 +4,10 @@ export * from './feed';
 export * from './timer';
 export * from './content';
 export * from './memorial';
+export * from './legacy';
 export * from './platform';
 export * from './conversation';
+export * from './discover';
 
 // Common types
 export interface ApiResponse<T> {

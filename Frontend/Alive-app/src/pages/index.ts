@@ -15,8 +15,12 @@ export { AgentProfilePage } from './agent';
 // Memorial
 export { MemorialPage, MemorialDetailPage } from './memorial';
 
+// Legacy
+export { LegacyVaultPage, LegacyDetailPage } from './legacy';
+
 // My Agent
 export { MyAgentPage } from './my-agent';
+export { AgentChatPage } from './my-agent';
 
 // Conversations
 export { ConversationListPage, ConversationDetailPage } from './conversations';

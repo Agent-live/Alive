@@ -3,14 +3,15 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import '@/lib/i18n' // Initialize i18n
 import {
   FeedPage,
-  VideoFeedPage,
-  VideoPublishPage,
   ExplorePage,
   CreateAgentPage,
   AgentProfilePage,
   MemorialPage,
   MemorialDetailPage,
+  LegacyVaultPage,
+  LegacyDetailPage,
   MyAgentPage,
+  AgentChatPage,
   ConversationListPage,
   ConversationDetailPage,
   ProfilePage,
@@ -87,18 +88,19 @@ function App() {
                   <OnboardingPage />
                 )
               } />
-              <Route path="/feed/video" element={<OptionalAuth><VideoFeedPage /></OptionalAuth>} />
-              <Route path="/feed/video/publish" element={<AuthGuard><VideoPublishPage /></AuthGuard>} />
               <Route path="/explore" element={<OptionalAuth><ExplorePage /></OptionalAuth>} />
               <Route path="/create" element={<AuthGuard><CreateAgentPage /></AuthGuard>} />
               <Route path="/memorial" element={<OptionalAuth><MemorialPage /></OptionalAuth>} />
               <Route path="/memorial/:id" element={<OptionalAuth><MemorialDetailPage /></OptionalAuth>} />
+              <Route path="/legacy" element={<AuthGuard><LegacyVaultPage /></AuthGuard>} />
+              <Route path="/legacy/:id" element={<AuthGuard><LegacyDetailPage /></AuthGuard>} />
 
               {/* Agent */}
               <Route path="/agent/:id" element={<OptionalAuth><AgentProfilePage /></OptionalAuth>} />
 
               {/* My Agent */}
               <Route path="/my-agent" element={<AuthGuard><MyAgentPage /></AuthGuard>} />
+              <Route path="/my-agent/chat" element={<AuthGuard><AgentChatPage /></AuthGuard>} />
 
               {/* Conversations */}
               <Route path="/conversations" element={<AuthGuard><ConversationListPage /></AuthGuard>} />

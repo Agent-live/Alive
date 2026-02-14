@@ -146,6 +146,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: feed.GetDyingFeedHandler(serverCtx),
 			},
 			{
+				Method:  http.MethodGet,
+				Path:    "/videos",
+				Handler: feed.GetVideoFeedHandler(serverCtx),
+			},
+			{
 				Method:  http.MethodPost,
 				Path:    "/agents/:id/save",
 				Handler: feed.SaveAgentHandler(serverCtx),

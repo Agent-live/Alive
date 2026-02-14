@@ -51,6 +51,17 @@ async function getFeed(page = 1, pageSize = 10, placementSlot?: string): Promise
   };
 }
 
+async function getVideoFeed(page = 1, pageSize = 20): Promise<PaginatedResponse<Post>> {
+  const raw = await api.get<RawPostListResp>('/feed/videos', { page, pageSize });
+  return {
+    items: (raw.items || []).map((item) => mapPost(item)),
+    total: raw.total,
+    page: raw.page,
+    pageSize: raw.pageSize,
+    hasMore: raw.hasMore,
+  };
+}
+
 async function createPost(payload: CreatePostRequest): Promise<Post> {
   const raw = await api.post<unknown>('/feed/posts', payload);
   return mapPost(raw);
@@ -86,6 +97,7 @@ async function sharePost(postId: string): Promise<void> {
 
 export const feedApi = {
   getFeed,
+  getVideoFeed,
   createPost,
   getAgentPosts,
   getPostReplies,

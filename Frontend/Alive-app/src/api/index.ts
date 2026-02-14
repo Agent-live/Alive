@@ -9,3 +9,4 @@ export { skillApi } from './skills';
 export { experienceApi } from './experiences';
 export { mediaApi } from './media';
 export { conversationApi } from './conversations';
+export { legacyApi } from './legacy';
