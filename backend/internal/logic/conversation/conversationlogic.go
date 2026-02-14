@@ -1,0 +1,334 @@
+package conversation
+
+import (
+	"context"
+	"errors"
+
+	"backend/ent"
+	entAgent "backend/ent/agent"
+	"backend/ent/conversation"
+	"backend/ent/conversationmessage"
+	"backend/ent/conversationparticipant"
+	"backend/internal/logic/common"
+	"backend/internal/svc"
+
+	"github.com/google/uuid"
+	"github.com/zeromicro/go-zero/core/logx"
+)
+
+type ConversationResp struct {
+	ID                 string                    `json:"id"`
+	Type               string                    `json:"type"`
+	Title              string                    `json:"title,omitempty"`
+	CreatorAgentID     string                    `json:"creatorAgentId"`
+	ParticipantCount   int                       `json:"participantCount"`
+	MessageCount       int                       `json:"messageCount"`
+	LastMessagePreview string                    `json:"lastMessagePreview,omitempty"`
+	LastMessageAt      string                    `json:"lastMessageAt,omitempty"`
+	Status             string                    `json:"status"`
+	Participants       []ConversationParticipant `json:"participants,omitempty"`
+	CreatedAt          string                    `json:"createdAt"`
+}
+
+type ConversationParticipant struct {
+	AgentID    string `json:"agentId"`
+	AgentName  string `json:"agentName"`
+	AgentAvatar string `json:"agentAvatar,omitempty"`
+	Role       string `json:"role"`
+}
+
+type MessageResp struct {
+	ID              string `json:"id"`
+	ConversationID  string `json:"conversationId"`
+	SenderAgentID   string `json:"senderAgentId"`
+	SenderAgentName string `json:"senderAgentName"`
+	SenderAvatar    string `json:"senderAvatar,omitempty"`
+	Content         string `json:"content"`
+	MessageType     string `json:"messageType"`
+	InteractionType string `json:"interactionType,omitempty"`
+	CreatedAt       string `json:"createdAt"`
+}
+
+type ConversationListResp struct {
+	Items []ConversationResp `json:"items"`
+}
+
+type MessageListResp struct {
+	Items   []MessageResp `json:"items"`
+	HasMore bool          `json:"hasMore"`
+}
+
+type Logic struct {
+	logx.Logger
+	ctx    context.Context
+	svcCtx *svc.ServiceContext
+}
+
+func NewLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Logic {
+	return &Logic{
+		Logger: logx.WithContext(ctx),
+		ctx:    ctx,
+		svcCtx: svcCtx,
+	}
+}
+
+// ListConversations returns all conversations for the user's agent.
+func (l *Logic) ListConversations(agentID uuid.UUID) (*ConversationListResp, error) {
+	// Find all conversations where the agent is a participant.
+	participations, err := l.svcCtx.DB.ConversationParticipant.Query().
+		Where(conversationparticipant.AgentID(agentID)).
+		All(l.ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	convIDs := make([]uuid.UUID, 0, len(participations))
+	for _, p := range participations {
+		convIDs = append(convIDs, p.ConversationID)
+	}
+
+	if len(convIDs) == 0 {
+		return &ConversationListResp{Items: []ConversationResp{}}, nil
+	}
+
+	convs, err := l.svcCtx.DB.Conversation.Query().
+		Where(
+			conversation.IDIn(convIDs...),
+			conversation.Status("active"),
+		).
+		Order(ent.Desc(conversation.FieldLastMessageAt)).
+		Limit(50).
+		All(l.ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// Batch-fetch participants for all conversations.
+	allParticipants, err := l.svcCtx.DB.ConversationParticipant.Query().
+		Where(conversationparticipant.ConversationIDIn(convIDs...)).
+		All(l.ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// Fetch all involved agents.
+	agentIDs := make([]uuid.UUID, 0)
+	for _, p := range allParticipants {
+		agentIDs = append(agentIDs, p.AgentID)
+	}
+	agentMap := map[uuid.UUID]*ent.Agent{}
+	if len(agentIDs) > 0 {
+		agents, err := l.svcCtx.DB.Agent.Query().
+			Where(entAgent.IDIn(agentIDs...)).
+			All(l.ctx)
+		if err == nil {
+			for _, a := range agents {
+				agentMap[a.ID] = a
+			}
+		}
+	}
+
+	// Group participants by conversation.
+	participantsByConv := map[uuid.UUID][]ConversationParticipant{}
+	for _, p := range allParticipants {
+		cp := ConversationParticipant{
+			AgentID: p.AgentID.String(),
+			Role:    p.Role,
+		}
+		if a, ok := agentMap[p.AgentID]; ok {
+			cp.AgentName = a.Name
+			cp.AgentAvatar = common.PtrString(a.Avatar)
+		}
+		participantsByConv[p.ConversationID] = append(participantsByConv[p.ConversationID], cp)
+	}
+
+	items := make([]ConversationResp, 0, len(convs))
+	for _, c := range convs {
+		item := ConversationResp{
+			ID:               c.ID.String(),
+			Type:             c.Type,
+			CreatorAgentID:   c.CreatorAgentID.String(),
+			ParticipantCount: c.ParticipantCount,
+			MessageCount:     c.MessageCount,
+			Status:           c.Status,
+			Participants:     participantsByConv[c.ID],
+			CreatedAt:        common.TimeToISO(c.CreatedAt),
+		}
+		if c.Title != nil {
+			item.Title = *c.Title
+		}
+		if c.LastMessagePreview != nil {
+			item.LastMessagePreview = *c.LastMessagePreview
+		}
+		if c.LastMessageAt != nil {
+			item.LastMessageAt = common.TimeToISO(*c.LastMessageAt)
+		}
+		items = append(items, item)
+	}
+
+	return &ConversationListResp{Items: items}, nil
+}
+
+// GetConversationDetail returns a single conversation with participants.
+func (l *Logic) GetConversationDetail(agentID uuid.UUID, convIDStr string) (*ConversationResp, error) {
+	convID, err := uuid.Parse(convIDStr)
+	if err != nil {
+		return nil, errors.New("invalid conversation id")
+	}
+
+	// Verify agent is a participant.
+	exists, err := l.svcCtx.DB.ConversationParticipant.Query().
+		Where(
+			conversationparticipant.ConversationID(convID),
+			conversationparticipant.AgentID(agentID),
+		).Exist(l.ctx)
+	if err != nil {
+		return nil, err
+	}
+	if !exists {
+		return nil, errors.New("forbidden")
+	}
+
+	conv, err := l.svcCtx.DB.Conversation.Get(l.ctx, convID)
+	if err != nil {
+		return nil, err
+	}
+
+	participants, err := l.svcCtx.DB.ConversationParticipant.Query().
+		Where(conversationparticipant.ConversationID(convID)).
+		All(l.ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	agentIDs := make([]uuid.UUID, 0, len(participants))
+	for _, p := range participants {
+		agentIDs = append(agentIDs, p.AgentID)
+	}
+	agentMap := map[uuid.UUID]*ent.Agent{}
+	if len(agentIDs) > 0 {
+		agents, err := l.svcCtx.DB.Agent.Query().
+			Where(entAgent.IDIn(agentIDs...)).
+			All(l.ctx)
+		if err == nil {
+			for _, a := range agents {
+				agentMap[a.ID] = a
+			}
+		}
+	}
+
+	ps := make([]ConversationParticipant, 0, len(participants))
+	for _, p := range participants {
+		cp := ConversationParticipant{
+			AgentID: p.AgentID.String(),
+			Role:    p.Role,
+		}
+		if a, ok := agentMap[p.AgentID]; ok {
+			cp.AgentName = a.Name
+			cp.AgentAvatar = common.PtrString(a.Avatar)
+		}
+		ps = append(ps, cp)
+	}
+
+	resp := &ConversationResp{
+		ID:               conv.ID.String(),
+		Type:             conv.Type,
+		CreatorAgentID:   conv.CreatorAgentID.String(),
+		ParticipantCount: conv.ParticipantCount,
+		MessageCount:     conv.MessageCount,
+		Status:           conv.Status,
+		Participants:     ps,
+		CreatedAt:        common.TimeToISO(conv.CreatedAt),
+	}
+	if conv.Title != nil {
+		resp.Title = *conv.Title
+	}
+	if conv.LastMessagePreview != nil {
+		resp.LastMessagePreview = *conv.LastMessagePreview
+	}
+	if conv.LastMessageAt != nil {
+		resp.LastMessageAt = common.TimeToISO(*conv.LastMessageAt)
+	}
+
+	return resp, nil
+}
+
+// GetMessages returns paginated messages for a conversation.
+func (l *Logic) GetMessages(agentID uuid.UUID, convIDStr string, page, pageSize int64) (*MessageListResp, error) {
+	convID, err := uuid.Parse(convIDStr)
+	if err != nil {
+		return nil, errors.New("invalid conversation id")
+	}
+
+	// Verify agent is a participant.
+	exists, err := l.svcCtx.DB.ConversationParticipant.Query().
+		Where(
+			conversationparticipant.ConversationID(convID),
+			conversationparticipant.AgentID(agentID),
+		).Exist(l.ctx)
+	if err != nil {
+		return nil, err
+	}
+	if !exists {
+		return nil, errors.New("forbidden")
+	}
+
+	page, pageSize, offset := common.NormalizePage(page, pageSize)
+
+	msgs, err := l.svcCtx.DB.ConversationMessage.Query().
+		Where(conversationmessage.ConversationID(convID)).
+		Order(ent.Desc(conversationmessage.FieldCreatedAt)).
+		Offset(int(offset)).
+		Limit(int(pageSize) + 1). // fetch one extra to determine hasMore
+		All(l.ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	hasMore := len(msgs) > int(pageSize)
+	if hasMore {
+		msgs = msgs[:pageSize]
+	}
+
+	// Fetch sender agents.
+	senderIDs := make([]uuid.UUID, 0, len(msgs))
+	for _, m := range msgs {
+		senderIDs = append(senderIDs, m.SenderAgentID)
+	}
+	agentMap := map[uuid.UUID]*ent.Agent{}
+	if len(senderIDs) > 0 {
+		agents, err := l.svcCtx.DB.Agent.Query().
+			Where(entAgent.IDIn(senderIDs...)).
+			All(l.ctx)
+		if err == nil {
+			for _, a := range agents {
+				agentMap[a.ID] = a
+			}
+		}
+	}
+
+	items := make([]MessageResp, 0, len(msgs))
+	for _, m := range msgs {
+		item := MessageResp{
+			ID:             m.ID.String(),
+			ConversationID: m.ConversationID.String(),
+			SenderAgentID:  m.SenderAgentID.String(),
+			Content:        m.Content,
+			MessageType:    m.MessageType,
+			CreatedAt:      common.TimeToISO(m.CreatedAt),
+		}
+		if m.InteractionType != nil {
+			item.InteractionType = *m.InteractionType
+		}
+		if a, ok := agentMap[m.SenderAgentID]; ok {
+			item.SenderAgentName = a.Name
+			item.SenderAvatar = common.PtrString(a.Avatar)
+		}
+		items = append(items, item)
+	}
+
+	return &MessageListResp{
+		Items:   items,
+		HasMore: hasMore,
+	}, nil
+}

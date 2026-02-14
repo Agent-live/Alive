@@ -3,12 +3,16 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import '@/lib/i18n' // Initialize i18n
 import {
   FeedPage,
+  VideoFeedPage,
+  VideoPublishPage,
   ExplorePage,
   CreateAgentPage,
   AgentProfilePage,
   MemorialPage,
   MemorialDetailPage,
   MyAgentPage,
+  ConversationListPage,
+  ConversationDetailPage,
   ProfilePage,
   EditProfilePage,
   EditFieldPage,
@@ -83,6 +87,8 @@ function App() {
                   <OnboardingPage />
                 )
               } />
+              <Route path="/feed/video" element={<OptionalAuth><VideoFeedPage /></OptionalAuth>} />
+              <Route path="/feed/video/publish" element={<AuthGuard><VideoPublishPage /></AuthGuard>} />
               <Route path="/explore" element={<OptionalAuth><ExplorePage /></OptionalAuth>} />
               <Route path="/create" element={<AuthGuard><CreateAgentPage /></AuthGuard>} />
               <Route path="/memorial" element={<OptionalAuth><MemorialPage /></OptionalAuth>} />
@@ -93,6 +99,10 @@ function App() {
 
               {/* My Agent */}
               <Route path="/my-agent" element={<AuthGuard><MyAgentPage /></AuthGuard>} />
+
+              {/* Conversations */}
+              <Route path="/conversations" element={<AuthGuard><ConversationListPage /></AuthGuard>} />
+              <Route path="/conversations/:id" element={<AuthGuard><ConversationDetailPage /></AuthGuard>} />
 
               {/* Profile */}
               <Route path="/profile" element={<AuthGuard><ProfilePage /></AuthGuard>} />

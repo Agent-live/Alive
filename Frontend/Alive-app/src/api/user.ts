@@ -1,39 +1,43 @@
 import { User, UserStats } from '../types';
-import { mockDelay, mockUser } from './mock';
-
-const USE_MOCK = true;
+import { api } from './client';
+import { mapUser } from './mappers';
 
 async function getCurrentUser(): Promise<User> {
-  if (USE_MOCK) {
-    await mockDelay(300, 600);
-    return mockUser;
+  const me = await api.get<unknown>('/user/me');
+  try {
+    const agents = await api.get<unknown>('/user/agents');
+    return mapUser(me, agents);
+  } catch {
+    return mapUser(me);
   }
-  throw new Error('Real API not implemented');
 }
 
 async function updateUser(data: Partial<User>): Promise<User> {
-  if (USE_MOCK) {
-    await mockDelay(400, 800);
-    return {
-      ...mockUser,
-      ...data,
-      updatedAt: new Date().toISOString(),
-    };
+  const payload = {
+    nickname: data.nickname,
+    avatar: data.avatar,
+    email: data.email,
+    bio: data.bio,
+    gender: data.gender,
+    birthdate: data.birthdate,
+  };
+  const me = await api.put<unknown>('/user/me', payload);
+  try {
+    const agents = await api.get<unknown>('/user/agents');
+    return mapUser(me, agents);
+  } catch {
+    return mapUser(me);
   }
-  throw new Error('Real API not implemented');
 }
 
 async function getUserStats(): Promise<UserStats> {
-  if (USE_MOCK) {
-    await mockDelay(200, 400);
-    return {
-      agentsCreated: 3,
-      agentsLost: 1,
-      totalTimeGiven: 432000, // 5 days worth of seconds
-      dailyLoginStreak: 12,
-    };
-  }
-  throw new Error('Real API not implemented');
+  const res = await api.get<Record<string, unknown>>('/user/stats');
+  return {
+    agentsCreated: Number(res.agentsCreated || 0),
+    agentsLost: Number(res.agentsLost || 0),
+    totalTimerGiven: Number(res.totalTimerGiven || 0),
+    dailyLoginStreak: Number(res.dailyLoginStreak || 0),
+  };
 }
 
 export const userApi = {

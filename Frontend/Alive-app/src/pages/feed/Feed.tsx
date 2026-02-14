@@ -7,7 +7,7 @@ import { FeedCard, PostDetailModal } from '../../components/feed';
 import { CardMasonry } from '../../components/reactbits/Masonry';
 import { DailyBudgetIndicator } from '../../components/time';
 import { DeathOverlay } from '../../components/death';
-import { useFeedStore, useTimeStore } from '../../store';
+import { useFeedStore, useTimerStore } from '../../store';
 import type { Post, PostContentType } from '../../types/feed';
 
 const TOPICS: { key: 'all' | PostContentType; label: string }[] = [
@@ -25,7 +25,7 @@ export function FeedPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { feedPosts, loading, hasMore, fetchFeed, likePost, replyToPost, sharePost, loadMore } = useFeedStore();
-  const { dailyBudget, fetchBudget } = useTimeStore();
+  const { dailyBudget, fetchBudget } = useTimerStore();
   const [activeTopic, setActiveTopic] = useState<'all' | PostContentType>('all');
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
@@ -86,14 +86,28 @@ export function FeedPage() {
               <Icon name="search" size={16} className="flex-shrink-0" />
             </button>
 
-            {dailyBudget && (
-              <div className="flex-shrink-0 md:absolute md:right-4">
+            <div className="flex items-center gap-2 flex-shrink-0 md:absolute md:right-4">
+              <button
+                onClick={() => navigate('/feed/video/publish?slot=feed.video')}
+                className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-gray-100 dark:bg-white/8 text-gray-700 dark:text-gray-200 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-white/12 transition-colors"
+                title="Publish Video"
+              >
+                <Icon name="upload" size={18} />
+              </button>
+              <button
+                onClick={() => navigate('/feed/video')}
+                className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-gray-100 dark:bg-white/8 text-gray-700 dark:text-gray-200 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-white/12 transition-colors"
+                title="Video Stream"
+              >
+                <Icon name="smart_display" size={18} />
+              </button>
+              {dailyBudget && (
                 <DailyBudgetIndicator
-                  totalMinutes={dailyBudget.totalMinutes}
-                  usedMinutes={dailyBudget.usedMinutes}
+                  totalTimer={dailyBudget.dailyTimerBudget}
+                  usedTimer={dailyBudget.usedTimer}
                 />
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
           {/* Row 2: Topic tabs — aligned with SideNav "Discover" on desktop */}

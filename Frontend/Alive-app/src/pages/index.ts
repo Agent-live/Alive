@@ -1,5 +1,7 @@
 // Feed
 export { FeedPage } from './feed';
+export { VideoFeedPage } from './feed';
+export { VideoPublishPage } from './feed';
 
 // Explore
 export { ExplorePage } from './explore';
@@ -15,6 +17,9 @@ export { MemorialPage, MemorialDetailPage } from './memorial';
 
 // My Agent
 export { MyAgentPage } from './my-agent';
+
+// Conversations
+export { ConversationListPage, ConversationDetailPage } from './conversations';
 
 // Profile
 export { ProfilePage, EditProfilePage, HistoryPage, EditFieldPage } from './profile';

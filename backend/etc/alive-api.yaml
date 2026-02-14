@@ -1,0 +1,29 @@
+Name: alive-api
+Host: 0.0.0.0
+Port: 8888
+Timeout: 30000
+
+Auth:
+  AccessSecret: "alive-dev-secret-change-me"
+  AccessExpire: 604800
+  Social:
+    AllowInsecureMock: true
+    Google:
+      ClientIDs: []
+    Apple:
+      ClientIDs: []
+
+Timer:
+  DecayEnabled: true
+  TickIntervalSeconds: 60
+
+Postgres:
+  DSN: "postgres://macbook.silan.tech@localhost:5432/alive_backend?sslmode=disable"
+
+OpenClaw:
+  Enabled: true
+  BaseURL: "http://localhost:3000"
+  GatewayToken: ""
+  GreenMode: true
+  SharedGateway: true
+  WorkspaceRoot: "/data/agents"

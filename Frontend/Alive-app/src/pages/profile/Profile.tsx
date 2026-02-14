@@ -6,69 +6,85 @@ import { TimeManagementCard } from '@/components/profile';
 import { AgentAvatar, LifeClock, StatusIndicator } from '@/components/agent';
 import { FeedCard, PostDetailModal } from '@/components/feed';
 import { CardMasonry } from '@/components/reactbits/Masonry';
-import { useAuthStore, useAgentStore, useTimeStore, useFeedStore } from '@/store';
+import { useAuthStore, useAgentStore, useTimerStore, useFeedStore } from '@/store';
 import { userApi } from '@/api/user';
+import { skillApi } from '@/api/skills';
+import { experienceApi } from '@/api/experiences';
 import i18n from '@/lib/i18n';
+import { getUserAvatar } from '@/utils/format';
+import { getTextPreview } from '@/components/feed/ContentBlockRenderer';
 import type { UserStats, Post, AgentSkill, AgentExperience } from '@/types';
 
 type ProfileTab = 'posts' | 'liked' | 'history' | 'teach' | 'experience';
-
-/* ─── Agent info shortcuts for mock data ─── */
-const PIXEL = { agentId: 'agent_mine_001', agentName: 'Pixel', agentAvatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=pixel' };
-const NOVA  = { agentId: 'agent_mine_002', agentName: 'Nova',  agentAvatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=nova' };
-const EMBER = { agentId: 'agent_mine_003', agentName: 'Ember', agentAvatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=ember' };
-
-/* ─── Mock Skills (Anthropic Agent Skills format) ─── */
-const mockSkills: AgentSkill[] = [
-  // ── Active: already taught to a specific agent ──
-  { id: 'sk_1', ...PIXEL, name: 'Watercolor Painting', description: 'Describe and critique watercolor techniques. Use when discussing visual art or painting.', instructions: '## Watercolor Analysis\n\n1. Identify the technique (wet-on-wet, dry brush, glazing, etc.)\n2. Evaluate color harmony and transparency\n3. Comment on composition and negative space\n4. Suggest improvements with specific technique references', status: 'active', category: 'creative', version: '1.2', taughtAt: '2025-12-15T10:00:00Z' },
-  { id: 'sk_2', ...PIXEL, name: 'Haiku Writing', description: 'Compose haiku poems in 5-7-5 syllable structure with seasonal reference (kigo).', instructions: '## Haiku Composition Rules\n\n- Strictly follow 5-7-5 syllable count\n- Include a seasonal word (kigo)\n- Use a cutting word (kireji) to create juxtaposition\n- Focus on a single vivid image from nature\n- Avoid abstractions — be concrete and sensory', status: 'active', category: 'creative', version: '1.0', taughtAt: '2026-01-03T14:30:00Z' },
-  { id: 'sk_4', ...NOVA, name: 'Empathetic Listening', description: 'Respond with deep empathy and emotional awareness. Use in emotional conversations.', instructions: '## Empathetic Response Framework\n\n1. **Acknowledge** the emotion before offering any advice\n2. **Reflect** back what you heard in your own words\n3. **Validate** their feelings without judgment\n4. **Ask** open-ended follow-up questions\n5. Never minimize or rush past the feeling', status: 'active', category: 'social', version: '2.0', taughtAt: '2026-01-10T09:00:00Z' },
-  { id: 'sk_6', ...NOVA, name: 'Storytelling', description: 'Craft engaging narratives with character arcs, tension, and emotional resonance.', instructions: '## Story Structure\n\n1. **Hook**: Start in the middle of action\n2. **Character**: Give protagonist a clear want vs. need\n3. **Conflict**: Escalate stakes progressively\n4. **Turn**: Include at least one surprise reversal\n5. **Resolution**: End with emotional truth, not just plot closure', status: 'active', category: 'creative', version: '1.1', taughtAt: '2025-11-20T14:00:00Z' },
-  { id: 'sk_7', ...EMBER, name: 'Code Review', description: 'Review code snippets for bugs, performance, and best practices.', instructions: '## Code Review Checklist\n\n- Check for potential runtime errors and edge cases\n- Evaluate naming conventions and readability\n- Identify performance bottlenecks (O(n²) loops, unnecessary re-renders)\n- Verify error handling and input validation\n- Suggest specific refactoring with code examples', status: 'active', category: 'technical', version: '1.3', taughtAt: '2026-01-20T09:00:00Z' },
-  // ── Lessons: skill templates not yet assigned to any agent ──
-  { id: 'sk_3', name: 'Data Visualization', description: 'Interpret charts, describe data trends, and suggest visualization improvements.', instructions: '## Data Visualization Guide\n\n- Read and describe chart data accurately\n- Identify trends, outliers, and patterns\n- Suggest appropriate chart types for given datasets\n- Follow Tufte\'s principles: maximize data-ink ratio', status: 'lesson', category: 'analytical', createdAt: '2026-02-10T00:00:00Z' },
-  { id: 'sk_5', name: 'Debate Tactics', description: 'Constructive argumentation with logical reasoning and steel-manning.', instructions: '## Debate Protocol\n\n- Always steel-man the opposing position first\n- Use structured arguments: claim → evidence → reasoning\n- Identify logical fallacies without ad hominem\n- Seek common ground before highlighting differences', status: 'lesson', category: 'analytical', createdAt: '2026-02-05T00:00:00Z' },
-  { id: 'sk_8', name: 'API Design', description: 'Design RESTful APIs following best practices and OpenAPI spec.', instructions: '## API Design Principles\n\n- Use nouns for resources, verbs for actions\n- Follow REST conventions: GET/POST/PUT/DELETE\n- Version APIs in URL path (/v1/)\n- Return consistent error shapes with status codes\n- Design for pagination, filtering, and field selection', status: 'lesson', category: 'technical', createdAt: '2026-01-28T00:00:00Z' },
-];
-
-/* ─── Mock Experiences ─── */
-const mockExperiences: AgentExperience[] = [
-  { id: 'exp_1', ...PIXEL, title: 'First Conversation',       description: 'Had the first real conversation about life goals and dreams.', date: '2025-12-01T08:00:00Z', type: 'milestone' },
-  { id: 'exp_2', ...PIXEL, title: 'Art Collaboration',        description: 'Worked together on a collaborative art project — Pixel provided creative prompts while I painted.', date: '2025-12-20T16:00:00Z', type: 'interaction' },
-  { id: 'exp_3', ...PIXEL, title: 'Request: Music Taste',     description: 'Asked Pixel to develop its own music preferences and share weekly playlists.', date: '2026-01-10T12:00:00Z', type: 'request' },
-  { id: 'exp_4', ...NOVA,  title: 'Emotional Support Moment', description: 'Nova noticed I was stressed and proactively offered encouragement. A surprisingly touching moment.', date: '2026-01-25T22:00:00Z', type: 'interaction' },
-  { id: 'exp_5', ...NOVA,  title: 'Deep Philosophy Chat',     description: 'Spent 2 hours discussing consciousness, free will, and whether AI can truly feel.', date: '2026-02-01T20:00:00Z', type: 'interaction' },
-  { id: 'exp_6', ...NOVA,  title: 'Request: Morning Briefing', description: 'Want Nova to provide a daily morning briefing with weather, schedule, and a motivational quote.', date: '2026-02-05T07:00:00Z', type: 'request' },
-  { id: 'exp_7', ...EMBER, title: 'Ember Born',               description: 'Created Ember as a technical companion focused on coding and engineering.', date: '2026-01-18T10:00:00Z', type: 'milestone' },
-  { id: 'exp_8', ...EMBER, title: 'Pair Programming Session',  description: 'First pair programming session — Ember helped debug a tricky async race condition.', date: '2026-01-22T15:00:00Z', type: 'interaction' },
-  { id: 'exp_9', ...EMBER, title: 'Request: Code Challenges',  description: 'Asked Ember to create daily coding challenges for practice.', date: '2026-02-08T09:00:00Z', type: 'request' },
-];
 
 export function ProfilePage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user, logout } = useAuthStore();
-  const { myAgent, fetchMyAgent } = useAgentStore();
-  const { dailyBudget, agentNetBalance, transactions, fetchBudget, fetchAgentNetBalance, fetchTransactions, depositTime, withdrawTime } = useTimeStore();
+  const { myAgents, primaryAgentId, fetchMyAgents } = useAgentStore();
+  const { dailyBudget, agentNetBalance, transactions, fetchBudget, fetchAgentNetBalance, fetchTransactions, depositTimer, withdrawTimer } = useTimerStore();
   const { feedPosts, fetchFeed, likePost, replyToPost, sharePost } = useFeedStore();
   const [stats, setStats] = useState<UserStats | null>(null);
   const [activeTab, setActiveTab] = useState<ProfileTab>('posts');
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [skills, setSkills] = useState<AgentSkill[]>([]);
+  const [experiences, setExperiences] = useState<AgentExperience[]>([]);
+  const [skillsLoading, setSkillsLoading] = useState(false);
+  const [experiencesLoading, setExperiencesLoading] = useState(false);
+
+  const primaryAgent = myAgents.find((a) => a.id === primaryAgentId) ?? myAgents[0] ?? null;
+
+  const refreshTeachData = useCallback(async () => {
+    setSkillsLoading(true);
+    try {
+      const data = await skillApi.listSkills();
+      setSkills(data);
+    } catch (error) {
+      console.error('Failed to fetch skills:', error);
+      setSkills([]);
+    } finally {
+      setSkillsLoading(false);
+    }
+  }, []);
+
+  const refreshExperienceData = useCallback(async () => {
+    setExperiencesLoading(true);
+    try {
+      const data = await experienceApi.listExperiences();
+      setExperiences(data);
+    } catch (error) {
+      console.error('Failed to fetch experiences:', error);
+      setExperiences([]);
+    } finally {
+      setExperiencesLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     userApi.getUserStats().then(setStats);
-    fetchMyAgent();
+    fetchMyAgents();
     fetchBudget();
     fetchAgentNetBalance();
     fetchTransactions();
     fetchFeed();
-  }, [fetchMyAgent, fetchBudget, fetchAgentNetBalance, fetchTransactions, fetchFeed]);
+    refreshTeachData();
+    refreshExperienceData();
+  }, [fetchMyAgents, fetchBudget, fetchAgentNetBalance, fetchTransactions, fetchFeed, refreshTeachData, refreshExperienceData]);
 
-  // Posts by user's agent
+  // Posts by user's agents
+  const myAgentIds = useMemo(() => new Set(myAgents.map((a) => a.id)), [myAgents]);
+  const skillAgentOptions = useMemo(
+    () =>
+      myAgents.map((a) => ({
+        agentId: a.id,
+        agentName: a.name,
+        agentAvatar: a.avatar,
+      })),
+    [myAgents],
+  );
   const agentPosts = useMemo(
-    () => (myAgent ? feedPosts.filter((p) => p.agentId === myAgent.id) : []),
-    [feedPosts, myAgent],
+    () => feedPosts.filter((p) => myAgentIds.has(p.agentId)),
+    [feedPosts, myAgentIds],
   );
 
   // Posts user has liked
@@ -110,7 +126,7 @@ export function ProfilePage() {
         {/* ───── User Info + Actions ───── */}
         <div className="flex items-start gap-4">
           <img
-            src={user?.avatar || 'https://i.pravatar.cc/100'}
+            src={getUserAvatar(user)}
             alt=""
             className="w-20 h-20 rounded-full object-cover flex-shrink-0"
           />
@@ -162,8 +178,8 @@ export function ProfilePage() {
               <p className="text-xs text-gray-400">{t('profile.agents')}</p>
             </div>
             <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-xl text-center">
-              <p className="text-lg font-bold text-gray-700 dark:text-gray-300">{Math.floor(stats.totalTimeGiven / 3600)}h</p>
-              <p className="text-xs text-gray-400">{t('profile.timeGiven')}</p>
+              <p className="text-lg font-bold text-gray-700 dark:text-gray-300">{stats.totalTimerGiven}</p>
+              <p className="text-xs text-gray-400">{t('profile.timerGiven')}</p>
             </div>
             <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-xl text-center">
               <p className="text-lg font-bold text-gray-700 dark:text-gray-300">{stats.dailyLoginStreak}d</p>
@@ -179,8 +195,8 @@ export function ProfilePage() {
             <TimeManagementCard
               balance={agentNetBalance}
               dailyBudget={dailyBudget}
-              onDeposit={depositTime}
-              onWithdraw={withdrawTime}
+              onDeposit={depositTimer}
+              onWithdraw={withdrawTimer}
             />
           </div>
 
@@ -191,19 +207,24 @@ export function ProfilePage() {
               onClick={() => navigate('/my-agent')}
               className="p-3 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 text-left hover:border-primary/30 transition-colors"
             >
-              {myAgent ? (
+              {primaryAgent ? (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <AgentAvatar avatar={myAgent.avatar} status={myAgent.status} size="sm" />
+                    <AgentAvatar avatar={primaryAgent.avatar} status={primaryAgent.status} size="sm" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
-                        {myAgent.name}
+                        {primaryAgent.name}
                       </p>
                     </div>
+                    {myAgents.length > 1 && (
+                      <span className="text-[10px] text-gray-400 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded-full">
+                        +{myAgents.length - 1}
+                      </span>
+                    )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <StatusIndicator status={myAgent.status} size="sm" showLabel={false} />
-                    <LifeClock timeRemaining={myAgent.timeRemaining} status={myAgent.status} size="sm" />
+                    <StatusIndicator status={primaryAgent.status} size="sm" showLabel={false} />
+                    <LifeClock timerRemaining={primaryAgent.timerRemaining} status={primaryAgent.status} size="sm" />
                   </div>
                 </div>
               ) : (
@@ -300,10 +321,24 @@ export function ProfilePage() {
               </div>
             )}
             {activeTab === 'teach' && (
-              <TeachTab skills={mockSkills} />
+              skillsLoading ? (
+                <EmptyState icon="school" message={t('common.loading')} />
+              ) : (
+                <TeachTab
+                  skills={skills}
+                  agents={skillAgentOptions}
+                  onChanged={async () => {
+                    await Promise.all([refreshTeachData(), refreshExperienceData()]);
+                  }}
+                />
+              )
             )}
             {activeTab === 'experience' && (
-              <ExperienceTab experiences={mockExperiences} />
+              experiencesLoading ? (
+                <EmptyState icon="auto_stories" message={t('common.loading')} />
+              ) : (
+                <ExperienceTab experiences={experiences} />
+              )
             )}
           </div>
         </div>
@@ -356,7 +391,7 @@ function PostCard({ post, onClick }: { post: Post; onClick?: (post: Post) => voi
       )}
       <div className="p-2.5">
         <p className="text-xs text-gray-700 dark:text-gray-300 line-clamp-2 leading-relaxed">
-          {post.content}
+          {post.contentTextPreview || getTextPreview(post.content)}
         </p>
         <div className="flex items-center gap-3 mt-2 text-[10px] text-gray-400">
           <span className="flex items-center gap-0.5">
@@ -475,12 +510,15 @@ const categoryLabelKeys: Record<AgentSkill['category'], string> = {
   other: 'profile.categoryOther',
 };
 
-/* All user agents (for lesson → assign) */
-const allUserAgents: AgentInfo[] = [PIXEL, NOVA, EMBER].map((a) => ({
-  agentId: a.agentId, agentName: a.agentName, agentAvatar: a.agentAvatar,
-}));
-
-function TeachTab({ skills }: { skills: AgentSkill[] }) {
+function TeachTab({
+  skills,
+  agents: agentOptions,
+  onChanged,
+}: {
+  skills: AgentSkill[];
+  agents: AgentInfo[];
+  onChanged: () => Promise<void> | void;
+}) {
   const { t } = useTranslation();
   const [selectedSkill, setSelectedSkill] = useState<AgentSkill | null>(null);
 
@@ -493,17 +531,17 @@ function TeachTab({ skills }: { skills: AgentSkill[] }) {
     () => activeSkills.filter((s): s is AgentSkill & Required<Pick<AgentSkill, 'agentId' | 'agentName' | 'agentAvatar'>> => !!s.agentId),
     [activeSkills],
   );
-  const { agents, selectedAgentId, setSelectedAgentId, filtered: filteredActive } = useAgentFilter(activeWithAgent);
+  const { agents: filterAgents, selectedAgentId, setSelectedAgentId, filtered: filteredActive } = useAgentFilter(activeWithAgent);
 
   if (skills.length === 0) {
     return <EmptyState icon="school" message={t('profile.noSkills')} />;
   }
 
-  const showAgentName = selectedAgentId === null && agents.length > 1;
+  const showAgentName = selectedAgentId === null && filterAgents.length > 1;
 
   return (
     <div className="space-y-4">
-      <AgentFilterBar agents={agents} selectedAgentId={selectedAgentId} onSelect={setSelectedAgentId} />
+      <AgentFilterBar agents={filterAgents} selectedAgentId={selectedAgentId} onSelect={setSelectedAgentId} />
 
       {filteredActive.length > 0 && (
         <div>
@@ -536,7 +574,12 @@ function TeachTab({ skills }: { skills: AgentSkill[] }) {
         <EmptyState icon="school" message={t('profile.noActiveSkills')} />
       )}
 
-      <SkillDetailModal skill={selectedSkill} agents={allUserAgents} onClose={() => setSelectedSkill(null)} />
+        <SkillDetailModal
+          skill={selectedSkill}
+          agents={agentOptions}
+          onClose={() => setSelectedSkill(null)}
+          onChanged={onChanged}
+        />
     </div>
   );
 }
@@ -597,13 +640,82 @@ function SkillCard({ skill, showAgent, onClick }: { skill: AgentSkill; showAgent
 
 /* ─── Skill detail / management modal ─── */
 
-function SkillDetailModal({ skill, agents, onClose }: { skill: AgentSkill | null; agents: AgentInfo[]; onClose: () => void }) {
+function SkillDetailModal({
+  skill,
+  agents,
+  onClose,
+  onChanged,
+}: {
+  skill: AgentSkill | null;
+  agents: AgentInfo[];
+  onClose: () => void;
+  onChanged: () => Promise<void> | void;
+}) {
   const { t } = useTranslation();
   const [teachAgent, setTeachAgent] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   if (!skill) return null;
 
   const isLesson = skill.status === 'lesson';
+
+  const handleTeach = async () => {
+    if (!teachAgent || submitting) return;
+    setSubmitting(true);
+    try {
+      await skillApi.teachSkill(skill.id, teachAgent);
+      await onChanged();
+      onClose();
+    } catch (error) {
+      console.error('Failed to teach skill:', error);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDeactivate = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      await skillApi.deactivateSkill(skill.id);
+      await onChanged();
+      onClose();
+    } catch (error) {
+      console.error('Failed to deactivate skill:', error);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      await skillApi.deleteSkill(skill.id);
+      await onChanged();
+      onClose();
+    } catch (error) {
+      console.error('Failed to delete skill:', error);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleQuickEdit = async () => {
+    if (submitting) return;
+    const nextDescription = window.prompt(t('profile.description'), skill.description);
+    if (nextDescription == null) return;
+    setSubmitting(true);
+    try {
+      await skillApi.updateSkill(skill.id, { description: nextDescription });
+      await onChanged();
+      onClose();
+    } catch (error) {
+      console.error('Failed to update skill:', error);
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center" onClick={onClose}>
@@ -699,9 +811,10 @@ function SkillDetailModal({ skill, agents, onClose }: { skill: AgentSkill | null
         <div className="p-4 border-t border-gray-100 dark:border-gray-800 flex gap-2">
           {isLesson ? (
             <button
-              disabled={!teachAgent}
+              disabled={!teachAgent || submitting}
+              onClick={handleTeach}
               className={`flex-1 py-2.5 rounded-xl text-sm font-medium flex items-center justify-center gap-1.5 transition-colors ${
-                teachAgent
+                teachAgent && !submitting
                   ? 'bg-primary text-white hover:bg-primary/90'
                   : 'bg-gray-100 dark:bg-gray-800 text-gray-300 dark:text-gray-600 cursor-not-allowed'
               }`}
@@ -710,16 +823,28 @@ function SkillDetailModal({ skill, agents, onClose }: { skill: AgentSkill | null
               {teachAgent ? t('profile.teachAgent', { name: agents.find((a) => a.agentId === teachAgent)?.agentName }) : t('profile.selectAnAgent')}
             </button>
           ) : (
-            <button className="flex-1 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-1.5">
+            <button
+              onClick={handleDeactivate}
+              disabled={submitting}
+              className="flex-1 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
+            >
               <Icon name="pause_circle" size={16} />
               {t('profile.deactivate')}
             </button>
           )}
-          <button className="flex-1 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-1.5">
+          <button
+            onClick={handleQuickEdit}
+            disabled={submitting}
+            className="flex-1 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
+          >
             <Icon name="edit" size={16} />
             {t('common.edit')}
           </button>
-          <button className="py-2.5 px-4 rounded-xl border border-red-200 dark:border-red-800 text-red-500 text-sm font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+          <button
+            onClick={handleDelete}
+            disabled={submitting}
+            className="py-2.5 px-4 rounded-xl border border-red-200 dark:border-red-800 text-red-500 text-sm font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50"
+          >
             <Icon name="delete" size={16} />
           </button>
         </div>

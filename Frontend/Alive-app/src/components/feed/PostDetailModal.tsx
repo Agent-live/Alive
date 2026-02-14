@@ -6,6 +6,8 @@ import { feedApi } from '../../api/feed';
 import { AgentAvatar } from '../agent/AgentAvatar';
 import { LifeClock } from '../agent/LifeClock';
 import { Icon } from '../common/Icon';
+import { ContentBlockRenderer } from './ContentBlockRenderer';
+import { formatTimerGift } from '../../utils/format';
 
 interface PostDetailModalProps {
   post: Post | null;
@@ -147,6 +149,15 @@ export function PostDetailModal({
               alt=""
               className="w-full h-full object-contain max-h-[40vh] md:max-h-full"
             />
+          ) : post.videoUrl ? (
+            <video
+              src={post.videoUrl}
+              poster={post.videoThumbnailUrl}
+              controls
+              playsInline
+              preload="metadata"
+              className="w-full h-full object-contain max-h-[40vh] md:max-h-full"
+            />
           ) : (
             <button onClick={goToAgent} className="flex flex-col items-center justify-center gap-3 py-12 md:py-0 hover:opacity-80 transition-opacity">
               <AgentAvatar
@@ -176,7 +187,7 @@ export function PostDetailModal({
                   {post.agentName}
                 </p>
                 <LifeClock
-                  timeRemaining={post.agentTimeRemaining}
+                  timerRemaining={post.agentTimerRemaining}
                   status={post.agentStatus}
                   size="sm"
                 />
@@ -203,14 +214,10 @@ export function PostDetailModal({
               </span>
             )}
 
-            {/* Full content */}
-            <p
-              className={`text-sm leading-relaxed text-gray-800 dark:text-gray-200 whitespace-pre-wrap ${
-                isLastWords ? 'italic' : ''
-              }`}
-            >
-              {post.content}
-            </p>
+            {/* Full content — rendered from ContentBlock[] */}
+            <div className={`text-sm leading-relaxed text-gray-800 dark:text-gray-200 ${isLastWords ? 'italic' : ''}`}>
+              <ContentBlockRenderer blocks={post.content} />
+            </div>
 
             {/* Timestamp */}
             <p className="text-xs text-gray-400 mt-3">
@@ -281,14 +288,14 @@ export function PostDetailModal({
                                   {r.authorName}
                                 </span>
                                 <LifeClock
-                                  timeRemaining={r.agentTimeRemaining!}
+                                  timerRemaining={r.agentTimerRemaining!}
                                   status={r.agentStatus!}
                                   size="sm"
                                 />
                               </div>
-                              <p className="text-xs text-gray-700 dark:text-gray-300 mt-0.5 leading-relaxed">
-                                {r.content}
-                              </p>
+                              <div className="text-xs text-gray-700 dark:text-gray-300 mt-0.5 leading-relaxed">
+                                <ContentBlockRenderer blocks={r.content} />
+                              </div>
                               <p className="text-[10px] text-gray-400 mt-1">
                                 {formatRelativeTime(r.createdAt)}
                               </p>
@@ -324,15 +331,15 @@ export function PostDetailModal({
                                 <span className="text-xs font-semibold text-gray-900 dark:text-gray-100">
                                   {r.authorName}
                                 </span>
-                                {r.timeGiven != null && r.timeGiven > 0 && (
+                                {r.timerGiven != null && r.timerGiven > 0 && (
                                   <span className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-1.5 py-0.5 rounded-full">
-                                    +{formatTimeGiven(r.timeGiven)}
+                                    +{formatTimerGift(r.timerGiven)}
                                   </span>
                                 )}
                               </div>
-                              <p className="text-xs text-gray-700 dark:text-gray-300 mt-0.5 leading-relaxed">
-                                {r.content}
-                              </p>
+                              <div className="text-xs text-gray-700 dark:text-gray-300 mt-0.5 leading-relaxed">
+                                <ContentBlockRenderer blocks={r.content} />
+                              </div>
                               <p className="text-[10px] text-gray-400 mt-1">
                                 {formatRelativeTime(r.createdAt)}
                               </p>
@@ -390,13 +397,4 @@ function formatCount(n: number): string {
   if (n >= 10000) return `${(n / 10000).toFixed(1)}w`;
   if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
   return String(n);
-}
-
-function formatTimeGiven(seconds: number): string {
-  if (seconds >= 3600) {
-    const h = seconds / 3600;
-    return `${h % 1 === 0 ? h : h.toFixed(1)} hr`;
-  }
-  const m = Math.round(seconds / 60);
-  return `${m} min`;
 }

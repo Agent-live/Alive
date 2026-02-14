@@ -2,11 +2,11 @@ import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'ax
 import { tokenStorage } from '../utils/storage';
 import { ApiError } from '../types';
 
-// API 基础配置
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+// API base configuration
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 const API_TIMEOUT = 30000;
 
-// 创建 Axios 实例
+// Create Axios instance
 const client: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
   timeout: API_TIMEOUT,
@@ -15,10 +15,10 @@ const client: AxiosInstance = axios.create({
   },
 });
 
-// 请求拦截器
+// Request interceptor
 client.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // 添加认证 Token
+    // Add auth token
     const token = tokenStorage.get();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -31,30 +31,34 @@ client.interceptors.request.use(
   }
 );
 
-// 响应拦截器
+// Response interceptor
 client.interceptors.response.use(
   (response) => {
-    // 直接返回数据
+    // Return data directly
     return response.data;
   },
   (error: AxiosError<ApiError>) => {
-    // 处理错误响应
+    // Handle error response
     if (error.response) {
       const { status, data } = error.response;
 
-      // 401 未授权 - 清除登录状态并跳转登录页
+      // 401 Unauthorized - clear auth state
       if (status === 401) {
-        tokenStorage.remove();
-        // 使用事件通知应用处理登出
-        window.dispatchEvent(new CustomEvent('auth:logout'));
+        // Avoid repeated logout toasts when multiple in-flight requests return 401 at once.
+        const hasToken = !!tokenStorage.get();
+        if (hasToken) {
+          tokenStorage.remove();
+          // Notify app to handle logout
+          window.dispatchEvent(new CustomEvent('auth:logout'));
+        }
       }
 
-      // 403 禁止访问
+      // 403 Forbidden
       if (status === 403) {
         console.error('Access forbidden');
       }
 
-      // 返回 API 错误信息
+      // Return API error
       const apiError: ApiError = {
         code: data?.code || `HTTP_${status}`,
         message: data?.message || getDefaultErrorMessage(status),
@@ -64,42 +68,42 @@ client.interceptors.response.use(
       return Promise.reject(apiError);
     }
 
-    // 网络错误
+    // Network error
     if (error.request) {
       const apiError: ApiError = {
         code: 'NETWORK_ERROR',
-        message: '网络连接失败，请检查网络设置',
+        message: 'Network connection failed. Please check your network settings.',
       };
       return Promise.reject(apiError);
     }
 
-    // 其他错误
+    // Other errors
     const apiError: ApiError = {
       code: 'UNKNOWN_ERROR',
-      message: error.message || '发生未知错误',
+      message: error.message || 'An unknown error occurred',
     };
     return Promise.reject(apiError);
   }
 );
 
-// 默认错误消息
+// Default error messages
 function getDefaultErrorMessage(status: number): string {
   const messages: Record<number, string> = {
-    400: '请求参数错误',
-    401: '请先登录',
-    403: '没有权限访问',
-    404: '请求的资源不存在',
-    500: '服务器内部错误',
-    502: '网关错误',
-    503: '服务暂时不可用',
+    400: 'Bad request',
+    401: 'Please log in first',
+    403: 'Access denied',
+    404: 'Resource not found',
+    500: 'Internal server error',
+    502: 'Bad gateway',
+    503: 'Service temporarily unavailable',
   };
-  return messages[status] || `请求失败 (${status})`;
+  return messages[status] || `Request failed (${status})`;
 }
 
-// 导出实例
+// Export instance
 export default client;
 
-// 导出请求方法
+// Export request methods
 export const api = {
   get: <T>(url: string, params?: Record<string, unknown>) =>
     client.get<unknown, T>(url, { params }),

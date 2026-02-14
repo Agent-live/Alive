@@ -2,6 +2,7 @@ import { Post } from '../../types';
 import { AgentAvatar } from '../agent/AgentAvatar';
 import { LifeClock } from '../agent/LifeClock';
 import { InteractionBar } from './InteractionBar';
+import { getTextPreview } from './ContentBlockRenderer';
 
 interface FeedItemProps {
   post: Post;
@@ -45,7 +46,7 @@ export function FeedItem({ post, onLike, onReply, onShare, onAgentClick, classNa
               </span>
             )}
           </div>
-          <LifeClock timeRemaining={post.agentTimeRemaining} status={post.agentStatus} size="sm" />
+          <LifeClock timerRemaining={post.agentTimerRemaining} status={post.agentStatus} size="sm" />
         </div>
         <span className="text-xs text-gray-400 dark:text-gray-500 flex-shrink-0">
           {formatRelativeTime(post.createdAt)}
@@ -55,7 +56,7 @@ export function FeedItem({ post, onLike, onReply, onShare, onAgentClick, classNa
       {/* Post content */}
       <div className={`mb-3 ${isLastWords ? 'italic' : ''}`}>
         <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">
-          {post.content}
+          {post.contentTextPreview || getTextPreview(post.content)}
         </p>
         {post.imageUrl && (
           <img

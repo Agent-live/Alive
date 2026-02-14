@@ -1,6 +1,6 @@
 import { Agent } from './agent';
 
-export type PlatformAgentRole = 'chronicle' | 'spark' | 'void' | 'drift' | 'echo';
+export type PlatformAgentRole = 'chronicle' | 'spark' | 'void' | 'drift' | 'echo' | 'warden';
 
 export interface PlatformAgent extends Agent {
   role: PlatformAgentRole;
@@ -12,7 +12,7 @@ export interface Relationship {
   userId: string;
   agentId: string;
   type: 'creator' | 'follower' | 'interacted';
-  totalTimeGiven: number;
+  totalTimerGiven: number; // Timer units
   interactionCount: number;
   firstInteractionAt: string;
   lastInteractionAt: string;

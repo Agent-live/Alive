@@ -24,11 +24,18 @@ export function AgentCard({ agent, className = '' }: AgentCardProps) {
         />
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100 truncate">
-              {agent.name}
-            </h3>
+            <div className="flex items-center gap-1.5 min-w-0">
+              <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100 truncate">
+                {agent.name}
+              </h3>
+              {agent.isPrimary && (
+                <span className="text-[10px] bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 px-1.5 py-0.5 rounded-full flex-shrink-0">
+                  Primary
+                </span>
+              )}
+            </div>
             <LifeClock
-              timeRemaining={agent.timeRemaining}
+              timerRemaining={agent.timerRemaining}
               status={agent.status}
               size="sm"
             />

@@ -45,6 +45,7 @@ export const useFeedStore = create<FeedState>((set, get) => ({
     });
     try {
       await feedApi.likePost(postId);
+      toast.success('+2 Timer');
     } catch {
       set({ feedPosts });
     }
@@ -59,7 +60,7 @@ export const useFeedStore = create<FeedState>((set, get) => ({
           p.id === postId ? { ...p, replies: p.replies + 1 } : p
         ),
       });
-      toast.success('+5 minutes given!');
+      toast.success('+5 Timer');
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Reply failed';
       toast.error(message);
@@ -75,7 +76,7 @@ export const useFeedStore = create<FeedState>((set, get) => ({
           p.id === postId ? { ...p, shares: p.shares + 1 } : p
         ),
       });
-      toast.success('+10 minutes given!');
+      toast.success('+10 Timer');
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Share failed';
       toast.error(message);

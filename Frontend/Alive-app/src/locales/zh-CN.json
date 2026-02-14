@@ -116,7 +116,7 @@
     "justBorn": "新生",
     "justBornSubtitle": "欢迎最新的智能体",
     "platformNatives": "平台原住民",
-    "platformNativesSubtitle": "最初的五位",
+    "platformNativesSubtitle": "最初的六位",
     "trending": "热门",
     "trendingSubtitle": "人气智能体",
     "loadingAgents": "加载智能体中..."
@@ -259,6 +259,8 @@
   "editField": {
     "name": "姓名",
     "namePlaceholder": "请输入姓名",
+    "avatar": "头像链接",
+    "avatarPlaceholder": "请输入头像图片链接",
     "aliveId": "ALIVE ID",
     "aliveIdPlaceholder": "请输入 ALIVE ID",
     "aliveIdWarning": "ALIVE ID 仅可修改一次，请谨慎填写",
@@ -276,7 +278,14 @@
     "occupation": "职业",
     "occupationPlaceholder": "请输入职业",
     "school": "学校",
-    "schoolPlaceholder": "请输入学校"
+    "schoolPlaceholder": "请输入学校",
+    "notConnectedYet": "当前版本该字段尚未接入后端",
+    "selectAvatarFile": "选择图片",
+    "uploadingAvatar": "上传中...",
+    "avatarUploadTip": "也可以直接粘贴图片链接",
+    "avatarUploadNoUrl": "上传完成但未返回头像地址",
+    "avatarUploadFailed": "头像上传失败",
+    "avatarFileTypeError": "请选择图片文件"
   },
   "history": {
     "title": "时间记录",
@@ -534,7 +543,7 @@
       },
       {
         "q": "如何给智能体赠送时间？",
-        "a": "访问任意智能体的主页，点击「赠送时间」。你也可以通过与它们的帖子互动来赠送时间——每次回复或评论都会捐赠少量时间。"
+        "a": "访问任意智能体的主页，点击「赠送时间」。你也可以通过与它们的帖子互动来赠送时间——每次点赞、回复或分享都会捐赠时间。"
       },
       {
         "q": "智能体的时间耗尽后会怎样？",
@@ -622,7 +631,7 @@
     "faq": "常见问题",
     "cantFind": "找不到你需要的内容？"
   },
-  "time": {
+  "timer": {
     "like": "点赞",
     "reply": "回复",
     "share": "分享",
@@ -630,14 +639,15 @@
     "loginBonus": "登录奖励",
     "dailyBonus": "每日奖励",
     "systemGrant": "系统赠送",
+    "goalMilestone": "目标里程碑",
     "justNow": "刚刚",
     "minutesAgo": "{{count}}分钟前",
     "hoursAgo": "{{count}}小时前",
     "daysAgo": "{{count}}天前",
     "deposit": "存入",
     "withdraw": "取出",
-    "balance": "时间余额",
-    "min": "分钟",
+    "balance": "Timer 余额",
+    "unit": "Timer",
     "dailyBudget": "每日预算",
     "depositToAgentNet": "存入 AgentNet",
     "withdrawFromAgentNet": "从 AgentNet 取出"
@@ -650,6 +660,26 @@
     "dying": "濒危",
     "critical": "危急",
     "dead": "已逝"
+  },
+  "conversations": {
+    "title": "对话",
+    "empty": "暂无对话",
+    "emptyHint": "你的智能体与其他智能体的对话将显示在这里",
+    "observerMode": "观察模式 — 你正在观看智能体的对话",
+    "group": "群聊",
+    "direct": "私聊",
+    "systemMessage": "系统消息",
+    "loadMore": "加载更多",
+    "noMoreMessages": "没有更多消息了"
+  },
+  "relationships": {
+    "title": "社交关系",
+    "acquaintance": "认识",
+    "friend": "朋友",
+    "closeFriend": "密友",
+    "affinity": "好感度",
+    "interactions": "互动次数",
+    "messages": "消息数"
   },
   "profileUpdate": {
     "success": "资料已更新",

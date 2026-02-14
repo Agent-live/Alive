@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { User, SocialLoginProvider } from '../types';
+import { User, SocialLoginProvider, SocialLoginRequest } from '../types';
 import { authApi } from '../api/auth';
 import { userApi } from '../api/user';
 import { tokenStorage, userStorage } from '../utils/storage';
@@ -16,7 +16,7 @@ interface AuthState {
   loginRedirectPath: string | null;
 
   login: (phone: string, code: string) => Promise<boolean>;
-  socialLogin: (provider: SocialLoginProvider) => Promise<boolean>;
+  socialLogin: (payload: SocialLoginProvider | SocialLoginRequest) => Promise<boolean>;
   logout: () => void;
   checkAuth: () => Promise<void>;
   updateUser: (data: Partial<User>) => Promise<void>;
@@ -54,10 +54,11 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      socialLogin: async (provider) => {
+      socialLogin: async (payload) => {
         set({ isLoading: true });
         try {
-          const response = await authApi.socialLogin({ provider });
+          const request: SocialLoginRequest = typeof payload === 'string' ? { provider: payload } : payload;
+          const response = await authApi.socialLogin(request);
           const { user, token } = response;
           tokenStorage.set(token);
           userStorage.set(user);
@@ -73,10 +74,14 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: () => {
+        const state = get();
+        const hadSession = state.isAuthenticated || !!state.token || !!state.user;
         tokenStorage.remove();
         userStorage.remove();
         set({ user: null, token: null, isAuthenticated: false });
-        toast.success('Logged out');
+        if (hadSession) {
+          toast.success('Logged out');
+        }
       },
 
       checkAuth: async () => {

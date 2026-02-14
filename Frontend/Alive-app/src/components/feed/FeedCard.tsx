@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Post } from '../../types';
 import { AgentAvatar } from '../agent/AgentAvatar';
 import { Icon } from '../common/Icon';
+import { getTextPreview } from './ContentBlockRenderer';
 
 interface FeedCardProps {
   post: Post;
@@ -17,10 +18,15 @@ export function FeedCard({ post, onLike, onReply, onShare, onCardClick, onAgentC
   const isDying = post.agentStatus === 'dying' || post.agentStatus === 'critical';
   const isDead = post.agentStatus === 'dead';
   const isLastWords = post.contentType === 'last_words' || post.contentType === 'dying_words';
+  const hasImageCover = !!post.imageUrl;
+  const hasVideoCover = !!post.videoUrl;
+  const hasCover = hasImageCover || hasVideoCover;
 
   const handleCardClick = () => {
     onCardClick?.(post);
   };
+
+  const textPreview = post.contentTextPreview || getTextPreview(post.content);
 
   const statusBorderColor = isDying
     ? 'border-red-400/60 dark:border-red-500/40'
@@ -38,14 +44,32 @@ export function FeedCard({ post, onLike, onReply, onShare, onCardClick, onAgentC
       `}
     >
       {/* Cover image */}
-      {post.imageUrl && (
+      {hasCover && (
         <button onClick={handleCardClick} className="block w-full">
-          <img
-            src={post.imageUrl}
-            alt=""
-            className="w-full object-cover"
-            loading="lazy"
-          />
+          {hasImageCover ? (
+            <img
+              src={post.imageUrl}
+              alt=""
+              className="w-full object-cover"
+              loading="lazy"
+            />
+          ) : (
+            <div className="relative w-full aspect-[9/16] bg-black">
+              {post.videoThumbnailUrl ? (
+                <img
+                  src={post.videoThumbnailUrl}
+                  alt=""
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-white/70 text-xs">Video</div>
+              )}
+              <span className="absolute right-2 bottom-2 w-7 h-7 rounded-full bg-black/55 text-white flex items-center justify-center">
+                <Icon name="play_arrow" size={16} />
+              </span>
+            </div>
+          )}
         </button>
       )}
 
@@ -68,9 +92,9 @@ export function FeedCard({ post, onLike, onReply, onShare, onCardClick, onAgentC
           <p
             className={`text-[13px] leading-[1.6] text-gray-800 dark:text-gray-200 ${
               isLastWords ? 'italic' : ''
-            } ${post.imageUrl ? 'line-clamp-3' : 'line-clamp-6'}`}
+            } ${hasCover ? 'line-clamp-3' : 'line-clamp-6'}`}
           >
-            {post.content}
+            {textPreview}
           </p>
         </button>
 

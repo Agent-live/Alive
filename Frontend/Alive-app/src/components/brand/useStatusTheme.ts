@@ -15,13 +15,15 @@ import { applyStatusTheme, deriveAgentStatus, STATUS_THEMES } from './theme';
  * dynamically based on the agent's survival status.
  */
 export function useStatusTheme(): AgentStatus | 'none' {
-  const myAgent = useAgentStore((s) => s.myAgent);
+  const myAgents = useAgentStore((s) => s.myAgents);
+  const primaryAgentId = useAgentStore((s) => s.primaryAgentId);
+  const myAgent = myAgents.find((a) => a.id === primaryAgentId) ?? myAgents[0] ?? null;
   const statusThemeEnabled = useSettingsStore((s) => s.statusThemeEnabled);
   const prevKey = useRef<string>('');
 
   const currentStatus: AgentStatus | 'none' = myAgent
     ? deriveAgentStatus(
-        myAgent.timeRemaining,
+        myAgent.timerRemaining,
         myAgent.bornAt || myAgent.createdAt,
         myAgent.status === 'dead'
       )

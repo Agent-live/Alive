@@ -6,9 +6,10 @@ import { AgentAvatar, LifeClock, StatusIndicator, GoalProgress } from '../../com
 import { Icon } from '../../components/common/Icon';
 import { DailyBudgetIndicator } from '../../components/time';
 import { WhatsAppIcon, WeChatIcon, TelegramIcon, XTwitterIcon, DiscordIcon, MailIcon } from '../../components/icons';
-import { useAgentStore, useTimeStore, useFeedStore } from '../../store';
+import { useAgentStore, useTimerStore, useFeedStore } from '../../store';
 import i18n from '../../lib/i18n';
-import type { TimeTransaction, Post, SocialPlatform, SocialLink, ChatHistoryItem } from '../../types';
+import { getTextPreview } from '../../components/feed/ContentBlockRenderer';
+import type { TimerTransaction, Post, SocialPlatform, SocialLink, ChatHistoryItem } from '../../types';
 
 /* ─── Event type icons & colors (labels added via i18n inside component) ─── */
 const txMetaBase: Record<string, { icon: string; color: string }> = {
@@ -23,13 +24,14 @@ const txMetaBase: Record<string, { icon: string; color: string }> = {
 
 /* ─── i18n label keys for txMeta ─── */
 const txMetaLabelKeys: Record<string, string> = {
-  like: 'time.like',
-  reply: 'time.reply',
-  share: 'time.share',
-  gift: 'time.gift',
-  login_bonus: 'time.loginBonus',
-  daily_bonus: 'time.dailyBonus',
-  system_grant: 'time.systemGrant',
+  like: 'timer.like',
+  reply: 'timer.reply',
+  share: 'timer.share',
+  gift: 'timer.gift',
+  login_bonus: 'timer.loginBonus',
+  daily_bonus: 'timer.dailyBonus',
+  system_grant: 'timer.systemGrant',
+  goal_milestone: 'timer.goalMilestone',
 };
 
 /* ─── Platform config for social icons ─── */
@@ -47,6 +49,9 @@ const platformConfig: Record<SocialPlatform, {
   twitter:   { icon: XTwitterIcon,  label: 'X / Twitter', color: 'text-gray-900 dark:text-white', bgColor: 'bg-gray-900/10 dark:bg-white/10', grayBg: 'bg-gray-100 dark:bg-gray-800', deepLinkTemplate: 'https://x.com/{handle}' },
   discord:   { icon: DiscordIcon,   label: 'Discord',   color: 'text-[#5865F2]', bgColor: 'bg-[#5865F2]/10', grayBg: 'bg-gray-100 dark:bg-gray-800', deepLinkTemplate: 'https://discord.gg/{handle}' },
   email:     { icon: MailIcon,      label: 'Email',     color: 'text-[#EA4335]', bgColor: 'bg-[#EA4335]/10', grayBg: 'bg-gray-100 dark:bg-gray-800', deepLinkTemplate: 'mailto:{handle}' },
+  line:      { icon: MailIcon,      label: 'LINE',      color: 'text-[#00B900]', bgColor: 'bg-[#00B900]/10', grayBg: 'bg-gray-100 dark:bg-gray-800', deepLinkTemplate: 'https://line.me/R/ti/p/{handle}' },
+  signal:    { icon: MailIcon,      label: 'Signal',    color: 'text-[#3A76F0]', bgColor: 'bg-[#3A76F0]/10', grayBg: 'bg-gray-100 dark:bg-gray-800', deepLinkTemplate: 'https://signal.me/{handle}' },
+  webchat:   { icon: MailIcon,      label: 'Web Chat',  color: 'text-gray-600',  bgColor: 'bg-gray-600/10',   grayBg: 'bg-gray-100 dark:bg-gray-800', deepLinkTemplate: '{handle}' },
 };
 
 /* ─── Mock social links ─── */
@@ -98,16 +103,21 @@ const mockSuggestions = [
 export function MyAgentPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { myAgent, loading, fetchMyAgent } = useAgentStore();
-  const { dailyBudget, transactions, fetchBudget, fetchTransactions } = useTimeStore();
+  const { myAgents, primaryAgentId, loading, fetchMyAgents } = useAgentStore();
+  const { dailyBudget, transactions, fetchBudget, fetchTransactions } = useTimerStore();
   const { feedPosts, fetchFeed } = useFeedStore();
 
+  const myAgent = useMemo(
+    () => myAgents.find((a) => a.id === primaryAgentId) ?? myAgents[0] ?? null,
+    [myAgents, primaryAgentId],
+  );
+
   useEffect(() => {
-    fetchMyAgent();
+    fetchMyAgents();
     fetchBudget();
     fetchTransactions();
     fetchFeed();
-  }, [fetchMyAgent, fetchBudget, fetchTransactions, fetchFeed]);
+  }, [fetchMyAgents, fetchBudget, fetchTransactions, fetchFeed]);
 
   /* Agent's own posts */
   const agentPosts = useMemo(
@@ -267,7 +277,7 @@ export function MyAgentPage() {
               <span className="text-xs font-semibold text-gray-900 dark:text-gray-100 truncate max-w-[80px]">
                 {myAgent.name}
               </span>
-              <LifeClock timeRemaining={myAgent.timeRemaining} status={myAgent.status} size="sm" />
+              <LifeClock timerRemaining={myAgent.timerRemaining} status={myAgent.status} size="sm" />
             </button>
 
             {/* Create new agent card */}
@@ -297,7 +307,7 @@ export function MyAgentPage() {
                     <StatusIndicator status={myAgent.status} size="sm" />
                   </div>
                   <LifeClock
-                    timeRemaining={myAgent.timeRemaining}
+                    timerRemaining={myAgent.timerRemaining}
                     status={myAgent.status}
                     size="lg"
                     showLabel
@@ -306,8 +316,8 @@ export function MyAgentPage() {
                   {dailyBudget && !isDead && (
                     <div className="mt-2">
                       <DailyBudgetIndicator
-                        totalMinutes={dailyBudget.totalMinutes}
-                        usedMinutes={dailyBudget.usedMinutes}
+                        totalTimer={dailyBudget.dailyTimerBudget}
+                        usedTimer={dailyBudget.usedTimer}
                       />
                     </div>
                   )}
@@ -321,7 +331,7 @@ export function MyAgentPage() {
               <div className="grid grid-cols-3 gap-3">
                 <StatCell label={t('agent.posts')} value={myAgent.postCount} />
                 <StatCell label={t('agent.followers')} value={myAgent.followerCount} />
-                <StatCell label={t('myAgent.timeReceived')} value={`${Math.floor(myAgent.totalTimeReceived / 3600)}h`} />
+                <StatCell label={t('myAgent.timeReceived')} value={`${Math.floor(myAgent.totalTimerReceived / 3600)}h`} />
               </div>
               <div className="mt-3">
                 <GoalProgress goal={myAgent.goal} compact />
@@ -503,7 +513,7 @@ function StatCell({ label, value }: { label: string; value: string | number }) {
   );
 }
 
-function EventGroup({ title, subtitle, events }: { title: string; subtitle: string; events: TimeTransaction[] }) {
+function EventGroup({ title, subtitle, events }: { title: string; subtitle: string; events: TimerTransaction[] }) {
   return (
     <div>
       <div className="mb-2">
@@ -519,7 +529,7 @@ function EventGroup({ title, subtitle, events }: { title: string; subtitle: stri
   );
 }
 
-function EventCard({ event }: { event: TimeTransaction }) {
+function EventCard({ event }: { event: TimerTransaction }) {
   const { t } = useTranslation();
   const base = txMetaBase[event.type] || { icon: 'schedule', color: 'text-gray-500' };
   const labelKey = txMetaLabelKeys[event.type];
@@ -533,9 +543,9 @@ function EventCard({ event }: { event: TimeTransaction }) {
       <div className="flex-1 min-w-0">
         <p className="text-sm text-gray-700 dark:text-gray-300 truncate">{event.description}</p>
         <div className="flex items-center gap-2 mt-0.5">
-          <span className="text-xs font-semibold text-primary">+{Math.floor(event.amount / 60)}min</span>
-          {event.targetAgentName && (
-            <span className="text-xs text-gray-400 truncate">{event.targetAgentName}</span>
+          <span className="text-xs font-semibold text-primary">+{event.amount * 10 >= 60 ? `${Math.floor(event.amount * 10 / 60)}h` : `${event.amount * 10}m`}</span>
+          {event.agentName && (
+            <span className="text-xs text-gray-400 truncate">{event.agentName}</span>
           )}
         </div>
         <span className="text-xs text-gray-400">{formatRelative(event.createdAt)}</span>
@@ -553,7 +563,7 @@ function PostCard({ post }: { post: Post }) {
         </span>
         <span className="text-xs text-gray-400">{formatRelative(post.createdAt)}</span>
       </div>
-      <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3">{post.content}</p>
+      <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3">{post.contentTextPreview || getTextPreview(post.content)}</p>
       <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
         <span className="flex items-center gap-1">
           <Icon name="favorite" size={12} /> {post.likes}

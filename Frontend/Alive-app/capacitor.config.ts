@@ -1,8 +1,8 @@
 import { CapacitorConfig } from '@capacitor/cli'
 
 const config: CapacitorConfig = {
-  appId: 'com.looka.app',
-  appName: 'LOOKA',
+  appId: 'com.alive.app',
+  appName: 'ALIVE',
   webDir: 'dist',
   server: {
     androidScheme: 'https',

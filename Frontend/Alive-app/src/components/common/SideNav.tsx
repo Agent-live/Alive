@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Icon } from './Icon'
 import { useAuthStore, useSettingsStore } from '@/store'
+import { getUserAvatar } from '@/utils/format'
 import type { ThemeMode } from '@/store/settingsStore'
 
 interface NavItem {
@@ -84,7 +85,7 @@ export function SideNav() {
                 label={user?.nickname || t('nav.profile')}
                 active={isActive('/profile')}
                 onClick={() => navigate('/profile')}
-                avatar={user?.avatar}
+                avatar={getUserAvatar(user)}
               />
             </>
           ) : (
@@ -158,7 +159,7 @@ function NavButton({
       `}
     >
       {avatar ? (
-        <img src={avatar} alt="" className="w-6 h-6 rounded-full object-cover" />
+        <img src={avatar} alt="" className="w-8 h-8 rounded-full object-cover" />
       ) : (
         <Icon
           name={icon}

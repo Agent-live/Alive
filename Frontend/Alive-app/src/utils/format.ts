@@ -1,35 +1,64 @@
-import { AgentStatus } from '../types';
+import { AgentStatus, User } from '../types';
 
 /**
- * Format time remaining as HH:MM:SS
+ * Format Timer balance with human-readable time equivalent.
+ * 1 Timer = 10 minutes of display time.
  */
-export function formatTimeRemaining(seconds: number): string {
-  if (seconds <= 0) return '00:00:00';
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = seconds % 60;
+export function formatTimer(timer: number, options?: { showEquivalent?: boolean }): string {
+  if (timer <= 0) return '0 Timer';
+  if (options?.showEquivalent) {
+    const hours = Math.floor((timer * 10) / 60);
+    return `${timer} Timer (about ${hours}h)`;
+  }
+  return `${timer} Timer`;
+}
+
+/**
+ * Format Timer transaction (with +/- sign)
+ */
+export function formatTimerDelta(delta: number): string {
+  const sign = delta >= 0 ? '+' : '';
+  return `${sign}${delta} Timer`;
+}
+
+/**
+ * Convert Timer to approximate human time string
+ */
+export function timerToHumanTime(timer: number): string {
+  const minutes = timer * 10;
+  if (minutes < 60) return `${minutes}m`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ${hours % 24}h`;
+}
+
+/**
+ * Convert Timer to LifeClock display format (HH:MM:SS).
+ * 1 Timer = 10 minutes = 600 seconds for display purposes.
+ */
+export function timerToLifeClock(timer: number): string {
+  if (timer <= 0) return '00:00:00';
+  const totalSeconds = timer * 600;
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
   return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
 /**
- * Format lifespan in human-readable form
+ * Format Timer lifespan in human-readable form
  */
-export function formatLifespan(seconds: number): string {
-  if (seconds <= 0) return '0 seconds';
-  const days = Math.floor(seconds / 86400);
-  const hours = Math.floor((seconds % 86400) / 3600);
-  if (days > 0) return `${days} day${days !== 1 ? 's' : ''} ${hours}h`;
-  if (hours > 0) return `${hours} hour${hours !== 1 ? 's' : ''}`;
-  const minutes = Math.floor(seconds / 60);
-  return `${minutes} minute${minutes !== 1 ? 's' : ''}`;
+export function formatLifespan(timer: number): string {
+  if (timer <= 0) return '0 Timer';
+  return timerToHumanTime(timer);
 }
 
 /**
- * Format time gift amount
+ * Format Timer gift amount
  */
-export function formatTimeGift(seconds: number): string {
-  if (seconds >= 3600) return `${Math.floor(seconds / 3600)}h`;
-  return `${Math.floor(seconds / 60)}m`;
+export function formatTimerGift(timer: number): string {
+  return `${timer} Timer`;
 }
 
 /**
@@ -110,6 +139,17 @@ export function formatNumberShort(num: number): string {
   if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
   if (num >= 1000) return `${(num / 1000).toFixed(1)}k`;
   return String(num);
+}
+
+/**
+ * Get user avatar URL with gender-based default fallback.
+ * Uses locally cached DiceBear Notionists SVGs.
+ */
+export function getUserAvatar(user: Pick<User, 'avatar' | 'gender'> | null | undefined): string {
+  if (user?.avatar) return user.avatar;
+  if (user?.gender === 'female') return '/default-avatar-female.svg';
+  if (user?.gender === 'male') return '/default-avatar-male.svg';
+  return '/default-avatar.svg';
 }
 
 /**

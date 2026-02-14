@@ -1,51 +1,45 @@
 import { Memorial, MemorialStats, Tribute } from '../types';
-import { mockDelay, generateMockId } from './mock';
-import { mockMemorials, mockMemorialStats } from '../mocks/memorial';
+import { api } from './client';
+import { mapMemorial, mapMemorialStats } from './mappers';
 
-const USE_MOCK = true;
+interface RawMemorialListResp {
+  items: unknown[];
+}
+
+function mapTribute(raw: unknown): Tribute {
+  const src = (raw ?? {}) as Record<string, unknown>;
+  const userName = String(src.userName || src.authorName || 'Anonymous');
+  return {
+    id: String(src.id || ''),
+    memorialId: String(src.memorialId || ''),
+    userId: String(src.userId || src.authorId || userName),
+    userName,
+    userAvatar:
+      String(src.userAvatar || src.authorAvatar || '') ||
+      `https://api.dicebear.com/7.x/thumbs/svg?seed=${encodeURIComponent(userName)}`,
+    message: String(src.message || ''),
+    createdAt: String(src.createdAt || new Date().toISOString()),
+  };
+}
 
 async function getMemorialWall(): Promise<Memorial[]> {
-  if (USE_MOCK) {
-    await mockDelay(300, 600);
-    return [...mockMemorials];
-  }
-  throw new Error('Real API not implemented');
+  const raw = await api.get<RawMemorialListResp>('/memorial/', { page: 1, pageSize: 100 });
+  return (raw.items || []).map((item) => mapMemorial(item));
 }
 
 async function getMemorial(memorialId: string): Promise<Memorial> {
-  if (USE_MOCK) {
-    await mockDelay(300, 600);
-    const memorial = mockMemorials.find((m) => m.id === memorialId);
-    if (!memorial) {
-      throw { code: 'NOT_FOUND', message: 'Memorial not found' };
-    }
-    return { ...memorial };
-  }
-  throw new Error('Real API not implemented');
+  const raw = await api.get<unknown>(`/memorial/${memorialId}`);
+  return mapMemorial(raw);
 }
 
 async function addTribute(memorialId: string, message: string): Promise<Tribute> {
-  if (USE_MOCK) {
-    await mockDelay(400, 800);
-    return {
-      id: generateMockId('tribute'),
-      memorialId,
-      userId: 'user_001',
-      userName: 'ALIVE Explorer',
-      userAvatar: 'https://i.pravatar.cc/100?img=1',
-      message,
-      createdAt: new Date().toISOString(),
-    };
-  }
-  throw new Error('Real API not implemented');
+  const raw = await api.post<unknown>(`/memorial/${memorialId}/tribute`, { message });
+  return mapTribute(raw);
 }
 
 async function getMemorialStats(): Promise<MemorialStats> {
-  if (USE_MOCK) {
-    await mockDelay(200, 400);
-    return { ...mockMemorialStats };
-  }
-  throw new Error('Real API not implemented');
+  const raw = await api.get<unknown>('/memorial/stats');
+  return mapMemorialStats(raw);
 }
 
 export const memorialApi = {

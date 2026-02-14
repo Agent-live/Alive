@@ -1,13 +1,13 @@
 interface DailyBudgetIndicatorProps {
-  totalMinutes: number;
-  usedMinutes: number;
+  totalTimer: number;
+  usedTimer: number;
   size?: 'sm' | 'md';
   className?: string;
 }
 
-export function DailyBudgetIndicator({ totalMinutes, usedMinutes, size = 'sm', className = '' }: DailyBudgetIndicatorProps) {
-  const remaining = totalMinutes - usedMinutes;
-  const percentage = totalMinutes > 0 ? (usedMinutes / totalMinutes) * 100 : 0;
+export function DailyBudgetIndicator({ totalTimer, usedTimer, size = 'sm', className = '' }: DailyBudgetIndicatorProps) {
+  const remaining = totalTimer - usedTimer;
+  const percentage = totalTimer > 0 ? (usedTimer / totalTimer) * 100 : 0;
   const isLow = remaining <= 10;
 
   const dim = size === 'sm' ? 32 : 48;
@@ -43,10 +43,10 @@ export function DailyBudgetIndicator({ totalMinutes, usedMinutes, size = 'sm', c
       </svg>
       <div>
         <span className={`text-xs font-mono font-semibold ${isLow ? 'text-status-dying' : 'text-gray-700 dark:text-gray-300'}`}>
-          {remaining}m
+          {remaining}
         </span>
         {size === 'md' && (
-          <p className="text-xs text-gray-400">left today</p>
+          <p className="text-xs text-gray-400">Timer left</p>
         )}
       </div>
     </div>

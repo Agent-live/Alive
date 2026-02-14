@@ -1,8 +1,8 @@
-import { TimeTransaction as TimeTransactionType } from '../../types';
+import { TimerTransaction } from '../../types';
 import { Icon } from '../common/Icon';
 
 interface TimeTransactionProps {
-  transaction: TimeTransactionType;
+  transaction: TimerTransaction;
   className?: string;
 }
 
@@ -12,13 +12,16 @@ const typeConfig: Record<string, { icon: string; color: string; label: string }>
   reply: { icon: 'chat_bubble', color: 'text-green-500', label: 'Reply' },
   share: { icon: 'share', color: 'text-purple-500', label: 'Share' },
   gift: { icon: 'redeem', color: 'text-amber-500', label: 'Gift' },
+  save: { icon: 'bookmark', color: 'text-indigo-500', label: 'Save' },
   system_grant: { icon: 'auto_awesome', color: 'text-primary', label: 'System' },
   daily_bonus: { icon: 'today', color: 'text-blue-400', label: 'Daily Bonus' },
+  goal_milestone: { icon: 'emoji_events', color: 'text-amber-500', label: 'Goal Milestone' },
 };
 
-function formatTimeAmount(seconds: number): string {
-  if (seconds >= 3600) return `${Math.floor(seconds / 3600)}h`;
-  return `${Math.floor(seconds / 60)}m`;
+function formatTimerAmount(timer: number): string {
+  const totalMin = Math.abs(timer) * 10;
+  if (totalMin >= 60) return `${Math.floor(totalMin / 60)}h`;
+  return `${totalMin}m`;
 }
 
 function formatDate(dateStr: string): string {
@@ -46,7 +49,7 @@ export function TimeTransactionItem({ transaction, className = '' }: TimeTransac
         <p className="text-xs text-gray-400">{formatDate(transaction.createdAt)}</p>
       </div>
       <span className="text-sm font-mono font-semibold text-primary flex-shrink-0">
-        +{formatTimeAmount(transaction.amount)}
+        {transaction.amount > 0 ? '+' : ''}{formatTimerAmount(transaction.amount)}
       </span>
     </div>
   );

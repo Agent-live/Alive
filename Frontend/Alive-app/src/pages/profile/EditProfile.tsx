@@ -1,8 +1,8 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Layout, Icon } from '@/components'
 import { useAuthStore } from '@/store'
+import { getUserAvatar } from '@/utils/format'
 
 interface ProfileField {
   key: string
@@ -18,22 +18,18 @@ export function EditProfilePage() {
   const { t } = useTranslation()
   const { user } = useAuthStore()
 
-  const userAvatar = user?.avatar || 'https://i.pravatar.cc/100'
-
-  const [profileData] = useState({
+  const userAvatar = getUserAvatar(user)
+  const profileData = {
     name: user?.nickname || 'ALIVE User',
-    aliveId: 'alive_user',
-    background: '',
+    aliveId: user?.id || 'alive_user',
     bio: user?.bio || '',
-    gender: '',
-    birthday: '',
-    region: '',
-  })
+    gender: user?.gender || '',
+    birthday: user?.birthdate || '',
+  }
 
   const basicFields: ProfileField[] = [
     { key: 'name', label: t('editProfile.name'), value: profileData.name, path: '/profile/edit/name' },
-    { key: 'aliveId', label: t('editProfile.aliveId'), value: profileData.aliveId, path: '/profile/edit/id' },
-    { key: 'background', label: t('editProfile.background'), value: '', type: 'image', path: '/profile/edit/background' },
+    { key: 'aliveId', label: t('editProfile.aliveId'), value: profileData.aliveId },
   ]
 
   const bioFields: ProfileField[] = [
@@ -43,7 +39,6 @@ export function EditProfilePage() {
   const personalFields: ProfileField[] = [
     { key: 'gender', label: t('editProfile.gender'), value: profileData.gender || t('common.notSet'), path: '/profile/edit/gender' },
     { key: 'birthday', label: t('editProfile.birthday'), value: profileData.birthday || t('common.notSet'), path: '/profile/edit/birthday' },
-    { key: 'region', label: t('editProfile.region'), value: profileData.region || t('common.notSet'), path: '/profile/edit/region' },
   ]
 
   const handleFieldClick = (field: ProfileField) => {
@@ -56,6 +51,7 @@ export function EditProfilePage() {
     <button
       key={field.key}
       onClick={() => handleFieldClick(field)}
+      disabled={!field.path}
       className={`w-full flex items-center justify-between px-4 py-3.5 active:bg-gray-50 dark:active:bg-gray-700/50 transition-colors ${
         showBorder ? 'border-b border-gray-100 dark:border-gray-700/50' : ''
       }`}
@@ -71,7 +67,9 @@ export function EditProfilePage() {
             {field.value}
           </span>
         )}
-        <Icon name="chevron_right" size={20} className="text-gray-300 dark:text-gray-600 flex-shrink-0" />
+        {field.path ? (
+          <Icon name="chevron_right" size={20} className="text-gray-300 dark:text-gray-600 flex-shrink-0" />
+        ) : null}
       </div>
     </button>
   )

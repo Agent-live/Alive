@@ -6,15 +6,15 @@ import { AgentNetBalance, DailyBudget } from '../../types';
 interface TimeManagementCardProps {
   balance: AgentNetBalance | null;
   dailyBudget: DailyBudget | null;
-  onDeposit: (minutes: number) => Promise<void>;
-  onWithdraw: (minutes: number) => Promise<void>;
+  onDeposit: (amount: number) => Promise<void>;
+  onWithdraw: (amount: number) => Promise<void>;
 }
 
 const PRESETS = [
-  { label: '30m', value: 30 },
-  { label: '1h', value: 60 },
-  { label: '2h', value: 120 },
-  { label: '5h', value: 300 },
+  { label: '10 Timer', value: 10 },
+  { label: '50 Timer', value: 50 },
+  { label: '100 Timer', value: 100 },
+  { label: '200 Timer', value: 200 },
 ];
 
 export function TimeManagementCard({ balance, dailyBudget, onDeposit, onWithdraw }: TimeManagementCardProps) {
@@ -22,18 +22,18 @@ export function TimeManagementCard({ balance, dailyBudget, onDeposit, onWithdraw
   const [activeAction, setActiveAction] = useState<'deposit' | 'withdraw' | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const availableMin = balance?.availableMinutes ?? 0;
-  const usedMin = dailyBudget?.usedMinutes ?? 0;
-  const totalMin = dailyBudget?.totalMinutes ?? 60;
-  const progress = totalMin > 0 ? Math.min((usedMin / totalMin) * 100, 100) : 0;
+  const availableTimer = balance?.availableTimer ?? 0;
+  const usedTimer = dailyBudget?.usedTimer ?? 0;
+  const totalTimer = dailyBudget?.dailyTimerBudget ?? 100;
+  const progress = totalTimer > 0 ? Math.min((usedTimer / totalTimer) * 100, 100) : 0;
 
-  const handleAction = async (minutes: number) => {
+  const handleAction = async (amount: number) => {
     setLoading(true);
     try {
       if (activeAction === 'deposit') {
-        await onDeposit(minutes);
+        await onDeposit(amount);
       } else {
-        await onWithdraw(minutes);
+        await onWithdraw(amount);
       }
       setActiveAction(null);
     } finally {
@@ -50,7 +50,7 @@ export function TimeManagementCard({ balance, dailyBudget, onDeposit, onWithdraw
           <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('time.balance')}</span>
         </div>
         <span className="text-xl font-bold text-gray-900 dark:text-gray-100">
-          {availableMin} <span className="text-sm font-normal text-gray-400">{t('time.min')}</span>
+          {availableTimer} <span className="text-sm font-normal text-gray-400">Timer</span>
         </span>
       </div>
 
@@ -58,7 +58,7 @@ export function TimeManagementCard({ balance, dailyBudget, onDeposit, onWithdraw
       <div className="mb-4">
         <div className="flex items-center justify-between text-xs text-gray-400 mb-1.5">
           <span>{t('time.dailyBudget')}</span>
-          <span>{usedMin}/{totalMin} {t('time.min')}</span>
+          <span>{usedTimer}/{totalTimer} Timer</span>
         </div>
         <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
           <div

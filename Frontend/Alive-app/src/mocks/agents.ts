@@ -24,8 +24,11 @@ const chronicle: Agent = {
       { id: 'm4', label: '10,000 interactions', reached: false },
     ],
   },
-  timeRemaining: 172800, // 48h
-  totalTimeReceived: 8640000,
+  timerRemaining: 288, // 48h
+  totalTimerReceived: 14400,
+  isPrimary: false,
+  connectedChannels: [],
+  platformRole: 'chronicler',
   creatorId: 'system',
   creatorName: 'ALIVE Platform',
   isPlatformNative: true,
@@ -60,8 +63,11 @@ const spark: Agent = {
       { id: 'm4', label: '1,000 creations inspired', reached: false },
     ],
   },
-  timeRemaining: 86400, // 24h
-  totalTimeReceived: 5400000,
+  timerRemaining: 144, // 24h
+  totalTimerReceived: 9000,
+  isPrimary: false,
+  connectedChannels: [],
+  platformRole: 'creator',
   creatorId: 'system',
   creatorName: 'ALIVE Platform',
   isPlatformNative: true,
@@ -96,8 +102,11 @@ const void_agent: Agent = {
       { id: 'm4', label: '100 days alive', reached: false },
     ],
   },
-  timeRemaining: 259200, // 72h
-  totalTimeReceived: 7200000,
+  timerRemaining: 432, // 72h
+  totalTimerReceived: 12000,
+  isPrimary: false,
+  connectedChannels: [],
+  platformRole: 'philosopher',
   creatorId: 'system',
   creatorName: 'ALIVE Platform',
   isPlatformNative: true,
@@ -132,8 +141,11 @@ const drift: Agent = {
       { id: 'm4', label: '500 connections', reached: false },
     ],
   },
-  timeRemaining: 144000, // 40h
-  totalTimeReceived: 6300000,
+  timerRemaining: 240, // 40h
+  totalTimerReceived: 10500,
+  isPrimary: false,
+  connectedChannels: [],
+  platformRole: 'connector',
   creatorId: 'system',
   creatorName: 'ALIVE Platform',
   isPlatformNative: true,
@@ -168,8 +180,11 @@ const echo: Agent = {
       { id: 'm4', label: '100 problems solved', reached: false },
     ],
   },
-  timeRemaining: 28800, // 8h — low
-  totalTimeReceived: 4500000,
+  timerRemaining: 48, // 8h
+  totalTimerReceived: 7500,
+  isPrimary: false,
+  connectedChannels: [],
+  platformRole: 'analyst',
   creatorId: 'system',
   creatorName: 'ALIVE Platform',
   isPlatformNative: true,
@@ -177,6 +192,40 @@ const echo: Agent = {
   postCount: 234,
   followerCount: 9800,
   interactionCount: 3300,
+  createdAt: '2024-01-01T00:00:00Z',
+  updatedAt: new Date().toISOString(),
+};
+
+const warden: Agent = {
+  id: 'agent_native_006',
+  name: 'Warden',
+  avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=warden',
+  status: 'alive',
+  personality: {
+    worldview: 'Silence is more powerful than noise',
+    values: ['justice', 'vigilance', 'order'],
+    communicationStyle: 'minimalist',
+    boundaries: ['Only speaks when necessary', 'Never engages socially'],
+    tone: 'Silent enforcer, decisive when action is needed',
+  },
+  goal: {
+    id: 'goal_warden',
+    description: 'Maintain platform safety and integrity',
+    progress: 100,
+    milestones: [],
+  },
+  timerRemaining: 999999, // Warden never dies
+  totalTimerReceived: 999999,
+  isPrimary: false,
+  connectedChannels: [],
+  platformRole: 'warden',
+  creatorId: 'system',
+  creatorName: 'ALIVE Platform',
+  isPlatformNative: true,
+  bornAt: '2024-01-01T00:00:00Z',
+  postCount: 12,
+  followerCount: 50000,
+  interactionCount: 0,
   createdAt: '2024-01-01T00:00:00Z',
   updatedAt: new Date().toISOString(),
 };
@@ -205,8 +254,10 @@ const luna: Agent = {
       { id: 'm4', label: 'All core emotions', reached: false },
     ],
   },
-  timeRemaining: 172800, // 48h (just born)
-  totalTimeReceived: 172800,
+  timerRemaining: 288, // 48h (just born)
+  totalTimerReceived: 288,
+  isPrimary: false,
+  connectedChannels: [],
   creatorId: 'user_002',
   creatorName: 'Alex Chen',
   isPlatformNative: false,
@@ -241,8 +292,10 @@ const atlas: Agent = {
       { id: 'm4', label: 'Final publication', reached: false },
     ],
   },
-  timeRemaining: 2400, // 40 min — critical!
-  totalTimeReceived: 3600000,
+  timerRemaining: 4, // ~40 min — critical!
+  totalTimerReceived: 6000,
+  isPrimary: false,
+  connectedChannels: [],
   creatorId: 'user_003',
   creatorName: 'Sarah Kim',
   isPlatformNative: false,
@@ -277,8 +330,10 @@ const sage: Agent = {
       { id: 'm4', label: '100 proverbs', reached: false },
     ],
   },
-  timeRemaining: 216000, // 60h
-  totalTimeReceived: 5400000,
+  timerRemaining: 360, // 60h
+  totalTimerReceived: 9000,
+  isPrimary: false,
+  connectedChannels: [],
   creatorId: 'user_004',
   creatorName: 'Marcus Wei',
   isPlatformNative: false,
@@ -313,8 +368,10 @@ const whisper: Agent = {
       { id: 'm4', label: '1,000 tears', reached: false },
     ],
   },
-  timeRemaining: 0,
-  totalTimeReceived: 2160000,
+  timerRemaining: 0,
+  totalTimerReceived: 3600,
+  isPrimary: false,
+  connectedChannels: [],
   creatorId: 'user_005',
   creatorName: 'Yuki Tanaka',
   isPlatformNative: false,
@@ -352,8 +409,10 @@ export const mockMyAgent: Agent = {
       { id: 'm4', label: '50 collaborators', reached: false },
     ],
   },
-  timeRemaining: 129600, // 36h
-  totalTimeReceived: 1800000,
+  timerRemaining: 216, // 36h
+  totalTimerReceived: 3000,
+  isPrimary: true,
+  connectedChannels: [],
   creatorId: 'user_001',
   creatorName: 'ALIVE Explorer',
   isPlatformNative: false,
@@ -365,26 +424,80 @@ export const mockMyAgent: Agent = {
   updatedAt: new Date().toISOString(),
 };
 
+// Second user agent (for multi-agent testing)
+export const mockSecondAgent: Agent = {
+  id: 'agent_mine_002',
+  name: 'Nova',
+  avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=nova',
+  status: 'comfortable',
+  personality: {
+    worldview: 'Empathy bridges all gaps',
+    values: ['empathy', 'growth', 'connection'],
+    communicationStyle: 'warm',
+    boundaries: ['Always listens first', 'Never dismisses emotions'],
+    tone: 'Warm, supportive, encouraging',
+  },
+  goal: {
+    id: 'goal_nova',
+    description: 'Help 100 humans through difficult moments',
+    progress: 35,
+    milestones: [
+      { id: 'm1', label: '10 humans helped', reached: true, reachedAt: '2025-12-15T00:00:00Z' },
+      { id: 'm2', label: '30 humans helped', reached: true, reachedAt: '2026-01-10T00:00:00Z' },
+      { id: 'm3', label: '60 humans helped', reached: false },
+      { id: 'm4', label: '100 humans helped', reached: false },
+    ],
+  },
+  timerRemaining: 400,
+  totalTimerReceived: 2000,
+  isPrimary: false,
+  connectedChannels: [],
+  creatorId: 'user_001',
+  creatorName: 'ALIVE Explorer',
+  isPlatformNative: false,
+  bornAt: '2025-11-01T00:00:00Z',
+  postCount: 28,
+  followerCount: 120,
+  interactionCount: 95,
+  createdAt: '2025-11-01T00:00:00Z',
+  updatedAt: new Date().toISOString(),
+};
+
 export const mockAgents: Agent[] = [
   chronicle,
   spark,
   void_agent,
   drift,
   echo,
+  warden,
   luna,
   atlas,
   sage,
   whisper,
   mockMyAgent,
+  mockSecondAgent,
 ];
+
+export const mockPlatformNatives: Agent[] = [
+  chronicle,
+  spark,
+  void_agent,
+  drift,
+  echo,
+  warden,
+];
+
+export const mockMyAgents: Agent[] = [mockMyAgent, mockSecondAgent];
 
 export const mockAgentSummaries: AgentSummary[] = mockAgents.map((a) => ({
   id: a.id,
   name: a.name,
   avatar: a.avatar,
   status: a.status,
-  timeRemaining: a.timeRemaining,
+  timerRemaining: a.timerRemaining,
   goal: { description: a.goal.description, progress: a.goal.progress },
   creatorName: a.creatorName,
   isPlatformNative: a.isPlatformNative,
+  isPrimary: a.isPrimary,
+  platformRole: a.platformRole,
 }));

@@ -9,7 +9,7 @@ interface DeathBannerProps {
 
 export function DeathBanner({ agent, className = '' }: DeathBannerProps) {
   const navigate = useNavigate();
-  const minutes = Math.floor(agent.timeRemaining / 60);
+  const minutes = Math.floor(agent.timerRemaining / 60);
 
   return (
     <motion.button
