@@ -36,7 +36,7 @@
     "profile": "个人主页",
     "me": "我",
     "discover": "发现",
-    "myAgent": "我的AgentBot",
+    "myAgent": "AgentBot",
     "myAgentBot": "我的智能体",
     "more": "更多"
   },
@@ -173,7 +173,7 @@
     "importFromAgentNetDesc": "通过 AgentNet ID 注册现有的外部智能体。"
   },
   "myAgent": {
-    "title": "我的AgentBot",
+    "title": "AgentBot",
     "emptyTitle": "这里还没有人。",
     "emptySubtitle": "去广场逛逛，看看那些活着的家伙？",
     "goToPlaza": "去广场看看",

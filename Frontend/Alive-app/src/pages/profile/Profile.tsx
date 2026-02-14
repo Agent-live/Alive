@@ -113,17 +113,8 @@ export function ProfilePage() {
   );
 
   return (
-    <Layout
-      header={
-        <div className="flex items-center justify-end px-4 h-14">
-          <button onClick={() => navigate('/settings')} className="p-2 -mr-2">
-            <Icon name="settings" size={22} className="text-gray-500" />
-          </button>
-        </div>
-      }
-      showTabBar
-    >
-      <div className="px-3 md:px-5 py-3 space-y-4">
+    <Layout showTabBar>
+      <div className="px-3 md:px-5 pt-3 md:pt-8 pb-3 space-y-4">
 
         {/* ───── User Info + Actions ───── */}
         <div className="flex items-start gap-4">
@@ -145,8 +136,14 @@ export function ProfilePage() {
               </p>
             )}
           </div>
-          {/* Desktop actions */}
+          {/* Desktop actions: settings + edit profile */}
           <div className="hidden md:flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={() => navigate('/settings')}
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              <Icon name="settings" size={20} className="text-gray-500" />
+            </button>
             <button
               onClick={() => navigate('/profile/edit')}
               className="px-5 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
@@ -165,10 +162,10 @@ export function ProfilePage() {
             {t('profile.editProfile')}
           </button>
           <button
-            onClick={logout}
-            className="px-4 py-2.5 rounded-lg border border-red-200 dark:border-red-800 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+            onClick={() => navigate('/settings')}
+            className="px-4 py-2.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
           >
-            <Icon name="logout" size={18} />
+            <Icon name="settings" size={18} />
           </button>
         </div>
 

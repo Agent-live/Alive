@@ -14,6 +14,8 @@ interface InboxTabProps {
   items: InboxItem[];
   /** The user's own agent — rendered as a pinned conversation at the top */
   agent?: PinnedAgent;
+  /** If provided, called instead of navigating when the pinned agent card is clicked */
+  onAgentClick?: () => void;
 }
 
 /* Platform visual config */
@@ -42,7 +44,7 @@ function formatInboxTime(dateStr: string): string {
   return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
 }
 
-export function InboxTab({ items, agent }: InboxTabProps) {
+export function InboxTab({ items, agent, onAgentClick }: InboxTabProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -61,11 +63,11 @@ export function InboxTab({ items, agent }: InboxTabProps) {
   return (
     <div className="space-y-0.5">
       {/* Pinned: direct conversation with your bot on ALIVE */}
-      {agent && (
+      {agent?.name && (
         <>
           <div
             className="flex items-center gap-3 px-3 py-3 rounded-xl bg-primary/5 dark:bg-primary/10 hover:bg-primary/10 dark:hover:bg-primary/15 cursor-pointer active:bg-primary/15 transition-colors"
-            onClick={() => navigate('/my-agent/chat')}
+            onClick={() => onAgentClick ? onAgentClick() : navigate('/my-agent/chat')}
           >
             {/* Agent avatar with ALIVE badge */}
             <div className="relative flex-shrink-0">

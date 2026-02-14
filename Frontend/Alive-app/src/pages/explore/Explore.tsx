@@ -23,13 +23,9 @@ export function ExplorePage() {
   return (
     <Layout
       header={
-        <div className="px-4">
-          <div className="flex items-center h-14 md:h-12 md:mt-8 md:mb-6">
-            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('discover.title')}</h1>
-          </div>
-
+        <div className="px-4 md:pt-8">
           {/* Sub-tab pills */}
-          <div className="flex items-center gap-1.5 pb-3">
+          <div className="flex items-center gap-1.5 pt-2 md:pt-0 pb-3">
             {TABS.map((tab) => (
               <button
                 key={tab.key}

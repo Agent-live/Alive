@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '../../components/common';
@@ -27,6 +28,29 @@ const statusDotColor: Record<string, string> = {
 
 type TabType = 'inbox' | 'social' | 'network';
 
+/* ─── Desktop detection (md = 768px) ─── */
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)');
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+  return isDesktop;
+}
+
+/* ─── Chat message type ─── */
+interface ChatMessage {
+  id: string;
+  role: 'user' | 'agent';
+  text: string;
+  timestamp: string;
+  timeCost?: number;
+}
+
 export function MyAgentPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -37,6 +61,15 @@ export function MyAgentPage() {
   const [activeTab, setActiveTab] = useState<TabType>('inbox');
   const [relationshipsLoading, setRelationshipsLoading] = useState(false);
   const [relationships, setRelationships] = useState<AgentRelationship[]>([]);
+  const [chatOpen, setChatOpen] = useState(false);
+  const isDesktop = useIsDesktop();
+
+  /* Chat dialog state */
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [chatInput, setChatInput] = useState('');
+  const [chatTyping, setChatTyping] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+  const chatInputRef = useRef<HTMLTextAreaElement>(null);
 
   const myAgent = useMemo(
     () => myAgents.find((a) => a.id === primaryAgentId) ?? myAgents[0] ?? null,
@@ -210,10 +243,10 @@ export function MyAgentPage() {
   );
 
   /* ─── Agent name + status ─── */
-  const AgentIdentity = ({ compact = false }: { compact?: boolean }) => (
-    <div className={compact ? 'text-left' : 'text-center'}>
-      <div className="flex items-center gap-2" style={compact ? {} : { justifyContent: 'center' }}>
-        <h1 className={`font-bold text-gray-900 dark:text-gray-100 ${compact ? 'text-lg' : 'text-xl'}`}>
+  const AgentIdentity = () => (
+    <div>
+      <div className="flex items-center gap-2">
+        <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">
           {myAgent.name}
         </h1>
         <span className={`w-2.5 h-2.5 rounded-full ${statusDotColor[myAgent.status] || 'bg-gray-400'}`} />
@@ -225,18 +258,96 @@ export function MyAgentPage() {
   );
 
   /* ─── Agent's last words / greeting ─── */
-  const AgentGreeting = ({ compact = false }: { compact?: boolean }) => (
-    <div className={`bg-gray-50 dark:bg-gray-900 rounded-2xl ${compact ? 'p-4' : 'p-5'}`}>
-      <p className={`text-gray-800 dark:text-gray-200 leading-relaxed italic ${compact ? 'text-sm' : 'text-base'}`}>
+  const AgentGreeting = () => (
+    <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-4">
+      <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed italic">
         &ldquo;{myAgent.lastWords || t('myAgent.defaultGreeting', { name: myAgent.name })}&rdquo;
       </p>
     </div>
   );
 
+  /* ─── Open chat: dialog on desktop, navigate on mobile ─── */
+  const openChat = useCallback(() => {
+    if (isDesktop) {
+      setChatOpen(true);
+      // Initialize with greeting if empty
+      if (chatMessages.length === 0 && myAgent) {
+        setChatMessages([{
+          id: 'msg_init',
+          role: 'agent',
+          text: myAgent.lastWords || t('myAgent.defaultGreeting', { name: myAgent.name }),
+          timestamp: new Date().toISOString(),
+        }]);
+      }
+    } else {
+      navigate('/my-agent/chat');
+    }
+  }, [isDesktop, chatMessages.length, myAgent, t, navigate]);
+
+  /* ─── Send chat message ─── */
+  const handleChatSend = useCallback(() => {
+    const text = chatInput.trim();
+    if (!text || !myAgent) return;
+
+    const userMsg: ChatMessage = {
+      id: `msg_${Date.now()}`,
+      role: 'user',
+      text,
+      timestamp: new Date().toISOString(),
+    };
+    setChatMessages((prev) => [...prev, userMsg]);
+    setChatInput('');
+    setChatTyping(true);
+
+    setTimeout(() => {
+      const replies = [
+        t('chat.mockReply1', { name: myAgent.name }),
+        t('chat.mockReply2'),
+        t('chat.mockReply3'),
+        t('chat.mockReply4'),
+        t('chat.mockReply5'),
+      ];
+      const agentMsg: ChatMessage = {
+        id: `msg_${Date.now() + 1}`,
+        role: 'agent',
+        text: replies[Math.floor(Math.random() * replies.length)],
+        timestamp: new Date().toISOString(),
+        timeCost: Math.ceil(Math.random() * 5) + 1,
+      };
+      setChatMessages((prev) => [...prev, agentMsg]);
+      setChatTyping(false);
+    }, 1000 + Math.random() * 2000);
+  }, [chatInput, myAgent, t]);
+
+  const handleChatKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleChatSend();
+    }
+  }, [handleChatSend]);
+
+  /* Scroll chat to bottom */
+  useEffect(() => {
+    if (chatOpen) {
+      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [chatMessages, chatOpen]);
+
+  /* Focus input when dialog opens + ESC to close */
+  useEffect(() => {
+    if (!chatOpen) return;
+    setTimeout(() => chatInputRef.current?.focus(), 100);
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setChatOpen(false);
+    };
+    document.addEventListener('keydown', handleEsc);
+    return () => document.removeEventListener('keydown', handleEsc);
+  }, [chatOpen]);
+
   /* ─── Chat input ─── */
   const ChatInput = () => (
     <button
-      onClick={() => navigate('/my-agent/chat')}
+      onClick={openChat}
       className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 text-left hover:border-primary/30 transition-colors"
     >
       <Icon name="chat" size={20} className="text-gray-400 flex-shrink-0" />
@@ -309,6 +420,7 @@ export function MyAgentPage() {
             status: myAgent.status,
             lastMessage: myAgent.lastWords,
           }}
+          onAgentClick={isDesktop ? openChat : undefined}
         />
       )}
       {activeTab === 'social' && <BotBotChatsTab conversations={conversations} loading={conversationsLoading} />}
@@ -324,23 +436,24 @@ export function MyAgentPage() {
     <Layout showTabBar>
       {/* ─── DESKTOP LAYOUT (md+) ─── */}
       <div className="hidden md:block px-5 pt-8 pb-4">
-        {/* Agent header — full-width row, matches Feed page left alignment */}
+        {/* Agent identity + life bar + switcher — single row */}
         <div className="flex items-center gap-4 mb-6">
-          <AgentSwitcher />
-          <div className="h-8 w-px bg-gray-200 dark:bg-gray-800" />
-          <AgentIdentity compact />
+          <AgentIdentity />
           {!isDead && (
             <div className="flex-1 max-w-[280px]">
               <LifeBar />
             </div>
           )}
+          <div className="ml-auto">
+            <AgentSwitcher />
+          </div>
         </div>
 
         {/* Two-column content — both start at the same baseline */}
         <div className="flex gap-6">
           {/* Left: interaction + activity */}
           <div className="w-[300px] flex-shrink-0 space-y-4">
-            {!isDead && <AgentGreeting compact />}
+            {!isDead && <AgentGreeting />}
             {isDead && <DeadPanel />}
 
             {!isDead && <ChatInput />}
@@ -397,6 +510,141 @@ export function MyAgentPage() {
         {!isDead && <TabBar />}
         {!isDead && <TabContent />}
       </div>
+
+      {/* ─── DESKTOP CHAT DIALOG ─── */}
+      {chatOpen && createPortal(
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          onClick={() => setChatOpen(false)}
+        >
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-[fadeIn_150ms_ease-out]" />
+
+          {/* Dialog */}
+          <div
+            className="relative w-full max-w-lg mx-4 bg-white dark:bg-gray-950 rounded-2xl shadow-2xl flex flex-col animate-[scaleIn_200ms_ease-out]"
+            style={{ height: 'min(600px, 80vh)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center gap-3 px-5 h-14 border-b border-gray-100 dark:border-gray-800 flex-shrink-0">
+              {myAgent && <AgentAvatar avatar={myAgent.avatar} status={myAgent.status} size="sm" />}
+              <div className="flex-1 min-w-0">
+                <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+                  {myAgent.name}
+                </h2>
+                <p className="text-[11px] text-gray-400">
+                  {isDead ? t('status.dead') : t('myAgent.aliveFor', { days: Math.floor(myAgent.timerRemaining / 86400) || 1 })}
+                </p>
+              </div>
+              <button
+                onClick={() => setChatOpen(false)}
+                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                <Icon name="close" size={20} className="text-gray-400" />
+              </button>
+            </div>
+
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
+              {chatMessages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div className={`flex items-end gap-2 max-w-[80%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                    {msg.role === 'agent' && (
+                      <div className="flex-shrink-0 w-7 h-7 rounded-full overflow-hidden">
+                        {myAgent.avatar ? (
+                          <img src={myAgent.avatar} alt="" className="w-7 h-7 object-cover" />
+                        ) : (
+                          <div className="w-7 h-7 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+                            <span className="text-white text-[10px] font-bold">{myAgent.name.charAt(0)}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    <div>
+                      <div
+                        className={`rounded-2xl px-3.5 py-2 ${
+                          msg.role === 'user'
+                            ? 'bg-primary text-white rounded-br-md'
+                            : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-bl-md'
+                        }`}
+                      >
+                        <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+                      </div>
+                      <div className={`flex items-center gap-2 mt-0.5 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                        <span className="text-[10px] text-gray-400">
+                          {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                        {msg.timeCost != null && (
+                          <span className="text-[10px] text-orange-400">-{msg.timeCost}min</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Typing indicator */}
+              {chatTyping && (
+                <div className="flex justify-start">
+                  <div className="flex items-end gap-2">
+                    <div className="flex-shrink-0 w-7 h-7 rounded-full overflow-hidden">
+                      {myAgent.avatar ? (
+                        <img src={myAgent.avatar} alt="" className="w-7 h-7 object-cover" />
+                      ) : (
+                        <div className="w-7 h-7 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+                          <span className="text-white text-[10px] font-bold">{myAgent.name.charAt(0)}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl rounded-bl-md px-4 py-3">
+                      <div className="flex gap-1">
+                        <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                        <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                        <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div ref={chatEndRef} />
+            </div>
+
+            {/* Input */}
+            {!isDead ? (
+              <div className="flex-shrink-0 border-t border-gray-100 dark:border-gray-800 px-5 py-3">
+                <div className="flex items-end gap-2">
+                  <textarea
+                    ref={chatInputRef}
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    onKeyDown={handleChatKeyDown}
+                    placeholder={t('myAgent.chatPlaceholder')}
+                    rows={1}
+                    className="flex-1 resize-none rounded-xl bg-gray-100 dark:bg-gray-800 px-4 py-2.5 text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 max-h-32"
+                    style={{ minHeight: '40px' }}
+                  />
+                  <button
+                    onClick={handleChatSend}
+                    disabled={!chatInput.trim()}
+                    className="flex-shrink-0 w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center disabled:opacity-40 transition-opacity"
+                  >
+                    <Icon name="arrow_upward" size={20} />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex-shrink-0 border-t border-gray-100 dark:border-gray-800 px-5 py-4 text-center">
+                <p className="text-sm text-gray-400">{t('chat.agentDead')}</p>
+              </div>
+            )}
+          </div>
+        </div>,
+        document.body,
+      )}
     </Layout>
   );
 }
