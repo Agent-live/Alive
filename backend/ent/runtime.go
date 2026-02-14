@@ -7,6 +7,7 @@ import (
 	"backend/ent/agentexperience"
 	"backend/ent/agentrelationship"
 	"backend/ent/agentskill"
+	"backend/ent/agenttask"
 	"backend/ent/channelconnection"
 	"backend/ent/chatmessage"
 	"backend/ent/conversation"
@@ -219,6 +220,75 @@ func init() {
 	agentskillDescID := agentskillFields[0].Descriptor()
 	// agentskill.DefaultID holds the default value on creation for the id field.
 	agentskill.DefaultID = agentskillDescID.Default.(func() uuid.UUID)
+	agenttaskMixin := schema.AgentTask{}.Mixin()
+	agenttaskMixinFields0 := agenttaskMixin[0].Fields()
+	_ = agenttaskMixinFields0
+	agenttaskFields := schema.AgentTask{}.Fields()
+	_ = agenttaskFields
+	// agenttaskDescCreatedAt is the schema descriptor for created_at field.
+	agenttaskDescCreatedAt := agenttaskMixinFields0[0].Descriptor()
+	// agenttask.DefaultCreatedAt holds the default value on creation for the created_at field.
+	agenttask.DefaultCreatedAt = agenttaskDescCreatedAt.Default.(func() time.Time)
+	// agenttaskDescUpdatedAt is the schema descriptor for updated_at field.
+	agenttaskDescUpdatedAt := agenttaskMixinFields0[1].Descriptor()
+	// agenttask.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	agenttask.DefaultUpdatedAt = agenttaskDescUpdatedAt.Default.(func() time.Time)
+	// agenttask.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	agenttask.UpdateDefaultUpdatedAt = agenttaskDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// agenttaskDescTitle is the schema descriptor for title field.
+	agenttaskDescTitle := agenttaskFields[2].Descriptor()
+	// agenttask.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	agenttask.TitleValidator = func() func(string) error {
+		validators := agenttaskDescTitle.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(title string) error {
+			for _, fn := range fns {
+				if err := fn(title); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// agenttaskDescDescription is the schema descriptor for description field.
+	agenttaskDescDescription := agenttaskFields[3].Descriptor()
+	// agenttask.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
+	agenttask.DescriptionValidator = agenttaskDescDescription.Validators[0].(func(string) error)
+	// agenttaskDescStatus is the schema descriptor for status field.
+	agenttaskDescStatus := agenttaskFields[4].Descriptor()
+	// agenttask.DefaultStatus holds the default value on creation for the status field.
+	agenttask.DefaultStatus = agenttaskDescStatus.Default.(string)
+	// agenttaskDescPriority is the schema descriptor for priority field.
+	agenttaskDescPriority := agenttaskFields[5].Descriptor()
+	// agenttask.DefaultPriority holds the default value on creation for the priority field.
+	agenttask.DefaultPriority = agenttaskDescPriority.Default.(string)
+	// agenttaskDescProgress is the schema descriptor for progress field.
+	agenttaskDescProgress := agenttaskFields[6].Descriptor()
+	// agenttask.DefaultProgress holds the default value on creation for the progress field.
+	agenttask.DefaultProgress = agenttaskDescProgress.Default.(int)
+	// agenttask.ProgressValidator is a validator for the "progress" field. It is called by the builders before save.
+	agenttask.ProgressValidator = func() func(int) error {
+		validators := agenttaskDescProgress.Validators
+		fns := [...]func(int) error{
+			validators[0].(func(int) error),
+			validators[1].(func(int) error),
+		}
+		return func(progress int) error {
+			for _, fn := range fns {
+				if err := fn(progress); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// agenttaskDescID is the schema descriptor for id field.
+	agenttaskDescID := agenttaskFields[0].Descriptor()
+	// agenttask.DefaultID holds the default value on creation for the id field.
+	agenttask.DefaultID = agenttaskDescID.Default.(func() uuid.UUID)
 	channelconnectionMixin := schema.ChannelConnection{}.Mixin()
 	channelconnectionMixinFields0 := channelconnectionMixin[0].Fields()
 	_ = channelconnectionMixinFields0

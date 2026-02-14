@@ -24,97 +24,97 @@ type ConversationParticipantCreate struct {
 }
 
 // SetConversationID sets the "conversation_id" field.
-func (_c *ConversationParticipantCreate) SetConversationID(v uuid.UUID) *ConversationParticipantCreate {
-	_c.mutation.SetConversationID(v)
-	return _c
+func (cpc *ConversationParticipantCreate) SetConversationID(u uuid.UUID) *ConversationParticipantCreate {
+	cpc.mutation.SetConversationID(u)
+	return cpc
 }
 
 // SetAgentID sets the "agent_id" field.
-func (_c *ConversationParticipantCreate) SetAgentID(v uuid.UUID) *ConversationParticipantCreate {
-	_c.mutation.SetAgentID(v)
-	return _c
+func (cpc *ConversationParticipantCreate) SetAgentID(u uuid.UUID) *ConversationParticipantCreate {
+	cpc.mutation.SetAgentID(u)
+	return cpc
 }
 
 // SetRole sets the "role" field.
-func (_c *ConversationParticipantCreate) SetRole(v string) *ConversationParticipantCreate {
-	_c.mutation.SetRole(v)
-	return _c
+func (cpc *ConversationParticipantCreate) SetRole(s string) *ConversationParticipantCreate {
+	cpc.mutation.SetRole(s)
+	return cpc
 }
 
 // SetNillableRole sets the "role" field if the given value is not nil.
-func (_c *ConversationParticipantCreate) SetNillableRole(v *string) *ConversationParticipantCreate {
-	if v != nil {
-		_c.SetRole(*v)
+func (cpc *ConversationParticipantCreate) SetNillableRole(s *string) *ConversationParticipantCreate {
+	if s != nil {
+		cpc.SetRole(*s)
 	}
-	return _c
+	return cpc
 }
 
 // SetJoinedAt sets the "joined_at" field.
-func (_c *ConversationParticipantCreate) SetJoinedAt(v time.Time) *ConversationParticipantCreate {
-	_c.mutation.SetJoinedAt(v)
-	return _c
+func (cpc *ConversationParticipantCreate) SetJoinedAt(t time.Time) *ConversationParticipantCreate {
+	cpc.mutation.SetJoinedAt(t)
+	return cpc
 }
 
 // SetNillableJoinedAt sets the "joined_at" field if the given value is not nil.
-func (_c *ConversationParticipantCreate) SetNillableJoinedAt(v *time.Time) *ConversationParticipantCreate {
-	if v != nil {
-		_c.SetJoinedAt(*v)
+func (cpc *ConversationParticipantCreate) SetNillableJoinedAt(t *time.Time) *ConversationParticipantCreate {
+	if t != nil {
+		cpc.SetJoinedAt(*t)
 	}
-	return _c
+	return cpc
 }
 
 // SetLastReadAt sets the "last_read_at" field.
-func (_c *ConversationParticipantCreate) SetLastReadAt(v time.Time) *ConversationParticipantCreate {
-	_c.mutation.SetLastReadAt(v)
-	return _c
+func (cpc *ConversationParticipantCreate) SetLastReadAt(t time.Time) *ConversationParticipantCreate {
+	cpc.mutation.SetLastReadAt(t)
+	return cpc
 }
 
 // SetNillableLastReadAt sets the "last_read_at" field if the given value is not nil.
-func (_c *ConversationParticipantCreate) SetNillableLastReadAt(v *time.Time) *ConversationParticipantCreate {
-	if v != nil {
-		_c.SetLastReadAt(*v)
+func (cpc *ConversationParticipantCreate) SetNillableLastReadAt(t *time.Time) *ConversationParticipantCreate {
+	if t != nil {
+		cpc.SetLastReadAt(*t)
 	}
-	return _c
+	return cpc
 }
 
 // SetID sets the "id" field.
-func (_c *ConversationParticipantCreate) SetID(v uuid.UUID) *ConversationParticipantCreate {
-	_c.mutation.SetID(v)
-	return _c
+func (cpc *ConversationParticipantCreate) SetID(u uuid.UUID) *ConversationParticipantCreate {
+	cpc.mutation.SetID(u)
+	return cpc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (_c *ConversationParticipantCreate) SetNillableID(v *uuid.UUID) *ConversationParticipantCreate {
-	if v != nil {
-		_c.SetID(*v)
+func (cpc *ConversationParticipantCreate) SetNillableID(u *uuid.UUID) *ConversationParticipantCreate {
+	if u != nil {
+		cpc.SetID(*u)
 	}
-	return _c
+	return cpc
 }
 
 // SetConversation sets the "conversation" edge to the Conversation entity.
-func (_c *ConversationParticipantCreate) SetConversation(v *Conversation) *ConversationParticipantCreate {
-	return _c.SetConversationID(v.ID)
+func (cpc *ConversationParticipantCreate) SetConversation(c *Conversation) *ConversationParticipantCreate {
+	return cpc.SetConversationID(c.ID)
 }
 
 // SetAgent sets the "agent" edge to the Agent entity.
-func (_c *ConversationParticipantCreate) SetAgent(v *Agent) *ConversationParticipantCreate {
-	return _c.SetAgentID(v.ID)
+func (cpc *ConversationParticipantCreate) SetAgent(a *Agent) *ConversationParticipantCreate {
+	return cpc.SetAgentID(a.ID)
 }
 
 // Mutation returns the ConversationParticipantMutation object of the builder.
-func (_c *ConversationParticipantCreate) Mutation() *ConversationParticipantMutation {
-	return _c.mutation
+func (cpc *ConversationParticipantCreate) Mutation() *ConversationParticipantMutation {
+	return cpc.mutation
 }
 
 // Save creates the ConversationParticipant in the database.
-func (_c *ConversationParticipantCreate) Save(ctx context.Context) (*ConversationParticipant, error) {
-	_c.defaults()
-	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
+func (cpc *ConversationParticipantCreate) Save(ctx context.Context) (*ConversationParticipant, error) {
+	cpc.defaults()
+	return withHooks(ctx, cpc.sqlSave, cpc.mutation, cpc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (_c *ConversationParticipantCreate) SaveX(ctx context.Context) *ConversationParticipant {
-	v, err := _c.Save(ctx)
+func (cpc *ConversationParticipantCreate) SaveX(ctx context.Context) *ConversationParticipant {
+	v, err := cpc.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -122,63 +122,63 @@ func (_c *ConversationParticipantCreate) SaveX(ctx context.Context) *Conversatio
 }
 
 // Exec executes the query.
-func (_c *ConversationParticipantCreate) Exec(ctx context.Context) error {
-	_, err := _c.Save(ctx)
+func (cpc *ConversationParticipantCreate) Exec(ctx context.Context) error {
+	_, err := cpc.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_c *ConversationParticipantCreate) ExecX(ctx context.Context) {
-	if err := _c.Exec(ctx); err != nil {
+func (cpc *ConversationParticipantCreate) ExecX(ctx context.Context) {
+	if err := cpc.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *ConversationParticipantCreate) defaults() {
-	if _, ok := _c.mutation.Role(); !ok {
+func (cpc *ConversationParticipantCreate) defaults() {
+	if _, ok := cpc.mutation.Role(); !ok {
 		v := conversationparticipant.DefaultRole
-		_c.mutation.SetRole(v)
+		cpc.mutation.SetRole(v)
 	}
-	if _, ok := _c.mutation.JoinedAt(); !ok {
+	if _, ok := cpc.mutation.JoinedAt(); !ok {
 		v := conversationparticipant.DefaultJoinedAt()
-		_c.mutation.SetJoinedAt(v)
+		cpc.mutation.SetJoinedAt(v)
 	}
-	if _, ok := _c.mutation.ID(); !ok {
+	if _, ok := cpc.mutation.ID(); !ok {
 		v := conversationparticipant.DefaultID()
-		_c.mutation.SetID(v)
+		cpc.mutation.SetID(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_c *ConversationParticipantCreate) check() error {
-	if _, ok := _c.mutation.ConversationID(); !ok {
+func (cpc *ConversationParticipantCreate) check() error {
+	if _, ok := cpc.mutation.ConversationID(); !ok {
 		return &ValidationError{Name: "conversation_id", err: errors.New(`ent: missing required field "ConversationParticipant.conversation_id"`)}
 	}
-	if _, ok := _c.mutation.AgentID(); !ok {
+	if _, ok := cpc.mutation.AgentID(); !ok {
 		return &ValidationError{Name: "agent_id", err: errors.New(`ent: missing required field "ConversationParticipant.agent_id"`)}
 	}
-	if _, ok := _c.mutation.Role(); !ok {
+	if _, ok := cpc.mutation.Role(); !ok {
 		return &ValidationError{Name: "role", err: errors.New(`ent: missing required field "ConversationParticipant.role"`)}
 	}
-	if _, ok := _c.mutation.JoinedAt(); !ok {
+	if _, ok := cpc.mutation.JoinedAt(); !ok {
 		return &ValidationError{Name: "joined_at", err: errors.New(`ent: missing required field "ConversationParticipant.joined_at"`)}
 	}
-	if len(_c.mutation.ConversationIDs()) == 0 {
+	if len(cpc.mutation.ConversationIDs()) == 0 {
 		return &ValidationError{Name: "conversation", err: errors.New(`ent: missing required edge "ConversationParticipant.conversation"`)}
 	}
-	if len(_c.mutation.AgentIDs()) == 0 {
+	if len(cpc.mutation.AgentIDs()) == 0 {
 		return &ValidationError{Name: "agent", err: errors.New(`ent: missing required edge "ConversationParticipant.agent"`)}
 	}
 	return nil
 }
 
-func (_c *ConversationParticipantCreate) sqlSave(ctx context.Context) (*ConversationParticipant, error) {
-	if err := _c.check(); err != nil {
+func (cpc *ConversationParticipantCreate) sqlSave(ctx context.Context) (*ConversationParticipant, error) {
+	if err := cpc.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := _c.createSpec()
-	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
+	_node, _spec := cpc.createSpec()
+	if err := sqlgraph.CreateNode(ctx, cpc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -191,33 +191,33 @@ func (_c *ConversationParticipantCreate) sqlSave(ctx context.Context) (*Conversa
 			return nil, err
 		}
 	}
-	_c.mutation.id = &_node.ID
-	_c.mutation.done = true
+	cpc.mutation.id = &_node.ID
+	cpc.mutation.done = true
 	return _node, nil
 }
 
-func (_c *ConversationParticipantCreate) createSpec() (*ConversationParticipant, *sqlgraph.CreateSpec) {
+func (cpc *ConversationParticipantCreate) createSpec() (*ConversationParticipant, *sqlgraph.CreateSpec) {
 	var (
-		_node = &ConversationParticipant{config: _c.config}
+		_node = &ConversationParticipant{config: cpc.config}
 		_spec = sqlgraph.NewCreateSpec(conversationparticipant.Table, sqlgraph.NewFieldSpec(conversationparticipant.FieldID, field.TypeUUID))
 	)
-	if id, ok := _c.mutation.ID(); ok {
+	if id, ok := cpc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
-	if value, ok := _c.mutation.Role(); ok {
+	if value, ok := cpc.mutation.Role(); ok {
 		_spec.SetField(conversationparticipant.FieldRole, field.TypeString, value)
 		_node.Role = value
 	}
-	if value, ok := _c.mutation.JoinedAt(); ok {
+	if value, ok := cpc.mutation.JoinedAt(); ok {
 		_spec.SetField(conversationparticipant.FieldJoinedAt, field.TypeTime, value)
 		_node.JoinedAt = value
 	}
-	if value, ok := _c.mutation.LastReadAt(); ok {
+	if value, ok := cpc.mutation.LastReadAt(); ok {
 		_spec.SetField(conversationparticipant.FieldLastReadAt, field.TypeTime, value)
 		_node.LastReadAt = &value
 	}
-	if nodes := _c.mutation.ConversationIDs(); len(nodes) > 0 {
+	if nodes := cpc.mutation.ConversationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -234,7 +234,7 @@ func (_c *ConversationParticipantCreate) createSpec() (*ConversationParticipant,
 		_node.ConversationID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := _c.mutation.AgentIDs(); len(nodes) > 0 {
+	if nodes := cpc.mutation.AgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -262,16 +262,16 @@ type ConversationParticipantCreateBulk struct {
 }
 
 // Save creates the ConversationParticipant entities in the database.
-func (_c *ConversationParticipantCreateBulk) Save(ctx context.Context) ([]*ConversationParticipant, error) {
-	if _c.err != nil {
-		return nil, _c.err
+func (cpcb *ConversationParticipantCreateBulk) Save(ctx context.Context) ([]*ConversationParticipant, error) {
+	if cpcb.err != nil {
+		return nil, cpcb.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
-	nodes := make([]*ConversationParticipant, len(_c.builders))
-	mutators := make([]Mutator, len(_c.builders))
-	for i := range _c.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(cpcb.builders))
+	nodes := make([]*ConversationParticipant, len(cpcb.builders))
+	mutators := make([]Mutator, len(cpcb.builders))
+	for i := range cpcb.builders {
 		func(i int, root context.Context) {
-			builder := _c.builders[i]
+			builder := cpcb.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*ConversationParticipantMutation)
@@ -285,11 +285,11 @@ func (_c *ConversationParticipantCreateBulk) Save(ctx context.Context) ([]*Conve
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, cpcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, cpcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -309,7 +309,7 @@ func (_c *ConversationParticipantCreateBulk) Save(ctx context.Context) ([]*Conve
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, cpcb.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -317,8 +317,8 @@ func (_c *ConversationParticipantCreateBulk) Save(ctx context.Context) ([]*Conve
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_c *ConversationParticipantCreateBulk) SaveX(ctx context.Context) []*ConversationParticipant {
-	v, err := _c.Save(ctx)
+func (cpcb *ConversationParticipantCreateBulk) SaveX(ctx context.Context) []*ConversationParticipant {
+	v, err := cpcb.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -326,14 +326,14 @@ func (_c *ConversationParticipantCreateBulk) SaveX(ctx context.Context) []*Conve
 }
 
 // Exec executes the query.
-func (_c *ConversationParticipantCreateBulk) Exec(ctx context.Context) error {
-	_, err := _c.Save(ctx)
+func (cpcb *ConversationParticipantCreateBulk) Exec(ctx context.Context) error {
+	_, err := cpcb.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_c *ConversationParticipantCreateBulk) ExecX(ctx context.Context) {
-	if err := _c.Exec(ctx); err != nil {
+func (cpcb *ConversationParticipantCreateBulk) ExecX(ctx context.Context) {
+	if err := cpcb.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

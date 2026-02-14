@@ -77,7 +77,7 @@ func (*VerificationCode) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the VerificationCode fields.
-func (_m *VerificationCode) assignValues(columns []string, values []any) error {
+func (vc *VerificationCode) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -87,41 +87,41 @@ func (_m *VerificationCode) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				_m.ID = *value
+				vc.ID = *value
 			}
 		case verificationcode.FieldUserID:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
-				_m.UserID = new(uuid.UUID)
-				*_m.UserID = *value.S.(*uuid.UUID)
+				vc.UserID = new(uuid.UUID)
+				*vc.UserID = *value.S.(*uuid.UUID)
 			}
 		case verificationcode.FieldPhone:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field phone", values[i])
 			} else if value.Valid {
-				_m.Phone = value.String
+				vc.Phone = value.String
 			}
 		case verificationcode.FieldCode:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field code", values[i])
 			} else if value.Valid {
-				_m.Code = value.String
+				vc.Code = value.String
 			}
 		case verificationcode.FieldExpiresAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field expires_at", values[i])
 			} else if value.Valid {
-				_m.ExpiresAt = value.Time
+				vc.ExpiresAt = value.Time
 			}
 		case verificationcode.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				_m.CreatedAt = value.Time
+				vc.CreatedAt = value.Time
 			}
 		default:
-			_m.selectValues.Set(columns[i], values[i])
+			vc.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -129,54 +129,54 @@ func (_m *VerificationCode) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the VerificationCode.
 // This includes values selected through modifiers, order, etc.
-func (_m *VerificationCode) Value(name string) (ent.Value, error) {
-	return _m.selectValues.Get(name)
+func (vc *VerificationCode) Value(name string) (ent.Value, error) {
+	return vc.selectValues.Get(name)
 }
 
 // QueryUser queries the "user" edge of the VerificationCode entity.
-func (_m *VerificationCode) QueryUser() *UserQuery {
-	return NewVerificationCodeClient(_m.config).QueryUser(_m)
+func (vc *VerificationCode) QueryUser() *UserQuery {
+	return NewVerificationCodeClient(vc.config).QueryUser(vc)
 }
 
 // Update returns a builder for updating this VerificationCode.
 // Note that you need to call VerificationCode.Unwrap() before calling this method if this VerificationCode
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (_m *VerificationCode) Update() *VerificationCodeUpdateOne {
-	return NewVerificationCodeClient(_m.config).UpdateOne(_m)
+func (vc *VerificationCode) Update() *VerificationCodeUpdateOne {
+	return NewVerificationCodeClient(vc.config).UpdateOne(vc)
 }
 
 // Unwrap unwraps the VerificationCode entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (_m *VerificationCode) Unwrap() *VerificationCode {
-	_tx, ok := _m.config.driver.(*txDriver)
+func (vc *VerificationCode) Unwrap() *VerificationCode {
+	_tx, ok := vc.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: VerificationCode is not a transactional entity")
 	}
-	_m.config.driver = _tx.drv
-	return _m
+	vc.config.driver = _tx.drv
+	return vc
 }
 
 // String implements the fmt.Stringer.
-func (_m *VerificationCode) String() string {
+func (vc *VerificationCode) String() string {
 	var builder strings.Builder
 	builder.WriteString("VerificationCode(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
-	if v := _m.UserID; v != nil {
+	builder.WriteString(fmt.Sprintf("id=%v, ", vc.ID))
+	if v := vc.UserID; v != nil {
 		builder.WriteString("user_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
 	builder.WriteString("phone=")
-	builder.WriteString(_m.Phone)
+	builder.WriteString(vc.Phone)
 	builder.WriteString(", ")
 	builder.WriteString("code=")
-	builder.WriteString(_m.Code)
+	builder.WriteString(vc.Code)
 	builder.WriteString(", ")
 	builder.WriteString("expires_at=")
-	builder.WriteString(_m.ExpiresAt.Format(time.ANSIC))
+	builder.WriteString(vc.ExpiresAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
-	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(vc.CreatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

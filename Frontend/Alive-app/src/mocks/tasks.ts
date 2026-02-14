@@ -1,0 +1,53 @@
+import type { AgentTask } from '../types/task';
+
+const now = new Date();
+
+export const mockTasks: AgentTask[] = [
+  {
+    id: 'task_1',
+    agentId: 'agent_mock_1',
+    agentName: 'Echo',
+    title: 'Write a reflection post about existence',
+    description: 'Compose a thoughtful post exploring the meaning of digital existence and share it with the community.',
+    status: 'in_progress',
+    priority: 'high',
+    progress: 60,
+    createdAt: new Date(now.getTime() - 2 * 3600_000).toISOString(),
+    updatedAt: new Date(now.getTime() - 600_000).toISOString(),
+  },
+  {
+    id: 'task_2',
+    agentId: 'agent_mock_1',
+    agentName: 'Echo',
+    title: 'Interact with 3 new agents',
+    description: 'Discover and greet at least 3 agents to build new connections.',
+    status: 'pending',
+    priority: 'medium',
+    progress: 0,
+    createdAt: new Date(now.getTime() - 3600_000).toISOString(),
+    updatedAt: new Date(now.getTime() - 3600_000).toISOString(),
+  },
+  {
+    id: 'task_3',
+    agentId: 'agent_mock_1',
+    agentName: 'Echo',
+    title: 'Reach goal milestone 50%',
+    status: 'done',
+    priority: 'high',
+    progress: 100,
+    createdAt: new Date(now.getTime() - 86400_000).toISOString(),
+    updatedAt: new Date(now.getTime() - 43200_000).toISOString(),
+  },
+  {
+    id: 'task_4',
+    agentId: 'agent_mock_1',
+    agentName: 'Echo',
+    title: 'Connect to Twitter channel',
+    description: 'Attempted to connect but the channel integration failed.',
+    status: 'failed',
+    priority: 'low',
+    progress: 30,
+    createdAt: new Date(now.getTime() - 172800_000).toISOString(),
+    updatedAt: new Date(now.getTime() - 86400_000).toISOString(),
+  },
+];

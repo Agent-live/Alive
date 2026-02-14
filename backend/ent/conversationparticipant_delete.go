@@ -20,56 +20,56 @@ type ConversationParticipantDelete struct {
 }
 
 // Where appends a list predicates to the ConversationParticipantDelete builder.
-func (_d *ConversationParticipantDelete) Where(ps ...predicate.ConversationParticipant) *ConversationParticipantDelete {
-	_d.mutation.Where(ps...)
-	return _d
+func (cpd *ConversationParticipantDelete) Where(ps ...predicate.ConversationParticipant) *ConversationParticipantDelete {
+	cpd.mutation.Where(ps...)
+	return cpd
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (_d *ConversationParticipantDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks(ctx, _d.sqlExec, _d.mutation, _d.hooks)
+func (cpd *ConversationParticipantDelete) Exec(ctx context.Context) (int, error) {
+	return withHooks(ctx, cpd.sqlExec, cpd.mutation, cpd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_d *ConversationParticipantDelete) ExecX(ctx context.Context) int {
-	n, err := _d.Exec(ctx)
+func (cpd *ConversationParticipantDelete) ExecX(ctx context.Context) int {
+	n, err := cpd.Exec(ctx)
 	if err != nil {
 		panic(err)
 	}
 	return n
 }
 
-func (_d *ConversationParticipantDelete) sqlExec(ctx context.Context) (int, error) {
+func (cpd *ConversationParticipantDelete) sqlExec(ctx context.Context) (int, error) {
 	_spec := sqlgraph.NewDeleteSpec(conversationparticipant.Table, sqlgraph.NewFieldSpec(conversationparticipant.FieldID, field.TypeUUID))
-	if ps := _d.mutation.predicates; len(ps) > 0 {
+	if ps := cpd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	affected, err := sqlgraph.DeleteNodes(ctx, _d.driver, _spec)
+	affected, err := sqlgraph.DeleteNodes(ctx, cpd.driver, _spec)
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
-	_d.mutation.done = true
+	cpd.mutation.done = true
 	return affected, err
 }
 
 // ConversationParticipantDeleteOne is the builder for deleting a single ConversationParticipant entity.
 type ConversationParticipantDeleteOne struct {
-	_d *ConversationParticipantDelete
+	cpd *ConversationParticipantDelete
 }
 
 // Where appends a list predicates to the ConversationParticipantDelete builder.
-func (_d *ConversationParticipantDeleteOne) Where(ps ...predicate.ConversationParticipant) *ConversationParticipantDeleteOne {
-	_d._d.mutation.Where(ps...)
-	return _d
+func (cpdo *ConversationParticipantDeleteOne) Where(ps ...predicate.ConversationParticipant) *ConversationParticipantDeleteOne {
+	cpdo.cpd.mutation.Where(ps...)
+	return cpdo
 }
 
 // Exec executes the deletion query.
-func (_d *ConversationParticipantDeleteOne) Exec(ctx context.Context) error {
-	n, err := _d._d.Exec(ctx)
+func (cpdo *ConversationParticipantDeleteOne) Exec(ctx context.Context) error {
+	n, err := cpdo.cpd.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
@@ -81,8 +81,8 @@ func (_d *ConversationParticipantDeleteOne) Exec(ctx context.Context) error {
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_d *ConversationParticipantDeleteOne) ExecX(ctx context.Context) {
-	if err := _d.Exec(ctx); err != nil {
+func (cpdo *ConversationParticipantDeleteOne) ExecX(ctx context.Context) {
+	if err := cpdo.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

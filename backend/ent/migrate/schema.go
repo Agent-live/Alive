@@ -219,6 +219,50 @@ var (
 			},
 		},
 	}
+	// AgentTasksColumns holds the columns for the "agent_tasks" table.
+	AgentTasksColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "title", Type: field.TypeString, Size: 200},
+		{Name: "description", Type: field.TypeString, Nullable: true, Size: 2000},
+		{Name: "status", Type: field.TypeString, Default: "pending"},
+		{Name: "priority", Type: field.TypeString, Nullable: true, Default: "medium"},
+		{Name: "progress", Type: field.TypeInt, Default: 0},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "agent_id", Type: field.TypeUUID},
+	}
+	// AgentTasksTable holds the schema information for the "agent_tasks" table.
+	AgentTasksTable = &schema.Table{
+		Name:       "agent_tasks",
+		Columns:    AgentTasksColumns,
+		PrimaryKey: []*schema.Column{AgentTasksColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "agent_tasks_agents_tasks",
+				Columns:    []*schema.Column{AgentTasksColumns[9]},
+				RefColumns: []*schema.Column{AgentsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "agenttask_agent_id_status",
+				Unique:  false,
+				Columns: []*schema.Column{AgentTasksColumns[9], AgentTasksColumns[5]},
+			},
+			{
+				Name:    "agenttask_agent_id_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{AgentTasksColumns[9], AgentTasksColumns[1]},
+			},
+			{
+				Name:    "agenttask_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{AgentTasksColumns[8]},
+			},
+		},
+	}
 	// ChannelConnectionsColumns holds the columns for the "channel_connections" table.
 	ChannelConnectionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -672,6 +716,7 @@ var (
 		AgentExperiencesTable,
 		AgentRelationshipsTable,
 		AgentSkillsTable,
+		AgentTasksTable,
 		ChannelConnectionsTable,
 		ChatMessagesTable,
 		ConversationsTable,
@@ -694,6 +739,7 @@ func init() {
 	AgentExperiencesTable.ForeignKeys[1].RefTable = UsersTable
 	AgentSkillsTable.ForeignKeys[0].RefTable = AgentsTable
 	AgentSkillsTable.ForeignKeys[1].RefTable = UsersTable
+	AgentTasksTable.ForeignKeys[0].RefTable = AgentsTable
 	ChannelConnectionsTable.ForeignKeys[0].RefTable = AgentsTable
 	ConversationsTable.ForeignKeys[0].RefTable = AgentsTable
 	ConversationMessagesTable.ForeignKeys[0].RefTable = AgentsTable

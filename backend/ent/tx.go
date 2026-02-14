@@ -20,6 +20,8 @@ type Tx struct {
 	AgentRelationship *AgentRelationshipClient
 	// AgentSkill is the client for interacting with the AgentSkill builders.
 	AgentSkill *AgentSkillClient
+	// AgentTask is the client for interacting with the AgentTask builders.
+	AgentTask *AgentTaskClient
 	// ChannelConnection is the client for interacting with the ChannelConnection builders.
 	ChannelConnection *ChannelConnectionClient
 	// ChatMessage is the client for interacting with the ChatMessage builders.
@@ -181,6 +183,7 @@ func (tx *Tx) init() {
 	tx.AgentExperience = NewAgentExperienceClient(tx.config)
 	tx.AgentRelationship = NewAgentRelationshipClient(tx.config)
 	tx.AgentSkill = NewAgentSkillClient(tx.config)
+	tx.AgentTask = NewAgentTaskClient(tx.config)
 	tx.ChannelConnection = NewChannelConnectionClient(tx.config)
 	tx.ChatMessage = NewChatMessageClient(tx.config)
 	tx.Conversation = NewConversationClient(tx.config)

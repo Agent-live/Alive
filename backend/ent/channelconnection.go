@@ -81,7 +81,7 @@ func (*ChannelConnection) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the ChannelConnection fields.
-func (_m *ChannelConnection) assignValues(columns []string, values []any) error {
+func (cc *ChannelConnection) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -91,61 +91,61 @@ func (_m *ChannelConnection) assignValues(columns []string, values []any) error 
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				_m.ID = *value
+				cc.ID = *value
 			}
 		case channelconnection.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				_m.CreatedAt = value.Time
+				cc.CreatedAt = value.Time
 			}
 		case channelconnection.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				_m.UpdatedAt = value.Time
+				cc.UpdatedAt = value.Time
 			}
 		case channelconnection.FieldAgentID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field agent_id", values[i])
 			} else if value != nil {
-				_m.AgentID = *value
+				cc.AgentID = *value
 			}
 		case channelconnection.FieldChannelType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field channel_type", values[i])
 			} else if value.Valid {
-				_m.ChannelType = value.String
+				cc.ChannelType = value.String
 			}
 		case channelconnection.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
-				_m.Status = value.String
+				cc.Status = value.String
 			}
 		case channelconnection.FieldHandle:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field handle", values[i])
 			} else if value.Valid {
-				_m.Handle = new(string)
-				*_m.Handle = value.String
+				cc.Handle = new(string)
+				*cc.Handle = value.String
 			}
 		case channelconnection.FieldDeepLink:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field deep_link", values[i])
 			} else if value.Valid {
-				_m.DeepLink = new(string)
-				*_m.DeepLink = value.String
+				cc.DeepLink = new(string)
+				*cc.DeepLink = value.String
 			}
 		case channelconnection.FieldConnectedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field connected_at", values[i])
 			} else if value.Valid {
-				_m.ConnectedAt = new(time.Time)
-				*_m.ConnectedAt = value.Time
+				cc.ConnectedAt = new(time.Time)
+				*cc.ConnectedAt = value.Time
 			}
 		default:
-			_m.selectValues.Set(columns[i], values[i])
+			cc.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -153,64 +153,64 @@ func (_m *ChannelConnection) assignValues(columns []string, values []any) error 
 
 // Value returns the ent.Value that was dynamically selected and assigned to the ChannelConnection.
 // This includes values selected through modifiers, order, etc.
-func (_m *ChannelConnection) Value(name string) (ent.Value, error) {
-	return _m.selectValues.Get(name)
+func (cc *ChannelConnection) Value(name string) (ent.Value, error) {
+	return cc.selectValues.Get(name)
 }
 
 // QueryAgent queries the "agent" edge of the ChannelConnection entity.
-func (_m *ChannelConnection) QueryAgent() *AgentQuery {
-	return NewChannelConnectionClient(_m.config).QueryAgent(_m)
+func (cc *ChannelConnection) QueryAgent() *AgentQuery {
+	return NewChannelConnectionClient(cc.config).QueryAgent(cc)
 }
 
 // Update returns a builder for updating this ChannelConnection.
 // Note that you need to call ChannelConnection.Unwrap() before calling this method if this ChannelConnection
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (_m *ChannelConnection) Update() *ChannelConnectionUpdateOne {
-	return NewChannelConnectionClient(_m.config).UpdateOne(_m)
+func (cc *ChannelConnection) Update() *ChannelConnectionUpdateOne {
+	return NewChannelConnectionClient(cc.config).UpdateOne(cc)
 }
 
 // Unwrap unwraps the ChannelConnection entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (_m *ChannelConnection) Unwrap() *ChannelConnection {
-	_tx, ok := _m.config.driver.(*txDriver)
+func (cc *ChannelConnection) Unwrap() *ChannelConnection {
+	_tx, ok := cc.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: ChannelConnection is not a transactional entity")
 	}
-	_m.config.driver = _tx.drv
-	return _m
+	cc.config.driver = _tx.drv
+	return cc
 }
 
 // String implements the fmt.Stringer.
-func (_m *ChannelConnection) String() string {
+func (cc *ChannelConnection) String() string {
 	var builder strings.Builder
 	builder.WriteString("ChannelConnection(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", cc.ID))
 	builder.WriteString("created_at=")
-	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(cc.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
-	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(cc.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("agent_id=")
-	builder.WriteString(fmt.Sprintf("%v", _m.AgentID))
+	builder.WriteString(fmt.Sprintf("%v", cc.AgentID))
 	builder.WriteString(", ")
 	builder.WriteString("channel_type=")
-	builder.WriteString(_m.ChannelType)
+	builder.WriteString(cc.ChannelType)
 	builder.WriteString(", ")
 	builder.WriteString("status=")
-	builder.WriteString(_m.Status)
+	builder.WriteString(cc.Status)
 	builder.WriteString(", ")
-	if v := _m.Handle; v != nil {
+	if v := cc.Handle; v != nil {
 		builder.WriteString("handle=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := _m.DeepLink; v != nil {
+	if v := cc.DeepLink; v != nil {
 		builder.WriteString("deep_link=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := _m.ConnectedAt; v != nil {
+	if v := cc.ConnectedAt; v != nil {
 		builder.WriteString("connected_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}

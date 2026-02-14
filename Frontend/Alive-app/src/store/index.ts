@@ -6,3 +6,4 @@ export { useTimerStore } from './timerStore';
 export { useSettingsStore, settings, fontSizeValues } from './settingsStore';
 export type { ThemeMode, FontSize } from './settingsStore';
 export { useConversationStore } from './conversationStore';
+export { useTaskStore } from './taskStore';

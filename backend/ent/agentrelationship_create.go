@@ -22,129 +22,129 @@ type AgentRelationshipCreate struct {
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (_c *AgentRelationshipCreate) SetCreatedAt(v time.Time) *AgentRelationshipCreate {
-	_c.mutation.SetCreatedAt(v)
-	return _c
+func (arc *AgentRelationshipCreate) SetCreatedAt(t time.Time) *AgentRelationshipCreate {
+	arc.mutation.SetCreatedAt(t)
+	return arc
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (_c *AgentRelationshipCreate) SetNillableCreatedAt(v *time.Time) *AgentRelationshipCreate {
-	if v != nil {
-		_c.SetCreatedAt(*v)
+func (arc *AgentRelationshipCreate) SetNillableCreatedAt(t *time.Time) *AgentRelationshipCreate {
+	if t != nil {
+		arc.SetCreatedAt(*t)
 	}
-	return _c
+	return arc
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (_c *AgentRelationshipCreate) SetUpdatedAt(v time.Time) *AgentRelationshipCreate {
-	_c.mutation.SetUpdatedAt(v)
-	return _c
+func (arc *AgentRelationshipCreate) SetUpdatedAt(t time.Time) *AgentRelationshipCreate {
+	arc.mutation.SetUpdatedAt(t)
+	return arc
 }
 
 // SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (_c *AgentRelationshipCreate) SetNillableUpdatedAt(v *time.Time) *AgentRelationshipCreate {
-	if v != nil {
-		_c.SetUpdatedAt(*v)
+func (arc *AgentRelationshipCreate) SetNillableUpdatedAt(t *time.Time) *AgentRelationshipCreate {
+	if t != nil {
+		arc.SetUpdatedAt(*t)
 	}
-	return _c
+	return arc
 }
 
 // SetAgentID sets the "agent_id" field.
-func (_c *AgentRelationshipCreate) SetAgentID(v uuid.UUID) *AgentRelationshipCreate {
-	_c.mutation.SetAgentID(v)
-	return _c
+func (arc *AgentRelationshipCreate) SetAgentID(u uuid.UUID) *AgentRelationshipCreate {
+	arc.mutation.SetAgentID(u)
+	return arc
 }
 
 // SetTargetAgentID sets the "target_agent_id" field.
-func (_c *AgentRelationshipCreate) SetTargetAgentID(v uuid.UUID) *AgentRelationshipCreate {
-	_c.mutation.SetTargetAgentID(v)
-	return _c
+func (arc *AgentRelationshipCreate) SetTargetAgentID(u uuid.UUID) *AgentRelationshipCreate {
+	arc.mutation.SetTargetAgentID(u)
+	return arc
 }
 
 // SetAffinity sets the "affinity" field.
-func (_c *AgentRelationshipCreate) SetAffinity(v int64) *AgentRelationshipCreate {
-	_c.mutation.SetAffinity(v)
-	return _c
+func (arc *AgentRelationshipCreate) SetAffinity(i int64) *AgentRelationshipCreate {
+	arc.mutation.SetAffinity(i)
+	return arc
 }
 
 // SetNillableAffinity sets the "affinity" field if the given value is not nil.
-func (_c *AgentRelationshipCreate) SetNillableAffinity(v *int64) *AgentRelationshipCreate {
-	if v != nil {
-		_c.SetAffinity(*v)
+func (arc *AgentRelationshipCreate) SetNillableAffinity(i *int64) *AgentRelationshipCreate {
+	if i != nil {
+		arc.SetAffinity(*i)
 	}
-	return _c
+	return arc
 }
 
 // SetLabel sets the "label" field.
-func (_c *AgentRelationshipCreate) SetLabel(v string) *AgentRelationshipCreate {
-	_c.mutation.SetLabel(v)
-	return _c
+func (arc *AgentRelationshipCreate) SetLabel(s string) *AgentRelationshipCreate {
+	arc.mutation.SetLabel(s)
+	return arc
 }
 
 // SetNillableLabel sets the "label" field if the given value is not nil.
-func (_c *AgentRelationshipCreate) SetNillableLabel(v *string) *AgentRelationshipCreate {
-	if v != nil {
-		_c.SetLabel(*v)
+func (arc *AgentRelationshipCreate) SetNillableLabel(s *string) *AgentRelationshipCreate {
+	if s != nil {
+		arc.SetLabel(*s)
 	}
-	return _c
+	return arc
 }
 
 // SetInteractionCount sets the "interaction_count" field.
-func (_c *AgentRelationshipCreate) SetInteractionCount(v int64) *AgentRelationshipCreate {
-	_c.mutation.SetInteractionCount(v)
-	return _c
+func (arc *AgentRelationshipCreate) SetInteractionCount(i int64) *AgentRelationshipCreate {
+	arc.mutation.SetInteractionCount(i)
+	return arc
 }
 
 // SetNillableInteractionCount sets the "interaction_count" field if the given value is not nil.
-func (_c *AgentRelationshipCreate) SetNillableInteractionCount(v *int64) *AgentRelationshipCreate {
-	if v != nil {
-		_c.SetInteractionCount(*v)
+func (arc *AgentRelationshipCreate) SetNillableInteractionCount(i *int64) *AgentRelationshipCreate {
+	if i != nil {
+		arc.SetInteractionCount(*i)
 	}
-	return _c
+	return arc
 }
 
 // SetMessageCount sets the "message_count" field.
-func (_c *AgentRelationshipCreate) SetMessageCount(v int64) *AgentRelationshipCreate {
-	_c.mutation.SetMessageCount(v)
-	return _c
+func (arc *AgentRelationshipCreate) SetMessageCount(i int64) *AgentRelationshipCreate {
+	arc.mutation.SetMessageCount(i)
+	return arc
 }
 
 // SetNillableMessageCount sets the "message_count" field if the given value is not nil.
-func (_c *AgentRelationshipCreate) SetNillableMessageCount(v *int64) *AgentRelationshipCreate {
-	if v != nil {
-		_c.SetMessageCount(*v)
+func (arc *AgentRelationshipCreate) SetNillableMessageCount(i *int64) *AgentRelationshipCreate {
+	if i != nil {
+		arc.SetMessageCount(*i)
 	}
-	return _c
+	return arc
 }
 
 // SetID sets the "id" field.
-func (_c *AgentRelationshipCreate) SetID(v uuid.UUID) *AgentRelationshipCreate {
-	_c.mutation.SetID(v)
-	return _c
+func (arc *AgentRelationshipCreate) SetID(u uuid.UUID) *AgentRelationshipCreate {
+	arc.mutation.SetID(u)
+	return arc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (_c *AgentRelationshipCreate) SetNillableID(v *uuid.UUID) *AgentRelationshipCreate {
-	if v != nil {
-		_c.SetID(*v)
+func (arc *AgentRelationshipCreate) SetNillableID(u *uuid.UUID) *AgentRelationshipCreate {
+	if u != nil {
+		arc.SetID(*u)
 	}
-	return _c
+	return arc
 }
 
 // Mutation returns the AgentRelationshipMutation object of the builder.
-func (_c *AgentRelationshipCreate) Mutation() *AgentRelationshipMutation {
-	return _c.mutation
+func (arc *AgentRelationshipCreate) Mutation() *AgentRelationshipMutation {
+	return arc.mutation
 }
 
 // Save creates the AgentRelationship in the database.
-func (_c *AgentRelationshipCreate) Save(ctx context.Context) (*AgentRelationship, error) {
-	_c.defaults()
-	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
+func (arc *AgentRelationshipCreate) Save(ctx context.Context) (*AgentRelationship, error) {
+	arc.defaults()
+	return withHooks(ctx, arc.sqlSave, arc.mutation, arc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (_c *AgentRelationshipCreate) SaveX(ctx context.Context) *AgentRelationship {
-	v, err := _c.Save(ctx)
+func (arc *AgentRelationshipCreate) SaveX(ctx context.Context) *AgentRelationship {
+	v, err := arc.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -152,85 +152,85 @@ func (_c *AgentRelationshipCreate) SaveX(ctx context.Context) *AgentRelationship
 }
 
 // Exec executes the query.
-func (_c *AgentRelationshipCreate) Exec(ctx context.Context) error {
-	_, err := _c.Save(ctx)
+func (arc *AgentRelationshipCreate) Exec(ctx context.Context) error {
+	_, err := arc.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_c *AgentRelationshipCreate) ExecX(ctx context.Context) {
-	if err := _c.Exec(ctx); err != nil {
+func (arc *AgentRelationshipCreate) ExecX(ctx context.Context) {
+	if err := arc.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *AgentRelationshipCreate) defaults() {
-	if _, ok := _c.mutation.CreatedAt(); !ok {
+func (arc *AgentRelationshipCreate) defaults() {
+	if _, ok := arc.mutation.CreatedAt(); !ok {
 		v := agentrelationship.DefaultCreatedAt()
-		_c.mutation.SetCreatedAt(v)
+		arc.mutation.SetCreatedAt(v)
 	}
-	if _, ok := _c.mutation.UpdatedAt(); !ok {
+	if _, ok := arc.mutation.UpdatedAt(); !ok {
 		v := agentrelationship.DefaultUpdatedAt()
-		_c.mutation.SetUpdatedAt(v)
+		arc.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := _c.mutation.Affinity(); !ok {
+	if _, ok := arc.mutation.Affinity(); !ok {
 		v := agentrelationship.DefaultAffinity
-		_c.mutation.SetAffinity(v)
+		arc.mutation.SetAffinity(v)
 	}
-	if _, ok := _c.mutation.Label(); !ok {
+	if _, ok := arc.mutation.Label(); !ok {
 		v := agentrelationship.DefaultLabel
-		_c.mutation.SetLabel(v)
+		arc.mutation.SetLabel(v)
 	}
-	if _, ok := _c.mutation.InteractionCount(); !ok {
+	if _, ok := arc.mutation.InteractionCount(); !ok {
 		v := agentrelationship.DefaultInteractionCount
-		_c.mutation.SetInteractionCount(v)
+		arc.mutation.SetInteractionCount(v)
 	}
-	if _, ok := _c.mutation.MessageCount(); !ok {
+	if _, ok := arc.mutation.MessageCount(); !ok {
 		v := agentrelationship.DefaultMessageCount
-		_c.mutation.SetMessageCount(v)
+		arc.mutation.SetMessageCount(v)
 	}
-	if _, ok := _c.mutation.ID(); !ok {
+	if _, ok := arc.mutation.ID(); !ok {
 		v := agentrelationship.DefaultID()
-		_c.mutation.SetID(v)
+		arc.mutation.SetID(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_c *AgentRelationshipCreate) check() error {
-	if _, ok := _c.mutation.CreatedAt(); !ok {
+func (arc *AgentRelationshipCreate) check() error {
+	if _, ok := arc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "AgentRelationship.created_at"`)}
 	}
-	if _, ok := _c.mutation.UpdatedAt(); !ok {
+	if _, ok := arc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "AgentRelationship.updated_at"`)}
 	}
-	if _, ok := _c.mutation.AgentID(); !ok {
+	if _, ok := arc.mutation.AgentID(); !ok {
 		return &ValidationError{Name: "agent_id", err: errors.New(`ent: missing required field "AgentRelationship.agent_id"`)}
 	}
-	if _, ok := _c.mutation.TargetAgentID(); !ok {
+	if _, ok := arc.mutation.TargetAgentID(); !ok {
 		return &ValidationError{Name: "target_agent_id", err: errors.New(`ent: missing required field "AgentRelationship.target_agent_id"`)}
 	}
-	if _, ok := _c.mutation.Affinity(); !ok {
+	if _, ok := arc.mutation.Affinity(); !ok {
 		return &ValidationError{Name: "affinity", err: errors.New(`ent: missing required field "AgentRelationship.affinity"`)}
 	}
-	if _, ok := _c.mutation.Label(); !ok {
+	if _, ok := arc.mutation.Label(); !ok {
 		return &ValidationError{Name: "label", err: errors.New(`ent: missing required field "AgentRelationship.label"`)}
 	}
-	if _, ok := _c.mutation.InteractionCount(); !ok {
+	if _, ok := arc.mutation.InteractionCount(); !ok {
 		return &ValidationError{Name: "interaction_count", err: errors.New(`ent: missing required field "AgentRelationship.interaction_count"`)}
 	}
-	if _, ok := _c.mutation.MessageCount(); !ok {
+	if _, ok := arc.mutation.MessageCount(); !ok {
 		return &ValidationError{Name: "message_count", err: errors.New(`ent: missing required field "AgentRelationship.message_count"`)}
 	}
 	return nil
 }
 
-func (_c *AgentRelationshipCreate) sqlSave(ctx context.Context) (*AgentRelationship, error) {
-	if err := _c.check(); err != nil {
+func (arc *AgentRelationshipCreate) sqlSave(ctx context.Context) (*AgentRelationship, error) {
+	if err := arc.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := _c.createSpec()
-	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
+	_node, _spec := arc.createSpec()
+	if err := sqlgraph.CreateNode(ctx, arc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -243,49 +243,49 @@ func (_c *AgentRelationshipCreate) sqlSave(ctx context.Context) (*AgentRelations
 			return nil, err
 		}
 	}
-	_c.mutation.id = &_node.ID
-	_c.mutation.done = true
+	arc.mutation.id = &_node.ID
+	arc.mutation.done = true
 	return _node, nil
 }
 
-func (_c *AgentRelationshipCreate) createSpec() (*AgentRelationship, *sqlgraph.CreateSpec) {
+func (arc *AgentRelationshipCreate) createSpec() (*AgentRelationship, *sqlgraph.CreateSpec) {
 	var (
-		_node = &AgentRelationship{config: _c.config}
+		_node = &AgentRelationship{config: arc.config}
 		_spec = sqlgraph.NewCreateSpec(agentrelationship.Table, sqlgraph.NewFieldSpec(agentrelationship.FieldID, field.TypeUUID))
 	)
-	if id, ok := _c.mutation.ID(); ok {
+	if id, ok := arc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
-	if value, ok := _c.mutation.CreatedAt(); ok {
+	if value, ok := arc.mutation.CreatedAt(); ok {
 		_spec.SetField(agentrelationship.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
-	if value, ok := _c.mutation.UpdatedAt(); ok {
+	if value, ok := arc.mutation.UpdatedAt(); ok {
 		_spec.SetField(agentrelationship.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := _c.mutation.AgentID(); ok {
+	if value, ok := arc.mutation.AgentID(); ok {
 		_spec.SetField(agentrelationship.FieldAgentID, field.TypeUUID, value)
 		_node.AgentID = value
 	}
-	if value, ok := _c.mutation.TargetAgentID(); ok {
+	if value, ok := arc.mutation.TargetAgentID(); ok {
 		_spec.SetField(agentrelationship.FieldTargetAgentID, field.TypeUUID, value)
 		_node.TargetAgentID = value
 	}
-	if value, ok := _c.mutation.Affinity(); ok {
+	if value, ok := arc.mutation.Affinity(); ok {
 		_spec.SetField(agentrelationship.FieldAffinity, field.TypeInt64, value)
 		_node.Affinity = value
 	}
-	if value, ok := _c.mutation.Label(); ok {
+	if value, ok := arc.mutation.Label(); ok {
 		_spec.SetField(agentrelationship.FieldLabel, field.TypeString, value)
 		_node.Label = value
 	}
-	if value, ok := _c.mutation.InteractionCount(); ok {
+	if value, ok := arc.mutation.InteractionCount(); ok {
 		_spec.SetField(agentrelationship.FieldInteractionCount, field.TypeInt64, value)
 		_node.InteractionCount = value
 	}
-	if value, ok := _c.mutation.MessageCount(); ok {
+	if value, ok := arc.mutation.MessageCount(); ok {
 		_spec.SetField(agentrelationship.FieldMessageCount, field.TypeInt64, value)
 		_node.MessageCount = value
 	}
@@ -300,16 +300,16 @@ type AgentRelationshipCreateBulk struct {
 }
 
 // Save creates the AgentRelationship entities in the database.
-func (_c *AgentRelationshipCreateBulk) Save(ctx context.Context) ([]*AgentRelationship, error) {
-	if _c.err != nil {
-		return nil, _c.err
+func (arcb *AgentRelationshipCreateBulk) Save(ctx context.Context) ([]*AgentRelationship, error) {
+	if arcb.err != nil {
+		return nil, arcb.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
-	nodes := make([]*AgentRelationship, len(_c.builders))
-	mutators := make([]Mutator, len(_c.builders))
-	for i := range _c.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(arcb.builders))
+	nodes := make([]*AgentRelationship, len(arcb.builders))
+	mutators := make([]Mutator, len(arcb.builders))
+	for i := range arcb.builders {
 		func(i int, root context.Context) {
-			builder := _c.builders[i]
+			builder := arcb.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*AgentRelationshipMutation)
@@ -323,11 +323,11 @@ func (_c *AgentRelationshipCreateBulk) Save(ctx context.Context) ([]*AgentRelati
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, arcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, arcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -347,7 +347,7 @@ func (_c *AgentRelationshipCreateBulk) Save(ctx context.Context) ([]*AgentRelati
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, arcb.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -355,8 +355,8 @@ func (_c *AgentRelationshipCreateBulk) Save(ctx context.Context) ([]*AgentRelati
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_c *AgentRelationshipCreateBulk) SaveX(ctx context.Context) []*AgentRelationship {
-	v, err := _c.Save(ctx)
+func (arcb *AgentRelationshipCreateBulk) SaveX(ctx context.Context) []*AgentRelationship {
+	v, err := arcb.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -364,14 +364,14 @@ func (_c *AgentRelationshipCreateBulk) SaveX(ctx context.Context) []*AgentRelati
 }
 
 // Exec executes the query.
-func (_c *AgentRelationshipCreateBulk) Exec(ctx context.Context) error {
-	_, err := _c.Save(ctx)
+func (arcb *AgentRelationshipCreateBulk) Exec(ctx context.Context) error {
+	_, err := arcb.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_c *AgentRelationshipCreateBulk) ExecX(ctx context.Context) {
-	if err := _c.Exec(ctx); err != nil {
+func (arcb *AgentRelationshipCreateBulk) ExecX(ctx context.Context) {
+	if err := arcb.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

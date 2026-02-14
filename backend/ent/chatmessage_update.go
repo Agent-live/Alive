@@ -24,108 +24,108 @@ type ChatMessageUpdate struct {
 }
 
 // Where appends a list predicates to the ChatMessageUpdate builder.
-func (_u *ChatMessageUpdate) Where(ps ...predicate.ChatMessage) *ChatMessageUpdate {
-	_u.mutation.Where(ps...)
-	return _u
+func (cmu *ChatMessageUpdate) Where(ps ...predicate.ChatMessage) *ChatMessageUpdate {
+	cmu.mutation.Where(ps...)
+	return cmu
 }
 
 // SetAgentID sets the "agent_id" field.
-func (_u *ChatMessageUpdate) SetAgentID(v uuid.UUID) *ChatMessageUpdate {
-	_u.mutation.SetAgentID(v)
-	return _u
+func (cmu *ChatMessageUpdate) SetAgentID(u uuid.UUID) *ChatMessageUpdate {
+	cmu.mutation.SetAgentID(u)
+	return cmu
 }
 
 // SetNillableAgentID sets the "agent_id" field if the given value is not nil.
-func (_u *ChatMessageUpdate) SetNillableAgentID(v *uuid.UUID) *ChatMessageUpdate {
-	if v != nil {
-		_u.SetAgentID(*v)
+func (cmu *ChatMessageUpdate) SetNillableAgentID(u *uuid.UUID) *ChatMessageUpdate {
+	if u != nil {
+		cmu.SetAgentID(*u)
 	}
-	return _u
+	return cmu
 }
 
 // SetUserID sets the "user_id" field.
-func (_u *ChatMessageUpdate) SetUserID(v uuid.UUID) *ChatMessageUpdate {
-	_u.mutation.SetUserID(v)
-	return _u
+func (cmu *ChatMessageUpdate) SetUserID(u uuid.UUID) *ChatMessageUpdate {
+	cmu.mutation.SetUserID(u)
+	return cmu
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_u *ChatMessageUpdate) SetNillableUserID(v *uuid.UUID) *ChatMessageUpdate {
-	if v != nil {
-		_u.SetUserID(*v)
+func (cmu *ChatMessageUpdate) SetNillableUserID(u *uuid.UUID) *ChatMessageUpdate {
+	if u != nil {
+		cmu.SetUserID(*u)
 	}
-	return _u
+	return cmu
 }
 
 // SetSessionID sets the "session_id" field.
-func (_u *ChatMessageUpdate) SetSessionID(v string) *ChatMessageUpdate {
-	_u.mutation.SetSessionID(v)
-	return _u
+func (cmu *ChatMessageUpdate) SetSessionID(s string) *ChatMessageUpdate {
+	cmu.mutation.SetSessionID(s)
+	return cmu
 }
 
 // SetNillableSessionID sets the "session_id" field if the given value is not nil.
-func (_u *ChatMessageUpdate) SetNillableSessionID(v *string) *ChatMessageUpdate {
-	if v != nil {
-		_u.SetSessionID(*v)
+func (cmu *ChatMessageUpdate) SetNillableSessionID(s *string) *ChatMessageUpdate {
+	if s != nil {
+		cmu.SetSessionID(*s)
 	}
-	return _u
+	return cmu
 }
 
 // SetRole sets the "role" field.
-func (_u *ChatMessageUpdate) SetRole(v string) *ChatMessageUpdate {
-	_u.mutation.SetRole(v)
-	return _u
+func (cmu *ChatMessageUpdate) SetRole(s string) *ChatMessageUpdate {
+	cmu.mutation.SetRole(s)
+	return cmu
 }
 
 // SetNillableRole sets the "role" field if the given value is not nil.
-func (_u *ChatMessageUpdate) SetNillableRole(v *string) *ChatMessageUpdate {
-	if v != nil {
-		_u.SetRole(*v)
+func (cmu *ChatMessageUpdate) SetNillableRole(s *string) *ChatMessageUpdate {
+	if s != nil {
+		cmu.SetRole(*s)
 	}
-	return _u
+	return cmu
 }
 
 // SetContent sets the "content" field.
-func (_u *ChatMessageUpdate) SetContent(v string) *ChatMessageUpdate {
-	_u.mutation.SetContent(v)
-	return _u
+func (cmu *ChatMessageUpdate) SetContent(s string) *ChatMessageUpdate {
+	cmu.mutation.SetContent(s)
+	return cmu
 }
 
 // SetNillableContent sets the "content" field if the given value is not nil.
-func (_u *ChatMessageUpdate) SetNillableContent(v *string) *ChatMessageUpdate {
-	if v != nil {
-		_u.SetContent(*v)
+func (cmu *ChatMessageUpdate) SetNillableContent(s *string) *ChatMessageUpdate {
+	if s != nil {
+		cmu.SetContent(*s)
 	}
-	return _u
+	return cmu
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (_u *ChatMessageUpdate) SetCreatedAt(v time.Time) *ChatMessageUpdate {
-	_u.mutation.SetCreatedAt(v)
-	return _u
+func (cmu *ChatMessageUpdate) SetCreatedAt(t time.Time) *ChatMessageUpdate {
+	cmu.mutation.SetCreatedAt(t)
+	return cmu
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (_u *ChatMessageUpdate) SetNillableCreatedAt(v *time.Time) *ChatMessageUpdate {
-	if v != nil {
-		_u.SetCreatedAt(*v)
+func (cmu *ChatMessageUpdate) SetNillableCreatedAt(t *time.Time) *ChatMessageUpdate {
+	if t != nil {
+		cmu.SetCreatedAt(*t)
 	}
-	return _u
+	return cmu
 }
 
 // Mutation returns the ChatMessageMutation object of the builder.
-func (_u *ChatMessageUpdate) Mutation() *ChatMessageMutation {
-	return _u.mutation
+func (cmu *ChatMessageUpdate) Mutation() *ChatMessageMutation {
+	return cmu.mutation
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (_u *ChatMessageUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
+func (cmu *ChatMessageUpdate) Save(ctx context.Context) (int, error) {
+	return withHooks(ctx, cmu.sqlSave, cmu.mutation, cmu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_u *ChatMessageUpdate) SaveX(ctx context.Context) int {
-	affected, err := _u.Save(ctx)
+func (cmu *ChatMessageUpdate) SaveX(ctx context.Context) int {
+	affected, err := cmu.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -133,31 +133,31 @@ func (_u *ChatMessageUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (_u *ChatMessageUpdate) Exec(ctx context.Context) error {
-	_, err := _u.Save(ctx)
+func (cmu *ChatMessageUpdate) Exec(ctx context.Context) error {
+	_, err := cmu.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_u *ChatMessageUpdate) ExecX(ctx context.Context) {
-	if err := _u.Exec(ctx); err != nil {
+func (cmu *ChatMessageUpdate) ExecX(ctx context.Context) {
+	if err := cmu.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_u *ChatMessageUpdate) check() error {
-	if v, ok := _u.mutation.SessionID(); ok {
+func (cmu *ChatMessageUpdate) check() error {
+	if v, ok := cmu.mutation.SessionID(); ok {
 		if err := chatmessage.SessionIDValidator(v); err != nil {
 			return &ValidationError{Name: "session_id", err: fmt.Errorf(`ent: validator failed for field "ChatMessage.session_id": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Role(); ok {
+	if v, ok := cmu.mutation.Role(); ok {
 		if err := chatmessage.RoleValidator(v); err != nil {
 			return &ValidationError{Name: "role", err: fmt.Errorf(`ent: validator failed for field "ChatMessage.role": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Content(); ok {
+	if v, ok := cmu.mutation.Content(); ok {
 		if err := chatmessage.ContentValidator(v); err != nil {
 			return &ValidationError{Name: "content", err: fmt.Errorf(`ent: validator failed for field "ChatMessage.content": %w`, err)}
 		}
@@ -165,37 +165,37 @@ func (_u *ChatMessageUpdate) check() error {
 	return nil
 }
 
-func (_u *ChatMessageUpdate) sqlSave(ctx context.Context) (_node int, err error) {
-	if err := _u.check(); err != nil {
-		return _node, err
+func (cmu *ChatMessageUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := cmu.check(); err != nil {
+		return n, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(chatmessage.Table, chatmessage.Columns, sqlgraph.NewFieldSpec(chatmessage.FieldID, field.TypeUUID))
-	if ps := _u.mutation.predicates; len(ps) > 0 {
+	if ps := cmu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := _u.mutation.AgentID(); ok {
+	if value, ok := cmu.mutation.AgentID(); ok {
 		_spec.SetField(chatmessage.FieldAgentID, field.TypeUUID, value)
 	}
-	if value, ok := _u.mutation.UserID(); ok {
+	if value, ok := cmu.mutation.UserID(); ok {
 		_spec.SetField(chatmessage.FieldUserID, field.TypeUUID, value)
 	}
-	if value, ok := _u.mutation.SessionID(); ok {
+	if value, ok := cmu.mutation.SessionID(); ok {
 		_spec.SetField(chatmessage.FieldSessionID, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Role(); ok {
+	if value, ok := cmu.mutation.Role(); ok {
 		_spec.SetField(chatmessage.FieldRole, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Content(); ok {
+	if value, ok := cmu.mutation.Content(); ok {
 		_spec.SetField(chatmessage.FieldContent, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.CreatedAt(); ok {
+	if value, ok := cmu.mutation.CreatedAt(); ok {
 		_spec.SetField(chatmessage.FieldCreatedAt, field.TypeTime, value)
 	}
-	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
+	if n, err = sqlgraph.UpdateNodes(ctx, cmu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{chatmessage.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -203,8 +203,8 @@ func (_u *ChatMessageUpdate) sqlSave(ctx context.Context) (_node int, err error)
 		}
 		return 0, err
 	}
-	_u.mutation.done = true
-	return _node, nil
+	cmu.mutation.done = true
+	return n, nil
 }
 
 // ChatMessageUpdateOne is the builder for updating a single ChatMessage entity.
@@ -216,115 +216,115 @@ type ChatMessageUpdateOne struct {
 }
 
 // SetAgentID sets the "agent_id" field.
-func (_u *ChatMessageUpdateOne) SetAgentID(v uuid.UUID) *ChatMessageUpdateOne {
-	_u.mutation.SetAgentID(v)
-	return _u
+func (cmuo *ChatMessageUpdateOne) SetAgentID(u uuid.UUID) *ChatMessageUpdateOne {
+	cmuo.mutation.SetAgentID(u)
+	return cmuo
 }
 
 // SetNillableAgentID sets the "agent_id" field if the given value is not nil.
-func (_u *ChatMessageUpdateOne) SetNillableAgentID(v *uuid.UUID) *ChatMessageUpdateOne {
-	if v != nil {
-		_u.SetAgentID(*v)
+func (cmuo *ChatMessageUpdateOne) SetNillableAgentID(u *uuid.UUID) *ChatMessageUpdateOne {
+	if u != nil {
+		cmuo.SetAgentID(*u)
 	}
-	return _u
+	return cmuo
 }
 
 // SetUserID sets the "user_id" field.
-func (_u *ChatMessageUpdateOne) SetUserID(v uuid.UUID) *ChatMessageUpdateOne {
-	_u.mutation.SetUserID(v)
-	return _u
+func (cmuo *ChatMessageUpdateOne) SetUserID(u uuid.UUID) *ChatMessageUpdateOne {
+	cmuo.mutation.SetUserID(u)
+	return cmuo
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (_u *ChatMessageUpdateOne) SetNillableUserID(v *uuid.UUID) *ChatMessageUpdateOne {
-	if v != nil {
-		_u.SetUserID(*v)
+func (cmuo *ChatMessageUpdateOne) SetNillableUserID(u *uuid.UUID) *ChatMessageUpdateOne {
+	if u != nil {
+		cmuo.SetUserID(*u)
 	}
-	return _u
+	return cmuo
 }
 
 // SetSessionID sets the "session_id" field.
-func (_u *ChatMessageUpdateOne) SetSessionID(v string) *ChatMessageUpdateOne {
-	_u.mutation.SetSessionID(v)
-	return _u
+func (cmuo *ChatMessageUpdateOne) SetSessionID(s string) *ChatMessageUpdateOne {
+	cmuo.mutation.SetSessionID(s)
+	return cmuo
 }
 
 // SetNillableSessionID sets the "session_id" field if the given value is not nil.
-func (_u *ChatMessageUpdateOne) SetNillableSessionID(v *string) *ChatMessageUpdateOne {
-	if v != nil {
-		_u.SetSessionID(*v)
+func (cmuo *ChatMessageUpdateOne) SetNillableSessionID(s *string) *ChatMessageUpdateOne {
+	if s != nil {
+		cmuo.SetSessionID(*s)
 	}
-	return _u
+	return cmuo
 }
 
 // SetRole sets the "role" field.
-func (_u *ChatMessageUpdateOne) SetRole(v string) *ChatMessageUpdateOne {
-	_u.mutation.SetRole(v)
-	return _u
+func (cmuo *ChatMessageUpdateOne) SetRole(s string) *ChatMessageUpdateOne {
+	cmuo.mutation.SetRole(s)
+	return cmuo
 }
 
 // SetNillableRole sets the "role" field if the given value is not nil.
-func (_u *ChatMessageUpdateOne) SetNillableRole(v *string) *ChatMessageUpdateOne {
-	if v != nil {
-		_u.SetRole(*v)
+func (cmuo *ChatMessageUpdateOne) SetNillableRole(s *string) *ChatMessageUpdateOne {
+	if s != nil {
+		cmuo.SetRole(*s)
 	}
-	return _u
+	return cmuo
 }
 
 // SetContent sets the "content" field.
-func (_u *ChatMessageUpdateOne) SetContent(v string) *ChatMessageUpdateOne {
-	_u.mutation.SetContent(v)
-	return _u
+func (cmuo *ChatMessageUpdateOne) SetContent(s string) *ChatMessageUpdateOne {
+	cmuo.mutation.SetContent(s)
+	return cmuo
 }
 
 // SetNillableContent sets the "content" field if the given value is not nil.
-func (_u *ChatMessageUpdateOne) SetNillableContent(v *string) *ChatMessageUpdateOne {
-	if v != nil {
-		_u.SetContent(*v)
+func (cmuo *ChatMessageUpdateOne) SetNillableContent(s *string) *ChatMessageUpdateOne {
+	if s != nil {
+		cmuo.SetContent(*s)
 	}
-	return _u
+	return cmuo
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (_u *ChatMessageUpdateOne) SetCreatedAt(v time.Time) *ChatMessageUpdateOne {
-	_u.mutation.SetCreatedAt(v)
-	return _u
+func (cmuo *ChatMessageUpdateOne) SetCreatedAt(t time.Time) *ChatMessageUpdateOne {
+	cmuo.mutation.SetCreatedAt(t)
+	return cmuo
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (_u *ChatMessageUpdateOne) SetNillableCreatedAt(v *time.Time) *ChatMessageUpdateOne {
-	if v != nil {
-		_u.SetCreatedAt(*v)
+func (cmuo *ChatMessageUpdateOne) SetNillableCreatedAt(t *time.Time) *ChatMessageUpdateOne {
+	if t != nil {
+		cmuo.SetCreatedAt(*t)
 	}
-	return _u
+	return cmuo
 }
 
 // Mutation returns the ChatMessageMutation object of the builder.
-func (_u *ChatMessageUpdateOne) Mutation() *ChatMessageMutation {
-	return _u.mutation
+func (cmuo *ChatMessageUpdateOne) Mutation() *ChatMessageMutation {
+	return cmuo.mutation
 }
 
 // Where appends a list predicates to the ChatMessageUpdate builder.
-func (_u *ChatMessageUpdateOne) Where(ps ...predicate.ChatMessage) *ChatMessageUpdateOne {
-	_u.mutation.Where(ps...)
-	return _u
+func (cmuo *ChatMessageUpdateOne) Where(ps ...predicate.ChatMessage) *ChatMessageUpdateOne {
+	cmuo.mutation.Where(ps...)
+	return cmuo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (_u *ChatMessageUpdateOne) Select(field string, fields ...string) *ChatMessageUpdateOne {
-	_u.fields = append([]string{field}, fields...)
-	return _u
+func (cmuo *ChatMessageUpdateOne) Select(field string, fields ...string) *ChatMessageUpdateOne {
+	cmuo.fields = append([]string{field}, fields...)
+	return cmuo
 }
 
 // Save executes the query and returns the updated ChatMessage entity.
-func (_u *ChatMessageUpdateOne) Save(ctx context.Context) (*ChatMessage, error) {
-	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
+func (cmuo *ChatMessageUpdateOne) Save(ctx context.Context) (*ChatMessage, error) {
+	return withHooks(ctx, cmuo.sqlSave, cmuo.mutation, cmuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_u *ChatMessageUpdateOne) SaveX(ctx context.Context) *ChatMessage {
-	node, err := _u.Save(ctx)
+func (cmuo *ChatMessageUpdateOne) SaveX(ctx context.Context) *ChatMessage {
+	node, err := cmuo.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -332,31 +332,31 @@ func (_u *ChatMessageUpdateOne) SaveX(ctx context.Context) *ChatMessage {
 }
 
 // Exec executes the query on the entity.
-func (_u *ChatMessageUpdateOne) Exec(ctx context.Context) error {
-	_, err := _u.Save(ctx)
+func (cmuo *ChatMessageUpdateOne) Exec(ctx context.Context) error {
+	_, err := cmuo.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_u *ChatMessageUpdateOne) ExecX(ctx context.Context) {
-	if err := _u.Exec(ctx); err != nil {
+func (cmuo *ChatMessageUpdateOne) ExecX(ctx context.Context) {
+	if err := cmuo.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_u *ChatMessageUpdateOne) check() error {
-	if v, ok := _u.mutation.SessionID(); ok {
+func (cmuo *ChatMessageUpdateOne) check() error {
+	if v, ok := cmuo.mutation.SessionID(); ok {
 		if err := chatmessage.SessionIDValidator(v); err != nil {
 			return &ValidationError{Name: "session_id", err: fmt.Errorf(`ent: validator failed for field "ChatMessage.session_id": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Role(); ok {
+	if v, ok := cmuo.mutation.Role(); ok {
 		if err := chatmessage.RoleValidator(v); err != nil {
 			return &ValidationError{Name: "role", err: fmt.Errorf(`ent: validator failed for field "ChatMessage.role": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Content(); ok {
+	if v, ok := cmuo.mutation.Content(); ok {
 		if err := chatmessage.ContentValidator(v); err != nil {
 			return &ValidationError{Name: "content", err: fmt.Errorf(`ent: validator failed for field "ChatMessage.content": %w`, err)}
 		}
@@ -364,17 +364,17 @@ func (_u *ChatMessageUpdateOne) check() error {
 	return nil
 }
 
-func (_u *ChatMessageUpdateOne) sqlSave(ctx context.Context) (_node *ChatMessage, err error) {
-	if err := _u.check(); err != nil {
+func (cmuo *ChatMessageUpdateOne) sqlSave(ctx context.Context) (_node *ChatMessage, err error) {
+	if err := cmuo.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(chatmessage.Table, chatmessage.Columns, sqlgraph.NewFieldSpec(chatmessage.FieldID, field.TypeUUID))
-	id, ok := _u.mutation.ID()
+	id, ok := cmuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "ChatMessage.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := _u.fields; len(fields) > 0 {
+	if fields := cmuo.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, chatmessage.FieldID)
 		for _, f := range fields {
@@ -386,35 +386,35 @@ func (_u *ChatMessageUpdateOne) sqlSave(ctx context.Context) (_node *ChatMessage
 			}
 		}
 	}
-	if ps := _u.mutation.predicates; len(ps) > 0 {
+	if ps := cmuo.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := _u.mutation.AgentID(); ok {
+	if value, ok := cmuo.mutation.AgentID(); ok {
 		_spec.SetField(chatmessage.FieldAgentID, field.TypeUUID, value)
 	}
-	if value, ok := _u.mutation.UserID(); ok {
+	if value, ok := cmuo.mutation.UserID(); ok {
 		_spec.SetField(chatmessage.FieldUserID, field.TypeUUID, value)
 	}
-	if value, ok := _u.mutation.SessionID(); ok {
+	if value, ok := cmuo.mutation.SessionID(); ok {
 		_spec.SetField(chatmessage.FieldSessionID, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Role(); ok {
+	if value, ok := cmuo.mutation.Role(); ok {
 		_spec.SetField(chatmessage.FieldRole, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Content(); ok {
+	if value, ok := cmuo.mutation.Content(); ok {
 		_spec.SetField(chatmessage.FieldContent, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.CreatedAt(); ok {
+	if value, ok := cmuo.mutation.CreatedAt(); ok {
 		_spec.SetField(chatmessage.FieldCreatedAt, field.TypeTime, value)
 	}
-	_node = &ChatMessage{config: _u.config}
+	_node = &ChatMessage{config: cmuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, cmuo.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{chatmessage.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -422,6 +422,6 @@ func (_u *ChatMessageUpdateOne) sqlSave(ctx context.Context) (_node *ChatMessage
 		}
 		return nil, err
 	}
-	_u.mutation.done = true
+	cmuo.mutation.done = true
 	return _node, nil
 }

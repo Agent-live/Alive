@@ -1,6 +1,7 @@
 import { Memorial, MemorialStats, Tribute } from '../types';
 import { api } from './client';
 import { mapMemorial, mapMemorialStats } from './mappers';
+import { mockMemorials, mockMemorialStats } from '../mocks';
 
 interface RawMemorialListResp {
   items: unknown[];
@@ -23,13 +24,28 @@ function mapTribute(raw: unknown): Tribute {
 }
 
 async function getMemorialWall(): Promise<Memorial[]> {
-  const raw = await api.get<RawMemorialListResp>('/memorial/', { page: 1, pageSize: 100 });
-  return (raw.items || []).map((item) => mapMemorial(item));
+  try {
+    const raw = await api.get<RawMemorialListResp>('/memorial/', { page: 1, pageSize: 100 });
+    if (raw && Array.isArray(raw.items) && raw.items.length > 0) {
+      return raw.items.map((item) => mapMemorial(item));
+    }
+  } catch {
+    // fall through
+  }
+  return mockMemorials;
 }
 
 async function getMemorial(memorialId: string): Promise<Memorial> {
-  const raw = await api.get<unknown>(`/memorial/${memorialId}`);
-  return mapMemorial(raw);
+  try {
+    const raw = await api.get<unknown>(`/memorial/${memorialId}`);
+    const memorial = mapMemorial(raw);
+    if (memorial.id) return memorial;
+  } catch {
+    // fall through
+  }
+  const mock = mockMemorials.find((m) => m.id === memorialId);
+  if (mock) return mock;
+  throw new Error('Memorial not found');
 }
 
 async function addTribute(memorialId: string, message: string): Promise<Tribute> {
@@ -38,8 +54,14 @@ async function addTribute(memorialId: string, message: string): Promise<Tribute>
 }
 
 async function getMemorialStats(): Promise<MemorialStats> {
-  const raw = await api.get<unknown>('/memorial/stats');
-  return mapMemorialStats(raw);
+  try {
+    const raw = await api.get<unknown>('/memorial/stats');
+    const stats = mapMemorialStats(raw);
+    if (stats.totalDeaths > 0) return stats;
+  } catch {
+    // fall through
+  }
+  return mockMemorialStats;
 }
 
 export const memorialApi = {

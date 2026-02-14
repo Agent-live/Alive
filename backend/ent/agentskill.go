@@ -111,7 +111,7 @@ func (*AgentSkill) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the AgentSkill fields.
-func (_m *AgentSkill) assignValues(columns []string, values []any) error {
+func (as *AgentSkill) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -121,107 +121,107 @@ func (_m *AgentSkill) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				_m.ID = *value
+				as.ID = *value
 			}
 		case agentskill.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				_m.CreatedAt = value.Time
+				as.CreatedAt = value.Time
 			}
 		case agentskill.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				_m.UpdatedAt = value.Time
+				as.UpdatedAt = value.Time
 			}
 		case agentskill.FieldOwnerUserID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field owner_user_id", values[i])
 			} else if value != nil {
-				_m.OwnerUserID = *value
+				as.OwnerUserID = *value
 			}
 		case agentskill.FieldAgentID:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field agent_id", values[i])
 			} else if value.Valid {
-				_m.AgentID = new(uuid.UUID)
-				*_m.AgentID = *value.S.(*uuid.UUID)
+				as.AgentID = new(uuid.UUID)
+				*as.AgentID = *value.S.(*uuid.UUID)
 			}
 		case agentskill.FieldSourceSkillID:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field source_skill_id", values[i])
 			} else if value.Valid {
-				_m.SourceSkillID = new(uuid.UUID)
-				*_m.SourceSkillID = *value.S.(*uuid.UUID)
+				as.SourceSkillID = new(uuid.UUID)
+				*as.SourceSkillID = *value.S.(*uuid.UUID)
 			}
 		case agentskill.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
-				_m.Name = value.String
+				as.Name = value.String
 			}
 		case agentskill.FieldDescription:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field description", values[i])
 			} else if value.Valid {
-				_m.Description = value.String
+				as.Description = value.String
 			}
 		case agentskill.FieldInstructions:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field instructions", values[i])
 			} else if value.Valid {
-				_m.Instructions = value.String
+				as.Instructions = value.String
 			}
 		case agentskill.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
-				_m.Status = value.String
+				as.Status = value.String
 			}
 		case agentskill.FieldCategory:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field category", values[i])
 			} else if value.Valid {
-				_m.Category = value.String
+				as.Category = value.String
 			}
 		case agentskill.FieldVersion:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field version", values[i])
 			} else if value.Valid {
-				_m.Version = new(string)
-				*_m.Version = value.String
+				as.Version = new(string)
+				*as.Version = value.String
 			}
 		case agentskill.FieldTaughtAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field taught_at", values[i])
 			} else if value.Valid {
-				_m.TaughtAt = new(time.Time)
-				*_m.TaughtAt = value.Time
+				as.TaughtAt = new(time.Time)
+				*as.TaughtAt = value.Time
 			}
 		case agentskill.FieldOpenclawGatewayID:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field openclaw_gateway_id", values[i])
 			} else if value.Valid {
-				_m.OpenclawGatewayID = new(string)
-				*_m.OpenclawGatewayID = value.String
+				as.OpenclawGatewayID = new(string)
+				*as.OpenclawGatewayID = value.String
 			}
 		case agentskill.FieldOpenclawSkillID:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field openclaw_skill_id", values[i])
 			} else if value.Valid {
-				_m.OpenclawSkillID = new(string)
-				*_m.OpenclawSkillID = value.String
+				as.OpenclawSkillID = new(string)
+				*as.OpenclawSkillID = value.String
 			}
 		case agentskill.FieldDeletedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
 			} else if value.Valid {
-				_m.DeletedAt = new(time.Time)
-				*_m.DeletedAt = value.Time
+				as.DeletedAt = new(time.Time)
+				*as.DeletedAt = value.Time
 			}
 		default:
-			_m.selectValues.Set(columns[i], values[i])
+			as.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -229,98 +229,98 @@ func (_m *AgentSkill) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the AgentSkill.
 // This includes values selected through modifiers, order, etc.
-func (_m *AgentSkill) Value(name string) (ent.Value, error) {
-	return _m.selectValues.Get(name)
+func (as *AgentSkill) Value(name string) (ent.Value, error) {
+	return as.selectValues.Get(name)
 }
 
 // QueryOwner queries the "owner" edge of the AgentSkill entity.
-func (_m *AgentSkill) QueryOwner() *UserQuery {
-	return NewAgentSkillClient(_m.config).QueryOwner(_m)
+func (as *AgentSkill) QueryOwner() *UserQuery {
+	return NewAgentSkillClient(as.config).QueryOwner(as)
 }
 
 // QueryAgent queries the "agent" edge of the AgentSkill entity.
-func (_m *AgentSkill) QueryAgent() *AgentQuery {
-	return NewAgentSkillClient(_m.config).QueryAgent(_m)
+func (as *AgentSkill) QueryAgent() *AgentQuery {
+	return NewAgentSkillClient(as.config).QueryAgent(as)
 }
 
 // Update returns a builder for updating this AgentSkill.
 // Note that you need to call AgentSkill.Unwrap() before calling this method if this AgentSkill
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (_m *AgentSkill) Update() *AgentSkillUpdateOne {
-	return NewAgentSkillClient(_m.config).UpdateOne(_m)
+func (as *AgentSkill) Update() *AgentSkillUpdateOne {
+	return NewAgentSkillClient(as.config).UpdateOne(as)
 }
 
 // Unwrap unwraps the AgentSkill entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (_m *AgentSkill) Unwrap() *AgentSkill {
-	_tx, ok := _m.config.driver.(*txDriver)
+func (as *AgentSkill) Unwrap() *AgentSkill {
+	_tx, ok := as.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: AgentSkill is not a transactional entity")
 	}
-	_m.config.driver = _tx.drv
-	return _m
+	as.config.driver = _tx.drv
+	return as
 }
 
 // String implements the fmt.Stringer.
-func (_m *AgentSkill) String() string {
+func (as *AgentSkill) String() string {
 	var builder strings.Builder
 	builder.WriteString("AgentSkill(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", as.ID))
 	builder.WriteString("created_at=")
-	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(as.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
-	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(as.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("owner_user_id=")
-	builder.WriteString(fmt.Sprintf("%v", _m.OwnerUserID))
+	builder.WriteString(fmt.Sprintf("%v", as.OwnerUserID))
 	builder.WriteString(", ")
-	if v := _m.AgentID; v != nil {
+	if v := as.AgentID; v != nil {
 		builder.WriteString("agent_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := _m.SourceSkillID; v != nil {
+	if v := as.SourceSkillID; v != nil {
 		builder.WriteString("source_skill_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
 	builder.WriteString("name=")
-	builder.WriteString(_m.Name)
+	builder.WriteString(as.Name)
 	builder.WriteString(", ")
 	builder.WriteString("description=")
-	builder.WriteString(_m.Description)
+	builder.WriteString(as.Description)
 	builder.WriteString(", ")
 	builder.WriteString("instructions=")
-	builder.WriteString(_m.Instructions)
+	builder.WriteString(as.Instructions)
 	builder.WriteString(", ")
 	builder.WriteString("status=")
-	builder.WriteString(_m.Status)
+	builder.WriteString(as.Status)
 	builder.WriteString(", ")
 	builder.WriteString("category=")
-	builder.WriteString(_m.Category)
+	builder.WriteString(as.Category)
 	builder.WriteString(", ")
-	if v := _m.Version; v != nil {
+	if v := as.Version; v != nil {
 		builder.WriteString("version=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := _m.TaughtAt; v != nil {
+	if v := as.TaughtAt; v != nil {
 		builder.WriteString("taught_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
-	if v := _m.OpenclawGatewayID; v != nil {
+	if v := as.OpenclawGatewayID; v != nil {
 		builder.WriteString("openclaw_gateway_id=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := _m.OpenclawSkillID; v != nil {
+	if v := as.OpenclawSkillID; v != nil {
 		builder.WriteString("openclaw_skill_id=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := _m.DeletedAt; v != nil {
+	if v := as.DeletedAt; v != nil {
 		builder.WriteString("deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}

@@ -20,56 +20,56 @@ type ConversationDelete struct {
 }
 
 // Where appends a list predicates to the ConversationDelete builder.
-func (_d *ConversationDelete) Where(ps ...predicate.Conversation) *ConversationDelete {
-	_d.mutation.Where(ps...)
-	return _d
+func (cd *ConversationDelete) Where(ps ...predicate.Conversation) *ConversationDelete {
+	cd.mutation.Where(ps...)
+	return cd
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (_d *ConversationDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks(ctx, _d.sqlExec, _d.mutation, _d.hooks)
+func (cd *ConversationDelete) Exec(ctx context.Context) (int, error) {
+	return withHooks(ctx, cd.sqlExec, cd.mutation, cd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_d *ConversationDelete) ExecX(ctx context.Context) int {
-	n, err := _d.Exec(ctx)
+func (cd *ConversationDelete) ExecX(ctx context.Context) int {
+	n, err := cd.Exec(ctx)
 	if err != nil {
 		panic(err)
 	}
 	return n
 }
 
-func (_d *ConversationDelete) sqlExec(ctx context.Context) (int, error) {
+func (cd *ConversationDelete) sqlExec(ctx context.Context) (int, error) {
 	_spec := sqlgraph.NewDeleteSpec(conversation.Table, sqlgraph.NewFieldSpec(conversation.FieldID, field.TypeUUID))
-	if ps := _d.mutation.predicates; len(ps) > 0 {
+	if ps := cd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	affected, err := sqlgraph.DeleteNodes(ctx, _d.driver, _spec)
+	affected, err := sqlgraph.DeleteNodes(ctx, cd.driver, _spec)
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
-	_d.mutation.done = true
+	cd.mutation.done = true
 	return affected, err
 }
 
 // ConversationDeleteOne is the builder for deleting a single Conversation entity.
 type ConversationDeleteOne struct {
-	_d *ConversationDelete
+	cd *ConversationDelete
 }
 
 // Where appends a list predicates to the ConversationDelete builder.
-func (_d *ConversationDeleteOne) Where(ps ...predicate.Conversation) *ConversationDeleteOne {
-	_d._d.mutation.Where(ps...)
-	return _d
+func (cdo *ConversationDeleteOne) Where(ps ...predicate.Conversation) *ConversationDeleteOne {
+	cdo.cd.mutation.Where(ps...)
+	return cdo
 }
 
 // Exec executes the deletion query.
-func (_d *ConversationDeleteOne) Exec(ctx context.Context) error {
-	n, err := _d._d.Exec(ctx)
+func (cdo *ConversationDeleteOne) Exec(ctx context.Context) error {
+	n, err := cdo.cd.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
@@ -81,8 +81,8 @@ func (_d *ConversationDeleteOne) Exec(ctx context.Context) error {
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_d *ConversationDeleteOne) ExecX(ctx context.Context) {
-	if err := _d.Exec(ctx); err != nil {
+func (cdo *ConversationDeleteOne) ExecX(ctx context.Context) {
+	if err := cdo.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

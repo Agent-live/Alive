@@ -89,7 +89,7 @@ func (*ConversationParticipant) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the ConversationParticipant fields.
-func (_m *ConversationParticipant) assignValues(columns []string, values []any) error {
+func (cp *ConversationParticipant) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -99,41 +99,41 @@ func (_m *ConversationParticipant) assignValues(columns []string, values []any) 
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				_m.ID = *value
+				cp.ID = *value
 			}
 		case conversationparticipant.FieldConversationID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field conversation_id", values[i])
 			} else if value != nil {
-				_m.ConversationID = *value
+				cp.ConversationID = *value
 			}
 		case conversationparticipant.FieldAgentID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field agent_id", values[i])
 			} else if value != nil {
-				_m.AgentID = *value
+				cp.AgentID = *value
 			}
 		case conversationparticipant.FieldRole:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field role", values[i])
 			} else if value.Valid {
-				_m.Role = value.String
+				cp.Role = value.String
 			}
 		case conversationparticipant.FieldJoinedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field joined_at", values[i])
 			} else if value.Valid {
-				_m.JoinedAt = value.Time
+				cp.JoinedAt = value.Time
 			}
 		case conversationparticipant.FieldLastReadAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field last_read_at", values[i])
 			} else if value.Valid {
-				_m.LastReadAt = new(time.Time)
-				*_m.LastReadAt = value.Time
+				cp.LastReadAt = new(time.Time)
+				*cp.LastReadAt = value.Time
 			}
 		default:
-			_m.selectValues.Set(columns[i], values[i])
+			cp.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -141,56 +141,56 @@ func (_m *ConversationParticipant) assignValues(columns []string, values []any) 
 
 // Value returns the ent.Value that was dynamically selected and assigned to the ConversationParticipant.
 // This includes values selected through modifiers, order, etc.
-func (_m *ConversationParticipant) Value(name string) (ent.Value, error) {
-	return _m.selectValues.Get(name)
+func (cp *ConversationParticipant) Value(name string) (ent.Value, error) {
+	return cp.selectValues.Get(name)
 }
 
 // QueryConversation queries the "conversation" edge of the ConversationParticipant entity.
-func (_m *ConversationParticipant) QueryConversation() *ConversationQuery {
-	return NewConversationParticipantClient(_m.config).QueryConversation(_m)
+func (cp *ConversationParticipant) QueryConversation() *ConversationQuery {
+	return NewConversationParticipantClient(cp.config).QueryConversation(cp)
 }
 
 // QueryAgent queries the "agent" edge of the ConversationParticipant entity.
-func (_m *ConversationParticipant) QueryAgent() *AgentQuery {
-	return NewConversationParticipantClient(_m.config).QueryAgent(_m)
+func (cp *ConversationParticipant) QueryAgent() *AgentQuery {
+	return NewConversationParticipantClient(cp.config).QueryAgent(cp)
 }
 
 // Update returns a builder for updating this ConversationParticipant.
 // Note that you need to call ConversationParticipant.Unwrap() before calling this method if this ConversationParticipant
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (_m *ConversationParticipant) Update() *ConversationParticipantUpdateOne {
-	return NewConversationParticipantClient(_m.config).UpdateOne(_m)
+func (cp *ConversationParticipant) Update() *ConversationParticipantUpdateOne {
+	return NewConversationParticipantClient(cp.config).UpdateOne(cp)
 }
 
 // Unwrap unwraps the ConversationParticipant entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (_m *ConversationParticipant) Unwrap() *ConversationParticipant {
-	_tx, ok := _m.config.driver.(*txDriver)
+func (cp *ConversationParticipant) Unwrap() *ConversationParticipant {
+	_tx, ok := cp.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: ConversationParticipant is not a transactional entity")
 	}
-	_m.config.driver = _tx.drv
-	return _m
+	cp.config.driver = _tx.drv
+	return cp
 }
 
 // String implements the fmt.Stringer.
-func (_m *ConversationParticipant) String() string {
+func (cp *ConversationParticipant) String() string {
 	var builder strings.Builder
 	builder.WriteString("ConversationParticipant(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", cp.ID))
 	builder.WriteString("conversation_id=")
-	builder.WriteString(fmt.Sprintf("%v", _m.ConversationID))
+	builder.WriteString(fmt.Sprintf("%v", cp.ConversationID))
 	builder.WriteString(", ")
 	builder.WriteString("agent_id=")
-	builder.WriteString(fmt.Sprintf("%v", _m.AgentID))
+	builder.WriteString(fmt.Sprintf("%v", cp.AgentID))
 	builder.WriteString(", ")
 	builder.WriteString("role=")
-	builder.WriteString(_m.Role)
+	builder.WriteString(cp.Role)
 	builder.WriteString(", ")
 	builder.WriteString("joined_at=")
-	builder.WriteString(_m.JoinedAt.Format(time.ANSIC))
+	builder.WriteString(cp.JoinedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	if v := _m.LastReadAt; v != nil {
+	if v := cp.LastReadAt; v != nil {
 		builder.WriteString("last_read_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}

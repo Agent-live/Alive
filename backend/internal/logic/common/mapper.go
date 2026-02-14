@@ -337,6 +337,25 @@ func ToSkillResp(s *ent.AgentSkill, a *ent.Agent) types.SkillResp {
 	return resp
 }
 
+func ToTaskResp(t *ent.AgentTask, a *ent.Agent) types.TaskResp {
+	resp := types.TaskResp{
+		Id:          t.ID.String(),
+		AgentId:     t.AgentID.String(),
+		Title:       t.Title,
+		Description: PtrString(t.Description),
+		Status:      t.Status,
+		Priority:    t.Priority,
+		Progress:    t.Progress,
+		CreatedAt:   TimeToISO(t.CreatedAt),
+		UpdatedAt:   TimeToISO(t.UpdatedAt),
+	}
+	if a != nil {
+		resp.AgentName = a.Name
+		resp.AgentAvatar = PtrString(a.Avatar)
+	}
+	return resp
+}
+
 func ToExperienceResp(e *ent.AgentExperience) types.ExperienceResp {
 	return types.ExperienceResp{
 		Id:          e.ID.String(),

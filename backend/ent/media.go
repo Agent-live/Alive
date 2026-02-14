@@ -55,7 +55,7 @@ func (*Media) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Media fields.
-func (_m *Media) assignValues(columns []string, values []any) error {
+func (m *Media) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -65,48 +65,48 @@ func (_m *Media) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				_m.ID = *value
+				m.ID = *value
 			}
 		case media.FieldMimeType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field mime_type", values[i])
 			} else if value.Valid {
-				_m.MimeType = value.String
+				m.MimeType = value.String
 			}
 		case media.FieldFileSize:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field file_size", values[i])
 			} else if value.Valid {
-				_m.FileSize = value.Int64
+				m.FileSize = value.Int64
 			}
 		case media.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
-				_m.Status = value.String
+				m.Status = value.String
 			}
 		case media.FieldURL:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field url", values[i])
 			} else if value.Valid {
-				_m.URL = new(string)
-				*_m.URL = value.String
+				m.URL = new(string)
+				*m.URL = value.String
 			}
 		case media.FieldThumbnailURL:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field thumbnail_url", values[i])
 			} else if value.Valid {
-				_m.ThumbnailURL = new(string)
-				*_m.ThumbnailURL = value.String
+				m.ThumbnailURL = new(string)
+				*m.ThumbnailURL = value.String
 			}
 		case media.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				_m.CreatedAt = value.Time
+				m.CreatedAt = value.Time
 			}
 		default:
-			_m.selectValues.Set(columns[i], values[i])
+			m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -114,54 +114,54 @@ func (_m *Media) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the Media.
 // This includes values selected through modifiers, order, etc.
-func (_m *Media) Value(name string) (ent.Value, error) {
-	return _m.selectValues.Get(name)
+func (m *Media) Value(name string) (ent.Value, error) {
+	return m.selectValues.Get(name)
 }
 
 // Update returns a builder for updating this Media.
 // Note that you need to call Media.Unwrap() before calling this method if this Media
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (_m *Media) Update() *MediaUpdateOne {
-	return NewMediaClient(_m.config).UpdateOne(_m)
+func (m *Media) Update() *MediaUpdateOne {
+	return NewMediaClient(m.config).UpdateOne(m)
 }
 
 // Unwrap unwraps the Media entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (_m *Media) Unwrap() *Media {
-	_tx, ok := _m.config.driver.(*txDriver)
+func (m *Media) Unwrap() *Media {
+	_tx, ok := m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: Media is not a transactional entity")
 	}
-	_m.config.driver = _tx.drv
-	return _m
+	m.config.driver = _tx.drv
+	return m
 }
 
 // String implements the fmt.Stringer.
-func (_m *Media) String() string {
+func (m *Media) String() string {
 	var builder strings.Builder
 	builder.WriteString("Media(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", m.ID))
 	builder.WriteString("mime_type=")
-	builder.WriteString(_m.MimeType)
+	builder.WriteString(m.MimeType)
 	builder.WriteString(", ")
 	builder.WriteString("file_size=")
-	builder.WriteString(fmt.Sprintf("%v", _m.FileSize))
+	builder.WriteString(fmt.Sprintf("%v", m.FileSize))
 	builder.WriteString(", ")
 	builder.WriteString("status=")
-	builder.WriteString(_m.Status)
+	builder.WriteString(m.Status)
 	builder.WriteString(", ")
-	if v := _m.URL; v != nil {
+	if v := m.URL; v != nil {
 		builder.WriteString("url=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := _m.ThumbnailURL; v != nil {
+	if v := m.ThumbnailURL; v != nil {
 		builder.WriteString("thumbnail_url=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
-	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(m.CreatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

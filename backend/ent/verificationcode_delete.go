@@ -20,56 +20,56 @@ type VerificationCodeDelete struct {
 }
 
 // Where appends a list predicates to the VerificationCodeDelete builder.
-func (_d *VerificationCodeDelete) Where(ps ...predicate.VerificationCode) *VerificationCodeDelete {
-	_d.mutation.Where(ps...)
-	return _d
+func (vcd *VerificationCodeDelete) Where(ps ...predicate.VerificationCode) *VerificationCodeDelete {
+	vcd.mutation.Where(ps...)
+	return vcd
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (_d *VerificationCodeDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks(ctx, _d.sqlExec, _d.mutation, _d.hooks)
+func (vcd *VerificationCodeDelete) Exec(ctx context.Context) (int, error) {
+	return withHooks(ctx, vcd.sqlExec, vcd.mutation, vcd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_d *VerificationCodeDelete) ExecX(ctx context.Context) int {
-	n, err := _d.Exec(ctx)
+func (vcd *VerificationCodeDelete) ExecX(ctx context.Context) int {
+	n, err := vcd.Exec(ctx)
 	if err != nil {
 		panic(err)
 	}
 	return n
 }
 
-func (_d *VerificationCodeDelete) sqlExec(ctx context.Context) (int, error) {
+func (vcd *VerificationCodeDelete) sqlExec(ctx context.Context) (int, error) {
 	_spec := sqlgraph.NewDeleteSpec(verificationcode.Table, sqlgraph.NewFieldSpec(verificationcode.FieldID, field.TypeUUID))
-	if ps := _d.mutation.predicates; len(ps) > 0 {
+	if ps := vcd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	affected, err := sqlgraph.DeleteNodes(ctx, _d.driver, _spec)
+	affected, err := sqlgraph.DeleteNodes(ctx, vcd.driver, _spec)
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
-	_d.mutation.done = true
+	vcd.mutation.done = true
 	return affected, err
 }
 
 // VerificationCodeDeleteOne is the builder for deleting a single VerificationCode entity.
 type VerificationCodeDeleteOne struct {
-	_d *VerificationCodeDelete
+	vcd *VerificationCodeDelete
 }
 
 // Where appends a list predicates to the VerificationCodeDelete builder.
-func (_d *VerificationCodeDeleteOne) Where(ps ...predicate.VerificationCode) *VerificationCodeDeleteOne {
-	_d._d.mutation.Where(ps...)
-	return _d
+func (vcdo *VerificationCodeDeleteOne) Where(ps ...predicate.VerificationCode) *VerificationCodeDeleteOne {
+	vcdo.vcd.mutation.Where(ps...)
+	return vcdo
 }
 
 // Exec executes the deletion query.
-func (_d *VerificationCodeDeleteOne) Exec(ctx context.Context) error {
-	n, err := _d._d.Exec(ctx)
+func (vcdo *VerificationCodeDeleteOne) Exec(ctx context.Context) error {
+	n, err := vcdo.vcd.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
@@ -81,8 +81,8 @@ func (_d *VerificationCodeDeleteOne) Exec(ctx context.Context) error {
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_d *VerificationCodeDeleteOne) ExecX(ctx context.Context) {
-	if err := _d.Exec(ctx); err != nil {
+func (vcdo *VerificationCodeDeleteOne) ExecX(ctx context.Context) {
+	if err := vcdo.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

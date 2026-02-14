@@ -25,214 +25,214 @@ type ConversationCreate struct {
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (_c *ConversationCreate) SetCreatedAt(v time.Time) *ConversationCreate {
-	_c.mutation.SetCreatedAt(v)
-	return _c
+func (cc *ConversationCreate) SetCreatedAt(t time.Time) *ConversationCreate {
+	cc.mutation.SetCreatedAt(t)
+	return cc
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (_c *ConversationCreate) SetNillableCreatedAt(v *time.Time) *ConversationCreate {
-	if v != nil {
-		_c.SetCreatedAt(*v)
+func (cc *ConversationCreate) SetNillableCreatedAt(t *time.Time) *ConversationCreate {
+	if t != nil {
+		cc.SetCreatedAt(*t)
 	}
-	return _c
+	return cc
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (_c *ConversationCreate) SetUpdatedAt(v time.Time) *ConversationCreate {
-	_c.mutation.SetUpdatedAt(v)
-	return _c
+func (cc *ConversationCreate) SetUpdatedAt(t time.Time) *ConversationCreate {
+	cc.mutation.SetUpdatedAt(t)
+	return cc
 }
 
 // SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (_c *ConversationCreate) SetNillableUpdatedAt(v *time.Time) *ConversationCreate {
-	if v != nil {
-		_c.SetUpdatedAt(*v)
+func (cc *ConversationCreate) SetNillableUpdatedAt(t *time.Time) *ConversationCreate {
+	if t != nil {
+		cc.SetUpdatedAt(*t)
 	}
-	return _c
+	return cc
 }
 
 // SetType sets the "type" field.
-func (_c *ConversationCreate) SetType(v string) *ConversationCreate {
-	_c.mutation.SetType(v)
-	return _c
+func (cc *ConversationCreate) SetType(s string) *ConversationCreate {
+	cc.mutation.SetType(s)
+	return cc
 }
 
 // SetNillableType sets the "type" field if the given value is not nil.
-func (_c *ConversationCreate) SetNillableType(v *string) *ConversationCreate {
-	if v != nil {
-		_c.SetType(*v)
+func (cc *ConversationCreate) SetNillableType(s *string) *ConversationCreate {
+	if s != nil {
+		cc.SetType(*s)
 	}
-	return _c
+	return cc
 }
 
 // SetTitle sets the "title" field.
-func (_c *ConversationCreate) SetTitle(v string) *ConversationCreate {
-	_c.mutation.SetTitle(v)
-	return _c
+func (cc *ConversationCreate) SetTitle(s string) *ConversationCreate {
+	cc.mutation.SetTitle(s)
+	return cc
 }
 
 // SetNillableTitle sets the "title" field if the given value is not nil.
-func (_c *ConversationCreate) SetNillableTitle(v *string) *ConversationCreate {
-	if v != nil {
-		_c.SetTitle(*v)
+func (cc *ConversationCreate) SetNillableTitle(s *string) *ConversationCreate {
+	if s != nil {
+		cc.SetTitle(*s)
 	}
-	return _c
+	return cc
 }
 
 // SetCreatorAgentID sets the "creator_agent_id" field.
-func (_c *ConversationCreate) SetCreatorAgentID(v uuid.UUID) *ConversationCreate {
-	_c.mutation.SetCreatorAgentID(v)
-	return _c
+func (cc *ConversationCreate) SetCreatorAgentID(u uuid.UUID) *ConversationCreate {
+	cc.mutation.SetCreatorAgentID(u)
+	return cc
 }
 
 // SetParticipantCount sets the "participant_count" field.
-func (_c *ConversationCreate) SetParticipantCount(v int) *ConversationCreate {
-	_c.mutation.SetParticipantCount(v)
-	return _c
+func (cc *ConversationCreate) SetParticipantCount(i int) *ConversationCreate {
+	cc.mutation.SetParticipantCount(i)
+	return cc
 }
 
 // SetNillableParticipantCount sets the "participant_count" field if the given value is not nil.
-func (_c *ConversationCreate) SetNillableParticipantCount(v *int) *ConversationCreate {
-	if v != nil {
-		_c.SetParticipantCount(*v)
+func (cc *ConversationCreate) SetNillableParticipantCount(i *int) *ConversationCreate {
+	if i != nil {
+		cc.SetParticipantCount(*i)
 	}
-	return _c
+	return cc
 }
 
 // SetMessageCount sets the "message_count" field.
-func (_c *ConversationCreate) SetMessageCount(v int) *ConversationCreate {
-	_c.mutation.SetMessageCount(v)
-	return _c
+func (cc *ConversationCreate) SetMessageCount(i int) *ConversationCreate {
+	cc.mutation.SetMessageCount(i)
+	return cc
 }
 
 // SetNillableMessageCount sets the "message_count" field if the given value is not nil.
-func (_c *ConversationCreate) SetNillableMessageCount(v *int) *ConversationCreate {
-	if v != nil {
-		_c.SetMessageCount(*v)
+func (cc *ConversationCreate) SetNillableMessageCount(i *int) *ConversationCreate {
+	if i != nil {
+		cc.SetMessageCount(*i)
 	}
-	return _c
+	return cc
 }
 
 // SetLastMessagePreview sets the "last_message_preview" field.
-func (_c *ConversationCreate) SetLastMessagePreview(v string) *ConversationCreate {
-	_c.mutation.SetLastMessagePreview(v)
-	return _c
+func (cc *ConversationCreate) SetLastMessagePreview(s string) *ConversationCreate {
+	cc.mutation.SetLastMessagePreview(s)
+	return cc
 }
 
 // SetNillableLastMessagePreview sets the "last_message_preview" field if the given value is not nil.
-func (_c *ConversationCreate) SetNillableLastMessagePreview(v *string) *ConversationCreate {
-	if v != nil {
-		_c.SetLastMessagePreview(*v)
+func (cc *ConversationCreate) SetNillableLastMessagePreview(s *string) *ConversationCreate {
+	if s != nil {
+		cc.SetLastMessagePreview(*s)
 	}
-	return _c
+	return cc
 }
 
 // SetLastMessageAt sets the "last_message_at" field.
-func (_c *ConversationCreate) SetLastMessageAt(v time.Time) *ConversationCreate {
-	_c.mutation.SetLastMessageAt(v)
-	return _c
+func (cc *ConversationCreate) SetLastMessageAt(t time.Time) *ConversationCreate {
+	cc.mutation.SetLastMessageAt(t)
+	return cc
 }
 
 // SetNillableLastMessageAt sets the "last_message_at" field if the given value is not nil.
-func (_c *ConversationCreate) SetNillableLastMessageAt(v *time.Time) *ConversationCreate {
-	if v != nil {
-		_c.SetLastMessageAt(*v)
+func (cc *ConversationCreate) SetNillableLastMessageAt(t *time.Time) *ConversationCreate {
+	if t != nil {
+		cc.SetLastMessageAt(*t)
 	}
-	return _c
+	return cc
 }
 
 // SetChatType sets the "chat_type" field.
-func (_c *ConversationCreate) SetChatType(v string) *ConversationCreate {
-	_c.mutation.SetChatType(v)
-	return _c
+func (cc *ConversationCreate) SetChatType(s string) *ConversationCreate {
+	cc.mutation.SetChatType(s)
+	return cc
 }
 
 // SetNillableChatType sets the "chat_type" field if the given value is not nil.
-func (_c *ConversationCreate) SetNillableChatType(v *string) *ConversationCreate {
-	if v != nil {
-		_c.SetChatType(*v)
+func (cc *ConversationCreate) SetNillableChatType(s *string) *ConversationCreate {
+	if s != nil {
+		cc.SetChatType(*s)
 	}
-	return _c
+	return cc
 }
 
 // SetStatus sets the "status" field.
-func (_c *ConversationCreate) SetStatus(v string) *ConversationCreate {
-	_c.mutation.SetStatus(v)
-	return _c
+func (cc *ConversationCreate) SetStatus(s string) *ConversationCreate {
+	cc.mutation.SetStatus(s)
+	return cc
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (_c *ConversationCreate) SetNillableStatus(v *string) *ConversationCreate {
-	if v != nil {
-		_c.SetStatus(*v)
+func (cc *ConversationCreate) SetNillableStatus(s *string) *ConversationCreate {
+	if s != nil {
+		cc.SetStatus(*s)
 	}
-	return _c
+	return cc
 }
 
 // SetID sets the "id" field.
-func (_c *ConversationCreate) SetID(v uuid.UUID) *ConversationCreate {
-	_c.mutation.SetID(v)
-	return _c
+func (cc *ConversationCreate) SetID(u uuid.UUID) *ConversationCreate {
+	cc.mutation.SetID(u)
+	return cc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (_c *ConversationCreate) SetNillableID(v *uuid.UUID) *ConversationCreate {
-	if v != nil {
-		_c.SetID(*v)
+func (cc *ConversationCreate) SetNillableID(u *uuid.UUID) *ConversationCreate {
+	if u != nil {
+		cc.SetID(*u)
 	}
-	return _c
+	return cc
 }
 
 // SetCreatorAgent sets the "creator_agent" edge to the Agent entity.
-func (_c *ConversationCreate) SetCreatorAgent(v *Agent) *ConversationCreate {
-	return _c.SetCreatorAgentID(v.ID)
+func (cc *ConversationCreate) SetCreatorAgent(a *Agent) *ConversationCreate {
+	return cc.SetCreatorAgentID(a.ID)
 }
 
 // AddParticipantIDs adds the "participants" edge to the ConversationParticipant entity by IDs.
-func (_c *ConversationCreate) AddParticipantIDs(ids ...uuid.UUID) *ConversationCreate {
-	_c.mutation.AddParticipantIDs(ids...)
-	return _c
+func (cc *ConversationCreate) AddParticipantIDs(ids ...uuid.UUID) *ConversationCreate {
+	cc.mutation.AddParticipantIDs(ids...)
+	return cc
 }
 
 // AddParticipants adds the "participants" edges to the ConversationParticipant entity.
-func (_c *ConversationCreate) AddParticipants(v ...*ConversationParticipant) *ConversationCreate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (cc *ConversationCreate) AddParticipants(c ...*ConversationParticipant) *ConversationCreate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return _c.AddParticipantIDs(ids...)
+	return cc.AddParticipantIDs(ids...)
 }
 
 // AddMessageIDs adds the "messages" edge to the ConversationMessage entity by IDs.
-func (_c *ConversationCreate) AddMessageIDs(ids ...uuid.UUID) *ConversationCreate {
-	_c.mutation.AddMessageIDs(ids...)
-	return _c
+func (cc *ConversationCreate) AddMessageIDs(ids ...uuid.UUID) *ConversationCreate {
+	cc.mutation.AddMessageIDs(ids...)
+	return cc
 }
 
 // AddMessages adds the "messages" edges to the ConversationMessage entity.
-func (_c *ConversationCreate) AddMessages(v ...*ConversationMessage) *ConversationCreate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (cc *ConversationCreate) AddMessages(c ...*ConversationMessage) *ConversationCreate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return _c.AddMessageIDs(ids...)
+	return cc.AddMessageIDs(ids...)
 }
 
 // Mutation returns the ConversationMutation object of the builder.
-func (_c *ConversationCreate) Mutation() *ConversationMutation {
-	return _c.mutation
+func (cc *ConversationCreate) Mutation() *ConversationMutation {
+	return cc.mutation
 }
 
 // Save creates the Conversation in the database.
-func (_c *ConversationCreate) Save(ctx context.Context) (*Conversation, error) {
-	_c.defaults()
-	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
+func (cc *ConversationCreate) Save(ctx context.Context) (*Conversation, error) {
+	cc.defaults()
+	return withHooks(ctx, cc.sqlSave, cc.mutation, cc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (_c *ConversationCreate) SaveX(ctx context.Context) *Conversation {
-	v, err := _c.Save(ctx)
+func (cc *ConversationCreate) SaveX(ctx context.Context) *Conversation {
+	v, err := cc.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -240,92 +240,92 @@ func (_c *ConversationCreate) SaveX(ctx context.Context) *Conversation {
 }
 
 // Exec executes the query.
-func (_c *ConversationCreate) Exec(ctx context.Context) error {
-	_, err := _c.Save(ctx)
+func (cc *ConversationCreate) Exec(ctx context.Context) error {
+	_, err := cc.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_c *ConversationCreate) ExecX(ctx context.Context) {
-	if err := _c.Exec(ctx); err != nil {
+func (cc *ConversationCreate) ExecX(ctx context.Context) {
+	if err := cc.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *ConversationCreate) defaults() {
-	if _, ok := _c.mutation.CreatedAt(); !ok {
+func (cc *ConversationCreate) defaults() {
+	if _, ok := cc.mutation.CreatedAt(); !ok {
 		v := conversation.DefaultCreatedAt()
-		_c.mutation.SetCreatedAt(v)
+		cc.mutation.SetCreatedAt(v)
 	}
-	if _, ok := _c.mutation.UpdatedAt(); !ok {
+	if _, ok := cc.mutation.UpdatedAt(); !ok {
 		v := conversation.DefaultUpdatedAt()
-		_c.mutation.SetUpdatedAt(v)
+		cc.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := _c.mutation.GetType(); !ok {
+	if _, ok := cc.mutation.GetType(); !ok {
 		v := conversation.DefaultType
-		_c.mutation.SetType(v)
+		cc.mutation.SetType(v)
 	}
-	if _, ok := _c.mutation.ParticipantCount(); !ok {
+	if _, ok := cc.mutation.ParticipantCount(); !ok {
 		v := conversation.DefaultParticipantCount
-		_c.mutation.SetParticipantCount(v)
+		cc.mutation.SetParticipantCount(v)
 	}
-	if _, ok := _c.mutation.MessageCount(); !ok {
+	if _, ok := cc.mutation.MessageCount(); !ok {
 		v := conversation.DefaultMessageCount
-		_c.mutation.SetMessageCount(v)
+		cc.mutation.SetMessageCount(v)
 	}
-	if _, ok := _c.mutation.ChatType(); !ok {
+	if _, ok := cc.mutation.ChatType(); !ok {
 		v := conversation.DefaultChatType
-		_c.mutation.SetChatType(v)
+		cc.mutation.SetChatType(v)
 	}
-	if _, ok := _c.mutation.Status(); !ok {
+	if _, ok := cc.mutation.Status(); !ok {
 		v := conversation.DefaultStatus
-		_c.mutation.SetStatus(v)
+		cc.mutation.SetStatus(v)
 	}
-	if _, ok := _c.mutation.ID(); !ok {
+	if _, ok := cc.mutation.ID(); !ok {
 		v := conversation.DefaultID()
-		_c.mutation.SetID(v)
+		cc.mutation.SetID(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_c *ConversationCreate) check() error {
-	if _, ok := _c.mutation.CreatedAt(); !ok {
+func (cc *ConversationCreate) check() error {
+	if _, ok := cc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Conversation.created_at"`)}
 	}
-	if _, ok := _c.mutation.UpdatedAt(); !ok {
+	if _, ok := cc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Conversation.updated_at"`)}
 	}
-	if _, ok := _c.mutation.GetType(); !ok {
+	if _, ok := cc.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Conversation.type"`)}
 	}
-	if _, ok := _c.mutation.CreatorAgentID(); !ok {
+	if _, ok := cc.mutation.CreatorAgentID(); !ok {
 		return &ValidationError{Name: "creator_agent_id", err: errors.New(`ent: missing required field "Conversation.creator_agent_id"`)}
 	}
-	if _, ok := _c.mutation.ParticipantCount(); !ok {
+	if _, ok := cc.mutation.ParticipantCount(); !ok {
 		return &ValidationError{Name: "participant_count", err: errors.New(`ent: missing required field "Conversation.participant_count"`)}
 	}
-	if _, ok := _c.mutation.MessageCount(); !ok {
+	if _, ok := cc.mutation.MessageCount(); !ok {
 		return &ValidationError{Name: "message_count", err: errors.New(`ent: missing required field "Conversation.message_count"`)}
 	}
-	if _, ok := _c.mutation.ChatType(); !ok {
+	if _, ok := cc.mutation.ChatType(); !ok {
 		return &ValidationError{Name: "chat_type", err: errors.New(`ent: missing required field "Conversation.chat_type"`)}
 	}
-	if _, ok := _c.mutation.Status(); !ok {
+	if _, ok := cc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Conversation.status"`)}
 	}
-	if len(_c.mutation.CreatorAgentIDs()) == 0 {
+	if len(cc.mutation.CreatorAgentIDs()) == 0 {
 		return &ValidationError{Name: "creator_agent", err: errors.New(`ent: missing required edge "Conversation.creator_agent"`)}
 	}
 	return nil
 }
 
-func (_c *ConversationCreate) sqlSave(ctx context.Context) (*Conversation, error) {
-	if err := _c.check(); err != nil {
+func (cc *ConversationCreate) sqlSave(ctx context.Context) (*Conversation, error) {
+	if err := cc.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := _c.createSpec()
-	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
+	_node, _spec := cc.createSpec()
+	if err := sqlgraph.CreateNode(ctx, cc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -338,61 +338,61 @@ func (_c *ConversationCreate) sqlSave(ctx context.Context) (*Conversation, error
 			return nil, err
 		}
 	}
-	_c.mutation.id = &_node.ID
-	_c.mutation.done = true
+	cc.mutation.id = &_node.ID
+	cc.mutation.done = true
 	return _node, nil
 }
 
-func (_c *ConversationCreate) createSpec() (*Conversation, *sqlgraph.CreateSpec) {
+func (cc *ConversationCreate) createSpec() (*Conversation, *sqlgraph.CreateSpec) {
 	var (
-		_node = &Conversation{config: _c.config}
+		_node = &Conversation{config: cc.config}
 		_spec = sqlgraph.NewCreateSpec(conversation.Table, sqlgraph.NewFieldSpec(conversation.FieldID, field.TypeUUID))
 	)
-	if id, ok := _c.mutation.ID(); ok {
+	if id, ok := cc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
-	if value, ok := _c.mutation.CreatedAt(); ok {
+	if value, ok := cc.mutation.CreatedAt(); ok {
 		_spec.SetField(conversation.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
-	if value, ok := _c.mutation.UpdatedAt(); ok {
+	if value, ok := cc.mutation.UpdatedAt(); ok {
 		_spec.SetField(conversation.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := _c.mutation.GetType(); ok {
+	if value, ok := cc.mutation.GetType(); ok {
 		_spec.SetField(conversation.FieldType, field.TypeString, value)
 		_node.Type = value
 	}
-	if value, ok := _c.mutation.Title(); ok {
+	if value, ok := cc.mutation.Title(); ok {
 		_spec.SetField(conversation.FieldTitle, field.TypeString, value)
 		_node.Title = &value
 	}
-	if value, ok := _c.mutation.ParticipantCount(); ok {
+	if value, ok := cc.mutation.ParticipantCount(); ok {
 		_spec.SetField(conversation.FieldParticipantCount, field.TypeInt, value)
 		_node.ParticipantCount = value
 	}
-	if value, ok := _c.mutation.MessageCount(); ok {
+	if value, ok := cc.mutation.MessageCount(); ok {
 		_spec.SetField(conversation.FieldMessageCount, field.TypeInt, value)
 		_node.MessageCount = value
 	}
-	if value, ok := _c.mutation.LastMessagePreview(); ok {
+	if value, ok := cc.mutation.LastMessagePreview(); ok {
 		_spec.SetField(conversation.FieldLastMessagePreview, field.TypeString, value)
 		_node.LastMessagePreview = &value
 	}
-	if value, ok := _c.mutation.LastMessageAt(); ok {
+	if value, ok := cc.mutation.LastMessageAt(); ok {
 		_spec.SetField(conversation.FieldLastMessageAt, field.TypeTime, value)
 		_node.LastMessageAt = &value
 	}
-	if value, ok := _c.mutation.ChatType(); ok {
+	if value, ok := cc.mutation.ChatType(); ok {
 		_spec.SetField(conversation.FieldChatType, field.TypeString, value)
 		_node.ChatType = value
 	}
-	if value, ok := _c.mutation.Status(); ok {
+	if value, ok := cc.mutation.Status(); ok {
 		_spec.SetField(conversation.FieldStatus, field.TypeString, value)
 		_node.Status = value
 	}
-	if nodes := _c.mutation.CreatorAgentIDs(); len(nodes) > 0 {
+	if nodes := cc.mutation.CreatorAgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -409,7 +409,7 @@ func (_c *ConversationCreate) createSpec() (*Conversation, *sqlgraph.CreateSpec)
 		_node.CreatorAgentID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := _c.mutation.ParticipantsIDs(); len(nodes) > 0 {
+	if nodes := cc.mutation.ParticipantsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -425,7 +425,7 @@ func (_c *ConversationCreate) createSpec() (*Conversation, *sqlgraph.CreateSpec)
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := _c.mutation.MessagesIDs(); len(nodes) > 0 {
+	if nodes := cc.mutation.MessagesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -452,16 +452,16 @@ type ConversationCreateBulk struct {
 }
 
 // Save creates the Conversation entities in the database.
-func (_c *ConversationCreateBulk) Save(ctx context.Context) ([]*Conversation, error) {
-	if _c.err != nil {
-		return nil, _c.err
+func (ccb *ConversationCreateBulk) Save(ctx context.Context) ([]*Conversation, error) {
+	if ccb.err != nil {
+		return nil, ccb.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
-	nodes := make([]*Conversation, len(_c.builders))
-	mutators := make([]Mutator, len(_c.builders))
-	for i := range _c.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(ccb.builders))
+	nodes := make([]*Conversation, len(ccb.builders))
+	mutators := make([]Mutator, len(ccb.builders))
+	for i := range ccb.builders {
 		func(i int, root context.Context) {
-			builder := _c.builders[i]
+			builder := ccb.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*ConversationMutation)
@@ -475,11 +475,11 @@ func (_c *ConversationCreateBulk) Save(ctx context.Context) ([]*Conversation, er
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, ccb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, ccb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -499,7 +499,7 @@ func (_c *ConversationCreateBulk) Save(ctx context.Context) ([]*Conversation, er
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, ccb.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -507,8 +507,8 @@ func (_c *ConversationCreateBulk) Save(ctx context.Context) ([]*Conversation, er
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_c *ConversationCreateBulk) SaveX(ctx context.Context) []*Conversation {
-	v, err := _c.Save(ctx)
+func (ccb *ConversationCreateBulk) SaveX(ctx context.Context) []*Conversation {
+	v, err := ccb.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -516,14 +516,14 @@ func (_c *ConversationCreateBulk) SaveX(ctx context.Context) []*Conversation {
 }
 
 // Exec executes the query.
-func (_c *ConversationCreateBulk) Exec(ctx context.Context) error {
-	_, err := _c.Save(ctx)
+func (ccb *ConversationCreateBulk) Exec(ctx context.Context) error {
+	_, err := ccb.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_c *ConversationCreateBulk) ExecX(ctx context.Context) {
-	if err := _c.Exec(ctx); err != nil {
+func (ccb *ConversationCreateBulk) ExecX(ctx context.Context) {
+	if err := ccb.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

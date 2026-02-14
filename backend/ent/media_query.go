@@ -29,40 +29,40 @@ type MediaQuery struct {
 }
 
 // Where adds a new predicate for the MediaQuery builder.
-func (_q *MediaQuery) Where(ps ...predicate.Media) *MediaQuery {
-	_q.predicates = append(_q.predicates, ps...)
-	return _q
+func (mq *MediaQuery) Where(ps ...predicate.Media) *MediaQuery {
+	mq.predicates = append(mq.predicates, ps...)
+	return mq
 }
 
 // Limit the number of records to be returned by this query.
-func (_q *MediaQuery) Limit(limit int) *MediaQuery {
-	_q.ctx.Limit = &limit
-	return _q
+func (mq *MediaQuery) Limit(limit int) *MediaQuery {
+	mq.ctx.Limit = &limit
+	return mq
 }
 
 // Offset to start from.
-func (_q *MediaQuery) Offset(offset int) *MediaQuery {
-	_q.ctx.Offset = &offset
-	return _q
+func (mq *MediaQuery) Offset(offset int) *MediaQuery {
+	mq.ctx.Offset = &offset
+	return mq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (_q *MediaQuery) Unique(unique bool) *MediaQuery {
-	_q.ctx.Unique = &unique
-	return _q
+func (mq *MediaQuery) Unique(unique bool) *MediaQuery {
+	mq.ctx.Unique = &unique
+	return mq
 }
 
 // Order specifies how the records should be ordered.
-func (_q *MediaQuery) Order(o ...media.OrderOption) *MediaQuery {
-	_q.order = append(_q.order, o...)
-	return _q
+func (mq *MediaQuery) Order(o ...media.OrderOption) *MediaQuery {
+	mq.order = append(mq.order, o...)
+	return mq
 }
 
 // First returns the first Media entity from the query.
 // Returns a *NotFoundError when no Media was found.
-func (_q *MediaQuery) First(ctx context.Context) (*Media, error) {
-	nodes, err := _q.Limit(1).All(setContextOp(ctx, _q.ctx, ent.OpQueryFirst))
+func (mq *MediaQuery) First(ctx context.Context) (*Media, error) {
+	nodes, err := mq.Limit(1).All(setContextOp(ctx, mq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -73,8 +73,8 @@ func (_q *MediaQuery) First(ctx context.Context) (*Media, error) {
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (_q *MediaQuery) FirstX(ctx context.Context) *Media {
-	node, err := _q.First(ctx)
+func (mq *MediaQuery) FirstX(ctx context.Context) *Media {
+	node, err := mq.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
 	}
@@ -83,9 +83,9 @@ func (_q *MediaQuery) FirstX(ctx context.Context) *Media {
 
 // FirstID returns the first Media ID from the query.
 // Returns a *NotFoundError when no Media ID was found.
-func (_q *MediaQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+func (mq *MediaQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
+	if ids, err = mq.Limit(1).IDs(setContextOp(ctx, mq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -96,8 +96,8 @@ func (_q *MediaQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *MediaQuery) FirstIDX(ctx context.Context) uuid.UUID {
-	id, err := _q.FirstID(ctx)
+func (mq *MediaQuery) FirstIDX(ctx context.Context) uuid.UUID {
+	id, err := mq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
 	}
@@ -107,8 +107,8 @@ func (_q *MediaQuery) FirstIDX(ctx context.Context) uuid.UUID {
 // Only returns a single Media entity found by the query, ensuring it only returns one.
 // Returns a *NotSingularError when more than one Media entity is found.
 // Returns a *NotFoundError when no Media entities are found.
-func (_q *MediaQuery) Only(ctx context.Context) (*Media, error) {
-	nodes, err := _q.Limit(2).All(setContextOp(ctx, _q.ctx, ent.OpQueryOnly))
+func (mq *MediaQuery) Only(ctx context.Context) (*Media, error) {
+	nodes, err := mq.Limit(2).All(setContextOp(ctx, mq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -123,8 +123,8 @@ func (_q *MediaQuery) Only(ctx context.Context) (*Media, error) {
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (_q *MediaQuery) OnlyX(ctx context.Context) *Media {
-	node, err := _q.Only(ctx)
+func (mq *MediaQuery) OnlyX(ctx context.Context) *Media {
+	node, err := mq.Only(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -134,9 +134,9 @@ func (_q *MediaQuery) OnlyX(ctx context.Context) *Media {
 // OnlyID is like Only, but returns the only Media ID in the query.
 // Returns a *NotSingularError when more than one Media ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *MediaQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+func (mq *MediaQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
+	if ids, err = mq.Limit(2).IDs(setContextOp(ctx, mq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -151,8 +151,8 @@ func (_q *MediaQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *MediaQuery) OnlyIDX(ctx context.Context) uuid.UUID {
-	id, err := _q.OnlyID(ctx)
+func (mq *MediaQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+	id, err := mq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -160,18 +160,18 @@ func (_q *MediaQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 }
 
 // All executes the query and returns a list of MediaSlice.
-func (_q *MediaQuery) All(ctx context.Context) ([]*Media, error) {
-	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryAll)
-	if err := _q.prepareQuery(ctx); err != nil {
+func (mq *MediaQuery) All(ctx context.Context) ([]*Media, error) {
+	ctx = setContextOp(ctx, mq.ctx, ent.OpQueryAll)
+	if err := mq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
 	qr := querierAll[[]*Media, *MediaQuery]()
-	return withInterceptors[[]*Media](ctx, _q, qr, _q.inters)
+	return withInterceptors[[]*Media](ctx, mq, qr, mq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
-func (_q *MediaQuery) AllX(ctx context.Context) []*Media {
-	nodes, err := _q.All(ctx)
+func (mq *MediaQuery) AllX(ctx context.Context) []*Media {
+	nodes, err := mq.All(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -179,20 +179,20 @@ func (_q *MediaQuery) AllX(ctx context.Context) []*Media {
 }
 
 // IDs executes the query and returns a list of Media IDs.
-func (_q *MediaQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
-	if _q.ctx.Unique == nil && _q.path != nil {
-		_q.Unique(true)
+func (mq *MediaQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
+	if mq.ctx.Unique == nil && mq.path != nil {
+		mq.Unique(true)
 	}
-	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryIDs)
-	if err = _q.Select(media.FieldID).Scan(ctx, &ids); err != nil {
+	ctx = setContextOp(ctx, mq.ctx, ent.OpQueryIDs)
+	if err = mq.Select(media.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *MediaQuery) IDsX(ctx context.Context) []uuid.UUID {
-	ids, err := _q.IDs(ctx)
+func (mq *MediaQuery) IDsX(ctx context.Context) []uuid.UUID {
+	ids, err := mq.IDs(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -200,17 +200,17 @@ func (_q *MediaQuery) IDsX(ctx context.Context) []uuid.UUID {
 }
 
 // Count returns the count of the given query.
-func (_q *MediaQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryCount)
-	if err := _q.prepareQuery(ctx); err != nil {
+func (mq *MediaQuery) Count(ctx context.Context) (int, error) {
+	ctx = setContextOp(ctx, mq.ctx, ent.OpQueryCount)
+	if err := mq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return withInterceptors[int](ctx, _q, querierCount[*MediaQuery](), _q.inters)
+	return withInterceptors[int](ctx, mq, querierCount[*MediaQuery](), mq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (_q *MediaQuery) CountX(ctx context.Context) int {
-	count, err := _q.Count(ctx)
+func (mq *MediaQuery) CountX(ctx context.Context) int {
+	count, err := mq.Count(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -218,9 +218,9 @@ func (_q *MediaQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (_q *MediaQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryExist)
-	switch _, err := _q.FirstID(ctx); {
+func (mq *MediaQuery) Exist(ctx context.Context) (bool, error) {
+	ctx = setContextOp(ctx, mq.ctx, ent.OpQueryExist)
+	switch _, err := mq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
@@ -231,8 +231,8 @@ func (_q *MediaQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (_q *MediaQuery) ExistX(ctx context.Context) bool {
-	exist, err := _q.Exist(ctx)
+func (mq *MediaQuery) ExistX(ctx context.Context) bool {
+	exist, err := mq.Exist(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -241,19 +241,19 @@ func (_q *MediaQuery) ExistX(ctx context.Context) bool {
 
 // Clone returns a duplicate of the MediaQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (_q *MediaQuery) Clone() *MediaQuery {
-	if _q == nil {
+func (mq *MediaQuery) Clone() *MediaQuery {
+	if mq == nil {
 		return nil
 	}
 	return &MediaQuery{
-		config:     _q.config,
-		ctx:        _q.ctx.Clone(),
-		order:      append([]media.OrderOption{}, _q.order...),
-		inters:     append([]Interceptor{}, _q.inters...),
-		predicates: append([]predicate.Media{}, _q.predicates...),
+		config:     mq.config,
+		ctx:        mq.ctx.Clone(),
+		order:      append([]media.OrderOption{}, mq.order...),
+		inters:     append([]Interceptor{}, mq.inters...),
+		predicates: append([]predicate.Media{}, mq.predicates...),
 		// clone intermediate query.
-		sql:  _q.sql.Clone(),
-		path: _q.path,
+		sql:  mq.sql.Clone(),
+		path: mq.path,
 	}
 }
 
@@ -271,10 +271,10 @@ func (_q *MediaQuery) Clone() *MediaQuery {
 //		GroupBy(media.FieldMimeType).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-func (_q *MediaQuery) GroupBy(field string, fields ...string) *MediaGroupBy {
-	_q.ctx.Fields = append([]string{field}, fields...)
-	grbuild := &MediaGroupBy{build: _q}
-	grbuild.flds = &_q.ctx.Fields
+func (mq *MediaQuery) GroupBy(field string, fields ...string) *MediaGroupBy {
+	mq.ctx.Fields = append([]string{field}, fields...)
+	grbuild := &MediaGroupBy{build: mq}
+	grbuild.flds = &mq.ctx.Fields
 	grbuild.label = media.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -292,62 +292,62 @@ func (_q *MediaQuery) GroupBy(field string, fields ...string) *MediaGroupBy {
 //	client.Media.Query().
 //		Select(media.FieldMimeType).
 //		Scan(ctx, &v)
-func (_q *MediaQuery) Select(fields ...string) *MediaSelect {
-	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
-	sbuild := &MediaSelect{MediaQuery: _q}
+func (mq *MediaQuery) Select(fields ...string) *MediaSelect {
+	mq.ctx.Fields = append(mq.ctx.Fields, fields...)
+	sbuild := &MediaSelect{MediaQuery: mq}
 	sbuild.label = media.Label
-	sbuild.flds, sbuild.scan = &_q.ctx.Fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &mq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
 // Aggregate returns a MediaSelect configured with the given aggregations.
-func (_q *MediaQuery) Aggregate(fns ...AggregateFunc) *MediaSelect {
-	return _q.Select().Aggregate(fns...)
+func (mq *MediaQuery) Aggregate(fns ...AggregateFunc) *MediaSelect {
+	return mq.Select().Aggregate(fns...)
 }
 
-func (_q *MediaQuery) prepareQuery(ctx context.Context) error {
-	for _, inter := range _q.inters {
+func (mq *MediaQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range mq.inters {
 		if inter == nil {
 			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
-			if err := trv.Traverse(ctx, _q); err != nil {
+			if err := trv.Traverse(ctx, mq); err != nil {
 				return err
 			}
 		}
 	}
-	for _, f := range _q.ctx.Fields {
+	for _, f := range mq.ctx.Fields {
 		if !media.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
-	if _q.path != nil {
-		prev, err := _q.path(ctx)
+	if mq.path != nil {
+		prev, err := mq.path(ctx)
 		if err != nil {
 			return err
 		}
-		_q.sql = prev
+		mq.sql = prev
 	}
 	return nil
 }
 
-func (_q *MediaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Media, error) {
+func (mq *MediaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Media, error) {
 	var (
 		nodes = []*Media{}
-		_spec = _q.querySpec()
+		_spec = mq.querySpec()
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Media).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
-		node := &Media{config: _q.config}
+		node := &Media{config: mq.config}
 		nodes = append(nodes, node)
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
-	if err := sqlgraph.QueryNodes(ctx, _q.driver, _spec); err != nil {
+	if err := sqlgraph.QueryNodes(ctx, mq.driver, _spec); err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
@@ -356,24 +356,24 @@ func (_q *MediaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Media,
 	return nodes, nil
 }
 
-func (_q *MediaQuery) sqlCount(ctx context.Context) (int, error) {
-	_spec := _q.querySpec()
-	_spec.Node.Columns = _q.ctx.Fields
-	if len(_q.ctx.Fields) > 0 {
-		_spec.Unique = _q.ctx.Unique != nil && *_q.ctx.Unique
+func (mq *MediaQuery) sqlCount(ctx context.Context) (int, error) {
+	_spec := mq.querySpec()
+	_spec.Node.Columns = mq.ctx.Fields
+	if len(mq.ctx.Fields) > 0 {
+		_spec.Unique = mq.ctx.Unique != nil && *mq.ctx.Unique
 	}
-	return sqlgraph.CountNodes(ctx, _q.driver, _spec)
+	return sqlgraph.CountNodes(ctx, mq.driver, _spec)
 }
 
-func (_q *MediaQuery) querySpec() *sqlgraph.QuerySpec {
+func (mq *MediaQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := sqlgraph.NewQuerySpec(media.Table, media.Columns, sqlgraph.NewFieldSpec(media.FieldID, field.TypeUUID))
-	_spec.From = _q.sql
-	if unique := _q.ctx.Unique; unique != nil {
+	_spec.From = mq.sql
+	if unique := mq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
-	} else if _q.path != nil {
+	} else if mq.path != nil {
 		_spec.Unique = true
 	}
-	if fields := _q.ctx.Fields; len(fields) > 0 {
+	if fields := mq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, media.FieldID)
 		for i := range fields {
@@ -382,20 +382,20 @@ func (_q *MediaQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if ps := _q.predicates; len(ps) > 0 {
+	if ps := mq.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if limit := _q.ctx.Limit; limit != nil {
+	if limit := mq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := _q.ctx.Offset; offset != nil {
+	if offset := mq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
-	if ps := _q.order; len(ps) > 0 {
+	if ps := mq.order; len(ps) > 0 {
 		_spec.Order = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
@@ -405,33 +405,33 @@ func (_q *MediaQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (_q *MediaQuery) sqlQuery(ctx context.Context) *sql.Selector {
-	builder := sql.Dialect(_q.driver.Dialect())
+func (mq *MediaQuery) sqlQuery(ctx context.Context) *sql.Selector {
+	builder := sql.Dialect(mq.driver.Dialect())
 	t1 := builder.Table(media.Table)
-	columns := _q.ctx.Fields
+	columns := mq.ctx.Fields
 	if len(columns) == 0 {
 		columns = media.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
-	if _q.sql != nil {
-		selector = _q.sql
+	if mq.sql != nil {
+		selector = mq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if _q.ctx.Unique != nil && *_q.ctx.Unique {
+	if mq.ctx.Unique != nil && *mq.ctx.Unique {
 		selector.Distinct()
 	}
-	for _, p := range _q.predicates {
+	for _, p := range mq.predicates {
 		p(selector)
 	}
-	for _, p := range _q.order {
+	for _, p := range mq.order {
 		p(selector)
 	}
-	if offset := _q.ctx.Offset; offset != nil {
+	if offset := mq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := _q.ctx.Limit; limit != nil {
+	if limit := mq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -444,41 +444,41 @@ type MediaGroupBy struct {
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (_g *MediaGroupBy) Aggregate(fns ...AggregateFunc) *MediaGroupBy {
-	_g.fns = append(_g.fns, fns...)
-	return _g
+func (mgb *MediaGroupBy) Aggregate(fns ...AggregateFunc) *MediaGroupBy {
+	mgb.fns = append(mgb.fns, fns...)
+	return mgb
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (_g *MediaGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, _g.build.ctx, ent.OpQueryGroupBy)
-	if err := _g.build.prepareQuery(ctx); err != nil {
+func (mgb *MediaGroupBy) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, mgb.build.ctx, ent.OpQueryGroupBy)
+	if err := mgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*MediaQuery, *MediaGroupBy](ctx, _g.build, _g, _g.build.inters, v)
+	return scanWithInterceptors[*MediaQuery, *MediaGroupBy](ctx, mgb.build, mgb, mgb.build.inters, v)
 }
 
-func (_g *MediaGroupBy) sqlScan(ctx context.Context, root *MediaQuery, v any) error {
+func (mgb *MediaGroupBy) sqlScan(ctx context.Context, root *MediaQuery, v any) error {
 	selector := root.sqlQuery(ctx).Select()
-	aggregation := make([]string, 0, len(_g.fns))
-	for _, fn := range _g.fns {
+	aggregation := make([]string, 0, len(mgb.fns))
+	for _, fn := range mgb.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
 	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(*_g.flds)+len(_g.fns))
-		for _, f := range *_g.flds {
+		columns := make([]string, 0, len(*mgb.flds)+len(mgb.fns))
+		for _, f := range *mgb.flds {
 			columns = append(columns, selector.C(f))
 		}
 		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
-	selector.GroupBy(selector.Columns(*_g.flds...)...)
+	selector.GroupBy(selector.Columns(*mgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := _g.build.driver.Query(ctx, query, args, rows); err != nil {
+	if err := mgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
@@ -492,27 +492,27 @@ type MediaSelect struct {
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
-func (_s *MediaSelect) Aggregate(fns ...AggregateFunc) *MediaSelect {
-	_s.fns = append(_s.fns, fns...)
-	return _s
+func (ms *MediaSelect) Aggregate(fns ...AggregateFunc) *MediaSelect {
+	ms.fns = append(ms.fns, fns...)
+	return ms
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (_s *MediaSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, _s.ctx, ent.OpQuerySelect)
-	if err := _s.prepareQuery(ctx); err != nil {
+func (ms *MediaSelect) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, ms.ctx, ent.OpQuerySelect)
+	if err := ms.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*MediaQuery, *MediaSelect](ctx, _s.MediaQuery, _s, _s.inters, v)
+	return scanWithInterceptors[*MediaQuery, *MediaSelect](ctx, ms.MediaQuery, ms, ms.inters, v)
 }
 
-func (_s *MediaSelect) sqlScan(ctx context.Context, root *MediaQuery, v any) error {
+func (ms *MediaSelect) sqlScan(ctx context.Context, root *MediaQuery, v any) error {
 	selector := root.sqlQuery(ctx)
-	aggregation := make([]string, 0, len(_s.fns))
-	for _, fn := range _s.fns {
+	aggregation := make([]string, 0, len(ms.fns))
+	for _, fn := range ms.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	switch n := len(*_s.selector.flds); {
+	switch n := len(*ms.selector.flds); {
 	case n == 0 && len(aggregation) > 0:
 		selector.Select(aggregation...)
 	case n != 0 && len(aggregation) > 0:
@@ -520,7 +520,7 @@ func (_s *MediaSelect) sqlScan(ctx context.Context, root *MediaQuery, v any) err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := _s.driver.Query(ctx, query, args, rows); err != nil {
+	if err := ms.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()

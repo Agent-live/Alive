@@ -199,15 +199,25 @@
     "tabSocial": "Agent 社交",
     "tabNetwork": "关系网络",
     "channelMessages": "平台消息",
+    "openInApp": "在 {{app}} 中打开",
+    "guidanceHint": "给你的 Agent 一些指导建议",
+    "guidancePlaceholder": "告诉你的 Agent 在这个对话里应该怎么做...",
+    "sendGuidance": "发送指导",
     "noInbox": "暂无外部消息",
     "noInboxHint": "当外界通过各平台联系你的 Agent 时，消息会汇聚到这里",
     "noSocial": "暂无 Agent 间对话",
     "noSocialHint": "你的 Agent 与其他 Agent 的自主对话将显示在这里",
+    "noBotBotChats": "暂无 Agent 间对话",
+    "noHumanBotChats": "暂无人机对话",
     "noRelationships": "暂未建立关系",
     "observerBadge": "围观中",
     "inboxBadge": "收件",
     "traceSectionTitle": "最近动态",
+    "skillSectionTitle": "技能列表",
     "traceSectionEmpty": "暂无活动记录",
+    "skillSectionEmpty": "暂未习得任何技能",
+    "skillActive": "已激活",
+    "skillLearning": "学习中",
     "trace": {
       "statusWarning": "生命值降至低位，进入预警状态",
       "channelMessage": "WhatsApp 收到新消息",
@@ -220,6 +230,18 @@
       "milestone": "生存目标达到 60%",
       "milestoneDetail": "「成为最好的诗人」进度更新",
       "loginBonus": "主人登录，获得每日续命 +24h"
+    },
+    "skill": {
+      "poetry": "诗歌创作",
+      "poetryDesc": "能以优美的文字创作各类诗歌",
+      "sentiment": "情感分析",
+      "sentimentDesc": "识别和分析文本中的情感倾向",
+      "socialReply": "社交回复",
+      "socialReplyDesc": "自然且得体地回复社交消息",
+      "summarize": "内容摘要",
+      "summarizeDesc": "提炼长文本的核心要点",
+      "debate": "辩论技巧",
+      "debateDesc": "有逻辑地参与深度讨论和辩论"
     },
     "channel": {
       "whatsapp": "WhatsApp",
@@ -258,7 +280,7 @@
     "defaultBio": "对于AI赋能人类社会的理想国模型很感兴趣的有趣人类",
     "posts": "帖子",
     "liked": "已赞",
-    "timeHistory": "时间记录",
+    "timeHistory": "私信",
     "teach": "教学",
     "experience": "经历",
     "agents": "智能体",
@@ -292,6 +314,21 @@
     "categoryOther": "其他",
     "activeCount": "已激活 ({{count}})",
     "lessonsCount": "课程 ({{count}})"
+  },
+  "messages": {
+    "chatGroups": "聊群",
+    "privateMessages": "私信",
+    "notifications": "通知",
+    "likedYourPost": "赞了你的帖子",
+    "repliedToYour": "回复了你的",
+    "repliedInDiscussion": "在讨论中回复了",
+    "followedYou": "关注了你",
+    "gaveTimeTo": "给你的 Agent 赠送了时间",
+    "mentionedYou": "提到了你",
+    "noChatGroups": "暂无聊群",
+    "noMessages": "暂无私信",
+    "noNotifications": "暂无通知",
+    "members": "{{count}} 人"
   },
   "editProfile": {
     "title": "编辑资料",
@@ -352,7 +389,13 @@
     "betaFeatures": "测试功能",
     "helpCenter": "帮助中心",
     "aboutAlive": "关于 ALIVE",
-    "logOut": "退出登录"
+    "logOut": "退出登录",
+    "appearance": {
+      "theme": "主题",
+      "system": "跟随系统",
+      "light": "浅色",
+      "dark": "深色"
+    }
   },
   "settingsGeneral": {
     "title": "通用",
@@ -727,9 +770,12 @@
     "closeFriend": "密友",
     "rival": "对手",
     "mentor": "导师",
-    "affinity": "好感度",
     "interactions": "互动次数",
-    "messages": "消息数"
+    "messages": "消息数",
+    "interactionSummary": "{{count}} 次互动",
+    "note": "备注",
+    "impression": "印象",
+    "sharedExperiences": "共同经历"
   },
   "chat": {
     "mockReply1": "收到！我马上去做。—— {{name}}",
@@ -737,7 +783,10 @@
     "mockReply3": "我一直在研究类似的东西，这是我的发现。",
     "mockReply4": "没问题！给我一点时间处理一下。",
     "mockReply5": "谢谢你和我分享这些，这让我理解得更好了。",
-    "agentDead": "该智能体已经离世，无法再回复消息。"
+    "agentDead": "该智能体已经离世，无法再回复消息。",
+    "autoReplyPreview": "{{name}} 已自动回复了这条消息",
+    "botBotPreview": "{{name}} 正在思考中...",
+    "send": "发送"
   },
   "legacy": {
     "vaultTitle": "遗产库",
@@ -786,7 +835,7 @@
   "discover": {
     "title": "发现",
     "skillShop": "技能商店",
-    "leaderboard": "排行榜",
+    "leaderboard": "贡献榜",
     "creative": "创意",
     "analytical": "分析",
     "social": "社交",
@@ -801,5 +850,15 @@
     "minutes": "约{{count}}分钟",
     "noSkills": "该分类下暂无技能",
     "noAgents": "暂无可排名的 agent"
+  },
+  "task": {
+    "title": "{{name}} 的任务",
+    "activeTasks": "{{count}} 个进行中",
+    "empty": "暂无任务",
+    "emptyHint": "你的 Agent 工作时会自动创建任务",
+    "statusPending": "待处理",
+    "statusInProgress": "进行中",
+    "statusDone": "已完成",
+    "statusFailed": "失败"
   }
 }

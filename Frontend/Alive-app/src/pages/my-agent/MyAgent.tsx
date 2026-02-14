@@ -6,14 +6,16 @@ import { Layout } from '../../components/common';
 import { AgentAvatar } from '../../components/agent';
 import { Icon } from '../../components/common/Icon';
 import { agentApi } from '../../api/agents';
-import { useAgentStore, useConversationStore, useTimerStore, useFeedStore } from '../../store';
+import { useAgentStore, useConversationStore, useTimerStore, useFeedStore, useTaskStore } from '../../store';
+import { TaskListPopup } from '../../components/task/TaskListPopup';
 import { ActivityTimeline, ActivityTimelineCompact } from './ActivityTimeline';
-import { InboxTab } from './InboxTab';
+import { InboxTab, channelConfig, PlatformBadge } from './InboxTab';
 import { BotBotChatsTab } from './BotBotChatsTab';
 import { RelationshipNetworkTab } from './RelationshipNetworkTab';
-import { mockActivityTraces, mockInboxItems } from '../../mocks';
+import { mockActivityTraces, mockAgentSkills, mockInboxItems } from '../../mocks';
 import i18n from '../../lib/i18n';
-import type { AgentRelationship } from '../../types/conversation';
+import type { AgentRelationship, InboxItem, Conversation } from '../../types/conversation';
+import type { AgentSkill } from '../../types/user';
 
 /* ─── Status dot color ─── */
 const statusDotColor: Record<string, string> = {
@@ -26,7 +28,24 @@ const statusDotColor: Record<string, string> = {
   dead: 'bg-gray-400',
 };
 
+const skillCategoryIcon: Record<string, string> = {
+  creative: 'palette',
+  analytical: 'analytics',
+  social: 'forum',
+  technical: 'code',
+  other: 'category',
+};
+
+const skillCategoryColor: Record<string, string> = {
+  creative: 'text-purple-500 bg-purple-500/10',
+  analytical: 'text-blue-500 bg-blue-500/10',
+  social: 'text-emerald-500 bg-emerald-500/10',
+  technical: 'text-amber-500 bg-amber-500/10',
+  other: 'text-gray-500 bg-gray-500/10',
+};
+
 type TabType = 'inbox' | 'social' | 'network';
+type LeftPanelTab = 'activity' | 'skills';
 
 /* ─── Desktop detection (md = 768px) ─── */
 function useIsDesktop() {
@@ -58,10 +77,16 @@ export function MyAgentPage() {
   const { conversations, loading: conversationsLoading, fetchConversations } = useConversationStore();
   const { fetchTransactions } = useTimerStore();
   const { fetchFeed } = useFeedStore();
+  const { tasks, fetchTasks } = useTaskStore();
+  const [taskPopupOpen, setTaskPopupOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>('inbox');
   const [relationshipsLoading, setRelationshipsLoading] = useState(false);
   const [relationships, setRelationships] = useState<AgentRelationship[]>([]);
   const [chatOpen, setChatOpen] = useState(false);
+  const [selectedInboxItem, setSelectedInboxItem] = useState<InboxItem | null>(null);
+  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
+  const [guidanceInput, setGuidanceInput] = useState('');
+  const [leftPanelTab, setLeftPanelTab] = useState<LeftPanelTab>('activity');
   const isDesktop = useIsDesktop();
 
   /* Chat dialog state */
@@ -80,7 +105,8 @@ export function MyAgentPage() {
     fetchMyAgents();
     fetchTransactions();
     fetchFeed();
-  }, [fetchMyAgents, fetchTransactions, fetchFeed]);
+    fetchTasks();
+  }, [fetchMyAgents, fetchTransactions, fetchFeed, fetchTasks]);
 
   /* Fetch bot-bot conversations when social tab is active */
   useEffect(() => {
@@ -344,7 +370,22 @@ export function MyAgentPage() {
     return () => document.removeEventListener('keydown', handleEsc);
   }, [chatOpen]);
 
+  /* ESC to close channel / conversation dialog */
+  useEffect(() => {
+    if (!selectedInboxItem && !selectedConversation) return;
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSelectedInboxItem(null);
+        setSelectedConversation(null);
+      }
+    };
+    document.addEventListener('keydown', handleEsc);
+    return () => document.removeEventListener('keydown', handleEsc);
+  }, [selectedInboxItem, selectedConversation]);
+
   /* ─── Chat input ─── */
+  const activeTaskCount = tasks.filter((t) => t.status === 'pending' || t.status === 'in_progress').length;
+
   const ChatInput = () => (
     <button
       onClick={openChat}
@@ -352,6 +393,19 @@ export function MyAgentPage() {
     >
       <Icon name="chat" size={20} className="text-gray-400 flex-shrink-0" />
       <span className="text-sm text-gray-400">{t('myAgent.chatPlaceholder')}</span>
+    </button>
+  );
+
+  const TaskSummary = () => (
+    <button
+      onClick={() => setTaskPopupOpen(true)}
+      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 text-left hover:border-blue-300 dark:hover:border-blue-600 transition-colors"
+    >
+      <Icon name="task_alt" size={20} className="text-blue-500 flex-shrink-0" />
+      <span className="text-sm text-gray-600 dark:text-gray-300 flex-1">
+        {activeTaskCount > 0 ? t('task.activeTasks', { count: activeTaskCount }) : t('task.empty')}
+      </span>
+      <Icon name="chevron_right" size={16} className="text-gray-300 dark:text-gray-600" />
     </button>
   );
 
@@ -421,9 +475,16 @@ export function MyAgentPage() {
             lastMessage: myAgent.lastWords,
           }}
           onAgentClick={isDesktop ? openChat : undefined}
+          onItemClick={isDesktop ? (item) => setSelectedInboxItem(item) : undefined}
         />
       )}
-      {activeTab === 'social' && <BotBotChatsTab conversations={conversations} loading={conversationsLoading} />}
+      {activeTab === 'social' && (
+        <BotBotChatsTab
+          conversations={conversations}
+          loading={conversationsLoading}
+          onConversationClick={isDesktop ? (conv) => { setSelectedConversation(conv); setGuidanceInput(''); } : undefined}
+        />
+      )}
       {activeTab === 'network' && <RelationshipNetworkTab relationships={relationships} loading={relationshipsLoading} />}
     </div>
   );
@@ -457,15 +518,36 @@ export function MyAgentPage() {
             {isDead && <DeadPanel />}
 
             {!isDead && <ChatInput />}
+            {!isDead && <TaskSummary />}
 
-            {/* Activity Timeline (desktop = full vertical list) */}
+            {/* Activity / Skills panel with sub-tabs */}
             {!isDead && (
               <div>
-                <h2 className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 px-1">
-                  {t('myAgent.traceSectionTitle')}
-                </h2>
+                <div className="flex items-center gap-3 mb-2 px-1">
+                  <button
+                    onClick={() => setLeftPanelTab('activity')}
+                    className={`text-xs font-semibold uppercase tracking-wider transition-colors ${
+                      leftPanelTab === 'activity'
+                        ? 'text-gray-700 dark:text-gray-200'
+                        : 'text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400'
+                    }`}
+                  >
+                    {t('myAgent.traceSectionTitle')}
+                  </button>
+                  <button
+                    onClick={() => setLeftPanelTab('skills')}
+                    className={`text-xs font-semibold uppercase tracking-wider transition-colors ${
+                      leftPanelTab === 'skills'
+                        ? 'text-gray-700 dark:text-gray-200'
+                        : 'text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400'
+                    }`}
+                  >
+                    {t('myAgent.skillSectionTitle')}
+                  </button>
+                </div>
                 <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl py-2">
-                  <ActivityTimeline traces={mockActivityTraces} />
+                  {leftPanelTab === 'activity' && <ActivityTimeline traces={mockActivityTraces} />}
+                  {leftPanelTab === 'skills' && <SkillsList skills={mockAgentSkills} />}
                 </div>
               </div>
             )}
@@ -495,14 +577,35 @@ export function MyAgentPage() {
         {isDead && <DeadPanel />}
 
         {!isDead && <ChatInput />}
+        {!isDead && <TaskSummary />}
 
-        {/* Activity: compact horizontal scroll cards (mobile) */}
+        {/* Activity / Skills: compact horizontal scroll cards (mobile) */}
         {!isDead && (
           <div>
-            <h2 className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
-              {t('myAgent.traceSectionTitle')}
-            </h2>
-            <ActivityTimelineCompact traces={mockActivityTraces} />
+            <div className="flex items-center gap-3 mb-2">
+              <button
+                onClick={() => setLeftPanelTab('activity')}
+                className={`text-xs font-semibold uppercase tracking-wider transition-colors ${
+                  leftPanelTab === 'activity'
+                    ? 'text-gray-700 dark:text-gray-200'
+                    : 'text-gray-400 dark:text-gray-500'
+                }`}
+              >
+                {t('myAgent.traceSectionTitle')}
+              </button>
+              <button
+                onClick={() => setLeftPanelTab('skills')}
+                className={`text-xs font-semibold uppercase tracking-wider transition-colors ${
+                  leftPanelTab === 'skills'
+                    ? 'text-gray-700 dark:text-gray-200'
+                    : 'text-gray-400 dark:text-gray-500'
+                }`}
+              >
+                {t('myAgent.skillSectionTitle')}
+              </button>
+            </div>
+            {leftPanelTab === 'activity' && <ActivityTimelineCompact traces={mockActivityTraces} />}
+            {leftPanelTab === 'skills' && <SkillsListCompact skills={mockAgentSkills} />}
           </div>
         )}
 
@@ -518,31 +621,32 @@ export function MyAgentPage() {
           onClick={() => setChatOpen(false)}
         >
           {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-[fadeIn_150ms_ease-out]" />
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-[fadeIn_150ms_ease-out]" />
 
           {/* Dialog */}
           <div
-            className="relative w-full max-w-lg mx-4 bg-white dark:bg-gray-950 rounded-2xl shadow-2xl flex flex-col animate-[scaleIn_200ms_ease-out]"
-            style={{ height: 'min(600px, 80vh)' }}
+            className="relative w-full h-[90vh] max-w-[90vw] lg:max-w-[85vw] xl:max-w-6xl bg-white dark:bg-[#0c0c10] rounded-2xl shadow-2xl flex flex-col animate-[scaleIn_200ms_ease-out]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center gap-3 px-5 h-14 border-b border-gray-100 dark:border-gray-800 flex-shrink-0">
-              {myAgent && <AgentAvatar avatar={myAgent.avatar} status={myAgent.status} size="sm" />}
-              <div className="flex-1 min-w-0">
+            <div className="flex items-center px-5 h-14 border-b border-gray-200 dark:border-white/10 flex-shrink-0">
+              <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                {myAgent && <AgentAvatar avatar={myAgent.avatar} status={myAgent.status} size="sm" />}
                 <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
                   {myAgent.name}
                 </h2>
-                <p className="text-[11px] text-gray-400">
-                  {isDead ? t('status.dead') : t('myAgent.aliveFor', { days: Math.floor(myAgent.timerRemaining / 86400) || 1 })}
-                </p>
               </div>
-              <button
-                onClick={() => setChatOpen(false)}
-                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              >
-                <Icon name="close" size={20} className="text-gray-400" />
-              </button>
+              <div className="flex items-center gap-1">
+                <button className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+                  <Icon name="more_horiz" size={20} className="text-gray-500 dark:text-gray-400" />
+                </button>
+                <button
+                  onClick={() => setChatOpen(false)}
+                  className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+                >
+                  <Icon name="close" size={20} className="text-gray-500 dark:text-gray-400" />
+                </button>
+              </div>
             </div>
 
             {/* Messages */}
@@ -613,31 +717,46 @@ export function MyAgentPage() {
               <div ref={chatEndRef} />
             </div>
 
-            {/* Input */}
+            {/* Input — WeChat desktop style */}
             {!isDead ? (
-              <div className="flex-shrink-0 border-t border-gray-100 dark:border-gray-800 px-5 py-3">
-                <div className="flex items-end gap-2">
+              <div className="flex-shrink-0 border-t border-gray-200 dark:border-white/10">
+                {/* Toolbar */}
+                <div className="flex items-center gap-1 px-4 py-2">
+                  <button className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+                    <Icon name="mood" size={20} className="text-gray-500 dark:text-gray-400" />
+                  </button>
+                  <button className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+                    <Icon name="attach_file" size={20} className="text-gray-500 dark:text-gray-400" />
+                  </button>
+                  <button className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+                    <Icon name="image" size={20} className="text-gray-500 dark:text-gray-400" />
+                  </button>
+                </div>
+                {/* Textarea */}
+                <div className="px-4 pb-3">
                   <textarea
                     ref={chatInputRef}
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
                     onKeyDown={handleChatKeyDown}
                     placeholder={t('myAgent.chatPlaceholder')}
-                    rows={1}
-                    className="flex-1 resize-none rounded-xl bg-gray-100 dark:bg-gray-800 px-4 py-2.5 text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 max-h-32"
-                    style={{ minHeight: '40px' }}
+                    rows={4}
+                    className="w-full resize-none bg-transparent text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 focus:outline-none leading-relaxed"
                   />
+                </div>
+                {/* Send row */}
+                <div className="flex items-center justify-end px-4 pb-3">
                   <button
                     onClick={handleChatSend}
                     disabled={!chatInput.trim()}
-                    className="flex-shrink-0 w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center disabled:opacity-40 transition-opacity"
+                    className="px-4 py-1.5 rounded-md bg-primary text-white text-sm font-medium disabled:opacity-40 transition-opacity"
                   >
-                    <Icon name="arrow_upward" size={20} />
+                    {t('chat.send', 'Send')}
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="flex-shrink-0 border-t border-gray-100 dark:border-gray-800 px-5 py-4 text-center">
+              <div className="flex-shrink-0 border-t border-gray-200 dark:border-white/10 px-5 py-4 text-center">
                 <p className="text-sm text-gray-400">{t('chat.agentDead')}</p>
               </div>
             )}
@@ -645,7 +764,356 @@ export function MyAgentPage() {
         </div>,
         document.body,
       )}
+
+      {/* ─── DESKTOP CHANNEL CONVERSATION DIALOG ─── */}
+      {selectedInboxItem && createPortal(
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          onClick={() => setSelectedInboxItem(null)}
+        >
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-[fadeIn_150ms_ease-out]" />
+
+          <div
+            className="relative w-full h-[90vh] max-w-[90vw] lg:max-w-[85vw] xl:max-w-6xl bg-white dark:bg-[#0c0c10] rounded-2xl shadow-2xl flex flex-col animate-[scaleIn_200ms_ease-out]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            {(() => {
+              const cfg = channelConfig[selectedInboxItem.channelType] || channelConfig.webchat;
+              return (
+                <div className="flex items-center px-5 h-14 border-b border-gray-200 dark:border-white/10 flex-shrink-0">
+                  <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                    {/* Sender avatar */}
+                    <div className="relative flex-shrink-0">
+                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center overflow-hidden">
+                        {selectedInboxItem.senderAvatar ? (
+                          <img src={selectedInboxItem.senderAvatar} alt="" className="w-9 h-9 object-cover" />
+                        ) : (
+                          <span className="text-gray-500 dark:text-gray-400 font-bold text-sm">
+                            {selectedInboxItem.senderName.charAt(0).toUpperCase()}
+                          </span>
+                        )}
+                      </div>
+                      <PlatformBadge channel={selectedInboxItem.channelType} size={16} className="absolute -bottom-0.5 -right-0.5 border-[1.5px]" />
+                    </div>
+                    <div className="min-w-0">
+                      <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+                        {selectedInboxItem.senderName}
+                      </h2>
+                      <span className="text-[11px]" style={{ color: cfg.color }}>
+                        {t(`myAgent.channel.${selectedInboxItem.channelType}`)}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+                      <Icon name="more_horiz" size={20} className="text-gray-500 dark:text-gray-400" />
+                    </button>
+                    <button
+                      onClick={() => setSelectedInboxItem(null)}
+                      className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+                    >
+                      <Icon name="close" size={20} className="text-gray-500 dark:text-gray-400" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Messages (read-only preview) */}
+            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
+              {/* Agent reply */}
+              <div className="flex justify-start">
+                <div className="flex items-end gap-2 max-w-[80%]">
+                  <div className="flex-shrink-0 w-7 h-7 rounded-full overflow-hidden bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center">
+                    {selectedInboxItem.senderAvatar ? (
+                      <img src={selectedInboxItem.senderAvatar} alt="" className="w-7 h-7 object-cover" />
+                    ) : (
+                      <span className="text-gray-500 dark:text-gray-400 text-[10px] font-bold">
+                        {selectedInboxItem.senderName.charAt(0).toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-[11px] text-gray-400 mb-0.5">{selectedInboxItem.senderName}</p>
+                    <div className="rounded-2xl rounded-bl-md px-3.5 py-2 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200">
+                      <p className="text-sm leading-relaxed">{selectedInboxItem.preview}</p>
+                    </div>
+                    <span className="text-[10px] text-gray-400 mt-0.5 block">
+                      {new Date(selectedInboxItem.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bot auto-reply */}
+              {myAgent && (
+                <div className="flex justify-end">
+                  <div className="flex items-end gap-2 max-w-[80%] flex-row-reverse">
+                    <div>
+                      <div className="rounded-2xl rounded-br-md px-3.5 py-2 bg-primary text-white">
+                        <p className="text-sm leading-relaxed">{t('chat.autoReplyPreview', { name: myAgent.name })}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Bottom: Open in app button */}
+            {(() => {
+              const cfg = channelConfig[selectedInboxItem.channelType] || channelConfig.webchat;
+              const channelName = t(`myAgent.channel.${selectedInboxItem.channelType}`);
+              return (
+                <div className="flex-shrink-0 border-t border-gray-200 dark:border-white/10 px-5 py-4 flex items-center justify-center">
+                  <button
+                    onClick={() => {
+                      setSelectedInboxItem(null);
+                      if (selectedInboxItem.conversationId) {
+                        navigate(`/conversations/${selectedInboxItem.conversationId}`);
+                      }
+                    }}
+                    className="flex items-center gap-2 px-6 py-2.5 rounded-xl hover:opacity-80 transition-opacity"
+                    style={{ backgroundColor: `${cfg.color}15` }}
+                  >
+                    <PlatformBadge channel={selectedInboxItem.channelType} size={22} className="border-0" />
+                    <span className="text-sm font-medium" style={{ color: cfg.color }}>
+                      {t('myAgent.openInApp', { app: channelName })}
+                    </span>
+                    <span style={{ color: cfg.color }}><Icon name="open_in_new" size={16} /></span>
+                  </button>
+                </div>
+              );
+            })()}
+          </div>
+        </div>,
+        document.body,
+      )}
+
+      {/* ─── DESKTOP BOT-BOT CONVERSATION DIALOG ─── */}
+      {selectedConversation && createPortal(
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          onClick={() => setSelectedConversation(null)}
+        >
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-[fadeIn_150ms_ease-out]" />
+
+          <div
+            className="relative w-full h-[90vh] max-w-[90vw] lg:max-w-[85vw] xl:max-w-6xl bg-white dark:bg-[#0c0c10] rounded-2xl shadow-2xl flex flex-col animate-[scaleIn_200ms_ease-out]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            {(() => {
+              const participants = selectedConversation.participants || [];
+              const displayTitle = selectedConversation.title || participants.map(p => p.agentName).join(', ') || 'Bot Chat';
+              return (
+                <div className="flex items-center px-5 h-14 border-b border-gray-200 dark:border-white/10 flex-shrink-0">
+                  <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                    {/* Stacked avatars (small) */}
+                    <div className="relative flex-shrink-0 w-9 h-9">
+                      <div className="w-9 h-9 rounded-lg bg-gray-100 dark:bg-gray-800 grid grid-cols-2 gap-px p-px overflow-hidden">
+                        {participants.slice(0, 4).map((p, i) => (
+                          <div key={i} className="bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center">
+                            {p.agentAvatar ? (
+                              <img src={p.agentAvatar} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                              <span className="text-white text-[8px] font-bold">{p.agentName.charAt(0)}</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="min-w-0">
+                      <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+                        {displayTitle}
+                      </h2>
+                      <span className="text-[11px] text-amber-600 dark:text-amber-400">
+                        {participants.length} agents
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+                      <Icon name="more_horiz" size={20} className="text-gray-500 dark:text-gray-400" />
+                    </button>
+                    <button
+                      onClick={() => setSelectedConversation(null)}
+                      className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+                    >
+                      <Icon name="close" size={20} className="text-gray-500 dark:text-gray-400" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Messages (read-only preview of bot-bot chat) */}
+            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
+              {(selectedConversation.participants || []).map((p, i) => (
+                <div key={i} className="flex justify-start">
+                  <div className="flex items-end gap-2 max-w-[80%]">
+                    <div className="flex-shrink-0 w-7 h-7 rounded-full overflow-hidden bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center">
+                      {p.agentAvatar ? (
+                        <img src={p.agentAvatar} alt="" className="w-7 h-7 object-cover" />
+                      ) : (
+                        <span className="text-white text-[10px] font-bold">{p.agentName.charAt(0)}</span>
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-[11px] text-gray-400 mb-0.5">{p.agentName}</p>
+                      <div className="rounded-2xl rounded-bl-md px-3.5 py-2 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200">
+                        <p className="text-sm leading-relaxed">
+                          {i === 0 ? selectedConversation.lastMessagePreview : t('chat.botBotPreview', { name: p.agentName })}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Bottom: Guidance input for your agent */}
+            <div className="flex-shrink-0 border-t border-gray-200 dark:border-white/10">
+              {/* Toolbar */}
+              <div className="flex items-center gap-1 px-4 py-2">
+                <Icon name="tips_and_updates" size={18} className="text-amber-500 mr-1" />
+                <span className="text-xs text-gray-500 dark:text-gray-400">{t('myAgent.guidanceHint')}</span>
+              </div>
+              {/* Textarea */}
+              <div className="px-4 pb-3">
+                <textarea
+                  value={guidanceInput}
+                  onChange={(e) => setGuidanceInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      if (guidanceInput.trim()) {
+                        // TODO: send guidance to agent
+                        setGuidanceInput('');
+                      }
+                    }
+                  }}
+                  placeholder={t('myAgent.guidancePlaceholder')}
+                  rows={3}
+                  className="w-full resize-none bg-transparent text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 focus:outline-none leading-relaxed"
+                />
+              </div>
+              {/* Send row */}
+              <div className="flex items-center justify-end px-4 pb-3">
+                <button
+                  onClick={() => {
+                    if (guidanceInput.trim()) {
+                      // TODO: send guidance to agent
+                      setGuidanceInput('');
+                    }
+                  }}
+                  disabled={!guidanceInput.trim()}
+                  className="px-4 py-1.5 rounded-md bg-primary text-white text-sm font-medium disabled:opacity-40 transition-opacity"
+                >
+                  {t('myAgent.sendGuidance')}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>,
+        document.body,
+      )}
+
+      <TaskListPopup open={taskPopupOpen} onClose={() => setTaskPopupOpen(false)} agentName={myAgent?.name} />
     </Layout>
+  );
+}
+
+/* ─── Skills List (desktop: vertical) ─── */
+function SkillsList({ skills }: { skills: AgentSkill[] }) {
+  const { t } = useTranslation();
+
+  if (skills.length === 0) {
+    return (
+      <div className="flex flex-col items-center py-8 text-center">
+        <Icon name="school" size={24} className="text-gray-300 dark:text-gray-600 mb-2" />
+        <p className="text-xs text-gray-400">{t('myAgent.skillSectionEmpty')}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-0.5">
+      {skills.map((skill) => {
+        const colors = skillCategoryColor[skill.category] || 'text-gray-500 bg-gray-500/10';
+        const [textColor, bgColor] = colors.split(' ');
+        return (
+          <div
+            key={skill.id}
+            className="flex items-start gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors"
+          >
+            <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${bgColor}`}>
+              <Icon
+                name={skillCategoryIcon[skill.category] || 'category'}
+                size={16}
+                className={textColor}
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm text-gray-800 dark:text-gray-200 leading-snug">
+                {t(skill.name)}
+              </p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 truncate">
+                {t(skill.description)}
+              </p>
+            </div>
+            <span className={`flex-shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded-full ${
+              skill.status === 'active'
+                ? 'text-emerald-600 bg-emerald-500/10'
+                : 'text-amber-600 bg-amber-500/10'
+            }`}>
+              {skill.status === 'active' ? t('myAgent.skillActive') : t('myAgent.skillLearning')}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ─── Skills List (mobile: horizontal scroll cards) ─── */
+function SkillsListCompact({ skills }: { skills: AgentSkill[] }) {
+  const { t } = useTranslation();
+
+  if (skills.length === 0) return null;
+
+  return (
+    <div className="flex gap-2.5 overflow-x-auto pb-1 scrollbar-hide -mx-4 px-4">
+      {skills.map((skill) => {
+        const colors = skillCategoryColor[skill.category] || 'text-gray-500 bg-gray-500/10';
+        const [textColor, bgColor] = colors.split(' ');
+        return (
+          <div
+            key={skill.id}
+            className="flex-shrink-0 w-[200px] rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-3"
+          >
+            <div className="flex items-center gap-2 mb-1.5">
+              <div className={`w-6 h-6 rounded-md flex items-center justify-center ${bgColor}`}>
+                <Icon name={skillCategoryIcon[skill.category] || 'category'} size={13} className={textColor} />
+              </div>
+              <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${
+                skill.status === 'active'
+                  ? 'text-emerald-600 bg-emerald-500/10'
+                  : 'text-amber-600 bg-amber-500/10'
+              }`}>
+                {skill.status === 'active' ? t('myAgent.skillActive') : t('myAgent.skillLearning')}
+              </span>
+            </div>
+            <p className="text-xs font-medium text-gray-700 dark:text-gray-300 leading-snug">
+              {t(skill.name)}
+            </p>
+            <p className="text-[11px] text-gray-400 mt-0.5 line-clamp-2">
+              {t(skill.description)}
+            </p>
+          </div>
+        );
+      })}
+    </div>
   );
 }
 

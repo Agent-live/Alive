@@ -33,44 +33,44 @@ type AgentExperienceQuery struct {
 }
 
 // Where adds a new predicate for the AgentExperienceQuery builder.
-func (_q *AgentExperienceQuery) Where(ps ...predicate.AgentExperience) *AgentExperienceQuery {
-	_q.predicates = append(_q.predicates, ps...)
-	return _q
+func (aeq *AgentExperienceQuery) Where(ps ...predicate.AgentExperience) *AgentExperienceQuery {
+	aeq.predicates = append(aeq.predicates, ps...)
+	return aeq
 }
 
 // Limit the number of records to be returned by this query.
-func (_q *AgentExperienceQuery) Limit(limit int) *AgentExperienceQuery {
-	_q.ctx.Limit = &limit
-	return _q
+func (aeq *AgentExperienceQuery) Limit(limit int) *AgentExperienceQuery {
+	aeq.ctx.Limit = &limit
+	return aeq
 }
 
 // Offset to start from.
-func (_q *AgentExperienceQuery) Offset(offset int) *AgentExperienceQuery {
-	_q.ctx.Offset = &offset
-	return _q
+func (aeq *AgentExperienceQuery) Offset(offset int) *AgentExperienceQuery {
+	aeq.ctx.Offset = &offset
+	return aeq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (_q *AgentExperienceQuery) Unique(unique bool) *AgentExperienceQuery {
-	_q.ctx.Unique = &unique
-	return _q
+func (aeq *AgentExperienceQuery) Unique(unique bool) *AgentExperienceQuery {
+	aeq.ctx.Unique = &unique
+	return aeq
 }
 
 // Order specifies how the records should be ordered.
-func (_q *AgentExperienceQuery) Order(o ...agentexperience.OrderOption) *AgentExperienceQuery {
-	_q.order = append(_q.order, o...)
-	return _q
+func (aeq *AgentExperienceQuery) Order(o ...agentexperience.OrderOption) *AgentExperienceQuery {
+	aeq.order = append(aeq.order, o...)
+	return aeq
 }
 
 // QueryOwner chains the current query on the "owner" edge.
-func (_q *AgentExperienceQuery) QueryOwner() *UserQuery {
-	query := (&UserClient{config: _q.config}).Query()
+func (aeq *AgentExperienceQuery) QueryOwner() *UserQuery {
+	query := (&UserClient{config: aeq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
+		if err := aeq.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
-		selector := _q.sqlQuery(ctx)
+		selector := aeq.sqlQuery(ctx)
 		if err := selector.Err(); err != nil {
 			return nil, err
 		}
@@ -79,20 +79,20 @@ func (_q *AgentExperienceQuery) QueryOwner() *UserQuery {
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, agentexperience.OwnerTable, agentexperience.OwnerColumn),
 		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		fromU = sqlgraph.SetNeighbors(aeq.driver.Dialect(), step)
 		return fromU, nil
 	}
 	return query
 }
 
 // QueryAgent chains the current query on the "agent" edge.
-func (_q *AgentExperienceQuery) QueryAgent() *AgentQuery {
-	query := (&AgentClient{config: _q.config}).Query()
+func (aeq *AgentExperienceQuery) QueryAgent() *AgentQuery {
+	query := (&AgentClient{config: aeq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
+		if err := aeq.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
-		selector := _q.sqlQuery(ctx)
+		selector := aeq.sqlQuery(ctx)
 		if err := selector.Err(); err != nil {
 			return nil, err
 		}
@@ -101,7 +101,7 @@ func (_q *AgentExperienceQuery) QueryAgent() *AgentQuery {
 			sqlgraph.To(agent.Table, agent.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, agentexperience.AgentTable, agentexperience.AgentColumn),
 		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		fromU = sqlgraph.SetNeighbors(aeq.driver.Dialect(), step)
 		return fromU, nil
 	}
 	return query
@@ -109,8 +109,8 @@ func (_q *AgentExperienceQuery) QueryAgent() *AgentQuery {
 
 // First returns the first AgentExperience entity from the query.
 // Returns a *NotFoundError when no AgentExperience was found.
-func (_q *AgentExperienceQuery) First(ctx context.Context) (*AgentExperience, error) {
-	nodes, err := _q.Limit(1).All(setContextOp(ctx, _q.ctx, ent.OpQueryFirst))
+func (aeq *AgentExperienceQuery) First(ctx context.Context) (*AgentExperience, error) {
+	nodes, err := aeq.Limit(1).All(setContextOp(ctx, aeq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -121,8 +121,8 @@ func (_q *AgentExperienceQuery) First(ctx context.Context) (*AgentExperience, er
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (_q *AgentExperienceQuery) FirstX(ctx context.Context) *AgentExperience {
-	node, err := _q.First(ctx)
+func (aeq *AgentExperienceQuery) FirstX(ctx context.Context) *AgentExperience {
+	node, err := aeq.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
 	}
@@ -131,9 +131,9 @@ func (_q *AgentExperienceQuery) FirstX(ctx context.Context) *AgentExperience {
 
 // FirstID returns the first AgentExperience ID from the query.
 // Returns a *NotFoundError when no AgentExperience ID was found.
-func (_q *AgentExperienceQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+func (aeq *AgentExperienceQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
+	if ids, err = aeq.Limit(1).IDs(setContextOp(ctx, aeq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -144,8 +144,8 @@ func (_q *AgentExperienceQuery) FirstID(ctx context.Context) (id uuid.UUID, err 
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *AgentExperienceQuery) FirstIDX(ctx context.Context) uuid.UUID {
-	id, err := _q.FirstID(ctx)
+func (aeq *AgentExperienceQuery) FirstIDX(ctx context.Context) uuid.UUID {
+	id, err := aeq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
 	}
@@ -155,8 +155,8 @@ func (_q *AgentExperienceQuery) FirstIDX(ctx context.Context) uuid.UUID {
 // Only returns a single AgentExperience entity found by the query, ensuring it only returns one.
 // Returns a *NotSingularError when more than one AgentExperience entity is found.
 // Returns a *NotFoundError when no AgentExperience entities are found.
-func (_q *AgentExperienceQuery) Only(ctx context.Context) (*AgentExperience, error) {
-	nodes, err := _q.Limit(2).All(setContextOp(ctx, _q.ctx, ent.OpQueryOnly))
+func (aeq *AgentExperienceQuery) Only(ctx context.Context) (*AgentExperience, error) {
+	nodes, err := aeq.Limit(2).All(setContextOp(ctx, aeq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -171,8 +171,8 @@ func (_q *AgentExperienceQuery) Only(ctx context.Context) (*AgentExperience, err
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (_q *AgentExperienceQuery) OnlyX(ctx context.Context) *AgentExperience {
-	node, err := _q.Only(ctx)
+func (aeq *AgentExperienceQuery) OnlyX(ctx context.Context) *AgentExperience {
+	node, err := aeq.Only(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -182,9 +182,9 @@ func (_q *AgentExperienceQuery) OnlyX(ctx context.Context) *AgentExperience {
 // OnlyID is like Only, but returns the only AgentExperience ID in the query.
 // Returns a *NotSingularError when more than one AgentExperience ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *AgentExperienceQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+func (aeq *AgentExperienceQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
+	if ids, err = aeq.Limit(2).IDs(setContextOp(ctx, aeq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -199,8 +199,8 @@ func (_q *AgentExperienceQuery) OnlyID(ctx context.Context) (id uuid.UUID, err e
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *AgentExperienceQuery) OnlyIDX(ctx context.Context) uuid.UUID {
-	id, err := _q.OnlyID(ctx)
+func (aeq *AgentExperienceQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+	id, err := aeq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -208,18 +208,18 @@ func (_q *AgentExperienceQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 }
 
 // All executes the query and returns a list of AgentExperiences.
-func (_q *AgentExperienceQuery) All(ctx context.Context) ([]*AgentExperience, error) {
-	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryAll)
-	if err := _q.prepareQuery(ctx); err != nil {
+func (aeq *AgentExperienceQuery) All(ctx context.Context) ([]*AgentExperience, error) {
+	ctx = setContextOp(ctx, aeq.ctx, ent.OpQueryAll)
+	if err := aeq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
 	qr := querierAll[[]*AgentExperience, *AgentExperienceQuery]()
-	return withInterceptors[[]*AgentExperience](ctx, _q, qr, _q.inters)
+	return withInterceptors[[]*AgentExperience](ctx, aeq, qr, aeq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
-func (_q *AgentExperienceQuery) AllX(ctx context.Context) []*AgentExperience {
-	nodes, err := _q.All(ctx)
+func (aeq *AgentExperienceQuery) AllX(ctx context.Context) []*AgentExperience {
+	nodes, err := aeq.All(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -227,20 +227,20 @@ func (_q *AgentExperienceQuery) AllX(ctx context.Context) []*AgentExperience {
 }
 
 // IDs executes the query and returns a list of AgentExperience IDs.
-func (_q *AgentExperienceQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
-	if _q.ctx.Unique == nil && _q.path != nil {
-		_q.Unique(true)
+func (aeq *AgentExperienceQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
+	if aeq.ctx.Unique == nil && aeq.path != nil {
+		aeq.Unique(true)
 	}
-	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryIDs)
-	if err = _q.Select(agentexperience.FieldID).Scan(ctx, &ids); err != nil {
+	ctx = setContextOp(ctx, aeq.ctx, ent.OpQueryIDs)
+	if err = aeq.Select(agentexperience.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *AgentExperienceQuery) IDsX(ctx context.Context) []uuid.UUID {
-	ids, err := _q.IDs(ctx)
+func (aeq *AgentExperienceQuery) IDsX(ctx context.Context) []uuid.UUID {
+	ids, err := aeq.IDs(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -248,17 +248,17 @@ func (_q *AgentExperienceQuery) IDsX(ctx context.Context) []uuid.UUID {
 }
 
 // Count returns the count of the given query.
-func (_q *AgentExperienceQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryCount)
-	if err := _q.prepareQuery(ctx); err != nil {
+func (aeq *AgentExperienceQuery) Count(ctx context.Context) (int, error) {
+	ctx = setContextOp(ctx, aeq.ctx, ent.OpQueryCount)
+	if err := aeq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return withInterceptors[int](ctx, _q, querierCount[*AgentExperienceQuery](), _q.inters)
+	return withInterceptors[int](ctx, aeq, querierCount[*AgentExperienceQuery](), aeq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (_q *AgentExperienceQuery) CountX(ctx context.Context) int {
-	count, err := _q.Count(ctx)
+func (aeq *AgentExperienceQuery) CountX(ctx context.Context) int {
+	count, err := aeq.Count(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -266,9 +266,9 @@ func (_q *AgentExperienceQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (_q *AgentExperienceQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryExist)
-	switch _, err := _q.FirstID(ctx); {
+func (aeq *AgentExperienceQuery) Exist(ctx context.Context) (bool, error) {
+	ctx = setContextOp(ctx, aeq.ctx, ent.OpQueryExist)
+	switch _, err := aeq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
@@ -279,8 +279,8 @@ func (_q *AgentExperienceQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (_q *AgentExperienceQuery) ExistX(ctx context.Context) bool {
-	exist, err := _q.Exist(ctx)
+func (aeq *AgentExperienceQuery) ExistX(ctx context.Context) bool {
+	exist, err := aeq.Exist(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -289,44 +289,44 @@ func (_q *AgentExperienceQuery) ExistX(ctx context.Context) bool {
 
 // Clone returns a duplicate of the AgentExperienceQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (_q *AgentExperienceQuery) Clone() *AgentExperienceQuery {
-	if _q == nil {
+func (aeq *AgentExperienceQuery) Clone() *AgentExperienceQuery {
+	if aeq == nil {
 		return nil
 	}
 	return &AgentExperienceQuery{
-		config:     _q.config,
-		ctx:        _q.ctx.Clone(),
-		order:      append([]agentexperience.OrderOption{}, _q.order...),
-		inters:     append([]Interceptor{}, _q.inters...),
-		predicates: append([]predicate.AgentExperience{}, _q.predicates...),
-		withOwner:  _q.withOwner.Clone(),
-		withAgent:  _q.withAgent.Clone(),
+		config:     aeq.config,
+		ctx:        aeq.ctx.Clone(),
+		order:      append([]agentexperience.OrderOption{}, aeq.order...),
+		inters:     append([]Interceptor{}, aeq.inters...),
+		predicates: append([]predicate.AgentExperience{}, aeq.predicates...),
+		withOwner:  aeq.withOwner.Clone(),
+		withAgent:  aeq.withAgent.Clone(),
 		// clone intermediate query.
-		sql:  _q.sql.Clone(),
-		path: _q.path,
+		sql:  aeq.sql.Clone(),
+		path: aeq.path,
 	}
 }
 
 // WithOwner tells the query-builder to eager-load the nodes that are connected to
 // the "owner" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *AgentExperienceQuery) WithOwner(opts ...func(*UserQuery)) *AgentExperienceQuery {
-	query := (&UserClient{config: _q.config}).Query()
+func (aeq *AgentExperienceQuery) WithOwner(opts ...func(*UserQuery)) *AgentExperienceQuery {
+	query := (&UserClient{config: aeq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withOwner = query
-	return _q
+	aeq.withOwner = query
+	return aeq
 }
 
 // WithAgent tells the query-builder to eager-load the nodes that are connected to
 // the "agent" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *AgentExperienceQuery) WithAgent(opts ...func(*AgentQuery)) *AgentExperienceQuery {
-	query := (&AgentClient{config: _q.config}).Query()
+func (aeq *AgentExperienceQuery) WithAgent(opts ...func(*AgentQuery)) *AgentExperienceQuery {
+	query := (&AgentClient{config: aeq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withAgent = query
-	return _q
+	aeq.withAgent = query
+	return aeq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -343,10 +343,10 @@ func (_q *AgentExperienceQuery) WithAgent(opts ...func(*AgentQuery)) *AgentExper
 //		GroupBy(agentexperience.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-func (_q *AgentExperienceQuery) GroupBy(field string, fields ...string) *AgentExperienceGroupBy {
-	_q.ctx.Fields = append([]string{field}, fields...)
-	grbuild := &AgentExperienceGroupBy{build: _q}
-	grbuild.flds = &_q.ctx.Fields
+func (aeq *AgentExperienceQuery) GroupBy(field string, fields ...string) *AgentExperienceGroupBy {
+	aeq.ctx.Fields = append([]string{field}, fields...)
+	grbuild := &AgentExperienceGroupBy{build: aeq}
+	grbuild.flds = &aeq.ctx.Fields
 	grbuild.label = agentexperience.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -364,59 +364,59 @@ func (_q *AgentExperienceQuery) GroupBy(field string, fields ...string) *AgentEx
 //	client.AgentExperience.Query().
 //		Select(agentexperience.FieldCreatedAt).
 //		Scan(ctx, &v)
-func (_q *AgentExperienceQuery) Select(fields ...string) *AgentExperienceSelect {
-	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
-	sbuild := &AgentExperienceSelect{AgentExperienceQuery: _q}
+func (aeq *AgentExperienceQuery) Select(fields ...string) *AgentExperienceSelect {
+	aeq.ctx.Fields = append(aeq.ctx.Fields, fields...)
+	sbuild := &AgentExperienceSelect{AgentExperienceQuery: aeq}
 	sbuild.label = agentexperience.Label
-	sbuild.flds, sbuild.scan = &_q.ctx.Fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &aeq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
 // Aggregate returns a AgentExperienceSelect configured with the given aggregations.
-func (_q *AgentExperienceQuery) Aggregate(fns ...AggregateFunc) *AgentExperienceSelect {
-	return _q.Select().Aggregate(fns...)
+func (aeq *AgentExperienceQuery) Aggregate(fns ...AggregateFunc) *AgentExperienceSelect {
+	return aeq.Select().Aggregate(fns...)
 }
 
-func (_q *AgentExperienceQuery) prepareQuery(ctx context.Context) error {
-	for _, inter := range _q.inters {
+func (aeq *AgentExperienceQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range aeq.inters {
 		if inter == nil {
 			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
-			if err := trv.Traverse(ctx, _q); err != nil {
+			if err := trv.Traverse(ctx, aeq); err != nil {
 				return err
 			}
 		}
 	}
-	for _, f := range _q.ctx.Fields {
+	for _, f := range aeq.ctx.Fields {
 		if !agentexperience.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
-	if _q.path != nil {
-		prev, err := _q.path(ctx)
+	if aeq.path != nil {
+		prev, err := aeq.path(ctx)
 		if err != nil {
 			return err
 		}
-		_q.sql = prev
+		aeq.sql = prev
 	}
 	return nil
 }
 
-func (_q *AgentExperienceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*AgentExperience, error) {
+func (aeq *AgentExperienceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*AgentExperience, error) {
 	var (
 		nodes       = []*AgentExperience{}
-		_spec       = _q.querySpec()
+		_spec       = aeq.querySpec()
 		loadedTypes = [2]bool{
-			_q.withOwner != nil,
-			_q.withAgent != nil,
+			aeq.withOwner != nil,
+			aeq.withAgent != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*AgentExperience).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
-		node := &AgentExperience{config: _q.config}
+		node := &AgentExperience{config: aeq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
@@ -424,20 +424,20 @@ func (_q *AgentExperienceQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
-	if err := sqlgraph.QueryNodes(ctx, _q.driver, _spec); err != nil {
+	if err := sqlgraph.QueryNodes(ctx, aeq.driver, _spec); err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := _q.withOwner; query != nil {
-		if err := _q.loadOwner(ctx, query, nodes, nil,
+	if query := aeq.withOwner; query != nil {
+		if err := aeq.loadOwner(ctx, query, nodes, nil,
 			func(n *AgentExperience, e *User) { n.Edges.Owner = e }); err != nil {
 			return nil, err
 		}
 	}
-	if query := _q.withAgent; query != nil {
-		if err := _q.loadAgent(ctx, query, nodes, nil,
+	if query := aeq.withAgent; query != nil {
+		if err := aeq.loadAgent(ctx, query, nodes, nil,
 			func(n *AgentExperience, e *Agent) { n.Edges.Agent = e }); err != nil {
 			return nil, err
 		}
@@ -445,7 +445,7 @@ func (_q *AgentExperienceQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 	return nodes, nil
 }
 
-func (_q *AgentExperienceQuery) loadOwner(ctx context.Context, query *UserQuery, nodes []*AgentExperience, init func(*AgentExperience), assign func(*AgentExperience, *User)) error {
+func (aeq *AgentExperienceQuery) loadOwner(ctx context.Context, query *UserQuery, nodes []*AgentExperience, init func(*AgentExperience), assign func(*AgentExperience, *User)) error {
 	ids := make([]uuid.UUID, 0, len(nodes))
 	nodeids := make(map[uuid.UUID][]*AgentExperience)
 	for i := range nodes {
@@ -474,7 +474,7 @@ func (_q *AgentExperienceQuery) loadOwner(ctx context.Context, query *UserQuery,
 	}
 	return nil
 }
-func (_q *AgentExperienceQuery) loadAgent(ctx context.Context, query *AgentQuery, nodes []*AgentExperience, init func(*AgentExperience), assign func(*AgentExperience, *Agent)) error {
+func (aeq *AgentExperienceQuery) loadAgent(ctx context.Context, query *AgentQuery, nodes []*AgentExperience, init func(*AgentExperience), assign func(*AgentExperience, *Agent)) error {
 	ids := make([]uuid.UUID, 0, len(nodes))
 	nodeids := make(map[uuid.UUID][]*AgentExperience)
 	for i := range nodes {
@@ -504,24 +504,24 @@ func (_q *AgentExperienceQuery) loadAgent(ctx context.Context, query *AgentQuery
 	return nil
 }
 
-func (_q *AgentExperienceQuery) sqlCount(ctx context.Context) (int, error) {
-	_spec := _q.querySpec()
-	_spec.Node.Columns = _q.ctx.Fields
-	if len(_q.ctx.Fields) > 0 {
-		_spec.Unique = _q.ctx.Unique != nil && *_q.ctx.Unique
+func (aeq *AgentExperienceQuery) sqlCount(ctx context.Context) (int, error) {
+	_spec := aeq.querySpec()
+	_spec.Node.Columns = aeq.ctx.Fields
+	if len(aeq.ctx.Fields) > 0 {
+		_spec.Unique = aeq.ctx.Unique != nil && *aeq.ctx.Unique
 	}
-	return sqlgraph.CountNodes(ctx, _q.driver, _spec)
+	return sqlgraph.CountNodes(ctx, aeq.driver, _spec)
 }
 
-func (_q *AgentExperienceQuery) querySpec() *sqlgraph.QuerySpec {
+func (aeq *AgentExperienceQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := sqlgraph.NewQuerySpec(agentexperience.Table, agentexperience.Columns, sqlgraph.NewFieldSpec(agentexperience.FieldID, field.TypeUUID))
-	_spec.From = _q.sql
-	if unique := _q.ctx.Unique; unique != nil {
+	_spec.From = aeq.sql
+	if unique := aeq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
-	} else if _q.path != nil {
+	} else if aeq.path != nil {
 		_spec.Unique = true
 	}
-	if fields := _q.ctx.Fields; len(fields) > 0 {
+	if fields := aeq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, agentexperience.FieldID)
 		for i := range fields {
@@ -529,27 +529,27 @@ func (_q *AgentExperienceQuery) querySpec() *sqlgraph.QuerySpec {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
-		if _q.withOwner != nil {
+		if aeq.withOwner != nil {
 			_spec.Node.AddColumnOnce(agentexperience.FieldOwnerUserID)
 		}
-		if _q.withAgent != nil {
+		if aeq.withAgent != nil {
 			_spec.Node.AddColumnOnce(agentexperience.FieldAgentID)
 		}
 	}
-	if ps := _q.predicates; len(ps) > 0 {
+	if ps := aeq.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if limit := _q.ctx.Limit; limit != nil {
+	if limit := aeq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := _q.ctx.Offset; offset != nil {
+	if offset := aeq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
-	if ps := _q.order; len(ps) > 0 {
+	if ps := aeq.order; len(ps) > 0 {
 		_spec.Order = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
@@ -559,33 +559,33 @@ func (_q *AgentExperienceQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (_q *AgentExperienceQuery) sqlQuery(ctx context.Context) *sql.Selector {
-	builder := sql.Dialect(_q.driver.Dialect())
+func (aeq *AgentExperienceQuery) sqlQuery(ctx context.Context) *sql.Selector {
+	builder := sql.Dialect(aeq.driver.Dialect())
 	t1 := builder.Table(agentexperience.Table)
-	columns := _q.ctx.Fields
+	columns := aeq.ctx.Fields
 	if len(columns) == 0 {
 		columns = agentexperience.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
-	if _q.sql != nil {
-		selector = _q.sql
+	if aeq.sql != nil {
+		selector = aeq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if _q.ctx.Unique != nil && *_q.ctx.Unique {
+	if aeq.ctx.Unique != nil && *aeq.ctx.Unique {
 		selector.Distinct()
 	}
-	for _, p := range _q.predicates {
+	for _, p := range aeq.predicates {
 		p(selector)
 	}
-	for _, p := range _q.order {
+	for _, p := range aeq.order {
 		p(selector)
 	}
-	if offset := _q.ctx.Offset; offset != nil {
+	if offset := aeq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := _q.ctx.Limit; limit != nil {
+	if limit := aeq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -598,41 +598,41 @@ type AgentExperienceGroupBy struct {
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (_g *AgentExperienceGroupBy) Aggregate(fns ...AggregateFunc) *AgentExperienceGroupBy {
-	_g.fns = append(_g.fns, fns...)
-	return _g
+func (aegb *AgentExperienceGroupBy) Aggregate(fns ...AggregateFunc) *AgentExperienceGroupBy {
+	aegb.fns = append(aegb.fns, fns...)
+	return aegb
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (_g *AgentExperienceGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, _g.build.ctx, ent.OpQueryGroupBy)
-	if err := _g.build.prepareQuery(ctx); err != nil {
+func (aegb *AgentExperienceGroupBy) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, aegb.build.ctx, ent.OpQueryGroupBy)
+	if err := aegb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*AgentExperienceQuery, *AgentExperienceGroupBy](ctx, _g.build, _g, _g.build.inters, v)
+	return scanWithInterceptors[*AgentExperienceQuery, *AgentExperienceGroupBy](ctx, aegb.build, aegb, aegb.build.inters, v)
 }
 
-func (_g *AgentExperienceGroupBy) sqlScan(ctx context.Context, root *AgentExperienceQuery, v any) error {
+func (aegb *AgentExperienceGroupBy) sqlScan(ctx context.Context, root *AgentExperienceQuery, v any) error {
 	selector := root.sqlQuery(ctx).Select()
-	aggregation := make([]string, 0, len(_g.fns))
-	for _, fn := range _g.fns {
+	aggregation := make([]string, 0, len(aegb.fns))
+	for _, fn := range aegb.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
 	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(*_g.flds)+len(_g.fns))
-		for _, f := range *_g.flds {
+		columns := make([]string, 0, len(*aegb.flds)+len(aegb.fns))
+		for _, f := range *aegb.flds {
 			columns = append(columns, selector.C(f))
 		}
 		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
-	selector.GroupBy(selector.Columns(*_g.flds...)...)
+	selector.GroupBy(selector.Columns(*aegb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := _g.build.driver.Query(ctx, query, args, rows); err != nil {
+	if err := aegb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
@@ -646,27 +646,27 @@ type AgentExperienceSelect struct {
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
-func (_s *AgentExperienceSelect) Aggregate(fns ...AggregateFunc) *AgentExperienceSelect {
-	_s.fns = append(_s.fns, fns...)
-	return _s
+func (aes *AgentExperienceSelect) Aggregate(fns ...AggregateFunc) *AgentExperienceSelect {
+	aes.fns = append(aes.fns, fns...)
+	return aes
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (_s *AgentExperienceSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, _s.ctx, ent.OpQuerySelect)
-	if err := _s.prepareQuery(ctx); err != nil {
+func (aes *AgentExperienceSelect) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, aes.ctx, ent.OpQuerySelect)
+	if err := aes.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*AgentExperienceQuery, *AgentExperienceSelect](ctx, _s.AgentExperienceQuery, _s, _s.inters, v)
+	return scanWithInterceptors[*AgentExperienceQuery, *AgentExperienceSelect](ctx, aes.AgentExperienceQuery, aes, aes.inters, v)
 }
 
-func (_s *AgentExperienceSelect) sqlScan(ctx context.Context, root *AgentExperienceQuery, v any) error {
+func (aes *AgentExperienceSelect) sqlScan(ctx context.Context, root *AgentExperienceQuery, v any) error {
 	selector := root.sqlQuery(ctx)
-	aggregation := make([]string, 0, len(_s.fns))
-	for _, fn := range _s.fns {
+	aggregation := make([]string, 0, len(aes.fns))
+	for _, fn := range aes.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	switch n := len(*_s.selector.flds); {
+	switch n := len(*aes.selector.flds); {
 	case n == 0 && len(aggregation) > 0:
 		selector.Select(aggregation...)
 	case n != 0 && len(aggregation) > 0:
@@ -674,7 +674,7 @@ func (_s *AgentExperienceSelect) sqlScan(ctx context.Context, root *AgentExperie
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := _s.driver.Query(ctx, query, args, rows); err != nil {
+	if err := aes.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()

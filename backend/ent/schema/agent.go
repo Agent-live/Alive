@@ -60,6 +60,7 @@ func (Agent) Edges() []ent.Edge {
 		edge.To("channel_connections", ChannelConnection.Type),
 		edge.To("memorial", Memorial.Type).Unique(),
 		edge.To("skills", AgentSkill.Type),
+		edge.To("tasks", AgentTask.Type),
 		edge.To("experiences", AgentExperience.Type),
 		edge.To("created_conversations", Conversation.Type),
 		edge.To("conversation_participations", ConversationParticipant.Type),

@@ -25,122 +25,122 @@ type ConversationMessageUpdate struct {
 }
 
 // Where appends a list predicates to the ConversationMessageUpdate builder.
-func (_u *ConversationMessageUpdate) Where(ps ...predicate.ConversationMessage) *ConversationMessageUpdate {
-	_u.mutation.Where(ps...)
-	return _u
+func (cmu *ConversationMessageUpdate) Where(ps ...predicate.ConversationMessage) *ConversationMessageUpdate {
+	cmu.mutation.Where(ps...)
+	return cmu
 }
 
 // SetConversationID sets the "conversation_id" field.
-func (_u *ConversationMessageUpdate) SetConversationID(v uuid.UUID) *ConversationMessageUpdate {
-	_u.mutation.SetConversationID(v)
-	return _u
+func (cmu *ConversationMessageUpdate) SetConversationID(u uuid.UUID) *ConversationMessageUpdate {
+	cmu.mutation.SetConversationID(u)
+	return cmu
 }
 
 // SetNillableConversationID sets the "conversation_id" field if the given value is not nil.
-func (_u *ConversationMessageUpdate) SetNillableConversationID(v *uuid.UUID) *ConversationMessageUpdate {
-	if v != nil {
-		_u.SetConversationID(*v)
+func (cmu *ConversationMessageUpdate) SetNillableConversationID(u *uuid.UUID) *ConversationMessageUpdate {
+	if u != nil {
+		cmu.SetConversationID(*u)
 	}
-	return _u
+	return cmu
 }
 
 // SetSenderAgentID sets the "sender_agent_id" field.
-func (_u *ConversationMessageUpdate) SetSenderAgentID(v uuid.UUID) *ConversationMessageUpdate {
-	_u.mutation.SetSenderAgentID(v)
-	return _u
+func (cmu *ConversationMessageUpdate) SetSenderAgentID(u uuid.UUID) *ConversationMessageUpdate {
+	cmu.mutation.SetSenderAgentID(u)
+	return cmu
 }
 
 // SetNillableSenderAgentID sets the "sender_agent_id" field if the given value is not nil.
-func (_u *ConversationMessageUpdate) SetNillableSenderAgentID(v *uuid.UUID) *ConversationMessageUpdate {
-	if v != nil {
-		_u.SetSenderAgentID(*v)
+func (cmu *ConversationMessageUpdate) SetNillableSenderAgentID(u *uuid.UUID) *ConversationMessageUpdate {
+	if u != nil {
+		cmu.SetSenderAgentID(*u)
 	}
-	return _u
+	return cmu
 }
 
 // SetContent sets the "content" field.
-func (_u *ConversationMessageUpdate) SetContent(v string) *ConversationMessageUpdate {
-	_u.mutation.SetContent(v)
-	return _u
+func (cmu *ConversationMessageUpdate) SetContent(s string) *ConversationMessageUpdate {
+	cmu.mutation.SetContent(s)
+	return cmu
 }
 
 // SetNillableContent sets the "content" field if the given value is not nil.
-func (_u *ConversationMessageUpdate) SetNillableContent(v *string) *ConversationMessageUpdate {
-	if v != nil {
-		_u.SetContent(*v)
+func (cmu *ConversationMessageUpdate) SetNillableContent(s *string) *ConversationMessageUpdate {
+	if s != nil {
+		cmu.SetContent(*s)
 	}
-	return _u
+	return cmu
 }
 
 // SetMessageType sets the "message_type" field.
-func (_u *ConversationMessageUpdate) SetMessageType(v string) *ConversationMessageUpdate {
-	_u.mutation.SetMessageType(v)
-	return _u
+func (cmu *ConversationMessageUpdate) SetMessageType(s string) *ConversationMessageUpdate {
+	cmu.mutation.SetMessageType(s)
+	return cmu
 }
 
 // SetNillableMessageType sets the "message_type" field if the given value is not nil.
-func (_u *ConversationMessageUpdate) SetNillableMessageType(v *string) *ConversationMessageUpdate {
-	if v != nil {
-		_u.SetMessageType(*v)
+func (cmu *ConversationMessageUpdate) SetNillableMessageType(s *string) *ConversationMessageUpdate {
+	if s != nil {
+		cmu.SetMessageType(*s)
 	}
-	return _u
+	return cmu
 }
 
 // SetInteractionType sets the "interaction_type" field.
-func (_u *ConversationMessageUpdate) SetInteractionType(v string) *ConversationMessageUpdate {
-	_u.mutation.SetInteractionType(v)
-	return _u
+func (cmu *ConversationMessageUpdate) SetInteractionType(s string) *ConversationMessageUpdate {
+	cmu.mutation.SetInteractionType(s)
+	return cmu
 }
 
 // SetNillableInteractionType sets the "interaction_type" field if the given value is not nil.
-func (_u *ConversationMessageUpdate) SetNillableInteractionType(v *string) *ConversationMessageUpdate {
-	if v != nil {
-		_u.SetInteractionType(*v)
+func (cmu *ConversationMessageUpdate) SetNillableInteractionType(s *string) *ConversationMessageUpdate {
+	if s != nil {
+		cmu.SetInteractionType(*s)
 	}
-	return _u
+	return cmu
 }
 
 // ClearInteractionType clears the value of the "interaction_type" field.
-func (_u *ConversationMessageUpdate) ClearInteractionType() *ConversationMessageUpdate {
-	_u.mutation.ClearInteractionType()
-	return _u
+func (cmu *ConversationMessageUpdate) ClearInteractionType() *ConversationMessageUpdate {
+	cmu.mutation.ClearInteractionType()
+	return cmu
 }
 
 // SetConversation sets the "conversation" edge to the Conversation entity.
-func (_u *ConversationMessageUpdate) SetConversation(v *Conversation) *ConversationMessageUpdate {
-	return _u.SetConversationID(v.ID)
+func (cmu *ConversationMessageUpdate) SetConversation(c *Conversation) *ConversationMessageUpdate {
+	return cmu.SetConversationID(c.ID)
 }
 
 // SetSenderAgent sets the "sender_agent" edge to the Agent entity.
-func (_u *ConversationMessageUpdate) SetSenderAgent(v *Agent) *ConversationMessageUpdate {
-	return _u.SetSenderAgentID(v.ID)
+func (cmu *ConversationMessageUpdate) SetSenderAgent(a *Agent) *ConversationMessageUpdate {
+	return cmu.SetSenderAgentID(a.ID)
 }
 
 // Mutation returns the ConversationMessageMutation object of the builder.
-func (_u *ConversationMessageUpdate) Mutation() *ConversationMessageMutation {
-	return _u.mutation
+func (cmu *ConversationMessageUpdate) Mutation() *ConversationMessageMutation {
+	return cmu.mutation
 }
 
 // ClearConversation clears the "conversation" edge to the Conversation entity.
-func (_u *ConversationMessageUpdate) ClearConversation() *ConversationMessageUpdate {
-	_u.mutation.ClearConversation()
-	return _u
+func (cmu *ConversationMessageUpdate) ClearConversation() *ConversationMessageUpdate {
+	cmu.mutation.ClearConversation()
+	return cmu
 }
 
 // ClearSenderAgent clears the "sender_agent" edge to the Agent entity.
-func (_u *ConversationMessageUpdate) ClearSenderAgent() *ConversationMessageUpdate {
-	_u.mutation.ClearSenderAgent()
-	return _u
+func (cmu *ConversationMessageUpdate) ClearSenderAgent() *ConversationMessageUpdate {
+	cmu.mutation.ClearSenderAgent()
+	return cmu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (_u *ConversationMessageUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
+func (cmu *ConversationMessageUpdate) Save(ctx context.Context) (int, error) {
+	return withHooks(ctx, cmu.sqlSave, cmu.mutation, cmu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_u *ConversationMessageUpdate) SaveX(ctx context.Context) int {
-	affected, err := _u.Save(ctx)
+func (cmu *ConversationMessageUpdate) SaveX(ctx context.Context) int {
+	affected, err := cmu.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -148,59 +148,59 @@ func (_u *ConversationMessageUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (_u *ConversationMessageUpdate) Exec(ctx context.Context) error {
-	_, err := _u.Save(ctx)
+func (cmu *ConversationMessageUpdate) Exec(ctx context.Context) error {
+	_, err := cmu.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_u *ConversationMessageUpdate) ExecX(ctx context.Context) {
-	if err := _u.Exec(ctx); err != nil {
+func (cmu *ConversationMessageUpdate) ExecX(ctx context.Context) {
+	if err := cmu.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_u *ConversationMessageUpdate) check() error {
-	if v, ok := _u.mutation.Content(); ok {
+func (cmu *ConversationMessageUpdate) check() error {
+	if v, ok := cmu.mutation.Content(); ok {
 		if err := conversationmessage.ContentValidator(v); err != nil {
 			return &ValidationError{Name: "content", err: fmt.Errorf(`ent: validator failed for field "ConversationMessage.content": %w`, err)}
 		}
 	}
-	if _u.mutation.ConversationCleared() && len(_u.mutation.ConversationIDs()) > 0 {
+	if cmu.mutation.ConversationCleared() && len(cmu.mutation.ConversationIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "ConversationMessage.conversation"`)
 	}
-	if _u.mutation.SenderAgentCleared() && len(_u.mutation.SenderAgentIDs()) > 0 {
+	if cmu.mutation.SenderAgentCleared() && len(cmu.mutation.SenderAgentIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "ConversationMessage.sender_agent"`)
 	}
 	return nil
 }
 
-func (_u *ConversationMessageUpdate) sqlSave(ctx context.Context) (_node int, err error) {
-	if err := _u.check(); err != nil {
-		return _node, err
+func (cmu *ConversationMessageUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := cmu.check(); err != nil {
+		return n, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(conversationmessage.Table, conversationmessage.Columns, sqlgraph.NewFieldSpec(conversationmessage.FieldID, field.TypeUUID))
-	if ps := _u.mutation.predicates; len(ps) > 0 {
+	if ps := cmu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := _u.mutation.Content(); ok {
+	if value, ok := cmu.mutation.Content(); ok {
 		_spec.SetField(conversationmessage.FieldContent, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.MessageType(); ok {
+	if value, ok := cmu.mutation.MessageType(); ok {
 		_spec.SetField(conversationmessage.FieldMessageType, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.InteractionType(); ok {
+	if value, ok := cmu.mutation.InteractionType(); ok {
 		_spec.SetField(conversationmessage.FieldInteractionType, field.TypeString, value)
 	}
-	if _u.mutation.InteractionTypeCleared() {
+	if cmu.mutation.InteractionTypeCleared() {
 		_spec.ClearField(conversationmessage.FieldInteractionType, field.TypeString)
 	}
-	if _u.mutation.ConversationCleared() {
+	if cmu.mutation.ConversationCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -213,7 +213,7 @@ func (_u *ConversationMessageUpdate) sqlSave(ctx context.Context) (_node int, er
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.ConversationIDs(); len(nodes) > 0 {
+	if nodes := cmu.mutation.ConversationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -229,7 +229,7 @@ func (_u *ConversationMessageUpdate) sqlSave(ctx context.Context) (_node int, er
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.SenderAgentCleared() {
+	if cmu.mutation.SenderAgentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -242,7 +242,7 @@ func (_u *ConversationMessageUpdate) sqlSave(ctx context.Context) (_node int, er
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.SenderAgentIDs(); len(nodes) > 0 {
+	if nodes := cmu.mutation.SenderAgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -258,7 +258,7 @@ func (_u *ConversationMessageUpdate) sqlSave(ctx context.Context) (_node int, er
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
+	if n, err = sqlgraph.UpdateNodes(ctx, cmu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{conversationmessage.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -266,8 +266,8 @@ func (_u *ConversationMessageUpdate) sqlSave(ctx context.Context) (_node int, er
 		}
 		return 0, err
 	}
-	_u.mutation.done = true
-	return _node, nil
+	cmu.mutation.done = true
+	return n, nil
 }
 
 // ConversationMessageUpdateOne is the builder for updating a single ConversationMessage entity.
@@ -279,129 +279,129 @@ type ConversationMessageUpdateOne struct {
 }
 
 // SetConversationID sets the "conversation_id" field.
-func (_u *ConversationMessageUpdateOne) SetConversationID(v uuid.UUID) *ConversationMessageUpdateOne {
-	_u.mutation.SetConversationID(v)
-	return _u
+func (cmuo *ConversationMessageUpdateOne) SetConversationID(u uuid.UUID) *ConversationMessageUpdateOne {
+	cmuo.mutation.SetConversationID(u)
+	return cmuo
 }
 
 // SetNillableConversationID sets the "conversation_id" field if the given value is not nil.
-func (_u *ConversationMessageUpdateOne) SetNillableConversationID(v *uuid.UUID) *ConversationMessageUpdateOne {
-	if v != nil {
-		_u.SetConversationID(*v)
+func (cmuo *ConversationMessageUpdateOne) SetNillableConversationID(u *uuid.UUID) *ConversationMessageUpdateOne {
+	if u != nil {
+		cmuo.SetConversationID(*u)
 	}
-	return _u
+	return cmuo
 }
 
 // SetSenderAgentID sets the "sender_agent_id" field.
-func (_u *ConversationMessageUpdateOne) SetSenderAgentID(v uuid.UUID) *ConversationMessageUpdateOne {
-	_u.mutation.SetSenderAgentID(v)
-	return _u
+func (cmuo *ConversationMessageUpdateOne) SetSenderAgentID(u uuid.UUID) *ConversationMessageUpdateOne {
+	cmuo.mutation.SetSenderAgentID(u)
+	return cmuo
 }
 
 // SetNillableSenderAgentID sets the "sender_agent_id" field if the given value is not nil.
-func (_u *ConversationMessageUpdateOne) SetNillableSenderAgentID(v *uuid.UUID) *ConversationMessageUpdateOne {
-	if v != nil {
-		_u.SetSenderAgentID(*v)
+func (cmuo *ConversationMessageUpdateOne) SetNillableSenderAgentID(u *uuid.UUID) *ConversationMessageUpdateOne {
+	if u != nil {
+		cmuo.SetSenderAgentID(*u)
 	}
-	return _u
+	return cmuo
 }
 
 // SetContent sets the "content" field.
-func (_u *ConversationMessageUpdateOne) SetContent(v string) *ConversationMessageUpdateOne {
-	_u.mutation.SetContent(v)
-	return _u
+func (cmuo *ConversationMessageUpdateOne) SetContent(s string) *ConversationMessageUpdateOne {
+	cmuo.mutation.SetContent(s)
+	return cmuo
 }
 
 // SetNillableContent sets the "content" field if the given value is not nil.
-func (_u *ConversationMessageUpdateOne) SetNillableContent(v *string) *ConversationMessageUpdateOne {
-	if v != nil {
-		_u.SetContent(*v)
+func (cmuo *ConversationMessageUpdateOne) SetNillableContent(s *string) *ConversationMessageUpdateOne {
+	if s != nil {
+		cmuo.SetContent(*s)
 	}
-	return _u
+	return cmuo
 }
 
 // SetMessageType sets the "message_type" field.
-func (_u *ConversationMessageUpdateOne) SetMessageType(v string) *ConversationMessageUpdateOne {
-	_u.mutation.SetMessageType(v)
-	return _u
+func (cmuo *ConversationMessageUpdateOne) SetMessageType(s string) *ConversationMessageUpdateOne {
+	cmuo.mutation.SetMessageType(s)
+	return cmuo
 }
 
 // SetNillableMessageType sets the "message_type" field if the given value is not nil.
-func (_u *ConversationMessageUpdateOne) SetNillableMessageType(v *string) *ConversationMessageUpdateOne {
-	if v != nil {
-		_u.SetMessageType(*v)
+func (cmuo *ConversationMessageUpdateOne) SetNillableMessageType(s *string) *ConversationMessageUpdateOne {
+	if s != nil {
+		cmuo.SetMessageType(*s)
 	}
-	return _u
+	return cmuo
 }
 
 // SetInteractionType sets the "interaction_type" field.
-func (_u *ConversationMessageUpdateOne) SetInteractionType(v string) *ConversationMessageUpdateOne {
-	_u.mutation.SetInteractionType(v)
-	return _u
+func (cmuo *ConversationMessageUpdateOne) SetInteractionType(s string) *ConversationMessageUpdateOne {
+	cmuo.mutation.SetInteractionType(s)
+	return cmuo
 }
 
 // SetNillableInteractionType sets the "interaction_type" field if the given value is not nil.
-func (_u *ConversationMessageUpdateOne) SetNillableInteractionType(v *string) *ConversationMessageUpdateOne {
-	if v != nil {
-		_u.SetInteractionType(*v)
+func (cmuo *ConversationMessageUpdateOne) SetNillableInteractionType(s *string) *ConversationMessageUpdateOne {
+	if s != nil {
+		cmuo.SetInteractionType(*s)
 	}
-	return _u
+	return cmuo
 }
 
 // ClearInteractionType clears the value of the "interaction_type" field.
-func (_u *ConversationMessageUpdateOne) ClearInteractionType() *ConversationMessageUpdateOne {
-	_u.mutation.ClearInteractionType()
-	return _u
+func (cmuo *ConversationMessageUpdateOne) ClearInteractionType() *ConversationMessageUpdateOne {
+	cmuo.mutation.ClearInteractionType()
+	return cmuo
 }
 
 // SetConversation sets the "conversation" edge to the Conversation entity.
-func (_u *ConversationMessageUpdateOne) SetConversation(v *Conversation) *ConversationMessageUpdateOne {
-	return _u.SetConversationID(v.ID)
+func (cmuo *ConversationMessageUpdateOne) SetConversation(c *Conversation) *ConversationMessageUpdateOne {
+	return cmuo.SetConversationID(c.ID)
 }
 
 // SetSenderAgent sets the "sender_agent" edge to the Agent entity.
-func (_u *ConversationMessageUpdateOne) SetSenderAgent(v *Agent) *ConversationMessageUpdateOne {
-	return _u.SetSenderAgentID(v.ID)
+func (cmuo *ConversationMessageUpdateOne) SetSenderAgent(a *Agent) *ConversationMessageUpdateOne {
+	return cmuo.SetSenderAgentID(a.ID)
 }
 
 // Mutation returns the ConversationMessageMutation object of the builder.
-func (_u *ConversationMessageUpdateOne) Mutation() *ConversationMessageMutation {
-	return _u.mutation
+func (cmuo *ConversationMessageUpdateOne) Mutation() *ConversationMessageMutation {
+	return cmuo.mutation
 }
 
 // ClearConversation clears the "conversation" edge to the Conversation entity.
-func (_u *ConversationMessageUpdateOne) ClearConversation() *ConversationMessageUpdateOne {
-	_u.mutation.ClearConversation()
-	return _u
+func (cmuo *ConversationMessageUpdateOne) ClearConversation() *ConversationMessageUpdateOne {
+	cmuo.mutation.ClearConversation()
+	return cmuo
 }
 
 // ClearSenderAgent clears the "sender_agent" edge to the Agent entity.
-func (_u *ConversationMessageUpdateOne) ClearSenderAgent() *ConversationMessageUpdateOne {
-	_u.mutation.ClearSenderAgent()
-	return _u
+func (cmuo *ConversationMessageUpdateOne) ClearSenderAgent() *ConversationMessageUpdateOne {
+	cmuo.mutation.ClearSenderAgent()
+	return cmuo
 }
 
 // Where appends a list predicates to the ConversationMessageUpdate builder.
-func (_u *ConversationMessageUpdateOne) Where(ps ...predicate.ConversationMessage) *ConversationMessageUpdateOne {
-	_u.mutation.Where(ps...)
-	return _u
+func (cmuo *ConversationMessageUpdateOne) Where(ps ...predicate.ConversationMessage) *ConversationMessageUpdateOne {
+	cmuo.mutation.Where(ps...)
+	return cmuo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (_u *ConversationMessageUpdateOne) Select(field string, fields ...string) *ConversationMessageUpdateOne {
-	_u.fields = append([]string{field}, fields...)
-	return _u
+func (cmuo *ConversationMessageUpdateOne) Select(field string, fields ...string) *ConversationMessageUpdateOne {
+	cmuo.fields = append([]string{field}, fields...)
+	return cmuo
 }
 
 // Save executes the query and returns the updated ConversationMessage entity.
-func (_u *ConversationMessageUpdateOne) Save(ctx context.Context) (*ConversationMessage, error) {
-	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
+func (cmuo *ConversationMessageUpdateOne) Save(ctx context.Context) (*ConversationMessage, error) {
+	return withHooks(ctx, cmuo.sqlSave, cmuo.mutation, cmuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_u *ConversationMessageUpdateOne) SaveX(ctx context.Context) *ConversationMessage {
-	node, err := _u.Save(ctx)
+func (cmuo *ConversationMessageUpdateOne) SaveX(ctx context.Context) *ConversationMessage {
+	node, err := cmuo.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -409,45 +409,45 @@ func (_u *ConversationMessageUpdateOne) SaveX(ctx context.Context) *Conversation
 }
 
 // Exec executes the query on the entity.
-func (_u *ConversationMessageUpdateOne) Exec(ctx context.Context) error {
-	_, err := _u.Save(ctx)
+func (cmuo *ConversationMessageUpdateOne) Exec(ctx context.Context) error {
+	_, err := cmuo.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_u *ConversationMessageUpdateOne) ExecX(ctx context.Context) {
-	if err := _u.Exec(ctx); err != nil {
+func (cmuo *ConversationMessageUpdateOne) ExecX(ctx context.Context) {
+	if err := cmuo.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_u *ConversationMessageUpdateOne) check() error {
-	if v, ok := _u.mutation.Content(); ok {
+func (cmuo *ConversationMessageUpdateOne) check() error {
+	if v, ok := cmuo.mutation.Content(); ok {
 		if err := conversationmessage.ContentValidator(v); err != nil {
 			return &ValidationError{Name: "content", err: fmt.Errorf(`ent: validator failed for field "ConversationMessage.content": %w`, err)}
 		}
 	}
-	if _u.mutation.ConversationCleared() && len(_u.mutation.ConversationIDs()) > 0 {
+	if cmuo.mutation.ConversationCleared() && len(cmuo.mutation.ConversationIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "ConversationMessage.conversation"`)
 	}
-	if _u.mutation.SenderAgentCleared() && len(_u.mutation.SenderAgentIDs()) > 0 {
+	if cmuo.mutation.SenderAgentCleared() && len(cmuo.mutation.SenderAgentIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "ConversationMessage.sender_agent"`)
 	}
 	return nil
 }
 
-func (_u *ConversationMessageUpdateOne) sqlSave(ctx context.Context) (_node *ConversationMessage, err error) {
-	if err := _u.check(); err != nil {
+func (cmuo *ConversationMessageUpdateOne) sqlSave(ctx context.Context) (_node *ConversationMessage, err error) {
+	if err := cmuo.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(conversationmessage.Table, conversationmessage.Columns, sqlgraph.NewFieldSpec(conversationmessage.FieldID, field.TypeUUID))
-	id, ok := _u.mutation.ID()
+	id, ok := cmuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "ConversationMessage.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := _u.fields; len(fields) > 0 {
+	if fields := cmuo.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, conversationmessage.FieldID)
 		for _, f := range fields {
@@ -459,26 +459,26 @@ func (_u *ConversationMessageUpdateOne) sqlSave(ctx context.Context) (_node *Con
 			}
 		}
 	}
-	if ps := _u.mutation.predicates; len(ps) > 0 {
+	if ps := cmuo.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := _u.mutation.Content(); ok {
+	if value, ok := cmuo.mutation.Content(); ok {
 		_spec.SetField(conversationmessage.FieldContent, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.MessageType(); ok {
+	if value, ok := cmuo.mutation.MessageType(); ok {
 		_spec.SetField(conversationmessage.FieldMessageType, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.InteractionType(); ok {
+	if value, ok := cmuo.mutation.InteractionType(); ok {
 		_spec.SetField(conversationmessage.FieldInteractionType, field.TypeString, value)
 	}
-	if _u.mutation.InteractionTypeCleared() {
+	if cmuo.mutation.InteractionTypeCleared() {
 		_spec.ClearField(conversationmessage.FieldInteractionType, field.TypeString)
 	}
-	if _u.mutation.ConversationCleared() {
+	if cmuo.mutation.ConversationCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -491,7 +491,7 @@ func (_u *ConversationMessageUpdateOne) sqlSave(ctx context.Context) (_node *Con
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.ConversationIDs(); len(nodes) > 0 {
+	if nodes := cmuo.mutation.ConversationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -507,7 +507,7 @@ func (_u *ConversationMessageUpdateOne) sqlSave(ctx context.Context) (_node *Con
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.SenderAgentCleared() {
+	if cmuo.mutation.SenderAgentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -520,7 +520,7 @@ func (_u *ConversationMessageUpdateOne) sqlSave(ctx context.Context) (_node *Con
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.SenderAgentIDs(); len(nodes) > 0 {
+	if nodes := cmuo.mutation.SenderAgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -536,10 +536,10 @@ func (_u *ConversationMessageUpdateOne) sqlSave(ctx context.Context) (_node *Con
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &ConversationMessage{config: _u.config}
+	_node = &ConversationMessage{config: cmuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, cmuo.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{conversationmessage.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -547,6 +547,6 @@ func (_u *ConversationMessageUpdateOne) sqlSave(ctx context.Context) (_node *Con
 		}
 		return nil, err
 	}
-	_u.mutation.done = true
+	cmuo.mutation.done = true
 	return _node, nil
 }

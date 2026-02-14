@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '../../components/common/Icon';
 import { AgentAvatar } from '../../components/agent';
@@ -15,9 +15,12 @@ interface ChatMessage {
 
 export function AgentChatPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
   const { myAgents, primaryAgentId } = useAgentStore();
   const myAgent = myAgents.find((a) => a.id === primaryAgentId) ?? myAgents[0] ?? null;
+
+  const prefill = (location.state as { prefill?: string } | null)?.prefill || '';
 
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     if (!myAgent) return [];
@@ -28,7 +31,7 @@ export function AgentChatPage() {
       timestamp: new Date().toISOString(),
     }];
   });
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState(prefill);
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);

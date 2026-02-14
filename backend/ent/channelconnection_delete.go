@@ -20,56 +20,56 @@ type ChannelConnectionDelete struct {
 }
 
 // Where appends a list predicates to the ChannelConnectionDelete builder.
-func (_d *ChannelConnectionDelete) Where(ps ...predicate.ChannelConnection) *ChannelConnectionDelete {
-	_d.mutation.Where(ps...)
-	return _d
+func (ccd *ChannelConnectionDelete) Where(ps ...predicate.ChannelConnection) *ChannelConnectionDelete {
+	ccd.mutation.Where(ps...)
+	return ccd
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (_d *ChannelConnectionDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks(ctx, _d.sqlExec, _d.mutation, _d.hooks)
+func (ccd *ChannelConnectionDelete) Exec(ctx context.Context) (int, error) {
+	return withHooks(ctx, ccd.sqlExec, ccd.mutation, ccd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_d *ChannelConnectionDelete) ExecX(ctx context.Context) int {
-	n, err := _d.Exec(ctx)
+func (ccd *ChannelConnectionDelete) ExecX(ctx context.Context) int {
+	n, err := ccd.Exec(ctx)
 	if err != nil {
 		panic(err)
 	}
 	return n
 }
 
-func (_d *ChannelConnectionDelete) sqlExec(ctx context.Context) (int, error) {
+func (ccd *ChannelConnectionDelete) sqlExec(ctx context.Context) (int, error) {
 	_spec := sqlgraph.NewDeleteSpec(channelconnection.Table, sqlgraph.NewFieldSpec(channelconnection.FieldID, field.TypeUUID))
-	if ps := _d.mutation.predicates; len(ps) > 0 {
+	if ps := ccd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	affected, err := sqlgraph.DeleteNodes(ctx, _d.driver, _spec)
+	affected, err := sqlgraph.DeleteNodes(ctx, ccd.driver, _spec)
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
-	_d.mutation.done = true
+	ccd.mutation.done = true
 	return affected, err
 }
 
 // ChannelConnectionDeleteOne is the builder for deleting a single ChannelConnection entity.
 type ChannelConnectionDeleteOne struct {
-	_d *ChannelConnectionDelete
+	ccd *ChannelConnectionDelete
 }
 
 // Where appends a list predicates to the ChannelConnectionDelete builder.
-func (_d *ChannelConnectionDeleteOne) Where(ps ...predicate.ChannelConnection) *ChannelConnectionDeleteOne {
-	_d._d.mutation.Where(ps...)
-	return _d
+func (ccdo *ChannelConnectionDeleteOne) Where(ps ...predicate.ChannelConnection) *ChannelConnectionDeleteOne {
+	ccdo.ccd.mutation.Where(ps...)
+	return ccdo
 }
 
 // Exec executes the deletion query.
-func (_d *ChannelConnectionDeleteOne) Exec(ctx context.Context) error {
-	n, err := _d._d.Exec(ctx)
+func (ccdo *ChannelConnectionDeleteOne) Exec(ctx context.Context) error {
+	n, err := ccdo.ccd.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
@@ -81,8 +81,8 @@ func (_d *ChannelConnectionDeleteOne) Exec(ctx context.Context) error {
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_d *ChannelConnectionDeleteOne) ExecX(ctx context.Context) {
-	if err := _d.Exec(ctx); err != nil {
+func (ccdo *ChannelConnectionDeleteOne) ExecX(ctx context.Context) {
+	if err := ccdo.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

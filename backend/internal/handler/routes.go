@@ -15,6 +15,7 @@ import (
 	media "backend/internal/handler/media"
 	memorial "backend/internal/handler/memorial"
 	skill "backend/internal/handler/skill"
+	task "backend/internal/handler/task"
 	timer "backend/internal/handler/timer"
 	user "backend/internal/handler/user"
 	"backend/internal/svc"
@@ -335,6 +336,18 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 		rest.WithPrefix("/api/v1/timer"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/",
+				Handler: task.ListTasksHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/api/v1/tasks"),
 	)
 
 	server.AddRoutes(

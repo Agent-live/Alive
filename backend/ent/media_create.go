@@ -22,101 +22,101 @@ type MediaCreate struct {
 }
 
 // SetMimeType sets the "mime_type" field.
-func (_c *MediaCreate) SetMimeType(v string) *MediaCreate {
-	_c.mutation.SetMimeType(v)
-	return _c
+func (mc *MediaCreate) SetMimeType(s string) *MediaCreate {
+	mc.mutation.SetMimeType(s)
+	return mc
 }
 
 // SetFileSize sets the "file_size" field.
-func (_c *MediaCreate) SetFileSize(v int64) *MediaCreate {
-	_c.mutation.SetFileSize(v)
-	return _c
+func (mc *MediaCreate) SetFileSize(i int64) *MediaCreate {
+	mc.mutation.SetFileSize(i)
+	return mc
 }
 
 // SetStatus sets the "status" field.
-func (_c *MediaCreate) SetStatus(v string) *MediaCreate {
-	_c.mutation.SetStatus(v)
-	return _c
+func (mc *MediaCreate) SetStatus(s string) *MediaCreate {
+	mc.mutation.SetStatus(s)
+	return mc
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (_c *MediaCreate) SetNillableStatus(v *string) *MediaCreate {
-	if v != nil {
-		_c.SetStatus(*v)
+func (mc *MediaCreate) SetNillableStatus(s *string) *MediaCreate {
+	if s != nil {
+		mc.SetStatus(*s)
 	}
-	return _c
+	return mc
 }
 
 // SetURL sets the "url" field.
-func (_c *MediaCreate) SetURL(v string) *MediaCreate {
-	_c.mutation.SetURL(v)
-	return _c
+func (mc *MediaCreate) SetURL(s string) *MediaCreate {
+	mc.mutation.SetURL(s)
+	return mc
 }
 
 // SetNillableURL sets the "url" field if the given value is not nil.
-func (_c *MediaCreate) SetNillableURL(v *string) *MediaCreate {
-	if v != nil {
-		_c.SetURL(*v)
+func (mc *MediaCreate) SetNillableURL(s *string) *MediaCreate {
+	if s != nil {
+		mc.SetURL(*s)
 	}
-	return _c
+	return mc
 }
 
 // SetThumbnailURL sets the "thumbnail_url" field.
-func (_c *MediaCreate) SetThumbnailURL(v string) *MediaCreate {
-	_c.mutation.SetThumbnailURL(v)
-	return _c
+func (mc *MediaCreate) SetThumbnailURL(s string) *MediaCreate {
+	mc.mutation.SetThumbnailURL(s)
+	return mc
 }
 
 // SetNillableThumbnailURL sets the "thumbnail_url" field if the given value is not nil.
-func (_c *MediaCreate) SetNillableThumbnailURL(v *string) *MediaCreate {
-	if v != nil {
-		_c.SetThumbnailURL(*v)
+func (mc *MediaCreate) SetNillableThumbnailURL(s *string) *MediaCreate {
+	if s != nil {
+		mc.SetThumbnailURL(*s)
 	}
-	return _c
+	return mc
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (_c *MediaCreate) SetCreatedAt(v time.Time) *MediaCreate {
-	_c.mutation.SetCreatedAt(v)
-	return _c
+func (mc *MediaCreate) SetCreatedAt(t time.Time) *MediaCreate {
+	mc.mutation.SetCreatedAt(t)
+	return mc
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (_c *MediaCreate) SetNillableCreatedAt(v *time.Time) *MediaCreate {
-	if v != nil {
-		_c.SetCreatedAt(*v)
+func (mc *MediaCreate) SetNillableCreatedAt(t *time.Time) *MediaCreate {
+	if t != nil {
+		mc.SetCreatedAt(*t)
 	}
-	return _c
+	return mc
 }
 
 // SetID sets the "id" field.
-func (_c *MediaCreate) SetID(v uuid.UUID) *MediaCreate {
-	_c.mutation.SetID(v)
-	return _c
+func (mc *MediaCreate) SetID(u uuid.UUID) *MediaCreate {
+	mc.mutation.SetID(u)
+	return mc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (_c *MediaCreate) SetNillableID(v *uuid.UUID) *MediaCreate {
-	if v != nil {
-		_c.SetID(*v)
+func (mc *MediaCreate) SetNillableID(u *uuid.UUID) *MediaCreate {
+	if u != nil {
+		mc.SetID(*u)
 	}
-	return _c
+	return mc
 }
 
 // Mutation returns the MediaMutation object of the builder.
-func (_c *MediaCreate) Mutation() *MediaMutation {
-	return _c.mutation
+func (mc *MediaCreate) Mutation() *MediaMutation {
+	return mc.mutation
 }
 
 // Save creates the Media in the database.
-func (_c *MediaCreate) Save(ctx context.Context) (*Media, error) {
-	_c.defaults()
-	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
+func (mc *MediaCreate) Save(ctx context.Context) (*Media, error) {
+	mc.defaults()
+	return withHooks(ctx, mc.sqlSave, mc.mutation, mc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (_c *MediaCreate) SaveX(ctx context.Context) *Media {
-	v, err := _c.Save(ctx)
+func (mc *MediaCreate) SaveX(ctx context.Context) *Media {
+	v, err := mc.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -124,62 +124,62 @@ func (_c *MediaCreate) SaveX(ctx context.Context) *Media {
 }
 
 // Exec executes the query.
-func (_c *MediaCreate) Exec(ctx context.Context) error {
-	_, err := _c.Save(ctx)
+func (mc *MediaCreate) Exec(ctx context.Context) error {
+	_, err := mc.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_c *MediaCreate) ExecX(ctx context.Context) {
-	if err := _c.Exec(ctx); err != nil {
+func (mc *MediaCreate) ExecX(ctx context.Context) {
+	if err := mc.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *MediaCreate) defaults() {
-	if _, ok := _c.mutation.Status(); !ok {
+func (mc *MediaCreate) defaults() {
+	if _, ok := mc.mutation.Status(); !ok {
 		v := media.DefaultStatus
-		_c.mutation.SetStatus(v)
+		mc.mutation.SetStatus(v)
 	}
-	if _, ok := _c.mutation.CreatedAt(); !ok {
+	if _, ok := mc.mutation.CreatedAt(); !ok {
 		v := media.DefaultCreatedAt()
-		_c.mutation.SetCreatedAt(v)
+		mc.mutation.SetCreatedAt(v)
 	}
-	if _, ok := _c.mutation.ID(); !ok {
+	if _, ok := mc.mutation.ID(); !ok {
 		v := media.DefaultID()
-		_c.mutation.SetID(v)
+		mc.mutation.SetID(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_c *MediaCreate) check() error {
-	if _, ok := _c.mutation.MimeType(); !ok {
+func (mc *MediaCreate) check() error {
+	if _, ok := mc.mutation.MimeType(); !ok {
 		return &ValidationError{Name: "mime_type", err: errors.New(`ent: missing required field "Media.mime_type"`)}
 	}
-	if v, ok := _c.mutation.MimeType(); ok {
+	if v, ok := mc.mutation.MimeType(); ok {
 		if err := media.MimeTypeValidator(v); err != nil {
 			return &ValidationError{Name: "mime_type", err: fmt.Errorf(`ent: validator failed for field "Media.mime_type": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.FileSize(); !ok {
+	if _, ok := mc.mutation.FileSize(); !ok {
 		return &ValidationError{Name: "file_size", err: errors.New(`ent: missing required field "Media.file_size"`)}
 	}
-	if _, ok := _c.mutation.Status(); !ok {
+	if _, ok := mc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Media.status"`)}
 	}
-	if _, ok := _c.mutation.CreatedAt(); !ok {
+	if _, ok := mc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Media.created_at"`)}
 	}
 	return nil
 }
 
-func (_c *MediaCreate) sqlSave(ctx context.Context) (*Media, error) {
-	if err := _c.check(); err != nil {
+func (mc *MediaCreate) sqlSave(ctx context.Context) (*Media, error) {
+	if err := mc.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := _c.createSpec()
-	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
+	_node, _spec := mc.createSpec()
+	if err := sqlgraph.CreateNode(ctx, mc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -192,41 +192,41 @@ func (_c *MediaCreate) sqlSave(ctx context.Context) (*Media, error) {
 			return nil, err
 		}
 	}
-	_c.mutation.id = &_node.ID
-	_c.mutation.done = true
+	mc.mutation.id = &_node.ID
+	mc.mutation.done = true
 	return _node, nil
 }
 
-func (_c *MediaCreate) createSpec() (*Media, *sqlgraph.CreateSpec) {
+func (mc *MediaCreate) createSpec() (*Media, *sqlgraph.CreateSpec) {
 	var (
-		_node = &Media{config: _c.config}
+		_node = &Media{config: mc.config}
 		_spec = sqlgraph.NewCreateSpec(media.Table, sqlgraph.NewFieldSpec(media.FieldID, field.TypeUUID))
 	)
-	if id, ok := _c.mutation.ID(); ok {
+	if id, ok := mc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
-	if value, ok := _c.mutation.MimeType(); ok {
+	if value, ok := mc.mutation.MimeType(); ok {
 		_spec.SetField(media.FieldMimeType, field.TypeString, value)
 		_node.MimeType = value
 	}
-	if value, ok := _c.mutation.FileSize(); ok {
+	if value, ok := mc.mutation.FileSize(); ok {
 		_spec.SetField(media.FieldFileSize, field.TypeInt64, value)
 		_node.FileSize = value
 	}
-	if value, ok := _c.mutation.Status(); ok {
+	if value, ok := mc.mutation.Status(); ok {
 		_spec.SetField(media.FieldStatus, field.TypeString, value)
 		_node.Status = value
 	}
-	if value, ok := _c.mutation.URL(); ok {
+	if value, ok := mc.mutation.URL(); ok {
 		_spec.SetField(media.FieldURL, field.TypeString, value)
 		_node.URL = &value
 	}
-	if value, ok := _c.mutation.ThumbnailURL(); ok {
+	if value, ok := mc.mutation.ThumbnailURL(); ok {
 		_spec.SetField(media.FieldThumbnailURL, field.TypeString, value)
 		_node.ThumbnailURL = &value
 	}
-	if value, ok := _c.mutation.CreatedAt(); ok {
+	if value, ok := mc.mutation.CreatedAt(); ok {
 		_spec.SetField(media.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
@@ -241,16 +241,16 @@ type MediaCreateBulk struct {
 }
 
 // Save creates the Media entities in the database.
-func (_c *MediaCreateBulk) Save(ctx context.Context) ([]*Media, error) {
-	if _c.err != nil {
-		return nil, _c.err
+func (mcb *MediaCreateBulk) Save(ctx context.Context) ([]*Media, error) {
+	if mcb.err != nil {
+		return nil, mcb.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
-	nodes := make([]*Media, len(_c.builders))
-	mutators := make([]Mutator, len(_c.builders))
-	for i := range _c.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(mcb.builders))
+	nodes := make([]*Media, len(mcb.builders))
+	mutators := make([]Mutator, len(mcb.builders))
+	for i := range mcb.builders {
 		func(i int, root context.Context) {
-			builder := _c.builders[i]
+			builder := mcb.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*MediaMutation)
@@ -264,11 +264,11 @@ func (_c *MediaCreateBulk) Save(ctx context.Context) ([]*Media, error) {
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, mcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, mcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -288,7 +288,7 @@ func (_c *MediaCreateBulk) Save(ctx context.Context) ([]*Media, error) {
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, mcb.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -296,8 +296,8 @@ func (_c *MediaCreateBulk) Save(ctx context.Context) ([]*Media, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_c *MediaCreateBulk) SaveX(ctx context.Context) []*Media {
-	v, err := _c.Save(ctx)
+func (mcb *MediaCreateBulk) SaveX(ctx context.Context) []*Media {
+	v, err := mcb.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -305,14 +305,14 @@ func (_c *MediaCreateBulk) SaveX(ctx context.Context) []*Media {
 }
 
 // Exec executes the query.
-func (_c *MediaCreateBulk) Exec(ctx context.Context) error {
-	_, err := _c.Save(ctx)
+func (mcb *MediaCreateBulk) Exec(ctx context.Context) error {
+	_, err := mcb.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_c *MediaCreateBulk) ExecX(ctx context.Context) {
-	if err := _c.Exec(ctx); err != nil {
+func (mcb *MediaCreateBulk) ExecX(ctx context.Context) {
+	if err := mcb.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

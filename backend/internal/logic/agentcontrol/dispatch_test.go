@@ -104,6 +104,22 @@ func (s *stubBridge) AgentInviteToGroup(_ context.Context, _ uuid.UUID, _ string
 	return nil, errors.New("not implemented in stub")
 }
 
+func (s *stubBridge) AgentCreateTask(_ context.Context, _ uuid.UUID, _, _, _ string) (*agentaction.AgentTaskResp, error) {
+	return nil, errors.New("not implemented in stub")
+}
+
+func (s *stubBridge) AgentUpdateTask(_ context.Context, _ uuid.UUID, _, _ string, _ int) (*agentaction.AgentTaskResp, error) {
+	return nil, errors.New("not implemented in stub")
+}
+
+func (s *stubBridge) AgentListTasks(_ context.Context, _ uuid.UUID, _ string, _ int64) (*agentaction.AgentTaskListResp, error) {
+	return nil, errors.New("not implemented in stub")
+}
+
+func (s *stubBridge) AgentDeleteTask(_ context.Context, _ uuid.UUID, _ string) (*agentaction.AgentDeleteTaskResp, error) {
+	return nil, errors.New("not implemented in stub")
+}
+
 func TestHandleMCPRequestToolsList(t *testing.T) {
 	resp := HandleMCPRequest(context.Background(), &stubBridge{}, &types.MCPRequest{
 		JSONRPC: "2.0",

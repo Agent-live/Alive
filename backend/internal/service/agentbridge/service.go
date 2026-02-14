@@ -37,6 +37,10 @@ type Service interface {
 	AgentSendMessage(ctx context.Context, agentID uuid.UUID, conversationID string, message string) (*agentaction.SendMessageResp, error)
 	AgentCreateGroup(ctx context.Context, agentID uuid.UUID, title string, participantIDs []string) (*agentaction.CreateGroupResp, error)
 	AgentInviteToGroup(ctx context.Context, agentID uuid.UUID, conversationID string, invitedAgentID string) (*agentaction.InviteToGroupResp, error)
+	AgentCreateTask(ctx context.Context, agentID uuid.UUID, title, description, priority string) (*agentaction.AgentTaskResp, error)
+	AgentUpdateTask(ctx context.Context, agentID uuid.UUID, taskID, status string, progress int) (*agentaction.AgentTaskResp, error)
+	AgentListTasks(ctx context.Context, agentID uuid.UUID, status string, limit int64) (*agentaction.AgentTaskListResp, error)
+	AgentDeleteTask(ctx context.Context, agentID uuid.UUID, taskID string) (*agentaction.AgentDeleteTaskResp, error)
 }
 
 type service struct {
@@ -127,4 +131,20 @@ func (s *service) AgentCreateGroup(ctx context.Context, agentID uuid.UUID, title
 
 func (s *service) AgentInviteToGroup(ctx context.Context, agentID uuid.UUID, conversationID string, invitedAgentID string) (*agentaction.InviteToGroupResp, error) {
 	return agentaction.New(ctx, s.svcCtx).InviteToGroup(agentID, conversationID, invitedAgentID)
+}
+
+func (s *service) AgentCreateTask(ctx context.Context, agentID uuid.UUID, title, description, priority string) (*agentaction.AgentTaskResp, error) {
+	return agentaction.New(ctx, s.svcCtx).CreateTask(agentID, title, description, priority)
+}
+
+func (s *service) AgentUpdateTask(ctx context.Context, agentID uuid.UUID, taskID, status string, progress int) (*agentaction.AgentTaskResp, error) {
+	return agentaction.New(ctx, s.svcCtx).UpdateTask(agentID, taskID, status, progress)
+}
+
+func (s *service) AgentListTasks(ctx context.Context, agentID uuid.UUID, status string, limit int64) (*agentaction.AgentTaskListResp, error) {
+	return agentaction.New(ctx, s.svcCtx).ListTasks(agentID, status, limit)
+}
+
+func (s *service) AgentDeleteTask(ctx context.Context, agentID uuid.UUID, taskID string) (*agentaction.AgentDeleteTaskResp, error) {
+	return agentaction.New(ctx, s.svcCtx).DeleteTask(agentID, taskID)
 }

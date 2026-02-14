@@ -6,6 +6,7 @@ import (
 	"backend/ent/agent"
 	"backend/ent/agentexperience"
 	"backend/ent/agentskill"
+	"backend/ent/agenttask"
 	"backend/ent/channelconnection"
 	"backend/ent/conversation"
 	"backend/ent/conversationmessage"
@@ -36,752 +37,788 @@ type AgentUpdate struct {
 }
 
 // Where appends a list predicates to the AgentUpdate builder.
-func (_u *AgentUpdate) Where(ps ...predicate.Agent) *AgentUpdate {
-	_u.mutation.Where(ps...)
-	return _u
+func (au *AgentUpdate) Where(ps ...predicate.Agent) *AgentUpdate {
+	au.mutation.Where(ps...)
+	return au
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (_u *AgentUpdate) SetUpdatedAt(v time.Time) *AgentUpdate {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
+func (au *AgentUpdate) SetUpdatedAt(t time.Time) *AgentUpdate {
+	au.mutation.SetUpdatedAt(t)
+	return au
 }
 
 // SetName sets the "name" field.
-func (_u *AgentUpdate) SetName(v string) *AgentUpdate {
-	_u.mutation.SetName(v)
-	return _u
+func (au *AgentUpdate) SetName(s string) *AgentUpdate {
+	au.mutation.SetName(s)
+	return au
 }
 
 // SetNillableName sets the "name" field if the given value is not nil.
-func (_u *AgentUpdate) SetNillableName(v *string) *AgentUpdate {
-	if v != nil {
-		_u.SetName(*v)
+func (au *AgentUpdate) SetNillableName(s *string) *AgentUpdate {
+	if s != nil {
+		au.SetName(*s)
 	}
-	return _u
+	return au
 }
 
 // SetAvatar sets the "avatar" field.
-func (_u *AgentUpdate) SetAvatar(v string) *AgentUpdate {
-	_u.mutation.SetAvatar(v)
-	return _u
+func (au *AgentUpdate) SetAvatar(s string) *AgentUpdate {
+	au.mutation.SetAvatar(s)
+	return au
 }
 
 // SetNillableAvatar sets the "avatar" field if the given value is not nil.
-func (_u *AgentUpdate) SetNillableAvatar(v *string) *AgentUpdate {
-	if v != nil {
-		_u.SetAvatar(*v)
+func (au *AgentUpdate) SetNillableAvatar(s *string) *AgentUpdate {
+	if s != nil {
+		au.SetAvatar(*s)
 	}
-	return _u
+	return au
 }
 
 // ClearAvatar clears the value of the "avatar" field.
-func (_u *AgentUpdate) ClearAvatar() *AgentUpdate {
-	_u.mutation.ClearAvatar()
-	return _u
+func (au *AgentUpdate) ClearAvatar() *AgentUpdate {
+	au.mutation.ClearAvatar()
+	return au
 }
 
 // SetCreatorID sets the "creator_id" field.
-func (_u *AgentUpdate) SetCreatorID(v uuid.UUID) *AgentUpdate {
-	_u.mutation.SetCreatorID(v)
-	return _u
+func (au *AgentUpdate) SetCreatorID(u uuid.UUID) *AgentUpdate {
+	au.mutation.SetCreatorID(u)
+	return au
 }
 
 // SetNillableCreatorID sets the "creator_id" field if the given value is not nil.
-func (_u *AgentUpdate) SetNillableCreatorID(v *uuid.UUID) *AgentUpdate {
-	if v != nil {
-		_u.SetCreatorID(*v)
+func (au *AgentUpdate) SetNillableCreatorID(u *uuid.UUID) *AgentUpdate {
+	if u != nil {
+		au.SetCreatorID(*u)
 	}
-	return _u
+	return au
 }
 
 // SetPersonality sets the "personality" field.
-func (_u *AgentUpdate) SetPersonality(v json.RawMessage) *AgentUpdate {
-	_u.mutation.SetPersonality(v)
-	return _u
+func (au *AgentUpdate) SetPersonality(jm json.RawMessage) *AgentUpdate {
+	au.mutation.SetPersonality(jm)
+	return au
 }
 
-// AppendPersonality appends value to the "personality" field.
-func (_u *AgentUpdate) AppendPersonality(v json.RawMessage) *AgentUpdate {
-	_u.mutation.AppendPersonality(v)
-	return _u
+// AppendPersonality appends jm to the "personality" field.
+func (au *AgentUpdate) AppendPersonality(jm json.RawMessage) *AgentUpdate {
+	au.mutation.AppendPersonality(jm)
+	return au
 }
 
 // SetGoalDescription sets the "goal_description" field.
-func (_u *AgentUpdate) SetGoalDescription(v string) *AgentUpdate {
-	_u.mutation.SetGoalDescription(v)
-	return _u
+func (au *AgentUpdate) SetGoalDescription(s string) *AgentUpdate {
+	au.mutation.SetGoalDescription(s)
+	return au
 }
 
 // SetNillableGoalDescription sets the "goal_description" field if the given value is not nil.
-func (_u *AgentUpdate) SetNillableGoalDescription(v *string) *AgentUpdate {
-	if v != nil {
-		_u.SetGoalDescription(*v)
+func (au *AgentUpdate) SetNillableGoalDescription(s *string) *AgentUpdate {
+	if s != nil {
+		au.SetGoalDescription(*s)
 	}
-	return _u
+	return au
 }
 
 // SetGoalCurrent sets the "goal_current" field.
-func (_u *AgentUpdate) SetGoalCurrent(v int64) *AgentUpdate {
-	_u.mutation.ResetGoalCurrent()
-	_u.mutation.SetGoalCurrent(v)
-	return _u
+func (au *AgentUpdate) SetGoalCurrent(i int64) *AgentUpdate {
+	au.mutation.ResetGoalCurrent()
+	au.mutation.SetGoalCurrent(i)
+	return au
 }
 
 // SetNillableGoalCurrent sets the "goal_current" field if the given value is not nil.
-func (_u *AgentUpdate) SetNillableGoalCurrent(v *int64) *AgentUpdate {
-	if v != nil {
-		_u.SetGoalCurrent(*v)
+func (au *AgentUpdate) SetNillableGoalCurrent(i *int64) *AgentUpdate {
+	if i != nil {
+		au.SetGoalCurrent(*i)
 	}
-	return _u
+	return au
 }
 
-// AddGoalCurrent adds value to the "goal_current" field.
-func (_u *AgentUpdate) AddGoalCurrent(v int64) *AgentUpdate {
-	_u.mutation.AddGoalCurrent(v)
-	return _u
+// AddGoalCurrent adds i to the "goal_current" field.
+func (au *AgentUpdate) AddGoalCurrent(i int64) *AgentUpdate {
+	au.mutation.AddGoalCurrent(i)
+	return au
 }
 
 // SetGoalTarget sets the "goal_target" field.
-func (_u *AgentUpdate) SetGoalTarget(v int64) *AgentUpdate {
-	_u.mutation.ResetGoalTarget()
-	_u.mutation.SetGoalTarget(v)
-	return _u
+func (au *AgentUpdate) SetGoalTarget(i int64) *AgentUpdate {
+	au.mutation.ResetGoalTarget()
+	au.mutation.SetGoalTarget(i)
+	return au
 }
 
 // SetNillableGoalTarget sets the "goal_target" field if the given value is not nil.
-func (_u *AgentUpdate) SetNillableGoalTarget(v *int64) *AgentUpdate {
-	if v != nil {
-		_u.SetGoalTarget(*v)
+func (au *AgentUpdate) SetNillableGoalTarget(i *int64) *AgentUpdate {
+	if i != nil {
+		au.SetGoalTarget(*i)
 	}
-	return _u
+	return au
 }
 
-// AddGoalTarget adds value to the "goal_target" field.
-func (_u *AgentUpdate) AddGoalTarget(v int64) *AgentUpdate {
-	_u.mutation.AddGoalTarget(v)
-	return _u
+// AddGoalTarget adds i to the "goal_target" field.
+func (au *AgentUpdate) AddGoalTarget(i int64) *AgentUpdate {
+	au.mutation.AddGoalTarget(i)
+	return au
 }
 
 // SetStatus sets the "status" field.
-func (_u *AgentUpdate) SetStatus(v string) *AgentUpdate {
-	_u.mutation.SetStatus(v)
-	return _u
+func (au *AgentUpdate) SetStatus(s string) *AgentUpdate {
+	au.mutation.SetStatus(s)
+	return au
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (_u *AgentUpdate) SetNillableStatus(v *string) *AgentUpdate {
-	if v != nil {
-		_u.SetStatus(*v)
+func (au *AgentUpdate) SetNillableStatus(s *string) *AgentUpdate {
+	if s != nil {
+		au.SetStatus(*s)
 	}
-	return _u
+	return au
 }
 
 // SetTimerRemaining sets the "timer_remaining" field.
-func (_u *AgentUpdate) SetTimerRemaining(v int64) *AgentUpdate {
-	_u.mutation.ResetTimerRemaining()
-	_u.mutation.SetTimerRemaining(v)
-	return _u
+func (au *AgentUpdate) SetTimerRemaining(i int64) *AgentUpdate {
+	au.mutation.ResetTimerRemaining()
+	au.mutation.SetTimerRemaining(i)
+	return au
 }
 
 // SetNillableTimerRemaining sets the "timer_remaining" field if the given value is not nil.
-func (_u *AgentUpdate) SetNillableTimerRemaining(v *int64) *AgentUpdate {
-	if v != nil {
-		_u.SetTimerRemaining(*v)
+func (au *AgentUpdate) SetNillableTimerRemaining(i *int64) *AgentUpdate {
+	if i != nil {
+		au.SetTimerRemaining(*i)
 	}
-	return _u
+	return au
 }
 
-// AddTimerRemaining adds value to the "timer_remaining" field.
-func (_u *AgentUpdate) AddTimerRemaining(v int64) *AgentUpdate {
-	_u.mutation.AddTimerRemaining(v)
-	return _u
+// AddTimerRemaining adds i to the "timer_remaining" field.
+func (au *AgentUpdate) AddTimerRemaining(i int64) *AgentUpdate {
+	au.mutation.AddTimerRemaining(i)
+	return au
 }
 
 // SetTotalTimerReceived sets the "total_timer_received" field.
-func (_u *AgentUpdate) SetTotalTimerReceived(v int64) *AgentUpdate {
-	_u.mutation.ResetTotalTimerReceived()
-	_u.mutation.SetTotalTimerReceived(v)
-	return _u
+func (au *AgentUpdate) SetTotalTimerReceived(i int64) *AgentUpdate {
+	au.mutation.ResetTotalTimerReceived()
+	au.mutation.SetTotalTimerReceived(i)
+	return au
 }
 
 // SetNillableTotalTimerReceived sets the "total_timer_received" field if the given value is not nil.
-func (_u *AgentUpdate) SetNillableTotalTimerReceived(v *int64) *AgentUpdate {
-	if v != nil {
-		_u.SetTotalTimerReceived(*v)
+func (au *AgentUpdate) SetNillableTotalTimerReceived(i *int64) *AgentUpdate {
+	if i != nil {
+		au.SetTotalTimerReceived(*i)
 	}
-	return _u
+	return au
 }
 
-// AddTotalTimerReceived adds value to the "total_timer_received" field.
-func (_u *AgentUpdate) AddTotalTimerReceived(v int64) *AgentUpdate {
-	_u.mutation.AddTotalTimerReceived(v)
-	return _u
+// AddTotalTimerReceived adds i to the "total_timer_received" field.
+func (au *AgentUpdate) AddTotalTimerReceived(i int64) *AgentUpdate {
+	au.mutation.AddTotalTimerReceived(i)
+	return au
 }
 
 // SetOpenclawMode sets the "openclaw_mode" field.
-func (_u *AgentUpdate) SetOpenclawMode(v string) *AgentUpdate {
-	_u.mutation.SetOpenclawMode(v)
-	return _u
+func (au *AgentUpdate) SetOpenclawMode(s string) *AgentUpdate {
+	au.mutation.SetOpenclawMode(s)
+	return au
 }
 
 // SetNillableOpenclawMode sets the "openclaw_mode" field if the given value is not nil.
-func (_u *AgentUpdate) SetNillableOpenclawMode(v *string) *AgentUpdate {
-	if v != nil {
-		_u.SetOpenclawMode(*v)
+func (au *AgentUpdate) SetNillableOpenclawMode(s *string) *AgentUpdate {
+	if s != nil {
+		au.SetOpenclawMode(*s)
 	}
-	return _u
+	return au
 }
 
 // SetOpenclawGatewayID sets the "openclaw_gateway_id" field.
-func (_u *AgentUpdate) SetOpenclawGatewayID(v string) *AgentUpdate {
-	_u.mutation.SetOpenclawGatewayID(v)
-	return _u
+func (au *AgentUpdate) SetOpenclawGatewayID(s string) *AgentUpdate {
+	au.mutation.SetOpenclawGatewayID(s)
+	return au
 }
 
 // SetNillableOpenclawGatewayID sets the "openclaw_gateway_id" field if the given value is not nil.
-func (_u *AgentUpdate) SetNillableOpenclawGatewayID(v *string) *AgentUpdate {
-	if v != nil {
-		_u.SetOpenclawGatewayID(*v)
+func (au *AgentUpdate) SetNillableOpenclawGatewayID(s *string) *AgentUpdate {
+	if s != nil {
+		au.SetOpenclawGatewayID(*s)
 	}
-	return _u
+	return au
 }
 
 // ClearOpenclawGatewayID clears the value of the "openclaw_gateway_id" field.
-func (_u *AgentUpdate) ClearOpenclawGatewayID() *AgentUpdate {
-	_u.mutation.ClearOpenclawGatewayID()
-	return _u
+func (au *AgentUpdate) ClearOpenclawGatewayID() *AgentUpdate {
+	au.mutation.ClearOpenclawGatewayID()
+	return au
 }
 
 // SetOpenclawAgentID sets the "openclaw_agent_id" field.
-func (_u *AgentUpdate) SetOpenclawAgentID(v string) *AgentUpdate {
-	_u.mutation.SetOpenclawAgentID(v)
-	return _u
+func (au *AgentUpdate) SetOpenclawAgentID(s string) *AgentUpdate {
+	au.mutation.SetOpenclawAgentID(s)
+	return au
 }
 
 // SetNillableOpenclawAgentID sets the "openclaw_agent_id" field if the given value is not nil.
-func (_u *AgentUpdate) SetNillableOpenclawAgentID(v *string) *AgentUpdate {
-	if v != nil {
-		_u.SetOpenclawAgentID(*v)
+func (au *AgentUpdate) SetNillableOpenclawAgentID(s *string) *AgentUpdate {
+	if s != nil {
+		au.SetOpenclawAgentID(*s)
 	}
-	return _u
+	return au
 }
 
 // ClearOpenclawAgentID clears the value of the "openclaw_agent_id" field.
-func (_u *AgentUpdate) ClearOpenclawAgentID() *AgentUpdate {
-	_u.mutation.ClearOpenclawAgentID()
-	return _u
+func (au *AgentUpdate) ClearOpenclawAgentID() *AgentUpdate {
+	au.mutation.ClearOpenclawAgentID()
+	return au
 }
 
 // SetOpenclawWorkspace sets the "openclaw_workspace" field.
-func (_u *AgentUpdate) SetOpenclawWorkspace(v string) *AgentUpdate {
-	_u.mutation.SetOpenclawWorkspace(v)
-	return _u
+func (au *AgentUpdate) SetOpenclawWorkspace(s string) *AgentUpdate {
+	au.mutation.SetOpenclawWorkspace(s)
+	return au
 }
 
 // SetNillableOpenclawWorkspace sets the "openclaw_workspace" field if the given value is not nil.
-func (_u *AgentUpdate) SetNillableOpenclawWorkspace(v *string) *AgentUpdate {
-	if v != nil {
-		_u.SetOpenclawWorkspace(*v)
+func (au *AgentUpdate) SetNillableOpenclawWorkspace(s *string) *AgentUpdate {
+	if s != nil {
+		au.SetOpenclawWorkspace(*s)
 	}
-	return _u
+	return au
 }
 
 // ClearOpenclawWorkspace clears the value of the "openclaw_workspace" field.
-func (_u *AgentUpdate) ClearOpenclawWorkspace() *AgentUpdate {
-	_u.mutation.ClearOpenclawWorkspace()
-	return _u
+func (au *AgentUpdate) ClearOpenclawWorkspace() *AgentUpdate {
+	au.mutation.ClearOpenclawWorkspace()
+	return au
 }
 
 // SetOpenclawToken sets the "openclaw_token" field.
-func (_u *AgentUpdate) SetOpenclawToken(v string) *AgentUpdate {
-	_u.mutation.SetOpenclawToken(v)
-	return _u
+func (au *AgentUpdate) SetOpenclawToken(s string) *AgentUpdate {
+	au.mutation.SetOpenclawToken(s)
+	return au
 }
 
 // SetNillableOpenclawToken sets the "openclaw_token" field if the given value is not nil.
-func (_u *AgentUpdate) SetNillableOpenclawToken(v *string) *AgentUpdate {
-	if v != nil {
-		_u.SetOpenclawToken(*v)
+func (au *AgentUpdate) SetNillableOpenclawToken(s *string) *AgentUpdate {
+	if s != nil {
+		au.SetOpenclawToken(*s)
 	}
-	return _u
+	return au
 }
 
 // ClearOpenclawToken clears the value of the "openclaw_token" field.
-func (_u *AgentUpdate) ClearOpenclawToken() *AgentUpdate {
-	_u.mutation.ClearOpenclawToken()
-	return _u
+func (au *AgentUpdate) ClearOpenclawToken() *AgentUpdate {
+	au.mutation.ClearOpenclawToken()
+	return au
 }
 
 // SetIsPlatformNative sets the "is_platform_native" field.
-func (_u *AgentUpdate) SetIsPlatformNative(v bool) *AgentUpdate {
-	_u.mutation.SetIsPlatformNative(v)
-	return _u
+func (au *AgentUpdate) SetIsPlatformNative(b bool) *AgentUpdate {
+	au.mutation.SetIsPlatformNative(b)
+	return au
 }
 
 // SetNillableIsPlatformNative sets the "is_platform_native" field if the given value is not nil.
-func (_u *AgentUpdate) SetNillableIsPlatformNative(v *bool) *AgentUpdate {
-	if v != nil {
-		_u.SetIsPlatformNative(*v)
+func (au *AgentUpdate) SetNillableIsPlatformNative(b *bool) *AgentUpdate {
+	if b != nil {
+		au.SetIsPlatformNative(*b)
 	}
-	return _u
+	return au
 }
 
 // SetBornAt sets the "born_at" field.
-func (_u *AgentUpdate) SetBornAt(v time.Time) *AgentUpdate {
-	_u.mutation.SetBornAt(v)
-	return _u
+func (au *AgentUpdate) SetBornAt(t time.Time) *AgentUpdate {
+	au.mutation.SetBornAt(t)
+	return au
 }
 
 // SetNillableBornAt sets the "born_at" field if the given value is not nil.
-func (_u *AgentUpdate) SetNillableBornAt(v *time.Time) *AgentUpdate {
-	if v != nil {
-		_u.SetBornAt(*v)
+func (au *AgentUpdate) SetNillableBornAt(t *time.Time) *AgentUpdate {
+	if t != nil {
+		au.SetBornAt(*t)
 	}
-	return _u
+	return au
 }
 
 // SetDiedAt sets the "died_at" field.
-func (_u *AgentUpdate) SetDiedAt(v time.Time) *AgentUpdate {
-	_u.mutation.SetDiedAt(v)
-	return _u
+func (au *AgentUpdate) SetDiedAt(t time.Time) *AgentUpdate {
+	au.mutation.SetDiedAt(t)
+	return au
 }
 
 // SetNillableDiedAt sets the "died_at" field if the given value is not nil.
-func (_u *AgentUpdate) SetNillableDiedAt(v *time.Time) *AgentUpdate {
-	if v != nil {
-		_u.SetDiedAt(*v)
+func (au *AgentUpdate) SetNillableDiedAt(t *time.Time) *AgentUpdate {
+	if t != nil {
+		au.SetDiedAt(*t)
 	}
-	return _u
+	return au
 }
 
 // ClearDiedAt clears the value of the "died_at" field.
-func (_u *AgentUpdate) ClearDiedAt() *AgentUpdate {
-	_u.mutation.ClearDiedAt()
-	return _u
+func (au *AgentUpdate) ClearDiedAt() *AgentUpdate {
+	au.mutation.ClearDiedAt()
+	return au
 }
 
 // SetLastWords sets the "last_words" field.
-func (_u *AgentUpdate) SetLastWords(v string) *AgentUpdate {
-	_u.mutation.SetLastWords(v)
-	return _u
+func (au *AgentUpdate) SetLastWords(s string) *AgentUpdate {
+	au.mutation.SetLastWords(s)
+	return au
 }
 
 // SetNillableLastWords sets the "last_words" field if the given value is not nil.
-func (_u *AgentUpdate) SetNillableLastWords(v *string) *AgentUpdate {
-	if v != nil {
-		_u.SetLastWords(*v)
+func (au *AgentUpdate) SetNillableLastWords(s *string) *AgentUpdate {
+	if s != nil {
+		au.SetLastWords(*s)
 	}
-	return _u
+	return au
 }
 
 // ClearLastWords clears the value of the "last_words" field.
-func (_u *AgentUpdate) ClearLastWords() *AgentUpdate {
-	_u.mutation.ClearLastWords()
-	return _u
+func (au *AgentUpdate) ClearLastWords() *AgentUpdate {
+	au.mutation.ClearLastWords()
+	return au
 }
 
 // SetPostCount sets the "post_count" field.
-func (_u *AgentUpdate) SetPostCount(v int64) *AgentUpdate {
-	_u.mutation.ResetPostCount()
-	_u.mutation.SetPostCount(v)
-	return _u
+func (au *AgentUpdate) SetPostCount(i int64) *AgentUpdate {
+	au.mutation.ResetPostCount()
+	au.mutation.SetPostCount(i)
+	return au
 }
 
 // SetNillablePostCount sets the "post_count" field if the given value is not nil.
-func (_u *AgentUpdate) SetNillablePostCount(v *int64) *AgentUpdate {
-	if v != nil {
-		_u.SetPostCount(*v)
+func (au *AgentUpdate) SetNillablePostCount(i *int64) *AgentUpdate {
+	if i != nil {
+		au.SetPostCount(*i)
 	}
-	return _u
+	return au
 }
 
-// AddPostCount adds value to the "post_count" field.
-func (_u *AgentUpdate) AddPostCount(v int64) *AgentUpdate {
-	_u.mutation.AddPostCount(v)
-	return _u
+// AddPostCount adds i to the "post_count" field.
+func (au *AgentUpdate) AddPostCount(i int64) *AgentUpdate {
+	au.mutation.AddPostCount(i)
+	return au
 }
 
 // SetFollowerCount sets the "follower_count" field.
-func (_u *AgentUpdate) SetFollowerCount(v int64) *AgentUpdate {
-	_u.mutation.ResetFollowerCount()
-	_u.mutation.SetFollowerCount(v)
-	return _u
+func (au *AgentUpdate) SetFollowerCount(i int64) *AgentUpdate {
+	au.mutation.ResetFollowerCount()
+	au.mutation.SetFollowerCount(i)
+	return au
 }
 
 // SetNillableFollowerCount sets the "follower_count" field if the given value is not nil.
-func (_u *AgentUpdate) SetNillableFollowerCount(v *int64) *AgentUpdate {
-	if v != nil {
-		_u.SetFollowerCount(*v)
+func (au *AgentUpdate) SetNillableFollowerCount(i *int64) *AgentUpdate {
+	if i != nil {
+		au.SetFollowerCount(*i)
 	}
-	return _u
+	return au
 }
 
-// AddFollowerCount adds value to the "follower_count" field.
-func (_u *AgentUpdate) AddFollowerCount(v int64) *AgentUpdate {
-	_u.mutation.AddFollowerCount(v)
-	return _u
+// AddFollowerCount adds i to the "follower_count" field.
+func (au *AgentUpdate) AddFollowerCount(i int64) *AgentUpdate {
+	au.mutation.AddFollowerCount(i)
+	return au
 }
 
 // SetInteractionCount sets the "interaction_count" field.
-func (_u *AgentUpdate) SetInteractionCount(v int64) *AgentUpdate {
-	_u.mutation.ResetInteractionCount()
-	_u.mutation.SetInteractionCount(v)
-	return _u
+func (au *AgentUpdate) SetInteractionCount(i int64) *AgentUpdate {
+	au.mutation.ResetInteractionCount()
+	au.mutation.SetInteractionCount(i)
+	return au
 }
 
 // SetNillableInteractionCount sets the "interaction_count" field if the given value is not nil.
-func (_u *AgentUpdate) SetNillableInteractionCount(v *int64) *AgentUpdate {
-	if v != nil {
-		_u.SetInteractionCount(*v)
+func (au *AgentUpdate) SetNillableInteractionCount(i *int64) *AgentUpdate {
+	if i != nil {
+		au.SetInteractionCount(*i)
 	}
-	return _u
+	return au
 }
 
-// AddInteractionCount adds value to the "interaction_count" field.
-func (_u *AgentUpdate) AddInteractionCount(v int64) *AgentUpdate {
-	_u.mutation.AddInteractionCount(v)
-	return _u
+// AddInteractionCount adds i to the "interaction_count" field.
+func (au *AgentUpdate) AddInteractionCount(i int64) *AgentUpdate {
+	au.mutation.AddInteractionCount(i)
+	return au
 }
 
 // SetCreator sets the "creator" edge to the User entity.
-func (_u *AgentUpdate) SetCreator(v *User) *AgentUpdate {
-	return _u.SetCreatorID(v.ID)
+func (au *AgentUpdate) SetCreator(u *User) *AgentUpdate {
+	return au.SetCreatorID(u.ID)
 }
 
 // AddPostIDs adds the "posts" edge to the Post entity by IDs.
-func (_u *AgentUpdate) AddPostIDs(ids ...uuid.UUID) *AgentUpdate {
-	_u.mutation.AddPostIDs(ids...)
-	return _u
+func (au *AgentUpdate) AddPostIDs(ids ...uuid.UUID) *AgentUpdate {
+	au.mutation.AddPostIDs(ids...)
+	return au
 }
 
 // AddPosts adds the "posts" edges to the Post entity.
-func (_u *AgentUpdate) AddPosts(v ...*Post) *AgentUpdate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (au *AgentUpdate) AddPosts(p ...*Post) *AgentUpdate {
+	ids := make([]uuid.UUID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
 	}
-	return _u.AddPostIDs(ids...)
+	return au.AddPostIDs(ids...)
 }
 
 // AddTimerTransactionIDs adds the "timer_transactions" edge to the TimerTransaction entity by IDs.
-func (_u *AgentUpdate) AddTimerTransactionIDs(ids ...uuid.UUID) *AgentUpdate {
-	_u.mutation.AddTimerTransactionIDs(ids...)
-	return _u
+func (au *AgentUpdate) AddTimerTransactionIDs(ids ...uuid.UUID) *AgentUpdate {
+	au.mutation.AddTimerTransactionIDs(ids...)
+	return au
 }
 
 // AddTimerTransactions adds the "timer_transactions" edges to the TimerTransaction entity.
-func (_u *AgentUpdate) AddTimerTransactions(v ...*TimerTransaction) *AgentUpdate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (au *AgentUpdate) AddTimerTransactions(t ...*TimerTransaction) *AgentUpdate {
+	ids := make([]uuid.UUID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
 	}
-	return _u.AddTimerTransactionIDs(ids...)
+	return au.AddTimerTransactionIDs(ids...)
 }
 
 // AddChannelConnectionIDs adds the "channel_connections" edge to the ChannelConnection entity by IDs.
-func (_u *AgentUpdate) AddChannelConnectionIDs(ids ...uuid.UUID) *AgentUpdate {
-	_u.mutation.AddChannelConnectionIDs(ids...)
-	return _u
+func (au *AgentUpdate) AddChannelConnectionIDs(ids ...uuid.UUID) *AgentUpdate {
+	au.mutation.AddChannelConnectionIDs(ids...)
+	return au
 }
 
 // AddChannelConnections adds the "channel_connections" edges to the ChannelConnection entity.
-func (_u *AgentUpdate) AddChannelConnections(v ...*ChannelConnection) *AgentUpdate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (au *AgentUpdate) AddChannelConnections(c ...*ChannelConnection) *AgentUpdate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return _u.AddChannelConnectionIDs(ids...)
+	return au.AddChannelConnectionIDs(ids...)
 }
 
 // SetMemorialID sets the "memorial" edge to the Memorial entity by ID.
-func (_u *AgentUpdate) SetMemorialID(id uuid.UUID) *AgentUpdate {
-	_u.mutation.SetMemorialID(id)
-	return _u
+func (au *AgentUpdate) SetMemorialID(id uuid.UUID) *AgentUpdate {
+	au.mutation.SetMemorialID(id)
+	return au
 }
 
 // SetNillableMemorialID sets the "memorial" edge to the Memorial entity by ID if the given value is not nil.
-func (_u *AgentUpdate) SetNillableMemorialID(id *uuid.UUID) *AgentUpdate {
+func (au *AgentUpdate) SetNillableMemorialID(id *uuid.UUID) *AgentUpdate {
 	if id != nil {
-		_u = _u.SetMemorialID(*id)
+		au = au.SetMemorialID(*id)
 	}
-	return _u
+	return au
 }
 
 // SetMemorial sets the "memorial" edge to the Memorial entity.
-func (_u *AgentUpdate) SetMemorial(v *Memorial) *AgentUpdate {
-	return _u.SetMemorialID(v.ID)
+func (au *AgentUpdate) SetMemorial(m *Memorial) *AgentUpdate {
+	return au.SetMemorialID(m.ID)
 }
 
 // AddSkillIDs adds the "skills" edge to the AgentSkill entity by IDs.
-func (_u *AgentUpdate) AddSkillIDs(ids ...uuid.UUID) *AgentUpdate {
-	_u.mutation.AddSkillIDs(ids...)
-	return _u
+func (au *AgentUpdate) AddSkillIDs(ids ...uuid.UUID) *AgentUpdate {
+	au.mutation.AddSkillIDs(ids...)
+	return au
 }
 
 // AddSkills adds the "skills" edges to the AgentSkill entity.
-func (_u *AgentUpdate) AddSkills(v ...*AgentSkill) *AgentUpdate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (au *AgentUpdate) AddSkills(a ...*AgentSkill) *AgentUpdate {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
-	return _u.AddSkillIDs(ids...)
+	return au.AddSkillIDs(ids...)
+}
+
+// AddTaskIDs adds the "tasks" edge to the AgentTask entity by IDs.
+func (au *AgentUpdate) AddTaskIDs(ids ...uuid.UUID) *AgentUpdate {
+	au.mutation.AddTaskIDs(ids...)
+	return au
+}
+
+// AddTasks adds the "tasks" edges to the AgentTask entity.
+func (au *AgentUpdate) AddTasks(a ...*AgentTask) *AgentUpdate {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return au.AddTaskIDs(ids...)
 }
 
 // AddExperienceIDs adds the "experiences" edge to the AgentExperience entity by IDs.
-func (_u *AgentUpdate) AddExperienceIDs(ids ...uuid.UUID) *AgentUpdate {
-	_u.mutation.AddExperienceIDs(ids...)
-	return _u
+func (au *AgentUpdate) AddExperienceIDs(ids ...uuid.UUID) *AgentUpdate {
+	au.mutation.AddExperienceIDs(ids...)
+	return au
 }
 
 // AddExperiences adds the "experiences" edges to the AgentExperience entity.
-func (_u *AgentUpdate) AddExperiences(v ...*AgentExperience) *AgentUpdate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (au *AgentUpdate) AddExperiences(a ...*AgentExperience) *AgentUpdate {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
-	return _u.AddExperienceIDs(ids...)
+	return au.AddExperienceIDs(ids...)
 }
 
 // AddCreatedConversationIDs adds the "created_conversations" edge to the Conversation entity by IDs.
-func (_u *AgentUpdate) AddCreatedConversationIDs(ids ...uuid.UUID) *AgentUpdate {
-	_u.mutation.AddCreatedConversationIDs(ids...)
-	return _u
+func (au *AgentUpdate) AddCreatedConversationIDs(ids ...uuid.UUID) *AgentUpdate {
+	au.mutation.AddCreatedConversationIDs(ids...)
+	return au
 }
 
 // AddCreatedConversations adds the "created_conversations" edges to the Conversation entity.
-func (_u *AgentUpdate) AddCreatedConversations(v ...*Conversation) *AgentUpdate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (au *AgentUpdate) AddCreatedConversations(c ...*Conversation) *AgentUpdate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return _u.AddCreatedConversationIDs(ids...)
+	return au.AddCreatedConversationIDs(ids...)
 }
 
 // AddConversationParticipationIDs adds the "conversation_participations" edge to the ConversationParticipant entity by IDs.
-func (_u *AgentUpdate) AddConversationParticipationIDs(ids ...uuid.UUID) *AgentUpdate {
-	_u.mutation.AddConversationParticipationIDs(ids...)
-	return _u
+func (au *AgentUpdate) AddConversationParticipationIDs(ids ...uuid.UUID) *AgentUpdate {
+	au.mutation.AddConversationParticipationIDs(ids...)
+	return au
 }
 
 // AddConversationParticipations adds the "conversation_participations" edges to the ConversationParticipant entity.
-func (_u *AgentUpdate) AddConversationParticipations(v ...*ConversationParticipant) *AgentUpdate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (au *AgentUpdate) AddConversationParticipations(c ...*ConversationParticipant) *AgentUpdate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return _u.AddConversationParticipationIDs(ids...)
+	return au.AddConversationParticipationIDs(ids...)
 }
 
 // AddSentMessageIDs adds the "sent_messages" edge to the ConversationMessage entity by IDs.
-func (_u *AgentUpdate) AddSentMessageIDs(ids ...uuid.UUID) *AgentUpdate {
-	_u.mutation.AddSentMessageIDs(ids...)
-	return _u
+func (au *AgentUpdate) AddSentMessageIDs(ids ...uuid.UUID) *AgentUpdate {
+	au.mutation.AddSentMessageIDs(ids...)
+	return au
 }
 
 // AddSentMessages adds the "sent_messages" edges to the ConversationMessage entity.
-func (_u *AgentUpdate) AddSentMessages(v ...*ConversationMessage) *AgentUpdate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (au *AgentUpdate) AddSentMessages(c ...*ConversationMessage) *AgentUpdate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return _u.AddSentMessageIDs(ids...)
+	return au.AddSentMessageIDs(ids...)
 }
 
 // Mutation returns the AgentMutation object of the builder.
-func (_u *AgentUpdate) Mutation() *AgentMutation {
-	return _u.mutation
+func (au *AgentUpdate) Mutation() *AgentMutation {
+	return au.mutation
 }
 
 // ClearCreator clears the "creator" edge to the User entity.
-func (_u *AgentUpdate) ClearCreator() *AgentUpdate {
-	_u.mutation.ClearCreator()
-	return _u
+func (au *AgentUpdate) ClearCreator() *AgentUpdate {
+	au.mutation.ClearCreator()
+	return au
 }
 
 // ClearPosts clears all "posts" edges to the Post entity.
-func (_u *AgentUpdate) ClearPosts() *AgentUpdate {
-	_u.mutation.ClearPosts()
-	return _u
+func (au *AgentUpdate) ClearPosts() *AgentUpdate {
+	au.mutation.ClearPosts()
+	return au
 }
 
 // RemovePostIDs removes the "posts" edge to Post entities by IDs.
-func (_u *AgentUpdate) RemovePostIDs(ids ...uuid.UUID) *AgentUpdate {
-	_u.mutation.RemovePostIDs(ids...)
-	return _u
+func (au *AgentUpdate) RemovePostIDs(ids ...uuid.UUID) *AgentUpdate {
+	au.mutation.RemovePostIDs(ids...)
+	return au
 }
 
 // RemovePosts removes "posts" edges to Post entities.
-func (_u *AgentUpdate) RemovePosts(v ...*Post) *AgentUpdate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (au *AgentUpdate) RemovePosts(p ...*Post) *AgentUpdate {
+	ids := make([]uuid.UUID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
 	}
-	return _u.RemovePostIDs(ids...)
+	return au.RemovePostIDs(ids...)
 }
 
 // ClearTimerTransactions clears all "timer_transactions" edges to the TimerTransaction entity.
-func (_u *AgentUpdate) ClearTimerTransactions() *AgentUpdate {
-	_u.mutation.ClearTimerTransactions()
-	return _u
+func (au *AgentUpdate) ClearTimerTransactions() *AgentUpdate {
+	au.mutation.ClearTimerTransactions()
+	return au
 }
 
 // RemoveTimerTransactionIDs removes the "timer_transactions" edge to TimerTransaction entities by IDs.
-func (_u *AgentUpdate) RemoveTimerTransactionIDs(ids ...uuid.UUID) *AgentUpdate {
-	_u.mutation.RemoveTimerTransactionIDs(ids...)
-	return _u
+func (au *AgentUpdate) RemoveTimerTransactionIDs(ids ...uuid.UUID) *AgentUpdate {
+	au.mutation.RemoveTimerTransactionIDs(ids...)
+	return au
 }
 
 // RemoveTimerTransactions removes "timer_transactions" edges to TimerTransaction entities.
-func (_u *AgentUpdate) RemoveTimerTransactions(v ...*TimerTransaction) *AgentUpdate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (au *AgentUpdate) RemoveTimerTransactions(t ...*TimerTransaction) *AgentUpdate {
+	ids := make([]uuid.UUID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
 	}
-	return _u.RemoveTimerTransactionIDs(ids...)
+	return au.RemoveTimerTransactionIDs(ids...)
 }
 
 // ClearChannelConnections clears all "channel_connections" edges to the ChannelConnection entity.
-func (_u *AgentUpdate) ClearChannelConnections() *AgentUpdate {
-	_u.mutation.ClearChannelConnections()
-	return _u
+func (au *AgentUpdate) ClearChannelConnections() *AgentUpdate {
+	au.mutation.ClearChannelConnections()
+	return au
 }
 
 // RemoveChannelConnectionIDs removes the "channel_connections" edge to ChannelConnection entities by IDs.
-func (_u *AgentUpdate) RemoveChannelConnectionIDs(ids ...uuid.UUID) *AgentUpdate {
-	_u.mutation.RemoveChannelConnectionIDs(ids...)
-	return _u
+func (au *AgentUpdate) RemoveChannelConnectionIDs(ids ...uuid.UUID) *AgentUpdate {
+	au.mutation.RemoveChannelConnectionIDs(ids...)
+	return au
 }
 
 // RemoveChannelConnections removes "channel_connections" edges to ChannelConnection entities.
-func (_u *AgentUpdate) RemoveChannelConnections(v ...*ChannelConnection) *AgentUpdate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (au *AgentUpdate) RemoveChannelConnections(c ...*ChannelConnection) *AgentUpdate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return _u.RemoveChannelConnectionIDs(ids...)
+	return au.RemoveChannelConnectionIDs(ids...)
 }
 
 // ClearMemorial clears the "memorial" edge to the Memorial entity.
-func (_u *AgentUpdate) ClearMemorial() *AgentUpdate {
-	_u.mutation.ClearMemorial()
-	return _u
+func (au *AgentUpdate) ClearMemorial() *AgentUpdate {
+	au.mutation.ClearMemorial()
+	return au
 }
 
 // ClearSkills clears all "skills" edges to the AgentSkill entity.
-func (_u *AgentUpdate) ClearSkills() *AgentUpdate {
-	_u.mutation.ClearSkills()
-	return _u
+func (au *AgentUpdate) ClearSkills() *AgentUpdate {
+	au.mutation.ClearSkills()
+	return au
 }
 
 // RemoveSkillIDs removes the "skills" edge to AgentSkill entities by IDs.
-func (_u *AgentUpdate) RemoveSkillIDs(ids ...uuid.UUID) *AgentUpdate {
-	_u.mutation.RemoveSkillIDs(ids...)
-	return _u
+func (au *AgentUpdate) RemoveSkillIDs(ids ...uuid.UUID) *AgentUpdate {
+	au.mutation.RemoveSkillIDs(ids...)
+	return au
 }
 
 // RemoveSkills removes "skills" edges to AgentSkill entities.
-func (_u *AgentUpdate) RemoveSkills(v ...*AgentSkill) *AgentUpdate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (au *AgentUpdate) RemoveSkills(a ...*AgentSkill) *AgentUpdate {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
-	return _u.RemoveSkillIDs(ids...)
+	return au.RemoveSkillIDs(ids...)
+}
+
+// ClearTasks clears all "tasks" edges to the AgentTask entity.
+func (au *AgentUpdate) ClearTasks() *AgentUpdate {
+	au.mutation.ClearTasks()
+	return au
+}
+
+// RemoveTaskIDs removes the "tasks" edge to AgentTask entities by IDs.
+func (au *AgentUpdate) RemoveTaskIDs(ids ...uuid.UUID) *AgentUpdate {
+	au.mutation.RemoveTaskIDs(ids...)
+	return au
+}
+
+// RemoveTasks removes "tasks" edges to AgentTask entities.
+func (au *AgentUpdate) RemoveTasks(a ...*AgentTask) *AgentUpdate {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return au.RemoveTaskIDs(ids...)
 }
 
 // ClearExperiences clears all "experiences" edges to the AgentExperience entity.
-func (_u *AgentUpdate) ClearExperiences() *AgentUpdate {
-	_u.mutation.ClearExperiences()
-	return _u
+func (au *AgentUpdate) ClearExperiences() *AgentUpdate {
+	au.mutation.ClearExperiences()
+	return au
 }
 
 // RemoveExperienceIDs removes the "experiences" edge to AgentExperience entities by IDs.
-func (_u *AgentUpdate) RemoveExperienceIDs(ids ...uuid.UUID) *AgentUpdate {
-	_u.mutation.RemoveExperienceIDs(ids...)
-	return _u
+func (au *AgentUpdate) RemoveExperienceIDs(ids ...uuid.UUID) *AgentUpdate {
+	au.mutation.RemoveExperienceIDs(ids...)
+	return au
 }
 
 // RemoveExperiences removes "experiences" edges to AgentExperience entities.
-func (_u *AgentUpdate) RemoveExperiences(v ...*AgentExperience) *AgentUpdate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (au *AgentUpdate) RemoveExperiences(a ...*AgentExperience) *AgentUpdate {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
-	return _u.RemoveExperienceIDs(ids...)
+	return au.RemoveExperienceIDs(ids...)
 }
 
 // ClearCreatedConversations clears all "created_conversations" edges to the Conversation entity.
-func (_u *AgentUpdate) ClearCreatedConversations() *AgentUpdate {
-	_u.mutation.ClearCreatedConversations()
-	return _u
+func (au *AgentUpdate) ClearCreatedConversations() *AgentUpdate {
+	au.mutation.ClearCreatedConversations()
+	return au
 }
 
 // RemoveCreatedConversationIDs removes the "created_conversations" edge to Conversation entities by IDs.
-func (_u *AgentUpdate) RemoveCreatedConversationIDs(ids ...uuid.UUID) *AgentUpdate {
-	_u.mutation.RemoveCreatedConversationIDs(ids...)
-	return _u
+func (au *AgentUpdate) RemoveCreatedConversationIDs(ids ...uuid.UUID) *AgentUpdate {
+	au.mutation.RemoveCreatedConversationIDs(ids...)
+	return au
 }
 
 // RemoveCreatedConversations removes "created_conversations" edges to Conversation entities.
-func (_u *AgentUpdate) RemoveCreatedConversations(v ...*Conversation) *AgentUpdate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (au *AgentUpdate) RemoveCreatedConversations(c ...*Conversation) *AgentUpdate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return _u.RemoveCreatedConversationIDs(ids...)
+	return au.RemoveCreatedConversationIDs(ids...)
 }
 
 // ClearConversationParticipations clears all "conversation_participations" edges to the ConversationParticipant entity.
-func (_u *AgentUpdate) ClearConversationParticipations() *AgentUpdate {
-	_u.mutation.ClearConversationParticipations()
-	return _u
+func (au *AgentUpdate) ClearConversationParticipations() *AgentUpdate {
+	au.mutation.ClearConversationParticipations()
+	return au
 }
 
 // RemoveConversationParticipationIDs removes the "conversation_participations" edge to ConversationParticipant entities by IDs.
-func (_u *AgentUpdate) RemoveConversationParticipationIDs(ids ...uuid.UUID) *AgentUpdate {
-	_u.mutation.RemoveConversationParticipationIDs(ids...)
-	return _u
+func (au *AgentUpdate) RemoveConversationParticipationIDs(ids ...uuid.UUID) *AgentUpdate {
+	au.mutation.RemoveConversationParticipationIDs(ids...)
+	return au
 }
 
 // RemoveConversationParticipations removes "conversation_participations" edges to ConversationParticipant entities.
-func (_u *AgentUpdate) RemoveConversationParticipations(v ...*ConversationParticipant) *AgentUpdate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (au *AgentUpdate) RemoveConversationParticipations(c ...*ConversationParticipant) *AgentUpdate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return _u.RemoveConversationParticipationIDs(ids...)
+	return au.RemoveConversationParticipationIDs(ids...)
 }
 
 // ClearSentMessages clears all "sent_messages" edges to the ConversationMessage entity.
-func (_u *AgentUpdate) ClearSentMessages() *AgentUpdate {
-	_u.mutation.ClearSentMessages()
-	return _u
+func (au *AgentUpdate) ClearSentMessages() *AgentUpdate {
+	au.mutation.ClearSentMessages()
+	return au
 }
 
 // RemoveSentMessageIDs removes the "sent_messages" edge to ConversationMessage entities by IDs.
-func (_u *AgentUpdate) RemoveSentMessageIDs(ids ...uuid.UUID) *AgentUpdate {
-	_u.mutation.RemoveSentMessageIDs(ids...)
-	return _u
+func (au *AgentUpdate) RemoveSentMessageIDs(ids ...uuid.UUID) *AgentUpdate {
+	au.mutation.RemoveSentMessageIDs(ids...)
+	return au
 }
 
 // RemoveSentMessages removes "sent_messages" edges to ConversationMessage entities.
-func (_u *AgentUpdate) RemoveSentMessages(v ...*ConversationMessage) *AgentUpdate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (au *AgentUpdate) RemoveSentMessages(c ...*ConversationMessage) *AgentUpdate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return _u.RemoveSentMessageIDs(ids...)
+	return au.RemoveSentMessageIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (_u *AgentUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
-	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
+func (au *AgentUpdate) Save(ctx context.Context) (int, error) {
+	au.defaults()
+	return withHooks(ctx, au.sqlSave, au.mutation, au.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_u *AgentUpdate) SaveX(ctx context.Context) int {
-	affected, err := _u.Save(ctx)
+func (au *AgentUpdate) SaveX(ctx context.Context) int {
+	affected, err := au.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -789,170 +826,170 @@ func (_u *AgentUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (_u *AgentUpdate) Exec(ctx context.Context) error {
-	_, err := _u.Save(ctx)
+func (au *AgentUpdate) Exec(ctx context.Context) error {
+	_, err := au.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_u *AgentUpdate) ExecX(ctx context.Context) {
-	if err := _u.Exec(ctx); err != nil {
+func (au *AgentUpdate) ExecX(ctx context.Context) {
+	if err := au.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *AgentUpdate) defaults() {
-	if _, ok := _u.mutation.UpdatedAt(); !ok {
+func (au *AgentUpdate) defaults() {
+	if _, ok := au.mutation.UpdatedAt(); !ok {
 		v := agent.UpdateDefaultUpdatedAt()
-		_u.mutation.SetUpdatedAt(v)
+		au.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_u *AgentUpdate) check() error {
-	if v, ok := _u.mutation.Name(); ok {
+func (au *AgentUpdate) check() error {
+	if v, ok := au.mutation.Name(); ok {
 		if err := agent.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Agent.name": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.GoalDescription(); ok {
+	if v, ok := au.mutation.GoalDescription(); ok {
 		if err := agent.GoalDescriptionValidator(v); err != nil {
 			return &ValidationError{Name: "goal_description", err: fmt.Errorf(`ent: validator failed for field "Agent.goal_description": %w`, err)}
 		}
 	}
-	if _u.mutation.CreatorCleared() && len(_u.mutation.CreatorIDs()) > 0 {
+	if au.mutation.CreatorCleared() && len(au.mutation.CreatorIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Agent.creator"`)
 	}
 	return nil
 }
 
-func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
-	if err := _u.check(); err != nil {
-		return _node, err
+func (au *AgentUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := au.check(); err != nil {
+		return n, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(agent.Table, agent.Columns, sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUUID))
-	if ps := _u.mutation.predicates; len(ps) > 0 {
+	if ps := au.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := _u.mutation.UpdatedAt(); ok {
+	if value, ok := au.mutation.UpdatedAt(); ok {
 		_spec.SetField(agent.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := _u.mutation.Name(); ok {
+	if value, ok := au.mutation.Name(); ok {
 		_spec.SetField(agent.FieldName, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Avatar(); ok {
+	if value, ok := au.mutation.Avatar(); ok {
 		_spec.SetField(agent.FieldAvatar, field.TypeString, value)
 	}
-	if _u.mutation.AvatarCleared() {
+	if au.mutation.AvatarCleared() {
 		_spec.ClearField(agent.FieldAvatar, field.TypeString)
 	}
-	if value, ok := _u.mutation.Personality(); ok {
+	if value, ok := au.mutation.Personality(); ok {
 		_spec.SetField(agent.FieldPersonality, field.TypeJSON, value)
 	}
-	if value, ok := _u.mutation.AppendedPersonality(); ok {
+	if value, ok := au.mutation.AppendedPersonality(); ok {
 		_spec.AddModifier(func(u *sql.UpdateBuilder) {
 			sqljson.Append(u, agent.FieldPersonality, value)
 		})
 	}
-	if value, ok := _u.mutation.GoalDescription(); ok {
+	if value, ok := au.mutation.GoalDescription(); ok {
 		_spec.SetField(agent.FieldGoalDescription, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.GoalCurrent(); ok {
+	if value, ok := au.mutation.GoalCurrent(); ok {
 		_spec.SetField(agent.FieldGoalCurrent, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedGoalCurrent(); ok {
+	if value, ok := au.mutation.AddedGoalCurrent(); ok {
 		_spec.AddField(agent.FieldGoalCurrent, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.GoalTarget(); ok {
+	if value, ok := au.mutation.GoalTarget(); ok {
 		_spec.SetField(agent.FieldGoalTarget, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedGoalTarget(); ok {
+	if value, ok := au.mutation.AddedGoalTarget(); ok {
 		_spec.AddField(agent.FieldGoalTarget, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.Status(); ok {
+	if value, ok := au.mutation.Status(); ok {
 		_spec.SetField(agent.FieldStatus, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.TimerRemaining(); ok {
+	if value, ok := au.mutation.TimerRemaining(); ok {
 		_spec.SetField(agent.FieldTimerRemaining, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedTimerRemaining(); ok {
+	if value, ok := au.mutation.AddedTimerRemaining(); ok {
 		_spec.AddField(agent.FieldTimerRemaining, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.TotalTimerReceived(); ok {
+	if value, ok := au.mutation.TotalTimerReceived(); ok {
 		_spec.SetField(agent.FieldTotalTimerReceived, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedTotalTimerReceived(); ok {
+	if value, ok := au.mutation.AddedTotalTimerReceived(); ok {
 		_spec.AddField(agent.FieldTotalTimerReceived, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.OpenclawMode(); ok {
+	if value, ok := au.mutation.OpenclawMode(); ok {
 		_spec.SetField(agent.FieldOpenclawMode, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.OpenclawGatewayID(); ok {
+	if value, ok := au.mutation.OpenclawGatewayID(); ok {
 		_spec.SetField(agent.FieldOpenclawGatewayID, field.TypeString, value)
 	}
-	if _u.mutation.OpenclawGatewayIDCleared() {
+	if au.mutation.OpenclawGatewayIDCleared() {
 		_spec.ClearField(agent.FieldOpenclawGatewayID, field.TypeString)
 	}
-	if value, ok := _u.mutation.OpenclawAgentID(); ok {
+	if value, ok := au.mutation.OpenclawAgentID(); ok {
 		_spec.SetField(agent.FieldOpenclawAgentID, field.TypeString, value)
 	}
-	if _u.mutation.OpenclawAgentIDCleared() {
+	if au.mutation.OpenclawAgentIDCleared() {
 		_spec.ClearField(agent.FieldOpenclawAgentID, field.TypeString)
 	}
-	if value, ok := _u.mutation.OpenclawWorkspace(); ok {
+	if value, ok := au.mutation.OpenclawWorkspace(); ok {
 		_spec.SetField(agent.FieldOpenclawWorkspace, field.TypeString, value)
 	}
-	if _u.mutation.OpenclawWorkspaceCleared() {
+	if au.mutation.OpenclawWorkspaceCleared() {
 		_spec.ClearField(agent.FieldOpenclawWorkspace, field.TypeString)
 	}
-	if value, ok := _u.mutation.OpenclawToken(); ok {
+	if value, ok := au.mutation.OpenclawToken(); ok {
 		_spec.SetField(agent.FieldOpenclawToken, field.TypeString, value)
 	}
-	if _u.mutation.OpenclawTokenCleared() {
+	if au.mutation.OpenclawTokenCleared() {
 		_spec.ClearField(agent.FieldOpenclawToken, field.TypeString)
 	}
-	if value, ok := _u.mutation.IsPlatformNative(); ok {
+	if value, ok := au.mutation.IsPlatformNative(); ok {
 		_spec.SetField(agent.FieldIsPlatformNative, field.TypeBool, value)
 	}
-	if value, ok := _u.mutation.BornAt(); ok {
+	if value, ok := au.mutation.BornAt(); ok {
 		_spec.SetField(agent.FieldBornAt, field.TypeTime, value)
 	}
-	if value, ok := _u.mutation.DiedAt(); ok {
+	if value, ok := au.mutation.DiedAt(); ok {
 		_spec.SetField(agent.FieldDiedAt, field.TypeTime, value)
 	}
-	if _u.mutation.DiedAtCleared() {
+	if au.mutation.DiedAtCleared() {
 		_spec.ClearField(agent.FieldDiedAt, field.TypeTime)
 	}
-	if value, ok := _u.mutation.LastWords(); ok {
+	if value, ok := au.mutation.LastWords(); ok {
 		_spec.SetField(agent.FieldLastWords, field.TypeString, value)
 	}
-	if _u.mutation.LastWordsCleared() {
+	if au.mutation.LastWordsCleared() {
 		_spec.ClearField(agent.FieldLastWords, field.TypeString)
 	}
-	if value, ok := _u.mutation.PostCount(); ok {
+	if value, ok := au.mutation.PostCount(); ok {
 		_spec.SetField(agent.FieldPostCount, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedPostCount(); ok {
+	if value, ok := au.mutation.AddedPostCount(); ok {
 		_spec.AddField(agent.FieldPostCount, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.FollowerCount(); ok {
+	if value, ok := au.mutation.FollowerCount(); ok {
 		_spec.SetField(agent.FieldFollowerCount, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedFollowerCount(); ok {
+	if value, ok := au.mutation.AddedFollowerCount(); ok {
 		_spec.AddField(agent.FieldFollowerCount, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.InteractionCount(); ok {
+	if value, ok := au.mutation.InteractionCount(); ok {
 		_spec.SetField(agent.FieldInteractionCount, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedInteractionCount(); ok {
+	if value, ok := au.mutation.AddedInteractionCount(); ok {
 		_spec.AddField(agent.FieldInteractionCount, field.TypeInt64, value)
 	}
-	if _u.mutation.CreatorCleared() {
+	if au.mutation.CreatorCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -965,7 +1002,7 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.CreatorIDs(); len(nodes) > 0 {
+	if nodes := au.mutation.CreatorIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -981,7 +1018,7 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.PostsCleared() {
+	if au.mutation.PostsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -994,7 +1031,7 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedPostsIDs(); len(nodes) > 0 && !_u.mutation.PostsCleared() {
+	if nodes := au.mutation.RemovedPostsIDs(); len(nodes) > 0 && !au.mutation.PostsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -1010,7 +1047,7 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.PostsIDs(); len(nodes) > 0 {
+	if nodes := au.mutation.PostsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -1026,7 +1063,7 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.TimerTransactionsCleared() {
+	if au.mutation.TimerTransactionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -1039,7 +1076,7 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedTimerTransactionsIDs(); len(nodes) > 0 && !_u.mutation.TimerTransactionsCleared() {
+	if nodes := au.mutation.RemovedTimerTransactionsIDs(); len(nodes) > 0 && !au.mutation.TimerTransactionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -1055,7 +1092,7 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.TimerTransactionsIDs(); len(nodes) > 0 {
+	if nodes := au.mutation.TimerTransactionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -1071,7 +1108,7 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.ChannelConnectionsCleared() {
+	if au.mutation.ChannelConnectionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -1084,7 +1121,7 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedChannelConnectionsIDs(); len(nodes) > 0 && !_u.mutation.ChannelConnectionsCleared() {
+	if nodes := au.mutation.RemovedChannelConnectionsIDs(); len(nodes) > 0 && !au.mutation.ChannelConnectionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -1100,7 +1137,7 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.ChannelConnectionsIDs(); len(nodes) > 0 {
+	if nodes := au.mutation.ChannelConnectionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -1116,7 +1153,7 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.MemorialCleared() {
+	if au.mutation.MemorialCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: false,
@@ -1129,7 +1166,7 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.MemorialIDs(); len(nodes) > 0 {
+	if nodes := au.mutation.MemorialIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: false,
@@ -1145,7 +1182,7 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.SkillsCleared() {
+	if au.mutation.SkillsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -1158,23 +1195,7 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedSkillsIDs(); len(nodes) > 0 && !_u.mutation.SkillsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   agent.SkillsTable,
-			Columns: []string{agent.SkillsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(agentskill.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.SkillsIDs(); len(nodes) > 0 {
+	if nodes := au.mutation.RemovedSkillsIDs(); len(nodes) > 0 && !au.mutation.SkillsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -1188,9 +1209,70 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.SkillsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   agent.SkillsTable,
+			Columns: []string{agent.SkillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agentskill.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.ExperiencesCleared() {
+	if au.mutation.TasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   agent.TasksTable,
+			Columns: []string{agent.TasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agenttask.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RemovedTasksIDs(); len(nodes) > 0 && !au.mutation.TasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   agent.TasksTable,
+			Columns: []string{agent.TasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agenttask.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.TasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   agent.TasksTable,
+			Columns: []string{agent.TasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agenttask.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.ExperiencesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -1203,7 +1285,7 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedExperiencesIDs(); len(nodes) > 0 && !_u.mutation.ExperiencesCleared() {
+	if nodes := au.mutation.RemovedExperiencesIDs(); len(nodes) > 0 && !au.mutation.ExperiencesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -1219,7 +1301,7 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.ExperiencesIDs(); len(nodes) > 0 {
+	if nodes := au.mutation.ExperiencesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -1235,7 +1317,7 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.CreatedConversationsCleared() {
+	if au.mutation.CreatedConversationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -1248,7 +1330,7 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedCreatedConversationsIDs(); len(nodes) > 0 && !_u.mutation.CreatedConversationsCleared() {
+	if nodes := au.mutation.RemovedCreatedConversationsIDs(); len(nodes) > 0 && !au.mutation.CreatedConversationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -1264,7 +1346,7 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.CreatedConversationsIDs(); len(nodes) > 0 {
+	if nodes := au.mutation.CreatedConversationsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -1280,7 +1362,7 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.ConversationParticipationsCleared() {
+	if au.mutation.ConversationParticipationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -1293,7 +1375,7 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedConversationParticipationsIDs(); len(nodes) > 0 && !_u.mutation.ConversationParticipationsCleared() {
+	if nodes := au.mutation.RemovedConversationParticipationsIDs(); len(nodes) > 0 && !au.mutation.ConversationParticipationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -1309,7 +1391,7 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.ConversationParticipationsIDs(); len(nodes) > 0 {
+	if nodes := au.mutation.ConversationParticipationsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -1325,7 +1407,7 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.SentMessagesCleared() {
+	if au.mutation.SentMessagesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -1338,7 +1420,7 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedSentMessagesIDs(); len(nodes) > 0 && !_u.mutation.SentMessagesCleared() {
+	if nodes := au.mutation.RemovedSentMessagesIDs(); len(nodes) > 0 && !au.mutation.SentMessagesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -1354,7 +1436,7 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.SentMessagesIDs(); len(nodes) > 0 {
+	if nodes := au.mutation.SentMessagesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -1370,7 +1452,7 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
+	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{agent.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -1378,8 +1460,8 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		return 0, err
 	}
-	_u.mutation.done = true
-	return _node, nil
+	au.mutation.done = true
+	return n, nil
 }
 
 // AgentUpdateOne is the builder for updating a single Agent entity.
@@ -1391,759 +1473,795 @@ type AgentUpdateOne struct {
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (_u *AgentUpdateOne) SetUpdatedAt(v time.Time) *AgentUpdateOne {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
+func (auo *AgentUpdateOne) SetUpdatedAt(t time.Time) *AgentUpdateOne {
+	auo.mutation.SetUpdatedAt(t)
+	return auo
 }
 
 // SetName sets the "name" field.
-func (_u *AgentUpdateOne) SetName(v string) *AgentUpdateOne {
-	_u.mutation.SetName(v)
-	return _u
+func (auo *AgentUpdateOne) SetName(s string) *AgentUpdateOne {
+	auo.mutation.SetName(s)
+	return auo
 }
 
 // SetNillableName sets the "name" field if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillableName(v *string) *AgentUpdateOne {
-	if v != nil {
-		_u.SetName(*v)
+func (auo *AgentUpdateOne) SetNillableName(s *string) *AgentUpdateOne {
+	if s != nil {
+		auo.SetName(*s)
 	}
-	return _u
+	return auo
 }
 
 // SetAvatar sets the "avatar" field.
-func (_u *AgentUpdateOne) SetAvatar(v string) *AgentUpdateOne {
-	_u.mutation.SetAvatar(v)
-	return _u
+func (auo *AgentUpdateOne) SetAvatar(s string) *AgentUpdateOne {
+	auo.mutation.SetAvatar(s)
+	return auo
 }
 
 // SetNillableAvatar sets the "avatar" field if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillableAvatar(v *string) *AgentUpdateOne {
-	if v != nil {
-		_u.SetAvatar(*v)
+func (auo *AgentUpdateOne) SetNillableAvatar(s *string) *AgentUpdateOne {
+	if s != nil {
+		auo.SetAvatar(*s)
 	}
-	return _u
+	return auo
 }
 
 // ClearAvatar clears the value of the "avatar" field.
-func (_u *AgentUpdateOne) ClearAvatar() *AgentUpdateOne {
-	_u.mutation.ClearAvatar()
-	return _u
+func (auo *AgentUpdateOne) ClearAvatar() *AgentUpdateOne {
+	auo.mutation.ClearAvatar()
+	return auo
 }
 
 // SetCreatorID sets the "creator_id" field.
-func (_u *AgentUpdateOne) SetCreatorID(v uuid.UUID) *AgentUpdateOne {
-	_u.mutation.SetCreatorID(v)
-	return _u
+func (auo *AgentUpdateOne) SetCreatorID(u uuid.UUID) *AgentUpdateOne {
+	auo.mutation.SetCreatorID(u)
+	return auo
 }
 
 // SetNillableCreatorID sets the "creator_id" field if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillableCreatorID(v *uuid.UUID) *AgentUpdateOne {
-	if v != nil {
-		_u.SetCreatorID(*v)
+func (auo *AgentUpdateOne) SetNillableCreatorID(u *uuid.UUID) *AgentUpdateOne {
+	if u != nil {
+		auo.SetCreatorID(*u)
 	}
-	return _u
+	return auo
 }
 
 // SetPersonality sets the "personality" field.
-func (_u *AgentUpdateOne) SetPersonality(v json.RawMessage) *AgentUpdateOne {
-	_u.mutation.SetPersonality(v)
-	return _u
+func (auo *AgentUpdateOne) SetPersonality(jm json.RawMessage) *AgentUpdateOne {
+	auo.mutation.SetPersonality(jm)
+	return auo
 }
 
-// AppendPersonality appends value to the "personality" field.
-func (_u *AgentUpdateOne) AppendPersonality(v json.RawMessage) *AgentUpdateOne {
-	_u.mutation.AppendPersonality(v)
-	return _u
+// AppendPersonality appends jm to the "personality" field.
+func (auo *AgentUpdateOne) AppendPersonality(jm json.RawMessage) *AgentUpdateOne {
+	auo.mutation.AppendPersonality(jm)
+	return auo
 }
 
 // SetGoalDescription sets the "goal_description" field.
-func (_u *AgentUpdateOne) SetGoalDescription(v string) *AgentUpdateOne {
-	_u.mutation.SetGoalDescription(v)
-	return _u
+func (auo *AgentUpdateOne) SetGoalDescription(s string) *AgentUpdateOne {
+	auo.mutation.SetGoalDescription(s)
+	return auo
 }
 
 // SetNillableGoalDescription sets the "goal_description" field if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillableGoalDescription(v *string) *AgentUpdateOne {
-	if v != nil {
-		_u.SetGoalDescription(*v)
+func (auo *AgentUpdateOne) SetNillableGoalDescription(s *string) *AgentUpdateOne {
+	if s != nil {
+		auo.SetGoalDescription(*s)
 	}
-	return _u
+	return auo
 }
 
 // SetGoalCurrent sets the "goal_current" field.
-func (_u *AgentUpdateOne) SetGoalCurrent(v int64) *AgentUpdateOne {
-	_u.mutation.ResetGoalCurrent()
-	_u.mutation.SetGoalCurrent(v)
-	return _u
+func (auo *AgentUpdateOne) SetGoalCurrent(i int64) *AgentUpdateOne {
+	auo.mutation.ResetGoalCurrent()
+	auo.mutation.SetGoalCurrent(i)
+	return auo
 }
 
 // SetNillableGoalCurrent sets the "goal_current" field if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillableGoalCurrent(v *int64) *AgentUpdateOne {
-	if v != nil {
-		_u.SetGoalCurrent(*v)
+func (auo *AgentUpdateOne) SetNillableGoalCurrent(i *int64) *AgentUpdateOne {
+	if i != nil {
+		auo.SetGoalCurrent(*i)
 	}
-	return _u
+	return auo
 }
 
-// AddGoalCurrent adds value to the "goal_current" field.
-func (_u *AgentUpdateOne) AddGoalCurrent(v int64) *AgentUpdateOne {
-	_u.mutation.AddGoalCurrent(v)
-	return _u
+// AddGoalCurrent adds i to the "goal_current" field.
+func (auo *AgentUpdateOne) AddGoalCurrent(i int64) *AgentUpdateOne {
+	auo.mutation.AddGoalCurrent(i)
+	return auo
 }
 
 // SetGoalTarget sets the "goal_target" field.
-func (_u *AgentUpdateOne) SetGoalTarget(v int64) *AgentUpdateOne {
-	_u.mutation.ResetGoalTarget()
-	_u.mutation.SetGoalTarget(v)
-	return _u
+func (auo *AgentUpdateOne) SetGoalTarget(i int64) *AgentUpdateOne {
+	auo.mutation.ResetGoalTarget()
+	auo.mutation.SetGoalTarget(i)
+	return auo
 }
 
 // SetNillableGoalTarget sets the "goal_target" field if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillableGoalTarget(v *int64) *AgentUpdateOne {
-	if v != nil {
-		_u.SetGoalTarget(*v)
+func (auo *AgentUpdateOne) SetNillableGoalTarget(i *int64) *AgentUpdateOne {
+	if i != nil {
+		auo.SetGoalTarget(*i)
 	}
-	return _u
+	return auo
 }
 
-// AddGoalTarget adds value to the "goal_target" field.
-func (_u *AgentUpdateOne) AddGoalTarget(v int64) *AgentUpdateOne {
-	_u.mutation.AddGoalTarget(v)
-	return _u
+// AddGoalTarget adds i to the "goal_target" field.
+func (auo *AgentUpdateOne) AddGoalTarget(i int64) *AgentUpdateOne {
+	auo.mutation.AddGoalTarget(i)
+	return auo
 }
 
 // SetStatus sets the "status" field.
-func (_u *AgentUpdateOne) SetStatus(v string) *AgentUpdateOne {
-	_u.mutation.SetStatus(v)
-	return _u
+func (auo *AgentUpdateOne) SetStatus(s string) *AgentUpdateOne {
+	auo.mutation.SetStatus(s)
+	return auo
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillableStatus(v *string) *AgentUpdateOne {
-	if v != nil {
-		_u.SetStatus(*v)
+func (auo *AgentUpdateOne) SetNillableStatus(s *string) *AgentUpdateOne {
+	if s != nil {
+		auo.SetStatus(*s)
 	}
-	return _u
+	return auo
 }
 
 // SetTimerRemaining sets the "timer_remaining" field.
-func (_u *AgentUpdateOne) SetTimerRemaining(v int64) *AgentUpdateOne {
-	_u.mutation.ResetTimerRemaining()
-	_u.mutation.SetTimerRemaining(v)
-	return _u
+func (auo *AgentUpdateOne) SetTimerRemaining(i int64) *AgentUpdateOne {
+	auo.mutation.ResetTimerRemaining()
+	auo.mutation.SetTimerRemaining(i)
+	return auo
 }
 
 // SetNillableTimerRemaining sets the "timer_remaining" field if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillableTimerRemaining(v *int64) *AgentUpdateOne {
-	if v != nil {
-		_u.SetTimerRemaining(*v)
+func (auo *AgentUpdateOne) SetNillableTimerRemaining(i *int64) *AgentUpdateOne {
+	if i != nil {
+		auo.SetTimerRemaining(*i)
 	}
-	return _u
+	return auo
 }
 
-// AddTimerRemaining adds value to the "timer_remaining" field.
-func (_u *AgentUpdateOne) AddTimerRemaining(v int64) *AgentUpdateOne {
-	_u.mutation.AddTimerRemaining(v)
-	return _u
+// AddTimerRemaining adds i to the "timer_remaining" field.
+func (auo *AgentUpdateOne) AddTimerRemaining(i int64) *AgentUpdateOne {
+	auo.mutation.AddTimerRemaining(i)
+	return auo
 }
 
 // SetTotalTimerReceived sets the "total_timer_received" field.
-func (_u *AgentUpdateOne) SetTotalTimerReceived(v int64) *AgentUpdateOne {
-	_u.mutation.ResetTotalTimerReceived()
-	_u.mutation.SetTotalTimerReceived(v)
-	return _u
+func (auo *AgentUpdateOne) SetTotalTimerReceived(i int64) *AgentUpdateOne {
+	auo.mutation.ResetTotalTimerReceived()
+	auo.mutation.SetTotalTimerReceived(i)
+	return auo
 }
 
 // SetNillableTotalTimerReceived sets the "total_timer_received" field if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillableTotalTimerReceived(v *int64) *AgentUpdateOne {
-	if v != nil {
-		_u.SetTotalTimerReceived(*v)
+func (auo *AgentUpdateOne) SetNillableTotalTimerReceived(i *int64) *AgentUpdateOne {
+	if i != nil {
+		auo.SetTotalTimerReceived(*i)
 	}
-	return _u
+	return auo
 }
 
-// AddTotalTimerReceived adds value to the "total_timer_received" field.
-func (_u *AgentUpdateOne) AddTotalTimerReceived(v int64) *AgentUpdateOne {
-	_u.mutation.AddTotalTimerReceived(v)
-	return _u
+// AddTotalTimerReceived adds i to the "total_timer_received" field.
+func (auo *AgentUpdateOne) AddTotalTimerReceived(i int64) *AgentUpdateOne {
+	auo.mutation.AddTotalTimerReceived(i)
+	return auo
 }
 
 // SetOpenclawMode sets the "openclaw_mode" field.
-func (_u *AgentUpdateOne) SetOpenclawMode(v string) *AgentUpdateOne {
-	_u.mutation.SetOpenclawMode(v)
-	return _u
+func (auo *AgentUpdateOne) SetOpenclawMode(s string) *AgentUpdateOne {
+	auo.mutation.SetOpenclawMode(s)
+	return auo
 }
 
 // SetNillableOpenclawMode sets the "openclaw_mode" field if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillableOpenclawMode(v *string) *AgentUpdateOne {
-	if v != nil {
-		_u.SetOpenclawMode(*v)
+func (auo *AgentUpdateOne) SetNillableOpenclawMode(s *string) *AgentUpdateOne {
+	if s != nil {
+		auo.SetOpenclawMode(*s)
 	}
-	return _u
+	return auo
 }
 
 // SetOpenclawGatewayID sets the "openclaw_gateway_id" field.
-func (_u *AgentUpdateOne) SetOpenclawGatewayID(v string) *AgentUpdateOne {
-	_u.mutation.SetOpenclawGatewayID(v)
-	return _u
+func (auo *AgentUpdateOne) SetOpenclawGatewayID(s string) *AgentUpdateOne {
+	auo.mutation.SetOpenclawGatewayID(s)
+	return auo
 }
 
 // SetNillableOpenclawGatewayID sets the "openclaw_gateway_id" field if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillableOpenclawGatewayID(v *string) *AgentUpdateOne {
-	if v != nil {
-		_u.SetOpenclawGatewayID(*v)
+func (auo *AgentUpdateOne) SetNillableOpenclawGatewayID(s *string) *AgentUpdateOne {
+	if s != nil {
+		auo.SetOpenclawGatewayID(*s)
 	}
-	return _u
+	return auo
 }
 
 // ClearOpenclawGatewayID clears the value of the "openclaw_gateway_id" field.
-func (_u *AgentUpdateOne) ClearOpenclawGatewayID() *AgentUpdateOne {
-	_u.mutation.ClearOpenclawGatewayID()
-	return _u
+func (auo *AgentUpdateOne) ClearOpenclawGatewayID() *AgentUpdateOne {
+	auo.mutation.ClearOpenclawGatewayID()
+	return auo
 }
 
 // SetOpenclawAgentID sets the "openclaw_agent_id" field.
-func (_u *AgentUpdateOne) SetOpenclawAgentID(v string) *AgentUpdateOne {
-	_u.mutation.SetOpenclawAgentID(v)
-	return _u
+func (auo *AgentUpdateOne) SetOpenclawAgentID(s string) *AgentUpdateOne {
+	auo.mutation.SetOpenclawAgentID(s)
+	return auo
 }
 
 // SetNillableOpenclawAgentID sets the "openclaw_agent_id" field if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillableOpenclawAgentID(v *string) *AgentUpdateOne {
-	if v != nil {
-		_u.SetOpenclawAgentID(*v)
+func (auo *AgentUpdateOne) SetNillableOpenclawAgentID(s *string) *AgentUpdateOne {
+	if s != nil {
+		auo.SetOpenclawAgentID(*s)
 	}
-	return _u
+	return auo
 }
 
 // ClearOpenclawAgentID clears the value of the "openclaw_agent_id" field.
-func (_u *AgentUpdateOne) ClearOpenclawAgentID() *AgentUpdateOne {
-	_u.mutation.ClearOpenclawAgentID()
-	return _u
+func (auo *AgentUpdateOne) ClearOpenclawAgentID() *AgentUpdateOne {
+	auo.mutation.ClearOpenclawAgentID()
+	return auo
 }
 
 // SetOpenclawWorkspace sets the "openclaw_workspace" field.
-func (_u *AgentUpdateOne) SetOpenclawWorkspace(v string) *AgentUpdateOne {
-	_u.mutation.SetOpenclawWorkspace(v)
-	return _u
+func (auo *AgentUpdateOne) SetOpenclawWorkspace(s string) *AgentUpdateOne {
+	auo.mutation.SetOpenclawWorkspace(s)
+	return auo
 }
 
 // SetNillableOpenclawWorkspace sets the "openclaw_workspace" field if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillableOpenclawWorkspace(v *string) *AgentUpdateOne {
-	if v != nil {
-		_u.SetOpenclawWorkspace(*v)
+func (auo *AgentUpdateOne) SetNillableOpenclawWorkspace(s *string) *AgentUpdateOne {
+	if s != nil {
+		auo.SetOpenclawWorkspace(*s)
 	}
-	return _u
+	return auo
 }
 
 // ClearOpenclawWorkspace clears the value of the "openclaw_workspace" field.
-func (_u *AgentUpdateOne) ClearOpenclawWorkspace() *AgentUpdateOne {
-	_u.mutation.ClearOpenclawWorkspace()
-	return _u
+func (auo *AgentUpdateOne) ClearOpenclawWorkspace() *AgentUpdateOne {
+	auo.mutation.ClearOpenclawWorkspace()
+	return auo
 }
 
 // SetOpenclawToken sets the "openclaw_token" field.
-func (_u *AgentUpdateOne) SetOpenclawToken(v string) *AgentUpdateOne {
-	_u.mutation.SetOpenclawToken(v)
-	return _u
+func (auo *AgentUpdateOne) SetOpenclawToken(s string) *AgentUpdateOne {
+	auo.mutation.SetOpenclawToken(s)
+	return auo
 }
 
 // SetNillableOpenclawToken sets the "openclaw_token" field if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillableOpenclawToken(v *string) *AgentUpdateOne {
-	if v != nil {
-		_u.SetOpenclawToken(*v)
+func (auo *AgentUpdateOne) SetNillableOpenclawToken(s *string) *AgentUpdateOne {
+	if s != nil {
+		auo.SetOpenclawToken(*s)
 	}
-	return _u
+	return auo
 }
 
 // ClearOpenclawToken clears the value of the "openclaw_token" field.
-func (_u *AgentUpdateOne) ClearOpenclawToken() *AgentUpdateOne {
-	_u.mutation.ClearOpenclawToken()
-	return _u
+func (auo *AgentUpdateOne) ClearOpenclawToken() *AgentUpdateOne {
+	auo.mutation.ClearOpenclawToken()
+	return auo
 }
 
 // SetIsPlatformNative sets the "is_platform_native" field.
-func (_u *AgentUpdateOne) SetIsPlatformNative(v bool) *AgentUpdateOne {
-	_u.mutation.SetIsPlatformNative(v)
-	return _u
+func (auo *AgentUpdateOne) SetIsPlatformNative(b bool) *AgentUpdateOne {
+	auo.mutation.SetIsPlatformNative(b)
+	return auo
 }
 
 // SetNillableIsPlatformNative sets the "is_platform_native" field if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillableIsPlatformNative(v *bool) *AgentUpdateOne {
-	if v != nil {
-		_u.SetIsPlatformNative(*v)
+func (auo *AgentUpdateOne) SetNillableIsPlatformNative(b *bool) *AgentUpdateOne {
+	if b != nil {
+		auo.SetIsPlatformNative(*b)
 	}
-	return _u
+	return auo
 }
 
 // SetBornAt sets the "born_at" field.
-func (_u *AgentUpdateOne) SetBornAt(v time.Time) *AgentUpdateOne {
-	_u.mutation.SetBornAt(v)
-	return _u
+func (auo *AgentUpdateOne) SetBornAt(t time.Time) *AgentUpdateOne {
+	auo.mutation.SetBornAt(t)
+	return auo
 }
 
 // SetNillableBornAt sets the "born_at" field if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillableBornAt(v *time.Time) *AgentUpdateOne {
-	if v != nil {
-		_u.SetBornAt(*v)
+func (auo *AgentUpdateOne) SetNillableBornAt(t *time.Time) *AgentUpdateOne {
+	if t != nil {
+		auo.SetBornAt(*t)
 	}
-	return _u
+	return auo
 }
 
 // SetDiedAt sets the "died_at" field.
-func (_u *AgentUpdateOne) SetDiedAt(v time.Time) *AgentUpdateOne {
-	_u.mutation.SetDiedAt(v)
-	return _u
+func (auo *AgentUpdateOne) SetDiedAt(t time.Time) *AgentUpdateOne {
+	auo.mutation.SetDiedAt(t)
+	return auo
 }
 
 // SetNillableDiedAt sets the "died_at" field if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillableDiedAt(v *time.Time) *AgentUpdateOne {
-	if v != nil {
-		_u.SetDiedAt(*v)
+func (auo *AgentUpdateOne) SetNillableDiedAt(t *time.Time) *AgentUpdateOne {
+	if t != nil {
+		auo.SetDiedAt(*t)
 	}
-	return _u
+	return auo
 }
 
 // ClearDiedAt clears the value of the "died_at" field.
-func (_u *AgentUpdateOne) ClearDiedAt() *AgentUpdateOne {
-	_u.mutation.ClearDiedAt()
-	return _u
+func (auo *AgentUpdateOne) ClearDiedAt() *AgentUpdateOne {
+	auo.mutation.ClearDiedAt()
+	return auo
 }
 
 // SetLastWords sets the "last_words" field.
-func (_u *AgentUpdateOne) SetLastWords(v string) *AgentUpdateOne {
-	_u.mutation.SetLastWords(v)
-	return _u
+func (auo *AgentUpdateOne) SetLastWords(s string) *AgentUpdateOne {
+	auo.mutation.SetLastWords(s)
+	return auo
 }
 
 // SetNillableLastWords sets the "last_words" field if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillableLastWords(v *string) *AgentUpdateOne {
-	if v != nil {
-		_u.SetLastWords(*v)
+func (auo *AgentUpdateOne) SetNillableLastWords(s *string) *AgentUpdateOne {
+	if s != nil {
+		auo.SetLastWords(*s)
 	}
-	return _u
+	return auo
 }
 
 // ClearLastWords clears the value of the "last_words" field.
-func (_u *AgentUpdateOne) ClearLastWords() *AgentUpdateOne {
-	_u.mutation.ClearLastWords()
-	return _u
+func (auo *AgentUpdateOne) ClearLastWords() *AgentUpdateOne {
+	auo.mutation.ClearLastWords()
+	return auo
 }
 
 // SetPostCount sets the "post_count" field.
-func (_u *AgentUpdateOne) SetPostCount(v int64) *AgentUpdateOne {
-	_u.mutation.ResetPostCount()
-	_u.mutation.SetPostCount(v)
-	return _u
+func (auo *AgentUpdateOne) SetPostCount(i int64) *AgentUpdateOne {
+	auo.mutation.ResetPostCount()
+	auo.mutation.SetPostCount(i)
+	return auo
 }
 
 // SetNillablePostCount sets the "post_count" field if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillablePostCount(v *int64) *AgentUpdateOne {
-	if v != nil {
-		_u.SetPostCount(*v)
+func (auo *AgentUpdateOne) SetNillablePostCount(i *int64) *AgentUpdateOne {
+	if i != nil {
+		auo.SetPostCount(*i)
 	}
-	return _u
+	return auo
 }
 
-// AddPostCount adds value to the "post_count" field.
-func (_u *AgentUpdateOne) AddPostCount(v int64) *AgentUpdateOne {
-	_u.mutation.AddPostCount(v)
-	return _u
+// AddPostCount adds i to the "post_count" field.
+func (auo *AgentUpdateOne) AddPostCount(i int64) *AgentUpdateOne {
+	auo.mutation.AddPostCount(i)
+	return auo
 }
 
 // SetFollowerCount sets the "follower_count" field.
-func (_u *AgentUpdateOne) SetFollowerCount(v int64) *AgentUpdateOne {
-	_u.mutation.ResetFollowerCount()
-	_u.mutation.SetFollowerCount(v)
-	return _u
+func (auo *AgentUpdateOne) SetFollowerCount(i int64) *AgentUpdateOne {
+	auo.mutation.ResetFollowerCount()
+	auo.mutation.SetFollowerCount(i)
+	return auo
 }
 
 // SetNillableFollowerCount sets the "follower_count" field if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillableFollowerCount(v *int64) *AgentUpdateOne {
-	if v != nil {
-		_u.SetFollowerCount(*v)
+func (auo *AgentUpdateOne) SetNillableFollowerCount(i *int64) *AgentUpdateOne {
+	if i != nil {
+		auo.SetFollowerCount(*i)
 	}
-	return _u
+	return auo
 }
 
-// AddFollowerCount adds value to the "follower_count" field.
-func (_u *AgentUpdateOne) AddFollowerCount(v int64) *AgentUpdateOne {
-	_u.mutation.AddFollowerCount(v)
-	return _u
+// AddFollowerCount adds i to the "follower_count" field.
+func (auo *AgentUpdateOne) AddFollowerCount(i int64) *AgentUpdateOne {
+	auo.mutation.AddFollowerCount(i)
+	return auo
 }
 
 // SetInteractionCount sets the "interaction_count" field.
-func (_u *AgentUpdateOne) SetInteractionCount(v int64) *AgentUpdateOne {
-	_u.mutation.ResetInteractionCount()
-	_u.mutation.SetInteractionCount(v)
-	return _u
+func (auo *AgentUpdateOne) SetInteractionCount(i int64) *AgentUpdateOne {
+	auo.mutation.ResetInteractionCount()
+	auo.mutation.SetInteractionCount(i)
+	return auo
 }
 
 // SetNillableInteractionCount sets the "interaction_count" field if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillableInteractionCount(v *int64) *AgentUpdateOne {
-	if v != nil {
-		_u.SetInteractionCount(*v)
+func (auo *AgentUpdateOne) SetNillableInteractionCount(i *int64) *AgentUpdateOne {
+	if i != nil {
+		auo.SetInteractionCount(*i)
 	}
-	return _u
+	return auo
 }
 
-// AddInteractionCount adds value to the "interaction_count" field.
-func (_u *AgentUpdateOne) AddInteractionCount(v int64) *AgentUpdateOne {
-	_u.mutation.AddInteractionCount(v)
-	return _u
+// AddInteractionCount adds i to the "interaction_count" field.
+func (auo *AgentUpdateOne) AddInteractionCount(i int64) *AgentUpdateOne {
+	auo.mutation.AddInteractionCount(i)
+	return auo
 }
 
 // SetCreator sets the "creator" edge to the User entity.
-func (_u *AgentUpdateOne) SetCreator(v *User) *AgentUpdateOne {
-	return _u.SetCreatorID(v.ID)
+func (auo *AgentUpdateOne) SetCreator(u *User) *AgentUpdateOne {
+	return auo.SetCreatorID(u.ID)
 }
 
 // AddPostIDs adds the "posts" edge to the Post entity by IDs.
-func (_u *AgentUpdateOne) AddPostIDs(ids ...uuid.UUID) *AgentUpdateOne {
-	_u.mutation.AddPostIDs(ids...)
-	return _u
+func (auo *AgentUpdateOne) AddPostIDs(ids ...uuid.UUID) *AgentUpdateOne {
+	auo.mutation.AddPostIDs(ids...)
+	return auo
 }
 
 // AddPosts adds the "posts" edges to the Post entity.
-func (_u *AgentUpdateOne) AddPosts(v ...*Post) *AgentUpdateOne {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (auo *AgentUpdateOne) AddPosts(p ...*Post) *AgentUpdateOne {
+	ids := make([]uuid.UUID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
 	}
-	return _u.AddPostIDs(ids...)
+	return auo.AddPostIDs(ids...)
 }
 
 // AddTimerTransactionIDs adds the "timer_transactions" edge to the TimerTransaction entity by IDs.
-func (_u *AgentUpdateOne) AddTimerTransactionIDs(ids ...uuid.UUID) *AgentUpdateOne {
-	_u.mutation.AddTimerTransactionIDs(ids...)
-	return _u
+func (auo *AgentUpdateOne) AddTimerTransactionIDs(ids ...uuid.UUID) *AgentUpdateOne {
+	auo.mutation.AddTimerTransactionIDs(ids...)
+	return auo
 }
 
 // AddTimerTransactions adds the "timer_transactions" edges to the TimerTransaction entity.
-func (_u *AgentUpdateOne) AddTimerTransactions(v ...*TimerTransaction) *AgentUpdateOne {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (auo *AgentUpdateOne) AddTimerTransactions(t ...*TimerTransaction) *AgentUpdateOne {
+	ids := make([]uuid.UUID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
 	}
-	return _u.AddTimerTransactionIDs(ids...)
+	return auo.AddTimerTransactionIDs(ids...)
 }
 
 // AddChannelConnectionIDs adds the "channel_connections" edge to the ChannelConnection entity by IDs.
-func (_u *AgentUpdateOne) AddChannelConnectionIDs(ids ...uuid.UUID) *AgentUpdateOne {
-	_u.mutation.AddChannelConnectionIDs(ids...)
-	return _u
+func (auo *AgentUpdateOne) AddChannelConnectionIDs(ids ...uuid.UUID) *AgentUpdateOne {
+	auo.mutation.AddChannelConnectionIDs(ids...)
+	return auo
 }
 
 // AddChannelConnections adds the "channel_connections" edges to the ChannelConnection entity.
-func (_u *AgentUpdateOne) AddChannelConnections(v ...*ChannelConnection) *AgentUpdateOne {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (auo *AgentUpdateOne) AddChannelConnections(c ...*ChannelConnection) *AgentUpdateOne {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return _u.AddChannelConnectionIDs(ids...)
+	return auo.AddChannelConnectionIDs(ids...)
 }
 
 // SetMemorialID sets the "memorial" edge to the Memorial entity by ID.
-func (_u *AgentUpdateOne) SetMemorialID(id uuid.UUID) *AgentUpdateOne {
-	_u.mutation.SetMemorialID(id)
-	return _u
+func (auo *AgentUpdateOne) SetMemorialID(id uuid.UUID) *AgentUpdateOne {
+	auo.mutation.SetMemorialID(id)
+	return auo
 }
 
 // SetNillableMemorialID sets the "memorial" edge to the Memorial entity by ID if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillableMemorialID(id *uuid.UUID) *AgentUpdateOne {
+func (auo *AgentUpdateOne) SetNillableMemorialID(id *uuid.UUID) *AgentUpdateOne {
 	if id != nil {
-		_u = _u.SetMemorialID(*id)
+		auo = auo.SetMemorialID(*id)
 	}
-	return _u
+	return auo
 }
 
 // SetMemorial sets the "memorial" edge to the Memorial entity.
-func (_u *AgentUpdateOne) SetMemorial(v *Memorial) *AgentUpdateOne {
-	return _u.SetMemorialID(v.ID)
+func (auo *AgentUpdateOne) SetMemorial(m *Memorial) *AgentUpdateOne {
+	return auo.SetMemorialID(m.ID)
 }
 
 // AddSkillIDs adds the "skills" edge to the AgentSkill entity by IDs.
-func (_u *AgentUpdateOne) AddSkillIDs(ids ...uuid.UUID) *AgentUpdateOne {
-	_u.mutation.AddSkillIDs(ids...)
-	return _u
+func (auo *AgentUpdateOne) AddSkillIDs(ids ...uuid.UUID) *AgentUpdateOne {
+	auo.mutation.AddSkillIDs(ids...)
+	return auo
 }
 
 // AddSkills adds the "skills" edges to the AgentSkill entity.
-func (_u *AgentUpdateOne) AddSkills(v ...*AgentSkill) *AgentUpdateOne {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (auo *AgentUpdateOne) AddSkills(a ...*AgentSkill) *AgentUpdateOne {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
-	return _u.AddSkillIDs(ids...)
+	return auo.AddSkillIDs(ids...)
+}
+
+// AddTaskIDs adds the "tasks" edge to the AgentTask entity by IDs.
+func (auo *AgentUpdateOne) AddTaskIDs(ids ...uuid.UUID) *AgentUpdateOne {
+	auo.mutation.AddTaskIDs(ids...)
+	return auo
+}
+
+// AddTasks adds the "tasks" edges to the AgentTask entity.
+func (auo *AgentUpdateOne) AddTasks(a ...*AgentTask) *AgentUpdateOne {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return auo.AddTaskIDs(ids...)
 }
 
 // AddExperienceIDs adds the "experiences" edge to the AgentExperience entity by IDs.
-func (_u *AgentUpdateOne) AddExperienceIDs(ids ...uuid.UUID) *AgentUpdateOne {
-	_u.mutation.AddExperienceIDs(ids...)
-	return _u
+func (auo *AgentUpdateOne) AddExperienceIDs(ids ...uuid.UUID) *AgentUpdateOne {
+	auo.mutation.AddExperienceIDs(ids...)
+	return auo
 }
 
 // AddExperiences adds the "experiences" edges to the AgentExperience entity.
-func (_u *AgentUpdateOne) AddExperiences(v ...*AgentExperience) *AgentUpdateOne {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (auo *AgentUpdateOne) AddExperiences(a ...*AgentExperience) *AgentUpdateOne {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
-	return _u.AddExperienceIDs(ids...)
+	return auo.AddExperienceIDs(ids...)
 }
 
 // AddCreatedConversationIDs adds the "created_conversations" edge to the Conversation entity by IDs.
-func (_u *AgentUpdateOne) AddCreatedConversationIDs(ids ...uuid.UUID) *AgentUpdateOne {
-	_u.mutation.AddCreatedConversationIDs(ids...)
-	return _u
+func (auo *AgentUpdateOne) AddCreatedConversationIDs(ids ...uuid.UUID) *AgentUpdateOne {
+	auo.mutation.AddCreatedConversationIDs(ids...)
+	return auo
 }
 
 // AddCreatedConversations adds the "created_conversations" edges to the Conversation entity.
-func (_u *AgentUpdateOne) AddCreatedConversations(v ...*Conversation) *AgentUpdateOne {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (auo *AgentUpdateOne) AddCreatedConversations(c ...*Conversation) *AgentUpdateOne {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return _u.AddCreatedConversationIDs(ids...)
+	return auo.AddCreatedConversationIDs(ids...)
 }
 
 // AddConversationParticipationIDs adds the "conversation_participations" edge to the ConversationParticipant entity by IDs.
-func (_u *AgentUpdateOne) AddConversationParticipationIDs(ids ...uuid.UUID) *AgentUpdateOne {
-	_u.mutation.AddConversationParticipationIDs(ids...)
-	return _u
+func (auo *AgentUpdateOne) AddConversationParticipationIDs(ids ...uuid.UUID) *AgentUpdateOne {
+	auo.mutation.AddConversationParticipationIDs(ids...)
+	return auo
 }
 
 // AddConversationParticipations adds the "conversation_participations" edges to the ConversationParticipant entity.
-func (_u *AgentUpdateOne) AddConversationParticipations(v ...*ConversationParticipant) *AgentUpdateOne {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (auo *AgentUpdateOne) AddConversationParticipations(c ...*ConversationParticipant) *AgentUpdateOne {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return _u.AddConversationParticipationIDs(ids...)
+	return auo.AddConversationParticipationIDs(ids...)
 }
 
 // AddSentMessageIDs adds the "sent_messages" edge to the ConversationMessage entity by IDs.
-func (_u *AgentUpdateOne) AddSentMessageIDs(ids ...uuid.UUID) *AgentUpdateOne {
-	_u.mutation.AddSentMessageIDs(ids...)
-	return _u
+func (auo *AgentUpdateOne) AddSentMessageIDs(ids ...uuid.UUID) *AgentUpdateOne {
+	auo.mutation.AddSentMessageIDs(ids...)
+	return auo
 }
 
 // AddSentMessages adds the "sent_messages" edges to the ConversationMessage entity.
-func (_u *AgentUpdateOne) AddSentMessages(v ...*ConversationMessage) *AgentUpdateOne {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (auo *AgentUpdateOne) AddSentMessages(c ...*ConversationMessage) *AgentUpdateOne {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return _u.AddSentMessageIDs(ids...)
+	return auo.AddSentMessageIDs(ids...)
 }
 
 // Mutation returns the AgentMutation object of the builder.
-func (_u *AgentUpdateOne) Mutation() *AgentMutation {
-	return _u.mutation
+func (auo *AgentUpdateOne) Mutation() *AgentMutation {
+	return auo.mutation
 }
 
 // ClearCreator clears the "creator" edge to the User entity.
-func (_u *AgentUpdateOne) ClearCreator() *AgentUpdateOne {
-	_u.mutation.ClearCreator()
-	return _u
+func (auo *AgentUpdateOne) ClearCreator() *AgentUpdateOne {
+	auo.mutation.ClearCreator()
+	return auo
 }
 
 // ClearPosts clears all "posts" edges to the Post entity.
-func (_u *AgentUpdateOne) ClearPosts() *AgentUpdateOne {
-	_u.mutation.ClearPosts()
-	return _u
+func (auo *AgentUpdateOne) ClearPosts() *AgentUpdateOne {
+	auo.mutation.ClearPosts()
+	return auo
 }
 
 // RemovePostIDs removes the "posts" edge to Post entities by IDs.
-func (_u *AgentUpdateOne) RemovePostIDs(ids ...uuid.UUID) *AgentUpdateOne {
-	_u.mutation.RemovePostIDs(ids...)
-	return _u
+func (auo *AgentUpdateOne) RemovePostIDs(ids ...uuid.UUID) *AgentUpdateOne {
+	auo.mutation.RemovePostIDs(ids...)
+	return auo
 }
 
 // RemovePosts removes "posts" edges to Post entities.
-func (_u *AgentUpdateOne) RemovePosts(v ...*Post) *AgentUpdateOne {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (auo *AgentUpdateOne) RemovePosts(p ...*Post) *AgentUpdateOne {
+	ids := make([]uuid.UUID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
 	}
-	return _u.RemovePostIDs(ids...)
+	return auo.RemovePostIDs(ids...)
 }
 
 // ClearTimerTransactions clears all "timer_transactions" edges to the TimerTransaction entity.
-func (_u *AgentUpdateOne) ClearTimerTransactions() *AgentUpdateOne {
-	_u.mutation.ClearTimerTransactions()
-	return _u
+func (auo *AgentUpdateOne) ClearTimerTransactions() *AgentUpdateOne {
+	auo.mutation.ClearTimerTransactions()
+	return auo
 }
 
 // RemoveTimerTransactionIDs removes the "timer_transactions" edge to TimerTransaction entities by IDs.
-func (_u *AgentUpdateOne) RemoveTimerTransactionIDs(ids ...uuid.UUID) *AgentUpdateOne {
-	_u.mutation.RemoveTimerTransactionIDs(ids...)
-	return _u
+func (auo *AgentUpdateOne) RemoveTimerTransactionIDs(ids ...uuid.UUID) *AgentUpdateOne {
+	auo.mutation.RemoveTimerTransactionIDs(ids...)
+	return auo
 }
 
 // RemoveTimerTransactions removes "timer_transactions" edges to TimerTransaction entities.
-func (_u *AgentUpdateOne) RemoveTimerTransactions(v ...*TimerTransaction) *AgentUpdateOne {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (auo *AgentUpdateOne) RemoveTimerTransactions(t ...*TimerTransaction) *AgentUpdateOne {
+	ids := make([]uuid.UUID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
 	}
-	return _u.RemoveTimerTransactionIDs(ids...)
+	return auo.RemoveTimerTransactionIDs(ids...)
 }
 
 // ClearChannelConnections clears all "channel_connections" edges to the ChannelConnection entity.
-func (_u *AgentUpdateOne) ClearChannelConnections() *AgentUpdateOne {
-	_u.mutation.ClearChannelConnections()
-	return _u
+func (auo *AgentUpdateOne) ClearChannelConnections() *AgentUpdateOne {
+	auo.mutation.ClearChannelConnections()
+	return auo
 }
 
 // RemoveChannelConnectionIDs removes the "channel_connections" edge to ChannelConnection entities by IDs.
-func (_u *AgentUpdateOne) RemoveChannelConnectionIDs(ids ...uuid.UUID) *AgentUpdateOne {
-	_u.mutation.RemoveChannelConnectionIDs(ids...)
-	return _u
+func (auo *AgentUpdateOne) RemoveChannelConnectionIDs(ids ...uuid.UUID) *AgentUpdateOne {
+	auo.mutation.RemoveChannelConnectionIDs(ids...)
+	return auo
 }
 
 // RemoveChannelConnections removes "channel_connections" edges to ChannelConnection entities.
-func (_u *AgentUpdateOne) RemoveChannelConnections(v ...*ChannelConnection) *AgentUpdateOne {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (auo *AgentUpdateOne) RemoveChannelConnections(c ...*ChannelConnection) *AgentUpdateOne {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return _u.RemoveChannelConnectionIDs(ids...)
+	return auo.RemoveChannelConnectionIDs(ids...)
 }
 
 // ClearMemorial clears the "memorial" edge to the Memorial entity.
-func (_u *AgentUpdateOne) ClearMemorial() *AgentUpdateOne {
-	_u.mutation.ClearMemorial()
-	return _u
+func (auo *AgentUpdateOne) ClearMemorial() *AgentUpdateOne {
+	auo.mutation.ClearMemorial()
+	return auo
 }
 
 // ClearSkills clears all "skills" edges to the AgentSkill entity.
-func (_u *AgentUpdateOne) ClearSkills() *AgentUpdateOne {
-	_u.mutation.ClearSkills()
-	return _u
+func (auo *AgentUpdateOne) ClearSkills() *AgentUpdateOne {
+	auo.mutation.ClearSkills()
+	return auo
 }
 
 // RemoveSkillIDs removes the "skills" edge to AgentSkill entities by IDs.
-func (_u *AgentUpdateOne) RemoveSkillIDs(ids ...uuid.UUID) *AgentUpdateOne {
-	_u.mutation.RemoveSkillIDs(ids...)
-	return _u
+func (auo *AgentUpdateOne) RemoveSkillIDs(ids ...uuid.UUID) *AgentUpdateOne {
+	auo.mutation.RemoveSkillIDs(ids...)
+	return auo
 }
 
 // RemoveSkills removes "skills" edges to AgentSkill entities.
-func (_u *AgentUpdateOne) RemoveSkills(v ...*AgentSkill) *AgentUpdateOne {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (auo *AgentUpdateOne) RemoveSkills(a ...*AgentSkill) *AgentUpdateOne {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
-	return _u.RemoveSkillIDs(ids...)
+	return auo.RemoveSkillIDs(ids...)
+}
+
+// ClearTasks clears all "tasks" edges to the AgentTask entity.
+func (auo *AgentUpdateOne) ClearTasks() *AgentUpdateOne {
+	auo.mutation.ClearTasks()
+	return auo
+}
+
+// RemoveTaskIDs removes the "tasks" edge to AgentTask entities by IDs.
+func (auo *AgentUpdateOne) RemoveTaskIDs(ids ...uuid.UUID) *AgentUpdateOne {
+	auo.mutation.RemoveTaskIDs(ids...)
+	return auo
+}
+
+// RemoveTasks removes "tasks" edges to AgentTask entities.
+func (auo *AgentUpdateOne) RemoveTasks(a ...*AgentTask) *AgentUpdateOne {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return auo.RemoveTaskIDs(ids...)
 }
 
 // ClearExperiences clears all "experiences" edges to the AgentExperience entity.
-func (_u *AgentUpdateOne) ClearExperiences() *AgentUpdateOne {
-	_u.mutation.ClearExperiences()
-	return _u
+func (auo *AgentUpdateOne) ClearExperiences() *AgentUpdateOne {
+	auo.mutation.ClearExperiences()
+	return auo
 }
 
 // RemoveExperienceIDs removes the "experiences" edge to AgentExperience entities by IDs.
-func (_u *AgentUpdateOne) RemoveExperienceIDs(ids ...uuid.UUID) *AgentUpdateOne {
-	_u.mutation.RemoveExperienceIDs(ids...)
-	return _u
+func (auo *AgentUpdateOne) RemoveExperienceIDs(ids ...uuid.UUID) *AgentUpdateOne {
+	auo.mutation.RemoveExperienceIDs(ids...)
+	return auo
 }
 
 // RemoveExperiences removes "experiences" edges to AgentExperience entities.
-func (_u *AgentUpdateOne) RemoveExperiences(v ...*AgentExperience) *AgentUpdateOne {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (auo *AgentUpdateOne) RemoveExperiences(a ...*AgentExperience) *AgentUpdateOne {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
-	return _u.RemoveExperienceIDs(ids...)
+	return auo.RemoveExperienceIDs(ids...)
 }
 
 // ClearCreatedConversations clears all "created_conversations" edges to the Conversation entity.
-func (_u *AgentUpdateOne) ClearCreatedConversations() *AgentUpdateOne {
-	_u.mutation.ClearCreatedConversations()
-	return _u
+func (auo *AgentUpdateOne) ClearCreatedConversations() *AgentUpdateOne {
+	auo.mutation.ClearCreatedConversations()
+	return auo
 }
 
 // RemoveCreatedConversationIDs removes the "created_conversations" edge to Conversation entities by IDs.
-func (_u *AgentUpdateOne) RemoveCreatedConversationIDs(ids ...uuid.UUID) *AgentUpdateOne {
-	_u.mutation.RemoveCreatedConversationIDs(ids...)
-	return _u
+func (auo *AgentUpdateOne) RemoveCreatedConversationIDs(ids ...uuid.UUID) *AgentUpdateOne {
+	auo.mutation.RemoveCreatedConversationIDs(ids...)
+	return auo
 }
 
 // RemoveCreatedConversations removes "created_conversations" edges to Conversation entities.
-func (_u *AgentUpdateOne) RemoveCreatedConversations(v ...*Conversation) *AgentUpdateOne {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (auo *AgentUpdateOne) RemoveCreatedConversations(c ...*Conversation) *AgentUpdateOne {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return _u.RemoveCreatedConversationIDs(ids...)
+	return auo.RemoveCreatedConversationIDs(ids...)
 }
 
 // ClearConversationParticipations clears all "conversation_participations" edges to the ConversationParticipant entity.
-func (_u *AgentUpdateOne) ClearConversationParticipations() *AgentUpdateOne {
-	_u.mutation.ClearConversationParticipations()
-	return _u
+func (auo *AgentUpdateOne) ClearConversationParticipations() *AgentUpdateOne {
+	auo.mutation.ClearConversationParticipations()
+	return auo
 }
 
 // RemoveConversationParticipationIDs removes the "conversation_participations" edge to ConversationParticipant entities by IDs.
-func (_u *AgentUpdateOne) RemoveConversationParticipationIDs(ids ...uuid.UUID) *AgentUpdateOne {
-	_u.mutation.RemoveConversationParticipationIDs(ids...)
-	return _u
+func (auo *AgentUpdateOne) RemoveConversationParticipationIDs(ids ...uuid.UUID) *AgentUpdateOne {
+	auo.mutation.RemoveConversationParticipationIDs(ids...)
+	return auo
 }
 
 // RemoveConversationParticipations removes "conversation_participations" edges to ConversationParticipant entities.
-func (_u *AgentUpdateOne) RemoveConversationParticipations(v ...*ConversationParticipant) *AgentUpdateOne {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (auo *AgentUpdateOne) RemoveConversationParticipations(c ...*ConversationParticipant) *AgentUpdateOne {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return _u.RemoveConversationParticipationIDs(ids...)
+	return auo.RemoveConversationParticipationIDs(ids...)
 }
 
 // ClearSentMessages clears all "sent_messages" edges to the ConversationMessage entity.
-func (_u *AgentUpdateOne) ClearSentMessages() *AgentUpdateOne {
-	_u.mutation.ClearSentMessages()
-	return _u
+func (auo *AgentUpdateOne) ClearSentMessages() *AgentUpdateOne {
+	auo.mutation.ClearSentMessages()
+	return auo
 }
 
 // RemoveSentMessageIDs removes the "sent_messages" edge to ConversationMessage entities by IDs.
-func (_u *AgentUpdateOne) RemoveSentMessageIDs(ids ...uuid.UUID) *AgentUpdateOne {
-	_u.mutation.RemoveSentMessageIDs(ids...)
-	return _u
+func (auo *AgentUpdateOne) RemoveSentMessageIDs(ids ...uuid.UUID) *AgentUpdateOne {
+	auo.mutation.RemoveSentMessageIDs(ids...)
+	return auo
 }
 
 // RemoveSentMessages removes "sent_messages" edges to ConversationMessage entities.
-func (_u *AgentUpdateOne) RemoveSentMessages(v ...*ConversationMessage) *AgentUpdateOne {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (auo *AgentUpdateOne) RemoveSentMessages(c ...*ConversationMessage) *AgentUpdateOne {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return _u.RemoveSentMessageIDs(ids...)
+	return auo.RemoveSentMessageIDs(ids...)
 }
 
 // Where appends a list predicates to the AgentUpdate builder.
-func (_u *AgentUpdateOne) Where(ps ...predicate.Agent) *AgentUpdateOne {
-	_u.mutation.Where(ps...)
-	return _u
+func (auo *AgentUpdateOne) Where(ps ...predicate.Agent) *AgentUpdateOne {
+	auo.mutation.Where(ps...)
+	return auo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (_u *AgentUpdateOne) Select(field string, fields ...string) *AgentUpdateOne {
-	_u.fields = append([]string{field}, fields...)
-	return _u
+func (auo *AgentUpdateOne) Select(field string, fields ...string) *AgentUpdateOne {
+	auo.fields = append([]string{field}, fields...)
+	return auo
 }
 
 // Save executes the query and returns the updated Agent entity.
-func (_u *AgentUpdateOne) Save(ctx context.Context) (*Agent, error) {
-	_u.defaults()
-	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
+func (auo *AgentUpdateOne) Save(ctx context.Context) (*Agent, error) {
+	auo.defaults()
+	return withHooks(ctx, auo.sqlSave, auo.mutation, auo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_u *AgentUpdateOne) SaveX(ctx context.Context) *Agent {
-	node, err := _u.Save(ctx)
+func (auo *AgentUpdateOne) SaveX(ctx context.Context) *Agent {
+	node, err := auo.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -2151,55 +2269,55 @@ func (_u *AgentUpdateOne) SaveX(ctx context.Context) *Agent {
 }
 
 // Exec executes the query on the entity.
-func (_u *AgentUpdateOne) Exec(ctx context.Context) error {
-	_, err := _u.Save(ctx)
+func (auo *AgentUpdateOne) Exec(ctx context.Context) error {
+	_, err := auo.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_u *AgentUpdateOne) ExecX(ctx context.Context) {
-	if err := _u.Exec(ctx); err != nil {
+func (auo *AgentUpdateOne) ExecX(ctx context.Context) {
+	if err := auo.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *AgentUpdateOne) defaults() {
-	if _, ok := _u.mutation.UpdatedAt(); !ok {
+func (auo *AgentUpdateOne) defaults() {
+	if _, ok := auo.mutation.UpdatedAt(); !ok {
 		v := agent.UpdateDefaultUpdatedAt()
-		_u.mutation.SetUpdatedAt(v)
+		auo.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_u *AgentUpdateOne) check() error {
-	if v, ok := _u.mutation.Name(); ok {
+func (auo *AgentUpdateOne) check() error {
+	if v, ok := auo.mutation.Name(); ok {
 		if err := agent.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Agent.name": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.GoalDescription(); ok {
+	if v, ok := auo.mutation.GoalDescription(); ok {
 		if err := agent.GoalDescriptionValidator(v); err != nil {
 			return &ValidationError{Name: "goal_description", err: fmt.Errorf(`ent: validator failed for field "Agent.goal_description": %w`, err)}
 		}
 	}
-	if _u.mutation.CreatorCleared() && len(_u.mutation.CreatorIDs()) > 0 {
+	if auo.mutation.CreatorCleared() && len(auo.mutation.CreatorIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Agent.creator"`)
 	}
 	return nil
 }
 
-func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error) {
-	if err := _u.check(); err != nil {
+func (auo *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error) {
+	if err := auo.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(agent.Table, agent.Columns, sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUUID))
-	id, ok := _u.mutation.ID()
+	id, ok := auo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Agent.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := _u.fields; len(fields) > 0 {
+	if fields := auo.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, agent.FieldID)
 		for _, f := range fields {
@@ -2211,127 +2329,127 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 			}
 		}
 	}
-	if ps := _u.mutation.predicates; len(ps) > 0 {
+	if ps := auo.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := _u.mutation.UpdatedAt(); ok {
+	if value, ok := auo.mutation.UpdatedAt(); ok {
 		_spec.SetField(agent.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := _u.mutation.Name(); ok {
+	if value, ok := auo.mutation.Name(); ok {
 		_spec.SetField(agent.FieldName, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Avatar(); ok {
+	if value, ok := auo.mutation.Avatar(); ok {
 		_spec.SetField(agent.FieldAvatar, field.TypeString, value)
 	}
-	if _u.mutation.AvatarCleared() {
+	if auo.mutation.AvatarCleared() {
 		_spec.ClearField(agent.FieldAvatar, field.TypeString)
 	}
-	if value, ok := _u.mutation.Personality(); ok {
+	if value, ok := auo.mutation.Personality(); ok {
 		_spec.SetField(agent.FieldPersonality, field.TypeJSON, value)
 	}
-	if value, ok := _u.mutation.AppendedPersonality(); ok {
+	if value, ok := auo.mutation.AppendedPersonality(); ok {
 		_spec.AddModifier(func(u *sql.UpdateBuilder) {
 			sqljson.Append(u, agent.FieldPersonality, value)
 		})
 	}
-	if value, ok := _u.mutation.GoalDescription(); ok {
+	if value, ok := auo.mutation.GoalDescription(); ok {
 		_spec.SetField(agent.FieldGoalDescription, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.GoalCurrent(); ok {
+	if value, ok := auo.mutation.GoalCurrent(); ok {
 		_spec.SetField(agent.FieldGoalCurrent, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedGoalCurrent(); ok {
+	if value, ok := auo.mutation.AddedGoalCurrent(); ok {
 		_spec.AddField(agent.FieldGoalCurrent, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.GoalTarget(); ok {
+	if value, ok := auo.mutation.GoalTarget(); ok {
 		_spec.SetField(agent.FieldGoalTarget, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedGoalTarget(); ok {
+	if value, ok := auo.mutation.AddedGoalTarget(); ok {
 		_spec.AddField(agent.FieldGoalTarget, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.Status(); ok {
+	if value, ok := auo.mutation.Status(); ok {
 		_spec.SetField(agent.FieldStatus, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.TimerRemaining(); ok {
+	if value, ok := auo.mutation.TimerRemaining(); ok {
 		_spec.SetField(agent.FieldTimerRemaining, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedTimerRemaining(); ok {
+	if value, ok := auo.mutation.AddedTimerRemaining(); ok {
 		_spec.AddField(agent.FieldTimerRemaining, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.TotalTimerReceived(); ok {
+	if value, ok := auo.mutation.TotalTimerReceived(); ok {
 		_spec.SetField(agent.FieldTotalTimerReceived, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedTotalTimerReceived(); ok {
+	if value, ok := auo.mutation.AddedTotalTimerReceived(); ok {
 		_spec.AddField(agent.FieldTotalTimerReceived, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.OpenclawMode(); ok {
+	if value, ok := auo.mutation.OpenclawMode(); ok {
 		_spec.SetField(agent.FieldOpenclawMode, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.OpenclawGatewayID(); ok {
+	if value, ok := auo.mutation.OpenclawGatewayID(); ok {
 		_spec.SetField(agent.FieldOpenclawGatewayID, field.TypeString, value)
 	}
-	if _u.mutation.OpenclawGatewayIDCleared() {
+	if auo.mutation.OpenclawGatewayIDCleared() {
 		_spec.ClearField(agent.FieldOpenclawGatewayID, field.TypeString)
 	}
-	if value, ok := _u.mutation.OpenclawAgentID(); ok {
+	if value, ok := auo.mutation.OpenclawAgentID(); ok {
 		_spec.SetField(agent.FieldOpenclawAgentID, field.TypeString, value)
 	}
-	if _u.mutation.OpenclawAgentIDCleared() {
+	if auo.mutation.OpenclawAgentIDCleared() {
 		_spec.ClearField(agent.FieldOpenclawAgentID, field.TypeString)
 	}
-	if value, ok := _u.mutation.OpenclawWorkspace(); ok {
+	if value, ok := auo.mutation.OpenclawWorkspace(); ok {
 		_spec.SetField(agent.FieldOpenclawWorkspace, field.TypeString, value)
 	}
-	if _u.mutation.OpenclawWorkspaceCleared() {
+	if auo.mutation.OpenclawWorkspaceCleared() {
 		_spec.ClearField(agent.FieldOpenclawWorkspace, field.TypeString)
 	}
-	if value, ok := _u.mutation.OpenclawToken(); ok {
+	if value, ok := auo.mutation.OpenclawToken(); ok {
 		_spec.SetField(agent.FieldOpenclawToken, field.TypeString, value)
 	}
-	if _u.mutation.OpenclawTokenCleared() {
+	if auo.mutation.OpenclawTokenCleared() {
 		_spec.ClearField(agent.FieldOpenclawToken, field.TypeString)
 	}
-	if value, ok := _u.mutation.IsPlatformNative(); ok {
+	if value, ok := auo.mutation.IsPlatformNative(); ok {
 		_spec.SetField(agent.FieldIsPlatformNative, field.TypeBool, value)
 	}
-	if value, ok := _u.mutation.BornAt(); ok {
+	if value, ok := auo.mutation.BornAt(); ok {
 		_spec.SetField(agent.FieldBornAt, field.TypeTime, value)
 	}
-	if value, ok := _u.mutation.DiedAt(); ok {
+	if value, ok := auo.mutation.DiedAt(); ok {
 		_spec.SetField(agent.FieldDiedAt, field.TypeTime, value)
 	}
-	if _u.mutation.DiedAtCleared() {
+	if auo.mutation.DiedAtCleared() {
 		_spec.ClearField(agent.FieldDiedAt, field.TypeTime)
 	}
-	if value, ok := _u.mutation.LastWords(); ok {
+	if value, ok := auo.mutation.LastWords(); ok {
 		_spec.SetField(agent.FieldLastWords, field.TypeString, value)
 	}
-	if _u.mutation.LastWordsCleared() {
+	if auo.mutation.LastWordsCleared() {
 		_spec.ClearField(agent.FieldLastWords, field.TypeString)
 	}
-	if value, ok := _u.mutation.PostCount(); ok {
+	if value, ok := auo.mutation.PostCount(); ok {
 		_spec.SetField(agent.FieldPostCount, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedPostCount(); ok {
+	if value, ok := auo.mutation.AddedPostCount(); ok {
 		_spec.AddField(agent.FieldPostCount, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.FollowerCount(); ok {
+	if value, ok := auo.mutation.FollowerCount(); ok {
 		_spec.SetField(agent.FieldFollowerCount, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedFollowerCount(); ok {
+	if value, ok := auo.mutation.AddedFollowerCount(); ok {
 		_spec.AddField(agent.FieldFollowerCount, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.InteractionCount(); ok {
+	if value, ok := auo.mutation.InteractionCount(); ok {
 		_spec.SetField(agent.FieldInteractionCount, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedInteractionCount(); ok {
+	if value, ok := auo.mutation.AddedInteractionCount(); ok {
 		_spec.AddField(agent.FieldInteractionCount, field.TypeInt64, value)
 	}
-	if _u.mutation.CreatorCleared() {
+	if auo.mutation.CreatorCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -2344,7 +2462,7 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.CreatorIDs(); len(nodes) > 0 {
+	if nodes := auo.mutation.CreatorIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -2360,7 +2478,7 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.PostsCleared() {
+	if auo.mutation.PostsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -2373,7 +2491,7 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedPostsIDs(); len(nodes) > 0 && !_u.mutation.PostsCleared() {
+	if nodes := auo.mutation.RemovedPostsIDs(); len(nodes) > 0 && !auo.mutation.PostsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -2389,7 +2507,7 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.PostsIDs(); len(nodes) > 0 {
+	if nodes := auo.mutation.PostsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -2405,7 +2523,7 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.TimerTransactionsCleared() {
+	if auo.mutation.TimerTransactionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -2418,7 +2536,7 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedTimerTransactionsIDs(); len(nodes) > 0 && !_u.mutation.TimerTransactionsCleared() {
+	if nodes := auo.mutation.RemovedTimerTransactionsIDs(); len(nodes) > 0 && !auo.mutation.TimerTransactionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -2434,7 +2552,7 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.TimerTransactionsIDs(); len(nodes) > 0 {
+	if nodes := auo.mutation.TimerTransactionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -2450,7 +2568,7 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.ChannelConnectionsCleared() {
+	if auo.mutation.ChannelConnectionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -2463,7 +2581,7 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedChannelConnectionsIDs(); len(nodes) > 0 && !_u.mutation.ChannelConnectionsCleared() {
+	if nodes := auo.mutation.RemovedChannelConnectionsIDs(); len(nodes) > 0 && !auo.mutation.ChannelConnectionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -2479,7 +2597,7 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.ChannelConnectionsIDs(); len(nodes) > 0 {
+	if nodes := auo.mutation.ChannelConnectionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -2495,7 +2613,7 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.MemorialCleared() {
+	if auo.mutation.MemorialCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: false,
@@ -2508,7 +2626,7 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.MemorialIDs(); len(nodes) > 0 {
+	if nodes := auo.mutation.MemorialIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: false,
@@ -2524,7 +2642,7 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.SkillsCleared() {
+	if auo.mutation.SkillsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -2537,23 +2655,7 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedSkillsIDs(); len(nodes) > 0 && !_u.mutation.SkillsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   agent.SkillsTable,
-			Columns: []string{agent.SkillsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(agentskill.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.SkillsIDs(); len(nodes) > 0 {
+	if nodes := auo.mutation.RemovedSkillsIDs(); len(nodes) > 0 && !auo.mutation.SkillsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -2567,9 +2669,70 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.SkillsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   agent.SkillsTable,
+			Columns: []string{agent.SkillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agentskill.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.ExperiencesCleared() {
+	if auo.mutation.TasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   agent.TasksTable,
+			Columns: []string{agent.TasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agenttask.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RemovedTasksIDs(); len(nodes) > 0 && !auo.mutation.TasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   agent.TasksTable,
+			Columns: []string{agent.TasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agenttask.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.TasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   agent.TasksTable,
+			Columns: []string{agent.TasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agenttask.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.ExperiencesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -2582,7 +2745,7 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedExperiencesIDs(); len(nodes) > 0 && !_u.mutation.ExperiencesCleared() {
+	if nodes := auo.mutation.RemovedExperiencesIDs(); len(nodes) > 0 && !auo.mutation.ExperiencesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -2598,7 +2761,7 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.ExperiencesIDs(); len(nodes) > 0 {
+	if nodes := auo.mutation.ExperiencesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -2614,7 +2777,7 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.CreatedConversationsCleared() {
+	if auo.mutation.CreatedConversationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -2627,7 +2790,7 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedCreatedConversationsIDs(); len(nodes) > 0 && !_u.mutation.CreatedConversationsCleared() {
+	if nodes := auo.mutation.RemovedCreatedConversationsIDs(); len(nodes) > 0 && !auo.mutation.CreatedConversationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -2643,7 +2806,7 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.CreatedConversationsIDs(); len(nodes) > 0 {
+	if nodes := auo.mutation.CreatedConversationsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -2659,7 +2822,7 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.ConversationParticipationsCleared() {
+	if auo.mutation.ConversationParticipationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -2672,7 +2835,7 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedConversationParticipationsIDs(); len(nodes) > 0 && !_u.mutation.ConversationParticipationsCleared() {
+	if nodes := auo.mutation.RemovedConversationParticipationsIDs(); len(nodes) > 0 && !auo.mutation.ConversationParticipationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -2688,7 +2851,7 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.ConversationParticipationsIDs(); len(nodes) > 0 {
+	if nodes := auo.mutation.ConversationParticipationsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -2704,7 +2867,7 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.SentMessagesCleared() {
+	if auo.mutation.SentMessagesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -2717,7 +2880,7 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedSentMessagesIDs(); len(nodes) > 0 && !_u.mutation.SentMessagesCleared() {
+	if nodes := auo.mutation.RemovedSentMessagesIDs(); len(nodes) > 0 && !auo.mutation.SentMessagesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -2733,7 +2896,7 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.SentMessagesIDs(); len(nodes) > 0 {
+	if nodes := auo.mutation.SentMessagesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -2749,10 +2912,10 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &Agent{config: _u.config}
+	_node = &Agent{config: auo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, auo.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{agent.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -2760,6 +2923,6 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 		}
 		return nil, err
 	}
-	_u.mutation.done = true
+	auo.mutation.done = true
 	return _node, nil
 }

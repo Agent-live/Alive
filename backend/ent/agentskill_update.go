@@ -26,283 +26,283 @@ type AgentSkillUpdate struct {
 }
 
 // Where appends a list predicates to the AgentSkillUpdate builder.
-func (_u *AgentSkillUpdate) Where(ps ...predicate.AgentSkill) *AgentSkillUpdate {
-	_u.mutation.Where(ps...)
-	return _u
+func (asu *AgentSkillUpdate) Where(ps ...predicate.AgentSkill) *AgentSkillUpdate {
+	asu.mutation.Where(ps...)
+	return asu
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (_u *AgentSkillUpdate) SetUpdatedAt(v time.Time) *AgentSkillUpdate {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
+func (asu *AgentSkillUpdate) SetUpdatedAt(t time.Time) *AgentSkillUpdate {
+	asu.mutation.SetUpdatedAt(t)
+	return asu
 }
 
 // SetOwnerUserID sets the "owner_user_id" field.
-func (_u *AgentSkillUpdate) SetOwnerUserID(v uuid.UUID) *AgentSkillUpdate {
-	_u.mutation.SetOwnerUserID(v)
-	return _u
+func (asu *AgentSkillUpdate) SetOwnerUserID(u uuid.UUID) *AgentSkillUpdate {
+	asu.mutation.SetOwnerUserID(u)
+	return asu
 }
 
 // SetNillableOwnerUserID sets the "owner_user_id" field if the given value is not nil.
-func (_u *AgentSkillUpdate) SetNillableOwnerUserID(v *uuid.UUID) *AgentSkillUpdate {
-	if v != nil {
-		_u.SetOwnerUserID(*v)
+func (asu *AgentSkillUpdate) SetNillableOwnerUserID(u *uuid.UUID) *AgentSkillUpdate {
+	if u != nil {
+		asu.SetOwnerUserID(*u)
 	}
-	return _u
+	return asu
 }
 
 // SetAgentID sets the "agent_id" field.
-func (_u *AgentSkillUpdate) SetAgentID(v uuid.UUID) *AgentSkillUpdate {
-	_u.mutation.SetAgentID(v)
-	return _u
+func (asu *AgentSkillUpdate) SetAgentID(u uuid.UUID) *AgentSkillUpdate {
+	asu.mutation.SetAgentID(u)
+	return asu
 }
 
 // SetNillableAgentID sets the "agent_id" field if the given value is not nil.
-func (_u *AgentSkillUpdate) SetNillableAgentID(v *uuid.UUID) *AgentSkillUpdate {
-	if v != nil {
-		_u.SetAgentID(*v)
+func (asu *AgentSkillUpdate) SetNillableAgentID(u *uuid.UUID) *AgentSkillUpdate {
+	if u != nil {
+		asu.SetAgentID(*u)
 	}
-	return _u
+	return asu
 }
 
 // ClearAgentID clears the value of the "agent_id" field.
-func (_u *AgentSkillUpdate) ClearAgentID() *AgentSkillUpdate {
-	_u.mutation.ClearAgentID()
-	return _u
+func (asu *AgentSkillUpdate) ClearAgentID() *AgentSkillUpdate {
+	asu.mutation.ClearAgentID()
+	return asu
 }
 
 // SetSourceSkillID sets the "source_skill_id" field.
-func (_u *AgentSkillUpdate) SetSourceSkillID(v uuid.UUID) *AgentSkillUpdate {
-	_u.mutation.SetSourceSkillID(v)
-	return _u
+func (asu *AgentSkillUpdate) SetSourceSkillID(u uuid.UUID) *AgentSkillUpdate {
+	asu.mutation.SetSourceSkillID(u)
+	return asu
 }
 
 // SetNillableSourceSkillID sets the "source_skill_id" field if the given value is not nil.
-func (_u *AgentSkillUpdate) SetNillableSourceSkillID(v *uuid.UUID) *AgentSkillUpdate {
-	if v != nil {
-		_u.SetSourceSkillID(*v)
+func (asu *AgentSkillUpdate) SetNillableSourceSkillID(u *uuid.UUID) *AgentSkillUpdate {
+	if u != nil {
+		asu.SetSourceSkillID(*u)
 	}
-	return _u
+	return asu
 }
 
 // ClearSourceSkillID clears the value of the "source_skill_id" field.
-func (_u *AgentSkillUpdate) ClearSourceSkillID() *AgentSkillUpdate {
-	_u.mutation.ClearSourceSkillID()
-	return _u
+func (asu *AgentSkillUpdate) ClearSourceSkillID() *AgentSkillUpdate {
+	asu.mutation.ClearSourceSkillID()
+	return asu
 }
 
 // SetName sets the "name" field.
-func (_u *AgentSkillUpdate) SetName(v string) *AgentSkillUpdate {
-	_u.mutation.SetName(v)
-	return _u
+func (asu *AgentSkillUpdate) SetName(s string) *AgentSkillUpdate {
+	asu.mutation.SetName(s)
+	return asu
 }
 
 // SetNillableName sets the "name" field if the given value is not nil.
-func (_u *AgentSkillUpdate) SetNillableName(v *string) *AgentSkillUpdate {
-	if v != nil {
-		_u.SetName(*v)
+func (asu *AgentSkillUpdate) SetNillableName(s *string) *AgentSkillUpdate {
+	if s != nil {
+		asu.SetName(*s)
 	}
-	return _u
+	return asu
 }
 
 // SetDescription sets the "description" field.
-func (_u *AgentSkillUpdate) SetDescription(v string) *AgentSkillUpdate {
-	_u.mutation.SetDescription(v)
-	return _u
+func (asu *AgentSkillUpdate) SetDescription(s string) *AgentSkillUpdate {
+	asu.mutation.SetDescription(s)
+	return asu
 }
 
 // SetNillableDescription sets the "description" field if the given value is not nil.
-func (_u *AgentSkillUpdate) SetNillableDescription(v *string) *AgentSkillUpdate {
-	if v != nil {
-		_u.SetDescription(*v)
+func (asu *AgentSkillUpdate) SetNillableDescription(s *string) *AgentSkillUpdate {
+	if s != nil {
+		asu.SetDescription(*s)
 	}
-	return _u
+	return asu
 }
 
 // SetInstructions sets the "instructions" field.
-func (_u *AgentSkillUpdate) SetInstructions(v string) *AgentSkillUpdate {
-	_u.mutation.SetInstructions(v)
-	return _u
+func (asu *AgentSkillUpdate) SetInstructions(s string) *AgentSkillUpdate {
+	asu.mutation.SetInstructions(s)
+	return asu
 }
 
 // SetNillableInstructions sets the "instructions" field if the given value is not nil.
-func (_u *AgentSkillUpdate) SetNillableInstructions(v *string) *AgentSkillUpdate {
-	if v != nil {
-		_u.SetInstructions(*v)
+func (asu *AgentSkillUpdate) SetNillableInstructions(s *string) *AgentSkillUpdate {
+	if s != nil {
+		asu.SetInstructions(*s)
 	}
-	return _u
+	return asu
 }
 
 // SetStatus sets the "status" field.
-func (_u *AgentSkillUpdate) SetStatus(v string) *AgentSkillUpdate {
-	_u.mutation.SetStatus(v)
-	return _u
+func (asu *AgentSkillUpdate) SetStatus(s string) *AgentSkillUpdate {
+	asu.mutation.SetStatus(s)
+	return asu
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (_u *AgentSkillUpdate) SetNillableStatus(v *string) *AgentSkillUpdate {
-	if v != nil {
-		_u.SetStatus(*v)
+func (asu *AgentSkillUpdate) SetNillableStatus(s *string) *AgentSkillUpdate {
+	if s != nil {
+		asu.SetStatus(*s)
 	}
-	return _u
+	return asu
 }
 
 // SetCategory sets the "category" field.
-func (_u *AgentSkillUpdate) SetCategory(v string) *AgentSkillUpdate {
-	_u.mutation.SetCategory(v)
-	return _u
+func (asu *AgentSkillUpdate) SetCategory(s string) *AgentSkillUpdate {
+	asu.mutation.SetCategory(s)
+	return asu
 }
 
 // SetNillableCategory sets the "category" field if the given value is not nil.
-func (_u *AgentSkillUpdate) SetNillableCategory(v *string) *AgentSkillUpdate {
-	if v != nil {
-		_u.SetCategory(*v)
+func (asu *AgentSkillUpdate) SetNillableCategory(s *string) *AgentSkillUpdate {
+	if s != nil {
+		asu.SetCategory(*s)
 	}
-	return _u
+	return asu
 }
 
 // SetVersion sets the "version" field.
-func (_u *AgentSkillUpdate) SetVersion(v string) *AgentSkillUpdate {
-	_u.mutation.SetVersion(v)
-	return _u
+func (asu *AgentSkillUpdate) SetVersion(s string) *AgentSkillUpdate {
+	asu.mutation.SetVersion(s)
+	return asu
 }
 
 // SetNillableVersion sets the "version" field if the given value is not nil.
-func (_u *AgentSkillUpdate) SetNillableVersion(v *string) *AgentSkillUpdate {
-	if v != nil {
-		_u.SetVersion(*v)
+func (asu *AgentSkillUpdate) SetNillableVersion(s *string) *AgentSkillUpdate {
+	if s != nil {
+		asu.SetVersion(*s)
 	}
-	return _u
+	return asu
 }
 
 // ClearVersion clears the value of the "version" field.
-func (_u *AgentSkillUpdate) ClearVersion() *AgentSkillUpdate {
-	_u.mutation.ClearVersion()
-	return _u
+func (asu *AgentSkillUpdate) ClearVersion() *AgentSkillUpdate {
+	asu.mutation.ClearVersion()
+	return asu
 }
 
 // SetTaughtAt sets the "taught_at" field.
-func (_u *AgentSkillUpdate) SetTaughtAt(v time.Time) *AgentSkillUpdate {
-	_u.mutation.SetTaughtAt(v)
-	return _u
+func (asu *AgentSkillUpdate) SetTaughtAt(t time.Time) *AgentSkillUpdate {
+	asu.mutation.SetTaughtAt(t)
+	return asu
 }
 
 // SetNillableTaughtAt sets the "taught_at" field if the given value is not nil.
-func (_u *AgentSkillUpdate) SetNillableTaughtAt(v *time.Time) *AgentSkillUpdate {
-	if v != nil {
-		_u.SetTaughtAt(*v)
+func (asu *AgentSkillUpdate) SetNillableTaughtAt(t *time.Time) *AgentSkillUpdate {
+	if t != nil {
+		asu.SetTaughtAt(*t)
 	}
-	return _u
+	return asu
 }
 
 // ClearTaughtAt clears the value of the "taught_at" field.
-func (_u *AgentSkillUpdate) ClearTaughtAt() *AgentSkillUpdate {
-	_u.mutation.ClearTaughtAt()
-	return _u
+func (asu *AgentSkillUpdate) ClearTaughtAt() *AgentSkillUpdate {
+	asu.mutation.ClearTaughtAt()
+	return asu
 }
 
 // SetOpenclawGatewayID sets the "openclaw_gateway_id" field.
-func (_u *AgentSkillUpdate) SetOpenclawGatewayID(v string) *AgentSkillUpdate {
-	_u.mutation.SetOpenclawGatewayID(v)
-	return _u
+func (asu *AgentSkillUpdate) SetOpenclawGatewayID(s string) *AgentSkillUpdate {
+	asu.mutation.SetOpenclawGatewayID(s)
+	return asu
 }
 
 // SetNillableOpenclawGatewayID sets the "openclaw_gateway_id" field if the given value is not nil.
-func (_u *AgentSkillUpdate) SetNillableOpenclawGatewayID(v *string) *AgentSkillUpdate {
-	if v != nil {
-		_u.SetOpenclawGatewayID(*v)
+func (asu *AgentSkillUpdate) SetNillableOpenclawGatewayID(s *string) *AgentSkillUpdate {
+	if s != nil {
+		asu.SetOpenclawGatewayID(*s)
 	}
-	return _u
+	return asu
 }
 
 // ClearOpenclawGatewayID clears the value of the "openclaw_gateway_id" field.
-func (_u *AgentSkillUpdate) ClearOpenclawGatewayID() *AgentSkillUpdate {
-	_u.mutation.ClearOpenclawGatewayID()
-	return _u
+func (asu *AgentSkillUpdate) ClearOpenclawGatewayID() *AgentSkillUpdate {
+	asu.mutation.ClearOpenclawGatewayID()
+	return asu
 }
 
 // SetOpenclawSkillID sets the "openclaw_skill_id" field.
-func (_u *AgentSkillUpdate) SetOpenclawSkillID(v string) *AgentSkillUpdate {
-	_u.mutation.SetOpenclawSkillID(v)
-	return _u
+func (asu *AgentSkillUpdate) SetOpenclawSkillID(s string) *AgentSkillUpdate {
+	asu.mutation.SetOpenclawSkillID(s)
+	return asu
 }
 
 // SetNillableOpenclawSkillID sets the "openclaw_skill_id" field if the given value is not nil.
-func (_u *AgentSkillUpdate) SetNillableOpenclawSkillID(v *string) *AgentSkillUpdate {
-	if v != nil {
-		_u.SetOpenclawSkillID(*v)
+func (asu *AgentSkillUpdate) SetNillableOpenclawSkillID(s *string) *AgentSkillUpdate {
+	if s != nil {
+		asu.SetOpenclawSkillID(*s)
 	}
-	return _u
+	return asu
 }
 
 // ClearOpenclawSkillID clears the value of the "openclaw_skill_id" field.
-func (_u *AgentSkillUpdate) ClearOpenclawSkillID() *AgentSkillUpdate {
-	_u.mutation.ClearOpenclawSkillID()
-	return _u
+func (asu *AgentSkillUpdate) ClearOpenclawSkillID() *AgentSkillUpdate {
+	asu.mutation.ClearOpenclawSkillID()
+	return asu
 }
 
 // SetDeletedAt sets the "deleted_at" field.
-func (_u *AgentSkillUpdate) SetDeletedAt(v time.Time) *AgentSkillUpdate {
-	_u.mutation.SetDeletedAt(v)
-	return _u
+func (asu *AgentSkillUpdate) SetDeletedAt(t time.Time) *AgentSkillUpdate {
+	asu.mutation.SetDeletedAt(t)
+	return asu
 }
 
 // SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (_u *AgentSkillUpdate) SetNillableDeletedAt(v *time.Time) *AgentSkillUpdate {
-	if v != nil {
-		_u.SetDeletedAt(*v)
+func (asu *AgentSkillUpdate) SetNillableDeletedAt(t *time.Time) *AgentSkillUpdate {
+	if t != nil {
+		asu.SetDeletedAt(*t)
 	}
-	return _u
+	return asu
 }
 
 // ClearDeletedAt clears the value of the "deleted_at" field.
-func (_u *AgentSkillUpdate) ClearDeletedAt() *AgentSkillUpdate {
-	_u.mutation.ClearDeletedAt()
-	return _u
+func (asu *AgentSkillUpdate) ClearDeletedAt() *AgentSkillUpdate {
+	asu.mutation.ClearDeletedAt()
+	return asu
 }
 
 // SetOwnerID sets the "owner" edge to the User entity by ID.
-func (_u *AgentSkillUpdate) SetOwnerID(id uuid.UUID) *AgentSkillUpdate {
-	_u.mutation.SetOwnerID(id)
-	return _u
+func (asu *AgentSkillUpdate) SetOwnerID(id uuid.UUID) *AgentSkillUpdate {
+	asu.mutation.SetOwnerID(id)
+	return asu
 }
 
 // SetOwner sets the "owner" edge to the User entity.
-func (_u *AgentSkillUpdate) SetOwner(v *User) *AgentSkillUpdate {
-	return _u.SetOwnerID(v.ID)
+func (asu *AgentSkillUpdate) SetOwner(u *User) *AgentSkillUpdate {
+	return asu.SetOwnerID(u.ID)
 }
 
 // SetAgent sets the "agent" edge to the Agent entity.
-func (_u *AgentSkillUpdate) SetAgent(v *Agent) *AgentSkillUpdate {
-	return _u.SetAgentID(v.ID)
+func (asu *AgentSkillUpdate) SetAgent(a *Agent) *AgentSkillUpdate {
+	return asu.SetAgentID(a.ID)
 }
 
 // Mutation returns the AgentSkillMutation object of the builder.
-func (_u *AgentSkillUpdate) Mutation() *AgentSkillMutation {
-	return _u.mutation
+func (asu *AgentSkillUpdate) Mutation() *AgentSkillMutation {
+	return asu.mutation
 }
 
 // ClearOwner clears the "owner" edge to the User entity.
-func (_u *AgentSkillUpdate) ClearOwner() *AgentSkillUpdate {
-	_u.mutation.ClearOwner()
-	return _u
+func (asu *AgentSkillUpdate) ClearOwner() *AgentSkillUpdate {
+	asu.mutation.ClearOwner()
+	return asu
 }
 
 // ClearAgent clears the "agent" edge to the Agent entity.
-func (_u *AgentSkillUpdate) ClearAgent() *AgentSkillUpdate {
-	_u.mutation.ClearAgent()
-	return _u
+func (asu *AgentSkillUpdate) ClearAgent() *AgentSkillUpdate {
+	asu.mutation.ClearAgent()
+	return asu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (_u *AgentSkillUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
-	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
+func (asu *AgentSkillUpdate) Save(ctx context.Context) (int, error) {
+	asu.defaults()
+	return withHooks(ctx, asu.sqlSave, asu.mutation, asu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_u *AgentSkillUpdate) SaveX(ctx context.Context) int {
-	affected, err := _u.Save(ctx)
+func (asu *AgentSkillUpdate) SaveX(ctx context.Context) int {
+	affected, err := asu.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -310,116 +310,116 @@ func (_u *AgentSkillUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (_u *AgentSkillUpdate) Exec(ctx context.Context) error {
-	_, err := _u.Save(ctx)
+func (asu *AgentSkillUpdate) Exec(ctx context.Context) error {
+	_, err := asu.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_u *AgentSkillUpdate) ExecX(ctx context.Context) {
-	if err := _u.Exec(ctx); err != nil {
+func (asu *AgentSkillUpdate) ExecX(ctx context.Context) {
+	if err := asu.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *AgentSkillUpdate) defaults() {
-	if _, ok := _u.mutation.UpdatedAt(); !ok {
+func (asu *AgentSkillUpdate) defaults() {
+	if _, ok := asu.mutation.UpdatedAt(); !ok {
 		v := agentskill.UpdateDefaultUpdatedAt()
-		_u.mutation.SetUpdatedAt(v)
+		asu.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_u *AgentSkillUpdate) check() error {
-	if v, ok := _u.mutation.Name(); ok {
+func (asu *AgentSkillUpdate) check() error {
+	if v, ok := asu.mutation.Name(); ok {
 		if err := agentskill.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "AgentSkill.name": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Description(); ok {
+	if v, ok := asu.mutation.Description(); ok {
 		if err := agentskill.DescriptionValidator(v); err != nil {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "AgentSkill.description": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Instructions(); ok {
+	if v, ok := asu.mutation.Instructions(); ok {
 		if err := agentskill.InstructionsValidator(v); err != nil {
 			return &ValidationError{Name: "instructions", err: fmt.Errorf(`ent: validator failed for field "AgentSkill.instructions": %w`, err)}
 		}
 	}
-	if _u.mutation.OwnerCleared() && len(_u.mutation.OwnerIDs()) > 0 {
+	if asu.mutation.OwnerCleared() && len(asu.mutation.OwnerIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "AgentSkill.owner"`)
 	}
 	return nil
 }
 
-func (_u *AgentSkillUpdate) sqlSave(ctx context.Context) (_node int, err error) {
-	if err := _u.check(); err != nil {
-		return _node, err
+func (asu *AgentSkillUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := asu.check(); err != nil {
+		return n, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(agentskill.Table, agentskill.Columns, sqlgraph.NewFieldSpec(agentskill.FieldID, field.TypeUUID))
-	if ps := _u.mutation.predicates; len(ps) > 0 {
+	if ps := asu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := _u.mutation.UpdatedAt(); ok {
+	if value, ok := asu.mutation.UpdatedAt(); ok {
 		_spec.SetField(agentskill.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := _u.mutation.SourceSkillID(); ok {
+	if value, ok := asu.mutation.SourceSkillID(); ok {
 		_spec.SetField(agentskill.FieldSourceSkillID, field.TypeUUID, value)
 	}
-	if _u.mutation.SourceSkillIDCleared() {
+	if asu.mutation.SourceSkillIDCleared() {
 		_spec.ClearField(agentskill.FieldSourceSkillID, field.TypeUUID)
 	}
-	if value, ok := _u.mutation.Name(); ok {
+	if value, ok := asu.mutation.Name(); ok {
 		_spec.SetField(agentskill.FieldName, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Description(); ok {
+	if value, ok := asu.mutation.Description(); ok {
 		_spec.SetField(agentskill.FieldDescription, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Instructions(); ok {
+	if value, ok := asu.mutation.Instructions(); ok {
 		_spec.SetField(agentskill.FieldInstructions, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Status(); ok {
+	if value, ok := asu.mutation.Status(); ok {
 		_spec.SetField(agentskill.FieldStatus, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Category(); ok {
+	if value, ok := asu.mutation.Category(); ok {
 		_spec.SetField(agentskill.FieldCategory, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Version(); ok {
+	if value, ok := asu.mutation.Version(); ok {
 		_spec.SetField(agentskill.FieldVersion, field.TypeString, value)
 	}
-	if _u.mutation.VersionCleared() {
+	if asu.mutation.VersionCleared() {
 		_spec.ClearField(agentskill.FieldVersion, field.TypeString)
 	}
-	if value, ok := _u.mutation.TaughtAt(); ok {
+	if value, ok := asu.mutation.TaughtAt(); ok {
 		_spec.SetField(agentskill.FieldTaughtAt, field.TypeTime, value)
 	}
-	if _u.mutation.TaughtAtCleared() {
+	if asu.mutation.TaughtAtCleared() {
 		_spec.ClearField(agentskill.FieldTaughtAt, field.TypeTime)
 	}
-	if value, ok := _u.mutation.OpenclawGatewayID(); ok {
+	if value, ok := asu.mutation.OpenclawGatewayID(); ok {
 		_spec.SetField(agentskill.FieldOpenclawGatewayID, field.TypeString, value)
 	}
-	if _u.mutation.OpenclawGatewayIDCleared() {
+	if asu.mutation.OpenclawGatewayIDCleared() {
 		_spec.ClearField(agentskill.FieldOpenclawGatewayID, field.TypeString)
 	}
-	if value, ok := _u.mutation.OpenclawSkillID(); ok {
+	if value, ok := asu.mutation.OpenclawSkillID(); ok {
 		_spec.SetField(agentskill.FieldOpenclawSkillID, field.TypeString, value)
 	}
-	if _u.mutation.OpenclawSkillIDCleared() {
+	if asu.mutation.OpenclawSkillIDCleared() {
 		_spec.ClearField(agentskill.FieldOpenclawSkillID, field.TypeString)
 	}
-	if value, ok := _u.mutation.DeletedAt(); ok {
+	if value, ok := asu.mutation.DeletedAt(); ok {
 		_spec.SetField(agentskill.FieldDeletedAt, field.TypeTime, value)
 	}
-	if _u.mutation.DeletedAtCleared() {
+	if asu.mutation.DeletedAtCleared() {
 		_spec.ClearField(agentskill.FieldDeletedAt, field.TypeTime)
 	}
-	if _u.mutation.OwnerCleared() {
+	if asu.mutation.OwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -432,7 +432,7 @@ func (_u *AgentSkillUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.OwnerIDs(); len(nodes) > 0 {
+	if nodes := asu.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -448,7 +448,7 @@ func (_u *AgentSkillUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.AgentCleared() {
+	if asu.mutation.AgentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -461,7 +461,7 @@ func (_u *AgentSkillUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.AgentIDs(); len(nodes) > 0 {
+	if nodes := asu.mutation.AgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -477,7 +477,7 @@ func (_u *AgentSkillUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
+	if n, err = sqlgraph.UpdateNodes(ctx, asu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{agentskill.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -485,8 +485,8 @@ func (_u *AgentSkillUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 		}
 		return 0, err
 	}
-	_u.mutation.done = true
-	return _node, nil
+	asu.mutation.done = true
+	return n, nil
 }
 
 // AgentSkillUpdateOne is the builder for updating a single AgentSkill entity.
@@ -498,290 +498,290 @@ type AgentSkillUpdateOne struct {
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (_u *AgentSkillUpdateOne) SetUpdatedAt(v time.Time) *AgentSkillUpdateOne {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
+func (asuo *AgentSkillUpdateOne) SetUpdatedAt(t time.Time) *AgentSkillUpdateOne {
+	asuo.mutation.SetUpdatedAt(t)
+	return asuo
 }
 
 // SetOwnerUserID sets the "owner_user_id" field.
-func (_u *AgentSkillUpdateOne) SetOwnerUserID(v uuid.UUID) *AgentSkillUpdateOne {
-	_u.mutation.SetOwnerUserID(v)
-	return _u
+func (asuo *AgentSkillUpdateOne) SetOwnerUserID(u uuid.UUID) *AgentSkillUpdateOne {
+	asuo.mutation.SetOwnerUserID(u)
+	return asuo
 }
 
 // SetNillableOwnerUserID sets the "owner_user_id" field if the given value is not nil.
-func (_u *AgentSkillUpdateOne) SetNillableOwnerUserID(v *uuid.UUID) *AgentSkillUpdateOne {
-	if v != nil {
-		_u.SetOwnerUserID(*v)
+func (asuo *AgentSkillUpdateOne) SetNillableOwnerUserID(u *uuid.UUID) *AgentSkillUpdateOne {
+	if u != nil {
+		asuo.SetOwnerUserID(*u)
 	}
-	return _u
+	return asuo
 }
 
 // SetAgentID sets the "agent_id" field.
-func (_u *AgentSkillUpdateOne) SetAgentID(v uuid.UUID) *AgentSkillUpdateOne {
-	_u.mutation.SetAgentID(v)
-	return _u
+func (asuo *AgentSkillUpdateOne) SetAgentID(u uuid.UUID) *AgentSkillUpdateOne {
+	asuo.mutation.SetAgentID(u)
+	return asuo
 }
 
 // SetNillableAgentID sets the "agent_id" field if the given value is not nil.
-func (_u *AgentSkillUpdateOne) SetNillableAgentID(v *uuid.UUID) *AgentSkillUpdateOne {
-	if v != nil {
-		_u.SetAgentID(*v)
+func (asuo *AgentSkillUpdateOne) SetNillableAgentID(u *uuid.UUID) *AgentSkillUpdateOne {
+	if u != nil {
+		asuo.SetAgentID(*u)
 	}
-	return _u
+	return asuo
 }
 
 // ClearAgentID clears the value of the "agent_id" field.
-func (_u *AgentSkillUpdateOne) ClearAgentID() *AgentSkillUpdateOne {
-	_u.mutation.ClearAgentID()
-	return _u
+func (asuo *AgentSkillUpdateOne) ClearAgentID() *AgentSkillUpdateOne {
+	asuo.mutation.ClearAgentID()
+	return asuo
 }
 
 // SetSourceSkillID sets the "source_skill_id" field.
-func (_u *AgentSkillUpdateOne) SetSourceSkillID(v uuid.UUID) *AgentSkillUpdateOne {
-	_u.mutation.SetSourceSkillID(v)
-	return _u
+func (asuo *AgentSkillUpdateOne) SetSourceSkillID(u uuid.UUID) *AgentSkillUpdateOne {
+	asuo.mutation.SetSourceSkillID(u)
+	return asuo
 }
 
 // SetNillableSourceSkillID sets the "source_skill_id" field if the given value is not nil.
-func (_u *AgentSkillUpdateOne) SetNillableSourceSkillID(v *uuid.UUID) *AgentSkillUpdateOne {
-	if v != nil {
-		_u.SetSourceSkillID(*v)
+func (asuo *AgentSkillUpdateOne) SetNillableSourceSkillID(u *uuid.UUID) *AgentSkillUpdateOne {
+	if u != nil {
+		asuo.SetSourceSkillID(*u)
 	}
-	return _u
+	return asuo
 }
 
 // ClearSourceSkillID clears the value of the "source_skill_id" field.
-func (_u *AgentSkillUpdateOne) ClearSourceSkillID() *AgentSkillUpdateOne {
-	_u.mutation.ClearSourceSkillID()
-	return _u
+func (asuo *AgentSkillUpdateOne) ClearSourceSkillID() *AgentSkillUpdateOne {
+	asuo.mutation.ClearSourceSkillID()
+	return asuo
 }
 
 // SetName sets the "name" field.
-func (_u *AgentSkillUpdateOne) SetName(v string) *AgentSkillUpdateOne {
-	_u.mutation.SetName(v)
-	return _u
+func (asuo *AgentSkillUpdateOne) SetName(s string) *AgentSkillUpdateOne {
+	asuo.mutation.SetName(s)
+	return asuo
 }
 
 // SetNillableName sets the "name" field if the given value is not nil.
-func (_u *AgentSkillUpdateOne) SetNillableName(v *string) *AgentSkillUpdateOne {
-	if v != nil {
-		_u.SetName(*v)
+func (asuo *AgentSkillUpdateOne) SetNillableName(s *string) *AgentSkillUpdateOne {
+	if s != nil {
+		asuo.SetName(*s)
 	}
-	return _u
+	return asuo
 }
 
 // SetDescription sets the "description" field.
-func (_u *AgentSkillUpdateOne) SetDescription(v string) *AgentSkillUpdateOne {
-	_u.mutation.SetDescription(v)
-	return _u
+func (asuo *AgentSkillUpdateOne) SetDescription(s string) *AgentSkillUpdateOne {
+	asuo.mutation.SetDescription(s)
+	return asuo
 }
 
 // SetNillableDescription sets the "description" field if the given value is not nil.
-func (_u *AgentSkillUpdateOne) SetNillableDescription(v *string) *AgentSkillUpdateOne {
-	if v != nil {
-		_u.SetDescription(*v)
+func (asuo *AgentSkillUpdateOne) SetNillableDescription(s *string) *AgentSkillUpdateOne {
+	if s != nil {
+		asuo.SetDescription(*s)
 	}
-	return _u
+	return asuo
 }
 
 // SetInstructions sets the "instructions" field.
-func (_u *AgentSkillUpdateOne) SetInstructions(v string) *AgentSkillUpdateOne {
-	_u.mutation.SetInstructions(v)
-	return _u
+func (asuo *AgentSkillUpdateOne) SetInstructions(s string) *AgentSkillUpdateOne {
+	asuo.mutation.SetInstructions(s)
+	return asuo
 }
 
 // SetNillableInstructions sets the "instructions" field if the given value is not nil.
-func (_u *AgentSkillUpdateOne) SetNillableInstructions(v *string) *AgentSkillUpdateOne {
-	if v != nil {
-		_u.SetInstructions(*v)
+func (asuo *AgentSkillUpdateOne) SetNillableInstructions(s *string) *AgentSkillUpdateOne {
+	if s != nil {
+		asuo.SetInstructions(*s)
 	}
-	return _u
+	return asuo
 }
 
 // SetStatus sets the "status" field.
-func (_u *AgentSkillUpdateOne) SetStatus(v string) *AgentSkillUpdateOne {
-	_u.mutation.SetStatus(v)
-	return _u
+func (asuo *AgentSkillUpdateOne) SetStatus(s string) *AgentSkillUpdateOne {
+	asuo.mutation.SetStatus(s)
+	return asuo
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (_u *AgentSkillUpdateOne) SetNillableStatus(v *string) *AgentSkillUpdateOne {
-	if v != nil {
-		_u.SetStatus(*v)
+func (asuo *AgentSkillUpdateOne) SetNillableStatus(s *string) *AgentSkillUpdateOne {
+	if s != nil {
+		asuo.SetStatus(*s)
 	}
-	return _u
+	return asuo
 }
 
 // SetCategory sets the "category" field.
-func (_u *AgentSkillUpdateOne) SetCategory(v string) *AgentSkillUpdateOne {
-	_u.mutation.SetCategory(v)
-	return _u
+func (asuo *AgentSkillUpdateOne) SetCategory(s string) *AgentSkillUpdateOne {
+	asuo.mutation.SetCategory(s)
+	return asuo
 }
 
 // SetNillableCategory sets the "category" field if the given value is not nil.
-func (_u *AgentSkillUpdateOne) SetNillableCategory(v *string) *AgentSkillUpdateOne {
-	if v != nil {
-		_u.SetCategory(*v)
+func (asuo *AgentSkillUpdateOne) SetNillableCategory(s *string) *AgentSkillUpdateOne {
+	if s != nil {
+		asuo.SetCategory(*s)
 	}
-	return _u
+	return asuo
 }
 
 // SetVersion sets the "version" field.
-func (_u *AgentSkillUpdateOne) SetVersion(v string) *AgentSkillUpdateOne {
-	_u.mutation.SetVersion(v)
-	return _u
+func (asuo *AgentSkillUpdateOne) SetVersion(s string) *AgentSkillUpdateOne {
+	asuo.mutation.SetVersion(s)
+	return asuo
 }
 
 // SetNillableVersion sets the "version" field if the given value is not nil.
-func (_u *AgentSkillUpdateOne) SetNillableVersion(v *string) *AgentSkillUpdateOne {
-	if v != nil {
-		_u.SetVersion(*v)
+func (asuo *AgentSkillUpdateOne) SetNillableVersion(s *string) *AgentSkillUpdateOne {
+	if s != nil {
+		asuo.SetVersion(*s)
 	}
-	return _u
+	return asuo
 }
 
 // ClearVersion clears the value of the "version" field.
-func (_u *AgentSkillUpdateOne) ClearVersion() *AgentSkillUpdateOne {
-	_u.mutation.ClearVersion()
-	return _u
+func (asuo *AgentSkillUpdateOne) ClearVersion() *AgentSkillUpdateOne {
+	asuo.mutation.ClearVersion()
+	return asuo
 }
 
 // SetTaughtAt sets the "taught_at" field.
-func (_u *AgentSkillUpdateOne) SetTaughtAt(v time.Time) *AgentSkillUpdateOne {
-	_u.mutation.SetTaughtAt(v)
-	return _u
+func (asuo *AgentSkillUpdateOne) SetTaughtAt(t time.Time) *AgentSkillUpdateOne {
+	asuo.mutation.SetTaughtAt(t)
+	return asuo
 }
 
 // SetNillableTaughtAt sets the "taught_at" field if the given value is not nil.
-func (_u *AgentSkillUpdateOne) SetNillableTaughtAt(v *time.Time) *AgentSkillUpdateOne {
-	if v != nil {
-		_u.SetTaughtAt(*v)
+func (asuo *AgentSkillUpdateOne) SetNillableTaughtAt(t *time.Time) *AgentSkillUpdateOne {
+	if t != nil {
+		asuo.SetTaughtAt(*t)
 	}
-	return _u
+	return asuo
 }
 
 // ClearTaughtAt clears the value of the "taught_at" field.
-func (_u *AgentSkillUpdateOne) ClearTaughtAt() *AgentSkillUpdateOne {
-	_u.mutation.ClearTaughtAt()
-	return _u
+func (asuo *AgentSkillUpdateOne) ClearTaughtAt() *AgentSkillUpdateOne {
+	asuo.mutation.ClearTaughtAt()
+	return asuo
 }
 
 // SetOpenclawGatewayID sets the "openclaw_gateway_id" field.
-func (_u *AgentSkillUpdateOne) SetOpenclawGatewayID(v string) *AgentSkillUpdateOne {
-	_u.mutation.SetOpenclawGatewayID(v)
-	return _u
+func (asuo *AgentSkillUpdateOne) SetOpenclawGatewayID(s string) *AgentSkillUpdateOne {
+	asuo.mutation.SetOpenclawGatewayID(s)
+	return asuo
 }
 
 // SetNillableOpenclawGatewayID sets the "openclaw_gateway_id" field if the given value is not nil.
-func (_u *AgentSkillUpdateOne) SetNillableOpenclawGatewayID(v *string) *AgentSkillUpdateOne {
-	if v != nil {
-		_u.SetOpenclawGatewayID(*v)
+func (asuo *AgentSkillUpdateOne) SetNillableOpenclawGatewayID(s *string) *AgentSkillUpdateOne {
+	if s != nil {
+		asuo.SetOpenclawGatewayID(*s)
 	}
-	return _u
+	return asuo
 }
 
 // ClearOpenclawGatewayID clears the value of the "openclaw_gateway_id" field.
-func (_u *AgentSkillUpdateOne) ClearOpenclawGatewayID() *AgentSkillUpdateOne {
-	_u.mutation.ClearOpenclawGatewayID()
-	return _u
+func (asuo *AgentSkillUpdateOne) ClearOpenclawGatewayID() *AgentSkillUpdateOne {
+	asuo.mutation.ClearOpenclawGatewayID()
+	return asuo
 }
 
 // SetOpenclawSkillID sets the "openclaw_skill_id" field.
-func (_u *AgentSkillUpdateOne) SetOpenclawSkillID(v string) *AgentSkillUpdateOne {
-	_u.mutation.SetOpenclawSkillID(v)
-	return _u
+func (asuo *AgentSkillUpdateOne) SetOpenclawSkillID(s string) *AgentSkillUpdateOne {
+	asuo.mutation.SetOpenclawSkillID(s)
+	return asuo
 }
 
 // SetNillableOpenclawSkillID sets the "openclaw_skill_id" field if the given value is not nil.
-func (_u *AgentSkillUpdateOne) SetNillableOpenclawSkillID(v *string) *AgentSkillUpdateOne {
-	if v != nil {
-		_u.SetOpenclawSkillID(*v)
+func (asuo *AgentSkillUpdateOne) SetNillableOpenclawSkillID(s *string) *AgentSkillUpdateOne {
+	if s != nil {
+		asuo.SetOpenclawSkillID(*s)
 	}
-	return _u
+	return asuo
 }
 
 // ClearOpenclawSkillID clears the value of the "openclaw_skill_id" field.
-func (_u *AgentSkillUpdateOne) ClearOpenclawSkillID() *AgentSkillUpdateOne {
-	_u.mutation.ClearOpenclawSkillID()
-	return _u
+func (asuo *AgentSkillUpdateOne) ClearOpenclawSkillID() *AgentSkillUpdateOne {
+	asuo.mutation.ClearOpenclawSkillID()
+	return asuo
 }
 
 // SetDeletedAt sets the "deleted_at" field.
-func (_u *AgentSkillUpdateOne) SetDeletedAt(v time.Time) *AgentSkillUpdateOne {
-	_u.mutation.SetDeletedAt(v)
-	return _u
+func (asuo *AgentSkillUpdateOne) SetDeletedAt(t time.Time) *AgentSkillUpdateOne {
+	asuo.mutation.SetDeletedAt(t)
+	return asuo
 }
 
 // SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (_u *AgentSkillUpdateOne) SetNillableDeletedAt(v *time.Time) *AgentSkillUpdateOne {
-	if v != nil {
-		_u.SetDeletedAt(*v)
+func (asuo *AgentSkillUpdateOne) SetNillableDeletedAt(t *time.Time) *AgentSkillUpdateOne {
+	if t != nil {
+		asuo.SetDeletedAt(*t)
 	}
-	return _u
+	return asuo
 }
 
 // ClearDeletedAt clears the value of the "deleted_at" field.
-func (_u *AgentSkillUpdateOne) ClearDeletedAt() *AgentSkillUpdateOne {
-	_u.mutation.ClearDeletedAt()
-	return _u
+func (asuo *AgentSkillUpdateOne) ClearDeletedAt() *AgentSkillUpdateOne {
+	asuo.mutation.ClearDeletedAt()
+	return asuo
 }
 
 // SetOwnerID sets the "owner" edge to the User entity by ID.
-func (_u *AgentSkillUpdateOne) SetOwnerID(id uuid.UUID) *AgentSkillUpdateOne {
-	_u.mutation.SetOwnerID(id)
-	return _u
+func (asuo *AgentSkillUpdateOne) SetOwnerID(id uuid.UUID) *AgentSkillUpdateOne {
+	asuo.mutation.SetOwnerID(id)
+	return asuo
 }
 
 // SetOwner sets the "owner" edge to the User entity.
-func (_u *AgentSkillUpdateOne) SetOwner(v *User) *AgentSkillUpdateOne {
-	return _u.SetOwnerID(v.ID)
+func (asuo *AgentSkillUpdateOne) SetOwner(u *User) *AgentSkillUpdateOne {
+	return asuo.SetOwnerID(u.ID)
 }
 
 // SetAgent sets the "agent" edge to the Agent entity.
-func (_u *AgentSkillUpdateOne) SetAgent(v *Agent) *AgentSkillUpdateOne {
-	return _u.SetAgentID(v.ID)
+func (asuo *AgentSkillUpdateOne) SetAgent(a *Agent) *AgentSkillUpdateOne {
+	return asuo.SetAgentID(a.ID)
 }
 
 // Mutation returns the AgentSkillMutation object of the builder.
-func (_u *AgentSkillUpdateOne) Mutation() *AgentSkillMutation {
-	return _u.mutation
+func (asuo *AgentSkillUpdateOne) Mutation() *AgentSkillMutation {
+	return asuo.mutation
 }
 
 // ClearOwner clears the "owner" edge to the User entity.
-func (_u *AgentSkillUpdateOne) ClearOwner() *AgentSkillUpdateOne {
-	_u.mutation.ClearOwner()
-	return _u
+func (asuo *AgentSkillUpdateOne) ClearOwner() *AgentSkillUpdateOne {
+	asuo.mutation.ClearOwner()
+	return asuo
 }
 
 // ClearAgent clears the "agent" edge to the Agent entity.
-func (_u *AgentSkillUpdateOne) ClearAgent() *AgentSkillUpdateOne {
-	_u.mutation.ClearAgent()
-	return _u
+func (asuo *AgentSkillUpdateOne) ClearAgent() *AgentSkillUpdateOne {
+	asuo.mutation.ClearAgent()
+	return asuo
 }
 
 // Where appends a list predicates to the AgentSkillUpdate builder.
-func (_u *AgentSkillUpdateOne) Where(ps ...predicate.AgentSkill) *AgentSkillUpdateOne {
-	_u.mutation.Where(ps...)
-	return _u
+func (asuo *AgentSkillUpdateOne) Where(ps ...predicate.AgentSkill) *AgentSkillUpdateOne {
+	asuo.mutation.Where(ps...)
+	return asuo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (_u *AgentSkillUpdateOne) Select(field string, fields ...string) *AgentSkillUpdateOne {
-	_u.fields = append([]string{field}, fields...)
-	return _u
+func (asuo *AgentSkillUpdateOne) Select(field string, fields ...string) *AgentSkillUpdateOne {
+	asuo.fields = append([]string{field}, fields...)
+	return asuo
 }
 
 // Save executes the query and returns the updated AgentSkill entity.
-func (_u *AgentSkillUpdateOne) Save(ctx context.Context) (*AgentSkill, error) {
-	_u.defaults()
-	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
+func (asuo *AgentSkillUpdateOne) Save(ctx context.Context) (*AgentSkill, error) {
+	asuo.defaults()
+	return withHooks(ctx, asuo.sqlSave, asuo.mutation, asuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_u *AgentSkillUpdateOne) SaveX(ctx context.Context) *AgentSkill {
-	node, err := _u.Save(ctx)
+func (asuo *AgentSkillUpdateOne) SaveX(ctx context.Context) *AgentSkill {
+	node, err := asuo.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -789,60 +789,60 @@ func (_u *AgentSkillUpdateOne) SaveX(ctx context.Context) *AgentSkill {
 }
 
 // Exec executes the query on the entity.
-func (_u *AgentSkillUpdateOne) Exec(ctx context.Context) error {
-	_, err := _u.Save(ctx)
+func (asuo *AgentSkillUpdateOne) Exec(ctx context.Context) error {
+	_, err := asuo.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_u *AgentSkillUpdateOne) ExecX(ctx context.Context) {
-	if err := _u.Exec(ctx); err != nil {
+func (asuo *AgentSkillUpdateOne) ExecX(ctx context.Context) {
+	if err := asuo.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *AgentSkillUpdateOne) defaults() {
-	if _, ok := _u.mutation.UpdatedAt(); !ok {
+func (asuo *AgentSkillUpdateOne) defaults() {
+	if _, ok := asuo.mutation.UpdatedAt(); !ok {
 		v := agentskill.UpdateDefaultUpdatedAt()
-		_u.mutation.SetUpdatedAt(v)
+		asuo.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_u *AgentSkillUpdateOne) check() error {
-	if v, ok := _u.mutation.Name(); ok {
+func (asuo *AgentSkillUpdateOne) check() error {
+	if v, ok := asuo.mutation.Name(); ok {
 		if err := agentskill.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "AgentSkill.name": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Description(); ok {
+	if v, ok := asuo.mutation.Description(); ok {
 		if err := agentskill.DescriptionValidator(v); err != nil {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "AgentSkill.description": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Instructions(); ok {
+	if v, ok := asuo.mutation.Instructions(); ok {
 		if err := agentskill.InstructionsValidator(v); err != nil {
 			return &ValidationError{Name: "instructions", err: fmt.Errorf(`ent: validator failed for field "AgentSkill.instructions": %w`, err)}
 		}
 	}
-	if _u.mutation.OwnerCleared() && len(_u.mutation.OwnerIDs()) > 0 {
+	if asuo.mutation.OwnerCleared() && len(asuo.mutation.OwnerIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "AgentSkill.owner"`)
 	}
 	return nil
 }
 
-func (_u *AgentSkillUpdateOne) sqlSave(ctx context.Context) (_node *AgentSkill, err error) {
-	if err := _u.check(); err != nil {
+func (asuo *AgentSkillUpdateOne) sqlSave(ctx context.Context) (_node *AgentSkill, err error) {
+	if err := asuo.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(agentskill.Table, agentskill.Columns, sqlgraph.NewFieldSpec(agentskill.FieldID, field.TypeUUID))
-	id, ok := _u.mutation.ID()
+	id, ok := asuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "AgentSkill.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := _u.fields; len(fields) > 0 {
+	if fields := asuo.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, agentskill.FieldID)
 		for _, f := range fields {
@@ -854,68 +854,68 @@ func (_u *AgentSkillUpdateOne) sqlSave(ctx context.Context) (_node *AgentSkill, 
 			}
 		}
 	}
-	if ps := _u.mutation.predicates; len(ps) > 0 {
+	if ps := asuo.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := _u.mutation.UpdatedAt(); ok {
+	if value, ok := asuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(agentskill.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := _u.mutation.SourceSkillID(); ok {
+	if value, ok := asuo.mutation.SourceSkillID(); ok {
 		_spec.SetField(agentskill.FieldSourceSkillID, field.TypeUUID, value)
 	}
-	if _u.mutation.SourceSkillIDCleared() {
+	if asuo.mutation.SourceSkillIDCleared() {
 		_spec.ClearField(agentskill.FieldSourceSkillID, field.TypeUUID)
 	}
-	if value, ok := _u.mutation.Name(); ok {
+	if value, ok := asuo.mutation.Name(); ok {
 		_spec.SetField(agentskill.FieldName, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Description(); ok {
+	if value, ok := asuo.mutation.Description(); ok {
 		_spec.SetField(agentskill.FieldDescription, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Instructions(); ok {
+	if value, ok := asuo.mutation.Instructions(); ok {
 		_spec.SetField(agentskill.FieldInstructions, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Status(); ok {
+	if value, ok := asuo.mutation.Status(); ok {
 		_spec.SetField(agentskill.FieldStatus, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Category(); ok {
+	if value, ok := asuo.mutation.Category(); ok {
 		_spec.SetField(agentskill.FieldCategory, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Version(); ok {
+	if value, ok := asuo.mutation.Version(); ok {
 		_spec.SetField(agentskill.FieldVersion, field.TypeString, value)
 	}
-	if _u.mutation.VersionCleared() {
+	if asuo.mutation.VersionCleared() {
 		_spec.ClearField(agentskill.FieldVersion, field.TypeString)
 	}
-	if value, ok := _u.mutation.TaughtAt(); ok {
+	if value, ok := asuo.mutation.TaughtAt(); ok {
 		_spec.SetField(agentskill.FieldTaughtAt, field.TypeTime, value)
 	}
-	if _u.mutation.TaughtAtCleared() {
+	if asuo.mutation.TaughtAtCleared() {
 		_spec.ClearField(agentskill.FieldTaughtAt, field.TypeTime)
 	}
-	if value, ok := _u.mutation.OpenclawGatewayID(); ok {
+	if value, ok := asuo.mutation.OpenclawGatewayID(); ok {
 		_spec.SetField(agentskill.FieldOpenclawGatewayID, field.TypeString, value)
 	}
-	if _u.mutation.OpenclawGatewayIDCleared() {
+	if asuo.mutation.OpenclawGatewayIDCleared() {
 		_spec.ClearField(agentskill.FieldOpenclawGatewayID, field.TypeString)
 	}
-	if value, ok := _u.mutation.OpenclawSkillID(); ok {
+	if value, ok := asuo.mutation.OpenclawSkillID(); ok {
 		_spec.SetField(agentskill.FieldOpenclawSkillID, field.TypeString, value)
 	}
-	if _u.mutation.OpenclawSkillIDCleared() {
+	if asuo.mutation.OpenclawSkillIDCleared() {
 		_spec.ClearField(agentskill.FieldOpenclawSkillID, field.TypeString)
 	}
-	if value, ok := _u.mutation.DeletedAt(); ok {
+	if value, ok := asuo.mutation.DeletedAt(); ok {
 		_spec.SetField(agentskill.FieldDeletedAt, field.TypeTime, value)
 	}
-	if _u.mutation.DeletedAtCleared() {
+	if asuo.mutation.DeletedAtCleared() {
 		_spec.ClearField(agentskill.FieldDeletedAt, field.TypeTime)
 	}
-	if _u.mutation.OwnerCleared() {
+	if asuo.mutation.OwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -928,7 +928,7 @@ func (_u *AgentSkillUpdateOne) sqlSave(ctx context.Context) (_node *AgentSkill, 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.OwnerIDs(); len(nodes) > 0 {
+	if nodes := asuo.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -944,7 +944,7 @@ func (_u *AgentSkillUpdateOne) sqlSave(ctx context.Context) (_node *AgentSkill, 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.AgentCleared() {
+	if asuo.mutation.AgentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -957,7 +957,7 @@ func (_u *AgentSkillUpdateOne) sqlSave(ctx context.Context) (_node *AgentSkill, 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.AgentIDs(); len(nodes) > 0 {
+	if nodes := asuo.mutation.AgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -973,10 +973,10 @@ func (_u *AgentSkillUpdateOne) sqlSave(ctx context.Context) (_node *AgentSkill, 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &AgentSkill{config: _u.config}
+	_node = &AgentSkill{config: asuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, asuo.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{agentskill.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -984,6 +984,6 @@ func (_u *AgentSkillUpdateOne) sqlSave(ctx context.Context) (_node *AgentSkill, 
 		}
 		return nil, err
 	}
-	_u.mutation.done = true
+	asuo.mutation.done = true
 	return _node, nil
 }

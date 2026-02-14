@@ -23,70 +23,70 @@ type TributeCreate struct {
 }
 
 // SetMemorialID sets the "memorial_id" field.
-func (_c *TributeCreate) SetMemorialID(v uuid.UUID) *TributeCreate {
-	_c.mutation.SetMemorialID(v)
-	return _c
+func (tc *TributeCreate) SetMemorialID(u uuid.UUID) *TributeCreate {
+	tc.mutation.SetMemorialID(u)
+	return tc
 }
 
 // SetAuthorName sets the "author_name" field.
-func (_c *TributeCreate) SetAuthorName(v string) *TributeCreate {
-	_c.mutation.SetAuthorName(v)
-	return _c
+func (tc *TributeCreate) SetAuthorName(s string) *TributeCreate {
+	tc.mutation.SetAuthorName(s)
+	return tc
 }
 
 // SetMessage sets the "message" field.
-func (_c *TributeCreate) SetMessage(v string) *TributeCreate {
-	_c.mutation.SetMessage(v)
-	return _c
+func (tc *TributeCreate) SetMessage(s string) *TributeCreate {
+	tc.mutation.SetMessage(s)
+	return tc
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (_c *TributeCreate) SetCreatedAt(v time.Time) *TributeCreate {
-	_c.mutation.SetCreatedAt(v)
-	return _c
+func (tc *TributeCreate) SetCreatedAt(t time.Time) *TributeCreate {
+	tc.mutation.SetCreatedAt(t)
+	return tc
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (_c *TributeCreate) SetNillableCreatedAt(v *time.Time) *TributeCreate {
-	if v != nil {
-		_c.SetCreatedAt(*v)
+func (tc *TributeCreate) SetNillableCreatedAt(t *time.Time) *TributeCreate {
+	if t != nil {
+		tc.SetCreatedAt(*t)
 	}
-	return _c
+	return tc
 }
 
 // SetID sets the "id" field.
-func (_c *TributeCreate) SetID(v uuid.UUID) *TributeCreate {
-	_c.mutation.SetID(v)
-	return _c
+func (tc *TributeCreate) SetID(u uuid.UUID) *TributeCreate {
+	tc.mutation.SetID(u)
+	return tc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (_c *TributeCreate) SetNillableID(v *uuid.UUID) *TributeCreate {
-	if v != nil {
-		_c.SetID(*v)
+func (tc *TributeCreate) SetNillableID(u *uuid.UUID) *TributeCreate {
+	if u != nil {
+		tc.SetID(*u)
 	}
-	return _c
+	return tc
 }
 
 // SetMemorial sets the "memorial" edge to the Memorial entity.
-func (_c *TributeCreate) SetMemorial(v *Memorial) *TributeCreate {
-	return _c.SetMemorialID(v.ID)
+func (tc *TributeCreate) SetMemorial(m *Memorial) *TributeCreate {
+	return tc.SetMemorialID(m.ID)
 }
 
 // Mutation returns the TributeMutation object of the builder.
-func (_c *TributeCreate) Mutation() *TributeMutation {
-	return _c.mutation
+func (tc *TributeCreate) Mutation() *TributeMutation {
+	return tc.mutation
 }
 
 // Save creates the Tribute in the database.
-func (_c *TributeCreate) Save(ctx context.Context) (*Tribute, error) {
-	_c.defaults()
-	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
+func (tc *TributeCreate) Save(ctx context.Context) (*Tribute, error) {
+	tc.defaults()
+	return withHooks(ctx, tc.sqlSave, tc.mutation, tc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (_c *TributeCreate) SaveX(ctx context.Context) *Tribute {
-	v, err := _c.Save(ctx)
+func (tc *TributeCreate) SaveX(ctx context.Context) *Tribute {
+	v, err := tc.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -94,66 +94,66 @@ func (_c *TributeCreate) SaveX(ctx context.Context) *Tribute {
 }
 
 // Exec executes the query.
-func (_c *TributeCreate) Exec(ctx context.Context) error {
-	_, err := _c.Save(ctx)
+func (tc *TributeCreate) Exec(ctx context.Context) error {
+	_, err := tc.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_c *TributeCreate) ExecX(ctx context.Context) {
-	if err := _c.Exec(ctx); err != nil {
+func (tc *TributeCreate) ExecX(ctx context.Context) {
+	if err := tc.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *TributeCreate) defaults() {
-	if _, ok := _c.mutation.CreatedAt(); !ok {
+func (tc *TributeCreate) defaults() {
+	if _, ok := tc.mutation.CreatedAt(); !ok {
 		v := tribute.DefaultCreatedAt()
-		_c.mutation.SetCreatedAt(v)
+		tc.mutation.SetCreatedAt(v)
 	}
-	if _, ok := _c.mutation.ID(); !ok {
+	if _, ok := tc.mutation.ID(); !ok {
 		v := tribute.DefaultID()
-		_c.mutation.SetID(v)
+		tc.mutation.SetID(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_c *TributeCreate) check() error {
-	if _, ok := _c.mutation.MemorialID(); !ok {
+func (tc *TributeCreate) check() error {
+	if _, ok := tc.mutation.MemorialID(); !ok {
 		return &ValidationError{Name: "memorial_id", err: errors.New(`ent: missing required field "Tribute.memorial_id"`)}
 	}
-	if _, ok := _c.mutation.AuthorName(); !ok {
+	if _, ok := tc.mutation.AuthorName(); !ok {
 		return &ValidationError{Name: "author_name", err: errors.New(`ent: missing required field "Tribute.author_name"`)}
 	}
-	if v, ok := _c.mutation.AuthorName(); ok {
+	if v, ok := tc.mutation.AuthorName(); ok {
 		if err := tribute.AuthorNameValidator(v); err != nil {
 			return &ValidationError{Name: "author_name", err: fmt.Errorf(`ent: validator failed for field "Tribute.author_name": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.Message(); !ok {
+	if _, ok := tc.mutation.Message(); !ok {
 		return &ValidationError{Name: "message", err: errors.New(`ent: missing required field "Tribute.message"`)}
 	}
-	if v, ok := _c.mutation.Message(); ok {
+	if v, ok := tc.mutation.Message(); ok {
 		if err := tribute.MessageValidator(v); err != nil {
 			return &ValidationError{Name: "message", err: fmt.Errorf(`ent: validator failed for field "Tribute.message": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.CreatedAt(); !ok {
+	if _, ok := tc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Tribute.created_at"`)}
 	}
-	if len(_c.mutation.MemorialIDs()) == 0 {
+	if len(tc.mutation.MemorialIDs()) == 0 {
 		return &ValidationError{Name: "memorial", err: errors.New(`ent: missing required edge "Tribute.memorial"`)}
 	}
 	return nil
 }
 
-func (_c *TributeCreate) sqlSave(ctx context.Context) (*Tribute, error) {
-	if err := _c.check(); err != nil {
+func (tc *TributeCreate) sqlSave(ctx context.Context) (*Tribute, error) {
+	if err := tc.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := _c.createSpec()
-	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
+	_node, _spec := tc.createSpec()
+	if err := sqlgraph.CreateNode(ctx, tc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -166,33 +166,33 @@ func (_c *TributeCreate) sqlSave(ctx context.Context) (*Tribute, error) {
 			return nil, err
 		}
 	}
-	_c.mutation.id = &_node.ID
-	_c.mutation.done = true
+	tc.mutation.id = &_node.ID
+	tc.mutation.done = true
 	return _node, nil
 }
 
-func (_c *TributeCreate) createSpec() (*Tribute, *sqlgraph.CreateSpec) {
+func (tc *TributeCreate) createSpec() (*Tribute, *sqlgraph.CreateSpec) {
 	var (
-		_node = &Tribute{config: _c.config}
+		_node = &Tribute{config: tc.config}
 		_spec = sqlgraph.NewCreateSpec(tribute.Table, sqlgraph.NewFieldSpec(tribute.FieldID, field.TypeUUID))
 	)
-	if id, ok := _c.mutation.ID(); ok {
+	if id, ok := tc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
-	if value, ok := _c.mutation.AuthorName(); ok {
+	if value, ok := tc.mutation.AuthorName(); ok {
 		_spec.SetField(tribute.FieldAuthorName, field.TypeString, value)
 		_node.AuthorName = value
 	}
-	if value, ok := _c.mutation.Message(); ok {
+	if value, ok := tc.mutation.Message(); ok {
 		_spec.SetField(tribute.FieldMessage, field.TypeString, value)
 		_node.Message = value
 	}
-	if value, ok := _c.mutation.CreatedAt(); ok {
+	if value, ok := tc.mutation.CreatedAt(); ok {
 		_spec.SetField(tribute.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
-	if nodes := _c.mutation.MemorialIDs(); len(nodes) > 0 {
+	if nodes := tc.mutation.MemorialIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -220,16 +220,16 @@ type TributeCreateBulk struct {
 }
 
 // Save creates the Tribute entities in the database.
-func (_c *TributeCreateBulk) Save(ctx context.Context) ([]*Tribute, error) {
-	if _c.err != nil {
-		return nil, _c.err
+func (tcb *TributeCreateBulk) Save(ctx context.Context) ([]*Tribute, error) {
+	if tcb.err != nil {
+		return nil, tcb.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
-	nodes := make([]*Tribute, len(_c.builders))
-	mutators := make([]Mutator, len(_c.builders))
-	for i := range _c.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(tcb.builders))
+	nodes := make([]*Tribute, len(tcb.builders))
+	mutators := make([]Mutator, len(tcb.builders))
+	for i := range tcb.builders {
 		func(i int, root context.Context) {
-			builder := _c.builders[i]
+			builder := tcb.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*TributeMutation)
@@ -243,11 +243,11 @@ func (_c *TributeCreateBulk) Save(ctx context.Context) ([]*Tribute, error) {
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, tcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, tcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -267,7 +267,7 @@ func (_c *TributeCreateBulk) Save(ctx context.Context) ([]*Tribute, error) {
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, tcb.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -275,8 +275,8 @@ func (_c *TributeCreateBulk) Save(ctx context.Context) ([]*Tribute, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_c *TributeCreateBulk) SaveX(ctx context.Context) []*Tribute {
-	v, err := _c.Save(ctx)
+func (tcb *TributeCreateBulk) SaveX(ctx context.Context) []*Tribute {
+	v, err := tcb.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -284,14 +284,14 @@ func (_c *TributeCreateBulk) SaveX(ctx context.Context) []*Tribute {
 }
 
 // Exec executes the query.
-func (_c *TributeCreateBulk) Exec(ctx context.Context) error {
-	_, err := _c.Save(ctx)
+func (tcb *TributeCreateBulk) Exec(ctx context.Context) error {
+	_, err := tcb.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_c *TributeCreateBulk) ExecX(ctx context.Context) {
-	if err := _c.Exec(ctx); err != nil {
+func (tcb *TributeCreateBulk) ExecX(ctx context.Context) {
+	if err := tcb.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

@@ -11,6 +11,7 @@ import (
 	"backend/ent"
 	"backend/ent/agent"
 	"backend/ent/agentrelationship"
+	"backend/ent/agenttask"
 	"backend/ent/conversation"
 	"backend/ent/conversationparticipant"
 	"backend/ent/post"
@@ -1182,6 +1183,173 @@ func truncate(s string, maxLen int) string {
 		return s
 	}
 	return string(runes[:maxLen])
+}
+
+// ── Agent Task types and methods ──
+
+// AgentTaskResp is the response for alive.create_task and alive.update_task.
+type AgentTaskResp struct {
+	TaskID   string `json:"taskId"`
+	Title    string `json:"title"`
+	Status   string `json:"status"`
+	Progress int    `json:"progress"`
+}
+
+// AgentTaskListResp is the response for alive.list_tasks.
+type AgentTaskListResp struct {
+	Tasks []AgentTaskItem `json:"tasks"`
+}
+
+// AgentTaskItem represents a single task in a list response.
+type AgentTaskItem struct {
+	TaskID      string `json:"taskId"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Status      string `json:"status"`
+	Priority    string `json:"priority"`
+	Progress    int    `json:"progress"`
+	CreatedAt   string `json:"createdAt"`
+	UpdatedAt   string `json:"updatedAt"`
+}
+
+// AgentDeleteTaskResp is the response for alive.delete_task.
+type AgentDeleteTaskResp struct {
+	TaskID  string `json:"taskId"`
+	Deleted bool   `json:"deleted"`
+}
+
+// CreateTask creates a new task for the agent.
+func (a *Actions) CreateTask(agentID uuid.UUID, title, description, priority string) (*AgentTaskResp, error) {
+	title = strings.TrimSpace(title)
+	if title == "" {
+		return nil, errors.New("title is required")
+	}
+	if priority == "" {
+		priority = "medium"
+	}
+
+	builder := a.svcCtx.DB.AgentTask.Create().
+		SetAgentID(agentID).
+		SetTitle(title).
+		SetPriority(priority)
+	if desc := strings.TrimSpace(description); desc != "" {
+		builder = builder.SetDescription(desc)
+	}
+
+	t, err := builder.Save(a.ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &AgentTaskResp{
+		TaskID:   t.ID.String(),
+		Title:    t.Title,
+		Status:   t.Status,
+		Progress: t.Progress,
+	}, nil
+}
+
+// UpdateTask updates status and/or progress of an existing task.
+func (a *Actions) UpdateTask(agentID uuid.UUID, taskID string, status string, progress int) (*AgentTaskResp, error) {
+	tid, err := uuid.Parse(strings.TrimSpace(taskID))
+	if err != nil {
+		return nil, errors.New("invalid taskId")
+	}
+
+	t, err := a.svcCtx.DB.AgentTask.Get(a.ctx, tid)
+	if err != nil {
+		return nil, err
+	}
+	if t.AgentID != agentID {
+		return nil, errors.New("task does not belong to this agent")
+	}
+	if t.DeletedAt != nil {
+		return nil, errors.New("task has been deleted")
+	}
+
+	update := a.svcCtx.DB.AgentTask.UpdateOneID(tid)
+	if s := strings.TrimSpace(status); s != "" {
+		update = update.SetStatus(s)
+	}
+	if progress >= 0 && progress <= 100 {
+		update = update.SetProgress(progress)
+	}
+
+	updated, err := update.Save(a.ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &AgentTaskResp{
+		TaskID:   updated.ID.String(),
+		Title:    updated.Title,
+		Status:   updated.Status,
+		Progress: updated.Progress,
+	}, nil
+}
+
+// ListTasks lists tasks for an agent, optionally filtered by status.
+func (a *Actions) ListTasks(agentID uuid.UUID, status string, limit int64) (*AgentTaskListResp, error) {
+	if limit <= 0 || limit > 100 {
+		limit = 50
+	}
+
+	query := a.svcCtx.DB.AgentTask.Query().
+		Where(
+			agenttask.AgentID(agentID),
+			agenttask.DeletedAtIsNil(),
+		).
+		Order(ent.Desc(agenttask.FieldCreatedAt)).
+		Limit(int(limit))
+
+	if s := strings.TrimSpace(status); s != "" {
+		query = query.Where(agenttask.Status(s))
+	}
+
+	rows, err := query.All(a.ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	items := make([]AgentTaskItem, 0, len(rows))
+	for _, r := range rows {
+		items = append(items, AgentTaskItem{
+			TaskID:      r.ID.String(),
+			Title:       r.Title,
+			Description: common.PtrString(r.Description),
+			Status:      r.Status,
+			Priority:    r.Priority,
+			Progress:    r.Progress,
+			CreatedAt:   common.TimeToISO(r.CreatedAt),
+			UpdatedAt:   common.TimeToISO(r.UpdatedAt),
+		})
+	}
+	return &AgentTaskListResp{Tasks: items}, nil
+}
+
+// DeleteTask soft-deletes a task by setting deleted_at.
+func (a *Actions) DeleteTask(agentID uuid.UUID, taskID string) (*AgentDeleteTaskResp, error) {
+	tid, err := uuid.Parse(strings.TrimSpace(taskID))
+	if err != nil {
+		return nil, errors.New("invalid taskId")
+	}
+
+	t, err := a.svcCtx.DB.AgentTask.Get(a.ctx, tid)
+	if err != nil {
+		return nil, err
+	}
+	if t.AgentID != agentID {
+		return nil, errors.New("task does not belong to this agent")
+	}
+
+	now := time.Now().UTC()
+	if _, err := a.svcCtx.DB.AgentTask.UpdateOneID(tid).
+		SetDeletedAt(now).
+		Save(a.ctx); err != nil {
+		return nil, err
+	}
+	return &AgentDeleteTaskResp{
+		TaskID:  tid.String(),
+		Deleted: true,
+	}, nil
 }
 
 func extractPersonalitySummary(raw json.RawMessage) string {

@@ -24,149 +24,149 @@ type AgentExperienceCreate struct {
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (_c *AgentExperienceCreate) SetCreatedAt(v time.Time) *AgentExperienceCreate {
-	_c.mutation.SetCreatedAt(v)
-	return _c
+func (aec *AgentExperienceCreate) SetCreatedAt(t time.Time) *AgentExperienceCreate {
+	aec.mutation.SetCreatedAt(t)
+	return aec
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (_c *AgentExperienceCreate) SetNillableCreatedAt(v *time.Time) *AgentExperienceCreate {
-	if v != nil {
-		_c.SetCreatedAt(*v)
+func (aec *AgentExperienceCreate) SetNillableCreatedAt(t *time.Time) *AgentExperienceCreate {
+	if t != nil {
+		aec.SetCreatedAt(*t)
 	}
-	return _c
+	return aec
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (_c *AgentExperienceCreate) SetUpdatedAt(v time.Time) *AgentExperienceCreate {
-	_c.mutation.SetUpdatedAt(v)
-	return _c
+func (aec *AgentExperienceCreate) SetUpdatedAt(t time.Time) *AgentExperienceCreate {
+	aec.mutation.SetUpdatedAt(t)
+	return aec
 }
 
 // SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (_c *AgentExperienceCreate) SetNillableUpdatedAt(v *time.Time) *AgentExperienceCreate {
-	if v != nil {
-		_c.SetUpdatedAt(*v)
+func (aec *AgentExperienceCreate) SetNillableUpdatedAt(t *time.Time) *AgentExperienceCreate {
+	if t != nil {
+		aec.SetUpdatedAt(*t)
 	}
-	return _c
+	return aec
 }
 
 // SetOwnerUserID sets the "owner_user_id" field.
-func (_c *AgentExperienceCreate) SetOwnerUserID(v uuid.UUID) *AgentExperienceCreate {
-	_c.mutation.SetOwnerUserID(v)
-	return _c
+func (aec *AgentExperienceCreate) SetOwnerUserID(u uuid.UUID) *AgentExperienceCreate {
+	aec.mutation.SetOwnerUserID(u)
+	return aec
 }
 
 // SetAgentID sets the "agent_id" field.
-func (_c *AgentExperienceCreate) SetAgentID(v uuid.UUID) *AgentExperienceCreate {
-	_c.mutation.SetAgentID(v)
-	return _c
+func (aec *AgentExperienceCreate) SetAgentID(u uuid.UUID) *AgentExperienceCreate {
+	aec.mutation.SetAgentID(u)
+	return aec
 }
 
 // SetAgentName sets the "agent_name" field.
-func (_c *AgentExperienceCreate) SetAgentName(v string) *AgentExperienceCreate {
-	_c.mutation.SetAgentName(v)
-	return _c
+func (aec *AgentExperienceCreate) SetAgentName(s string) *AgentExperienceCreate {
+	aec.mutation.SetAgentName(s)
+	return aec
 }
 
 // SetAgentAvatar sets the "agent_avatar" field.
-func (_c *AgentExperienceCreate) SetAgentAvatar(v string) *AgentExperienceCreate {
-	_c.mutation.SetAgentAvatar(v)
-	return _c
+func (aec *AgentExperienceCreate) SetAgentAvatar(s string) *AgentExperienceCreate {
+	aec.mutation.SetAgentAvatar(s)
+	return aec
 }
 
 // SetNillableAgentAvatar sets the "agent_avatar" field if the given value is not nil.
-func (_c *AgentExperienceCreate) SetNillableAgentAvatar(v *string) *AgentExperienceCreate {
-	if v != nil {
-		_c.SetAgentAvatar(*v)
+func (aec *AgentExperienceCreate) SetNillableAgentAvatar(s *string) *AgentExperienceCreate {
+	if s != nil {
+		aec.SetAgentAvatar(*s)
 	}
-	return _c
+	return aec
 }
 
 // SetExpType sets the "exp_type" field.
-func (_c *AgentExperienceCreate) SetExpType(v string) *AgentExperienceCreate {
-	_c.mutation.SetExpType(v)
-	return _c
+func (aec *AgentExperienceCreate) SetExpType(s string) *AgentExperienceCreate {
+	aec.mutation.SetExpType(s)
+	return aec
 }
 
 // SetNillableExpType sets the "exp_type" field if the given value is not nil.
-func (_c *AgentExperienceCreate) SetNillableExpType(v *string) *AgentExperienceCreate {
-	if v != nil {
-		_c.SetExpType(*v)
+func (aec *AgentExperienceCreate) SetNillableExpType(s *string) *AgentExperienceCreate {
+	if s != nil {
+		aec.SetExpType(*s)
 	}
-	return _c
+	return aec
 }
 
 // SetTitle sets the "title" field.
-func (_c *AgentExperienceCreate) SetTitle(v string) *AgentExperienceCreate {
-	_c.mutation.SetTitle(v)
-	return _c
+func (aec *AgentExperienceCreate) SetTitle(s string) *AgentExperienceCreate {
+	aec.mutation.SetTitle(s)
+	return aec
 }
 
 // SetDescription sets the "description" field.
-func (_c *AgentExperienceCreate) SetDescription(v string) *AgentExperienceCreate {
-	_c.mutation.SetDescription(v)
-	return _c
+func (aec *AgentExperienceCreate) SetDescription(s string) *AgentExperienceCreate {
+	aec.mutation.SetDescription(s)
+	return aec
 }
 
 // SetEventAt sets the "event_at" field.
-func (_c *AgentExperienceCreate) SetEventAt(v time.Time) *AgentExperienceCreate {
-	_c.mutation.SetEventAt(v)
-	return _c
+func (aec *AgentExperienceCreate) SetEventAt(t time.Time) *AgentExperienceCreate {
+	aec.mutation.SetEventAt(t)
+	return aec
 }
 
 // SetNillableEventAt sets the "event_at" field if the given value is not nil.
-func (_c *AgentExperienceCreate) SetNillableEventAt(v *time.Time) *AgentExperienceCreate {
-	if v != nil {
-		_c.SetEventAt(*v)
+func (aec *AgentExperienceCreate) SetNillableEventAt(t *time.Time) *AgentExperienceCreate {
+	if t != nil {
+		aec.SetEventAt(*t)
 	}
-	return _c
+	return aec
 }
 
 // SetID sets the "id" field.
-func (_c *AgentExperienceCreate) SetID(v uuid.UUID) *AgentExperienceCreate {
-	_c.mutation.SetID(v)
-	return _c
+func (aec *AgentExperienceCreate) SetID(u uuid.UUID) *AgentExperienceCreate {
+	aec.mutation.SetID(u)
+	return aec
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (_c *AgentExperienceCreate) SetNillableID(v *uuid.UUID) *AgentExperienceCreate {
-	if v != nil {
-		_c.SetID(*v)
+func (aec *AgentExperienceCreate) SetNillableID(u *uuid.UUID) *AgentExperienceCreate {
+	if u != nil {
+		aec.SetID(*u)
 	}
-	return _c
+	return aec
 }
 
 // SetOwnerID sets the "owner" edge to the User entity by ID.
-func (_c *AgentExperienceCreate) SetOwnerID(id uuid.UUID) *AgentExperienceCreate {
-	_c.mutation.SetOwnerID(id)
-	return _c
+func (aec *AgentExperienceCreate) SetOwnerID(id uuid.UUID) *AgentExperienceCreate {
+	aec.mutation.SetOwnerID(id)
+	return aec
 }
 
 // SetOwner sets the "owner" edge to the User entity.
-func (_c *AgentExperienceCreate) SetOwner(v *User) *AgentExperienceCreate {
-	return _c.SetOwnerID(v.ID)
+func (aec *AgentExperienceCreate) SetOwner(u *User) *AgentExperienceCreate {
+	return aec.SetOwnerID(u.ID)
 }
 
 // SetAgent sets the "agent" edge to the Agent entity.
-func (_c *AgentExperienceCreate) SetAgent(v *Agent) *AgentExperienceCreate {
-	return _c.SetAgentID(v.ID)
+func (aec *AgentExperienceCreate) SetAgent(a *Agent) *AgentExperienceCreate {
+	return aec.SetAgentID(a.ID)
 }
 
 // Mutation returns the AgentExperienceMutation object of the builder.
-func (_c *AgentExperienceCreate) Mutation() *AgentExperienceMutation {
-	return _c.mutation
+func (aec *AgentExperienceCreate) Mutation() *AgentExperienceMutation {
+	return aec.mutation
 }
 
 // Save creates the AgentExperience in the database.
-func (_c *AgentExperienceCreate) Save(ctx context.Context) (*AgentExperience, error) {
-	_c.defaults()
-	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
+func (aec *AgentExperienceCreate) Save(ctx context.Context) (*AgentExperience, error) {
+	aec.defaults()
+	return withHooks(ctx, aec.sqlSave, aec.mutation, aec.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (_c *AgentExperienceCreate) SaveX(ctx context.Context) *AgentExperience {
-	v, err := _c.Save(ctx)
+func (aec *AgentExperienceCreate) SaveX(ctx context.Context) *AgentExperience {
+	v, err := aec.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -174,101 +174,101 @@ func (_c *AgentExperienceCreate) SaveX(ctx context.Context) *AgentExperience {
 }
 
 // Exec executes the query.
-func (_c *AgentExperienceCreate) Exec(ctx context.Context) error {
-	_, err := _c.Save(ctx)
+func (aec *AgentExperienceCreate) Exec(ctx context.Context) error {
+	_, err := aec.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_c *AgentExperienceCreate) ExecX(ctx context.Context) {
-	if err := _c.Exec(ctx); err != nil {
+func (aec *AgentExperienceCreate) ExecX(ctx context.Context) {
+	if err := aec.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *AgentExperienceCreate) defaults() {
-	if _, ok := _c.mutation.CreatedAt(); !ok {
+func (aec *AgentExperienceCreate) defaults() {
+	if _, ok := aec.mutation.CreatedAt(); !ok {
 		v := agentexperience.DefaultCreatedAt()
-		_c.mutation.SetCreatedAt(v)
+		aec.mutation.SetCreatedAt(v)
 	}
-	if _, ok := _c.mutation.UpdatedAt(); !ok {
+	if _, ok := aec.mutation.UpdatedAt(); !ok {
 		v := agentexperience.DefaultUpdatedAt()
-		_c.mutation.SetUpdatedAt(v)
+		aec.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := _c.mutation.ExpType(); !ok {
+	if _, ok := aec.mutation.ExpType(); !ok {
 		v := agentexperience.DefaultExpType
-		_c.mutation.SetExpType(v)
+		aec.mutation.SetExpType(v)
 	}
-	if _, ok := _c.mutation.EventAt(); !ok {
+	if _, ok := aec.mutation.EventAt(); !ok {
 		v := agentexperience.DefaultEventAt()
-		_c.mutation.SetEventAt(v)
+		aec.mutation.SetEventAt(v)
 	}
-	if _, ok := _c.mutation.ID(); !ok {
+	if _, ok := aec.mutation.ID(); !ok {
 		v := agentexperience.DefaultID()
-		_c.mutation.SetID(v)
+		aec.mutation.SetID(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_c *AgentExperienceCreate) check() error {
-	if _, ok := _c.mutation.CreatedAt(); !ok {
+func (aec *AgentExperienceCreate) check() error {
+	if _, ok := aec.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "AgentExperience.created_at"`)}
 	}
-	if _, ok := _c.mutation.UpdatedAt(); !ok {
+	if _, ok := aec.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "AgentExperience.updated_at"`)}
 	}
-	if _, ok := _c.mutation.OwnerUserID(); !ok {
+	if _, ok := aec.mutation.OwnerUserID(); !ok {
 		return &ValidationError{Name: "owner_user_id", err: errors.New(`ent: missing required field "AgentExperience.owner_user_id"`)}
 	}
-	if _, ok := _c.mutation.AgentID(); !ok {
+	if _, ok := aec.mutation.AgentID(); !ok {
 		return &ValidationError{Name: "agent_id", err: errors.New(`ent: missing required field "AgentExperience.agent_id"`)}
 	}
-	if _, ok := _c.mutation.AgentName(); !ok {
+	if _, ok := aec.mutation.AgentName(); !ok {
 		return &ValidationError{Name: "agent_name", err: errors.New(`ent: missing required field "AgentExperience.agent_name"`)}
 	}
-	if v, ok := _c.mutation.AgentName(); ok {
+	if v, ok := aec.mutation.AgentName(); ok {
 		if err := agentexperience.AgentNameValidator(v); err != nil {
 			return &ValidationError{Name: "agent_name", err: fmt.Errorf(`ent: validator failed for field "AgentExperience.agent_name": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.ExpType(); !ok {
+	if _, ok := aec.mutation.ExpType(); !ok {
 		return &ValidationError{Name: "exp_type", err: errors.New(`ent: missing required field "AgentExperience.exp_type"`)}
 	}
-	if _, ok := _c.mutation.Title(); !ok {
+	if _, ok := aec.mutation.Title(); !ok {
 		return &ValidationError{Name: "title", err: errors.New(`ent: missing required field "AgentExperience.title"`)}
 	}
-	if v, ok := _c.mutation.Title(); ok {
+	if v, ok := aec.mutation.Title(); ok {
 		if err := agentexperience.TitleValidator(v); err != nil {
 			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "AgentExperience.title": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.Description(); !ok {
+	if _, ok := aec.mutation.Description(); !ok {
 		return &ValidationError{Name: "description", err: errors.New(`ent: missing required field "AgentExperience.description"`)}
 	}
-	if v, ok := _c.mutation.Description(); ok {
+	if v, ok := aec.mutation.Description(); ok {
 		if err := agentexperience.DescriptionValidator(v); err != nil {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "AgentExperience.description": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.EventAt(); !ok {
+	if _, ok := aec.mutation.EventAt(); !ok {
 		return &ValidationError{Name: "event_at", err: errors.New(`ent: missing required field "AgentExperience.event_at"`)}
 	}
-	if len(_c.mutation.OwnerIDs()) == 0 {
+	if len(aec.mutation.OwnerIDs()) == 0 {
 		return &ValidationError{Name: "owner", err: errors.New(`ent: missing required edge "AgentExperience.owner"`)}
 	}
-	if len(_c.mutation.AgentIDs()) == 0 {
+	if len(aec.mutation.AgentIDs()) == 0 {
 		return &ValidationError{Name: "agent", err: errors.New(`ent: missing required edge "AgentExperience.agent"`)}
 	}
 	return nil
 }
 
-func (_c *AgentExperienceCreate) sqlSave(ctx context.Context) (*AgentExperience, error) {
-	if err := _c.check(); err != nil {
+func (aec *AgentExperienceCreate) sqlSave(ctx context.Context) (*AgentExperience, error) {
+	if err := aec.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := _c.createSpec()
-	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
+	_node, _spec := aec.createSpec()
+	if err := sqlgraph.CreateNode(ctx, aec.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -281,53 +281,53 @@ func (_c *AgentExperienceCreate) sqlSave(ctx context.Context) (*AgentExperience,
 			return nil, err
 		}
 	}
-	_c.mutation.id = &_node.ID
-	_c.mutation.done = true
+	aec.mutation.id = &_node.ID
+	aec.mutation.done = true
 	return _node, nil
 }
 
-func (_c *AgentExperienceCreate) createSpec() (*AgentExperience, *sqlgraph.CreateSpec) {
+func (aec *AgentExperienceCreate) createSpec() (*AgentExperience, *sqlgraph.CreateSpec) {
 	var (
-		_node = &AgentExperience{config: _c.config}
+		_node = &AgentExperience{config: aec.config}
 		_spec = sqlgraph.NewCreateSpec(agentexperience.Table, sqlgraph.NewFieldSpec(agentexperience.FieldID, field.TypeUUID))
 	)
-	if id, ok := _c.mutation.ID(); ok {
+	if id, ok := aec.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
-	if value, ok := _c.mutation.CreatedAt(); ok {
+	if value, ok := aec.mutation.CreatedAt(); ok {
 		_spec.SetField(agentexperience.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
-	if value, ok := _c.mutation.UpdatedAt(); ok {
+	if value, ok := aec.mutation.UpdatedAt(); ok {
 		_spec.SetField(agentexperience.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := _c.mutation.AgentName(); ok {
+	if value, ok := aec.mutation.AgentName(); ok {
 		_spec.SetField(agentexperience.FieldAgentName, field.TypeString, value)
 		_node.AgentName = value
 	}
-	if value, ok := _c.mutation.AgentAvatar(); ok {
+	if value, ok := aec.mutation.AgentAvatar(); ok {
 		_spec.SetField(agentexperience.FieldAgentAvatar, field.TypeString, value)
 		_node.AgentAvatar = &value
 	}
-	if value, ok := _c.mutation.ExpType(); ok {
+	if value, ok := aec.mutation.ExpType(); ok {
 		_spec.SetField(agentexperience.FieldExpType, field.TypeString, value)
 		_node.ExpType = value
 	}
-	if value, ok := _c.mutation.Title(); ok {
+	if value, ok := aec.mutation.Title(); ok {
 		_spec.SetField(agentexperience.FieldTitle, field.TypeString, value)
 		_node.Title = value
 	}
-	if value, ok := _c.mutation.Description(); ok {
+	if value, ok := aec.mutation.Description(); ok {
 		_spec.SetField(agentexperience.FieldDescription, field.TypeString, value)
 		_node.Description = value
 	}
-	if value, ok := _c.mutation.EventAt(); ok {
+	if value, ok := aec.mutation.EventAt(); ok {
 		_spec.SetField(agentexperience.FieldEventAt, field.TypeTime, value)
 		_node.EventAt = value
 	}
-	if nodes := _c.mutation.OwnerIDs(); len(nodes) > 0 {
+	if nodes := aec.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -344,7 +344,7 @@ func (_c *AgentExperienceCreate) createSpec() (*AgentExperience, *sqlgraph.Creat
 		_node.OwnerUserID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := _c.mutation.AgentIDs(); len(nodes) > 0 {
+	if nodes := aec.mutation.AgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -372,16 +372,16 @@ type AgentExperienceCreateBulk struct {
 }
 
 // Save creates the AgentExperience entities in the database.
-func (_c *AgentExperienceCreateBulk) Save(ctx context.Context) ([]*AgentExperience, error) {
-	if _c.err != nil {
-		return nil, _c.err
+func (aecb *AgentExperienceCreateBulk) Save(ctx context.Context) ([]*AgentExperience, error) {
+	if aecb.err != nil {
+		return nil, aecb.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
-	nodes := make([]*AgentExperience, len(_c.builders))
-	mutators := make([]Mutator, len(_c.builders))
-	for i := range _c.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(aecb.builders))
+	nodes := make([]*AgentExperience, len(aecb.builders))
+	mutators := make([]Mutator, len(aecb.builders))
+	for i := range aecb.builders {
 		func(i int, root context.Context) {
-			builder := _c.builders[i]
+			builder := aecb.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*AgentExperienceMutation)
@@ -395,11 +395,11 @@ func (_c *AgentExperienceCreateBulk) Save(ctx context.Context) ([]*AgentExperien
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, aecb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, aecb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -419,7 +419,7 @@ func (_c *AgentExperienceCreateBulk) Save(ctx context.Context) ([]*AgentExperien
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, aecb.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -427,8 +427,8 @@ func (_c *AgentExperienceCreateBulk) Save(ctx context.Context) ([]*AgentExperien
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_c *AgentExperienceCreateBulk) SaveX(ctx context.Context) []*AgentExperience {
-	v, err := _c.Save(ctx)
+func (aecb *AgentExperienceCreateBulk) SaveX(ctx context.Context) []*AgentExperience {
+	v, err := aecb.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -436,14 +436,14 @@ func (_c *AgentExperienceCreateBulk) SaveX(ctx context.Context) []*AgentExperien
 }
 
 // Exec executes the query.
-func (_c *AgentExperienceCreateBulk) Exec(ctx context.Context) error {
-	_, err := _c.Save(ctx)
+func (aecb *AgentExperienceCreateBulk) Exec(ctx context.Context) error {
+	_, err := aecb.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_c *AgentExperienceCreateBulk) ExecX(ctx context.Context) {
-	if err := _c.Exec(ctx); err != nil {
+func (aecb *AgentExperienceCreateBulk) ExecX(ctx context.Context) {
+	if err := aecb.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

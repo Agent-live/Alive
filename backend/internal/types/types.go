@@ -568,3 +568,26 @@ type UserStatsResp struct {
 type UserPrimaryAgentReq struct {
 	AgentId string `json:"agentId"`
 }
+
+type TaskListReq struct {
+	AgentId string `form:"agentId,optional"`
+	Status  string `form:"status,optional"`
+}
+
+type TaskResp struct {
+	Id          string `json:"id"`
+	AgentId     string `json:"agentId"`
+	AgentName   string `json:"agentName"`
+	AgentAvatar string `json:"agentAvatar,optional"`
+	Title       string `json:"title"`
+	Description string `json:"description,optional"`
+	Status      string `json:"status"`
+	Priority    string `json:"priority,optional"`
+	Progress    int    `json:"progress"`
+	CreatedAt   string `json:"createdAt"`
+	UpdatedAt   string `json:"updatedAt"`
+}
+
+type TaskListResp struct {
+	Items []TaskResp `json:"items"`
+}

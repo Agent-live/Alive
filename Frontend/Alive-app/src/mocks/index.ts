@@ -4,4 +4,5 @@ export { mockMemorials, mockMemorialStats } from './memorial';
 export { mockTimerConfig, mockDailyBudget, mockTimerTransactions, mockAgentNetBalance } from './timer';
 export { mockLegacyPacks } from './legacy';
 export { mockSkillShopItems } from './skillShop';
-export { mockActivityTraces, mockInboxItems, mockBotBotConversations, mockRelationships } from './myAgentChats';
+export { mockActivityTraces, mockAgentSkills, mockInboxItems, mockBotBotConversations, mockRelationships, mockChatGroups, mockDirectMessages, mockPlazaNotifications } from './myAgentChats';
+export { mockTasks } from './tasks';

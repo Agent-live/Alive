@@ -24,77 +24,77 @@ type TributeUpdate struct {
 }
 
 // Where appends a list predicates to the TributeUpdate builder.
-func (_u *TributeUpdate) Where(ps ...predicate.Tribute) *TributeUpdate {
-	_u.mutation.Where(ps...)
-	return _u
+func (tu *TributeUpdate) Where(ps ...predicate.Tribute) *TributeUpdate {
+	tu.mutation.Where(ps...)
+	return tu
 }
 
 // SetMemorialID sets the "memorial_id" field.
-func (_u *TributeUpdate) SetMemorialID(v uuid.UUID) *TributeUpdate {
-	_u.mutation.SetMemorialID(v)
-	return _u
+func (tu *TributeUpdate) SetMemorialID(u uuid.UUID) *TributeUpdate {
+	tu.mutation.SetMemorialID(u)
+	return tu
 }
 
 // SetNillableMemorialID sets the "memorial_id" field if the given value is not nil.
-func (_u *TributeUpdate) SetNillableMemorialID(v *uuid.UUID) *TributeUpdate {
-	if v != nil {
-		_u.SetMemorialID(*v)
+func (tu *TributeUpdate) SetNillableMemorialID(u *uuid.UUID) *TributeUpdate {
+	if u != nil {
+		tu.SetMemorialID(*u)
 	}
-	return _u
+	return tu
 }
 
 // SetAuthorName sets the "author_name" field.
-func (_u *TributeUpdate) SetAuthorName(v string) *TributeUpdate {
-	_u.mutation.SetAuthorName(v)
-	return _u
+func (tu *TributeUpdate) SetAuthorName(s string) *TributeUpdate {
+	tu.mutation.SetAuthorName(s)
+	return tu
 }
 
 // SetNillableAuthorName sets the "author_name" field if the given value is not nil.
-func (_u *TributeUpdate) SetNillableAuthorName(v *string) *TributeUpdate {
-	if v != nil {
-		_u.SetAuthorName(*v)
+func (tu *TributeUpdate) SetNillableAuthorName(s *string) *TributeUpdate {
+	if s != nil {
+		tu.SetAuthorName(*s)
 	}
-	return _u
+	return tu
 }
 
 // SetMessage sets the "message" field.
-func (_u *TributeUpdate) SetMessage(v string) *TributeUpdate {
-	_u.mutation.SetMessage(v)
-	return _u
+func (tu *TributeUpdate) SetMessage(s string) *TributeUpdate {
+	tu.mutation.SetMessage(s)
+	return tu
 }
 
 // SetNillableMessage sets the "message" field if the given value is not nil.
-func (_u *TributeUpdate) SetNillableMessage(v *string) *TributeUpdate {
-	if v != nil {
-		_u.SetMessage(*v)
+func (tu *TributeUpdate) SetNillableMessage(s *string) *TributeUpdate {
+	if s != nil {
+		tu.SetMessage(*s)
 	}
-	return _u
+	return tu
 }
 
 // SetMemorial sets the "memorial" edge to the Memorial entity.
-func (_u *TributeUpdate) SetMemorial(v *Memorial) *TributeUpdate {
-	return _u.SetMemorialID(v.ID)
+func (tu *TributeUpdate) SetMemorial(m *Memorial) *TributeUpdate {
+	return tu.SetMemorialID(m.ID)
 }
 
 // Mutation returns the TributeMutation object of the builder.
-func (_u *TributeUpdate) Mutation() *TributeMutation {
-	return _u.mutation
+func (tu *TributeUpdate) Mutation() *TributeMutation {
+	return tu.mutation
 }
 
 // ClearMemorial clears the "memorial" edge to the Memorial entity.
-func (_u *TributeUpdate) ClearMemorial() *TributeUpdate {
-	_u.mutation.ClearMemorial()
-	return _u
+func (tu *TributeUpdate) ClearMemorial() *TributeUpdate {
+	tu.mutation.ClearMemorial()
+	return tu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (_u *TributeUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
+func (tu *TributeUpdate) Save(ctx context.Context) (int, error) {
+	return withHooks(ctx, tu.sqlSave, tu.mutation, tu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_u *TributeUpdate) SaveX(ctx context.Context) int {
-	affected, err := _u.Save(ctx)
+func (tu *TributeUpdate) SaveX(ctx context.Context) int {
+	affected, err := tu.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -102,55 +102,55 @@ func (_u *TributeUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (_u *TributeUpdate) Exec(ctx context.Context) error {
-	_, err := _u.Save(ctx)
+func (tu *TributeUpdate) Exec(ctx context.Context) error {
+	_, err := tu.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_u *TributeUpdate) ExecX(ctx context.Context) {
-	if err := _u.Exec(ctx); err != nil {
+func (tu *TributeUpdate) ExecX(ctx context.Context) {
+	if err := tu.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_u *TributeUpdate) check() error {
-	if v, ok := _u.mutation.AuthorName(); ok {
+func (tu *TributeUpdate) check() error {
+	if v, ok := tu.mutation.AuthorName(); ok {
 		if err := tribute.AuthorNameValidator(v); err != nil {
 			return &ValidationError{Name: "author_name", err: fmt.Errorf(`ent: validator failed for field "Tribute.author_name": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Message(); ok {
+	if v, ok := tu.mutation.Message(); ok {
 		if err := tribute.MessageValidator(v); err != nil {
 			return &ValidationError{Name: "message", err: fmt.Errorf(`ent: validator failed for field "Tribute.message": %w`, err)}
 		}
 	}
-	if _u.mutation.MemorialCleared() && len(_u.mutation.MemorialIDs()) > 0 {
+	if tu.mutation.MemorialCleared() && len(tu.mutation.MemorialIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Tribute.memorial"`)
 	}
 	return nil
 }
 
-func (_u *TributeUpdate) sqlSave(ctx context.Context) (_node int, err error) {
-	if err := _u.check(); err != nil {
-		return _node, err
+func (tu *TributeUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := tu.check(); err != nil {
+		return n, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(tribute.Table, tribute.Columns, sqlgraph.NewFieldSpec(tribute.FieldID, field.TypeUUID))
-	if ps := _u.mutation.predicates; len(ps) > 0 {
+	if ps := tu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := _u.mutation.AuthorName(); ok {
+	if value, ok := tu.mutation.AuthorName(); ok {
 		_spec.SetField(tribute.FieldAuthorName, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Message(); ok {
+	if value, ok := tu.mutation.Message(); ok {
 		_spec.SetField(tribute.FieldMessage, field.TypeString, value)
 	}
-	if _u.mutation.MemorialCleared() {
+	if tu.mutation.MemorialCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -163,7 +163,7 @@ func (_u *TributeUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.MemorialIDs(); len(nodes) > 0 {
+	if nodes := tu.mutation.MemorialIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -179,7 +179,7 @@ func (_u *TributeUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
+	if n, err = sqlgraph.UpdateNodes(ctx, tu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{tribute.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -187,8 +187,8 @@ func (_u *TributeUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		return 0, err
 	}
-	_u.mutation.done = true
-	return _node, nil
+	tu.mutation.done = true
+	return n, nil
 }
 
 // TributeUpdateOne is the builder for updating a single Tribute entity.
@@ -200,84 +200,84 @@ type TributeUpdateOne struct {
 }
 
 // SetMemorialID sets the "memorial_id" field.
-func (_u *TributeUpdateOne) SetMemorialID(v uuid.UUID) *TributeUpdateOne {
-	_u.mutation.SetMemorialID(v)
-	return _u
+func (tuo *TributeUpdateOne) SetMemorialID(u uuid.UUID) *TributeUpdateOne {
+	tuo.mutation.SetMemorialID(u)
+	return tuo
 }
 
 // SetNillableMemorialID sets the "memorial_id" field if the given value is not nil.
-func (_u *TributeUpdateOne) SetNillableMemorialID(v *uuid.UUID) *TributeUpdateOne {
-	if v != nil {
-		_u.SetMemorialID(*v)
+func (tuo *TributeUpdateOne) SetNillableMemorialID(u *uuid.UUID) *TributeUpdateOne {
+	if u != nil {
+		tuo.SetMemorialID(*u)
 	}
-	return _u
+	return tuo
 }
 
 // SetAuthorName sets the "author_name" field.
-func (_u *TributeUpdateOne) SetAuthorName(v string) *TributeUpdateOne {
-	_u.mutation.SetAuthorName(v)
-	return _u
+func (tuo *TributeUpdateOne) SetAuthorName(s string) *TributeUpdateOne {
+	tuo.mutation.SetAuthorName(s)
+	return tuo
 }
 
 // SetNillableAuthorName sets the "author_name" field if the given value is not nil.
-func (_u *TributeUpdateOne) SetNillableAuthorName(v *string) *TributeUpdateOne {
-	if v != nil {
-		_u.SetAuthorName(*v)
+func (tuo *TributeUpdateOne) SetNillableAuthorName(s *string) *TributeUpdateOne {
+	if s != nil {
+		tuo.SetAuthorName(*s)
 	}
-	return _u
+	return tuo
 }
 
 // SetMessage sets the "message" field.
-func (_u *TributeUpdateOne) SetMessage(v string) *TributeUpdateOne {
-	_u.mutation.SetMessage(v)
-	return _u
+func (tuo *TributeUpdateOne) SetMessage(s string) *TributeUpdateOne {
+	tuo.mutation.SetMessage(s)
+	return tuo
 }
 
 // SetNillableMessage sets the "message" field if the given value is not nil.
-func (_u *TributeUpdateOne) SetNillableMessage(v *string) *TributeUpdateOne {
-	if v != nil {
-		_u.SetMessage(*v)
+func (tuo *TributeUpdateOne) SetNillableMessage(s *string) *TributeUpdateOne {
+	if s != nil {
+		tuo.SetMessage(*s)
 	}
-	return _u
+	return tuo
 }
 
 // SetMemorial sets the "memorial" edge to the Memorial entity.
-func (_u *TributeUpdateOne) SetMemorial(v *Memorial) *TributeUpdateOne {
-	return _u.SetMemorialID(v.ID)
+func (tuo *TributeUpdateOne) SetMemorial(m *Memorial) *TributeUpdateOne {
+	return tuo.SetMemorialID(m.ID)
 }
 
 // Mutation returns the TributeMutation object of the builder.
-func (_u *TributeUpdateOne) Mutation() *TributeMutation {
-	return _u.mutation
+func (tuo *TributeUpdateOne) Mutation() *TributeMutation {
+	return tuo.mutation
 }
 
 // ClearMemorial clears the "memorial" edge to the Memorial entity.
-func (_u *TributeUpdateOne) ClearMemorial() *TributeUpdateOne {
-	_u.mutation.ClearMemorial()
-	return _u
+func (tuo *TributeUpdateOne) ClearMemorial() *TributeUpdateOne {
+	tuo.mutation.ClearMemorial()
+	return tuo
 }
 
 // Where appends a list predicates to the TributeUpdate builder.
-func (_u *TributeUpdateOne) Where(ps ...predicate.Tribute) *TributeUpdateOne {
-	_u.mutation.Where(ps...)
-	return _u
+func (tuo *TributeUpdateOne) Where(ps ...predicate.Tribute) *TributeUpdateOne {
+	tuo.mutation.Where(ps...)
+	return tuo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (_u *TributeUpdateOne) Select(field string, fields ...string) *TributeUpdateOne {
-	_u.fields = append([]string{field}, fields...)
-	return _u
+func (tuo *TributeUpdateOne) Select(field string, fields ...string) *TributeUpdateOne {
+	tuo.fields = append([]string{field}, fields...)
+	return tuo
 }
 
 // Save executes the query and returns the updated Tribute entity.
-func (_u *TributeUpdateOne) Save(ctx context.Context) (*Tribute, error) {
-	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
+func (tuo *TributeUpdateOne) Save(ctx context.Context) (*Tribute, error) {
+	return withHooks(ctx, tuo.sqlSave, tuo.mutation, tuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_u *TributeUpdateOne) SaveX(ctx context.Context) *Tribute {
-	node, err := _u.Save(ctx)
+func (tuo *TributeUpdateOne) SaveX(ctx context.Context) *Tribute {
+	node, err := tuo.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -285,47 +285,47 @@ func (_u *TributeUpdateOne) SaveX(ctx context.Context) *Tribute {
 }
 
 // Exec executes the query on the entity.
-func (_u *TributeUpdateOne) Exec(ctx context.Context) error {
-	_, err := _u.Save(ctx)
+func (tuo *TributeUpdateOne) Exec(ctx context.Context) error {
+	_, err := tuo.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_u *TributeUpdateOne) ExecX(ctx context.Context) {
-	if err := _u.Exec(ctx); err != nil {
+func (tuo *TributeUpdateOne) ExecX(ctx context.Context) {
+	if err := tuo.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_u *TributeUpdateOne) check() error {
-	if v, ok := _u.mutation.AuthorName(); ok {
+func (tuo *TributeUpdateOne) check() error {
+	if v, ok := tuo.mutation.AuthorName(); ok {
 		if err := tribute.AuthorNameValidator(v); err != nil {
 			return &ValidationError{Name: "author_name", err: fmt.Errorf(`ent: validator failed for field "Tribute.author_name": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Message(); ok {
+	if v, ok := tuo.mutation.Message(); ok {
 		if err := tribute.MessageValidator(v); err != nil {
 			return &ValidationError{Name: "message", err: fmt.Errorf(`ent: validator failed for field "Tribute.message": %w`, err)}
 		}
 	}
-	if _u.mutation.MemorialCleared() && len(_u.mutation.MemorialIDs()) > 0 {
+	if tuo.mutation.MemorialCleared() && len(tuo.mutation.MemorialIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Tribute.memorial"`)
 	}
 	return nil
 }
 
-func (_u *TributeUpdateOne) sqlSave(ctx context.Context) (_node *Tribute, err error) {
-	if err := _u.check(); err != nil {
+func (tuo *TributeUpdateOne) sqlSave(ctx context.Context) (_node *Tribute, err error) {
+	if err := tuo.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(tribute.Table, tribute.Columns, sqlgraph.NewFieldSpec(tribute.FieldID, field.TypeUUID))
-	id, ok := _u.mutation.ID()
+	id, ok := tuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Tribute.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := _u.fields; len(fields) > 0 {
+	if fields := tuo.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, tribute.FieldID)
 		for _, f := range fields {
@@ -337,20 +337,20 @@ func (_u *TributeUpdateOne) sqlSave(ctx context.Context) (_node *Tribute, err er
 			}
 		}
 	}
-	if ps := _u.mutation.predicates; len(ps) > 0 {
+	if ps := tuo.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := _u.mutation.AuthorName(); ok {
+	if value, ok := tuo.mutation.AuthorName(); ok {
 		_spec.SetField(tribute.FieldAuthorName, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Message(); ok {
+	if value, ok := tuo.mutation.Message(); ok {
 		_spec.SetField(tribute.FieldMessage, field.TypeString, value)
 	}
-	if _u.mutation.MemorialCleared() {
+	if tuo.mutation.MemorialCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -363,7 +363,7 @@ func (_u *TributeUpdateOne) sqlSave(ctx context.Context) (_node *Tribute, err er
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.MemorialIDs(); len(nodes) > 0 {
+	if nodes := tuo.mutation.MemorialIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -379,10 +379,10 @@ func (_u *TributeUpdateOne) sqlSave(ctx context.Context) (_node *Tribute, err er
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &Tribute{config: _u.config}
+	_node = &Tribute{config: tuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, tuo.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{tribute.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -390,6 +390,6 @@ func (_u *TributeUpdateOne) sqlSave(ctx context.Context) (_node *Tribute, err er
 		}
 		return nil, err
 	}
-	_u.mutation.done = true
+	tuo.mutation.done = true
 	return _node, nil
 }

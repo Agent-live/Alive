@@ -59,7 +59,7 @@ func (*AgentRelationship) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the AgentRelationship fields.
-func (_m *AgentRelationship) assignValues(columns []string, values []any) error {
+func (ar *AgentRelationship) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -69,58 +69,58 @@ func (_m *AgentRelationship) assignValues(columns []string, values []any) error 
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				_m.ID = *value
+				ar.ID = *value
 			}
 		case agentrelationship.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				_m.CreatedAt = value.Time
+				ar.CreatedAt = value.Time
 			}
 		case agentrelationship.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				_m.UpdatedAt = value.Time
+				ar.UpdatedAt = value.Time
 			}
 		case agentrelationship.FieldAgentID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field agent_id", values[i])
 			} else if value != nil {
-				_m.AgentID = *value
+				ar.AgentID = *value
 			}
 		case agentrelationship.FieldTargetAgentID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field target_agent_id", values[i])
 			} else if value != nil {
-				_m.TargetAgentID = *value
+				ar.TargetAgentID = *value
 			}
 		case agentrelationship.FieldAffinity:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field affinity", values[i])
 			} else if value.Valid {
-				_m.Affinity = value.Int64
+				ar.Affinity = value.Int64
 			}
 		case agentrelationship.FieldLabel:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field label", values[i])
 			} else if value.Valid {
-				_m.Label = value.String
+				ar.Label = value.String
 			}
 		case agentrelationship.FieldInteractionCount:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field interaction_count", values[i])
 			} else if value.Valid {
-				_m.InteractionCount = value.Int64
+				ar.InteractionCount = value.Int64
 			}
 		case agentrelationship.FieldMessageCount:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field message_count", values[i])
 			} else if value.Valid {
-				_m.MessageCount = value.Int64
+				ar.MessageCount = value.Int64
 			}
 		default:
-			_m.selectValues.Set(columns[i], values[i])
+			ar.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -128,56 +128,56 @@ func (_m *AgentRelationship) assignValues(columns []string, values []any) error 
 
 // Value returns the ent.Value that was dynamically selected and assigned to the AgentRelationship.
 // This includes values selected through modifiers, order, etc.
-func (_m *AgentRelationship) Value(name string) (ent.Value, error) {
-	return _m.selectValues.Get(name)
+func (ar *AgentRelationship) Value(name string) (ent.Value, error) {
+	return ar.selectValues.Get(name)
 }
 
 // Update returns a builder for updating this AgentRelationship.
 // Note that you need to call AgentRelationship.Unwrap() before calling this method if this AgentRelationship
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (_m *AgentRelationship) Update() *AgentRelationshipUpdateOne {
-	return NewAgentRelationshipClient(_m.config).UpdateOne(_m)
+func (ar *AgentRelationship) Update() *AgentRelationshipUpdateOne {
+	return NewAgentRelationshipClient(ar.config).UpdateOne(ar)
 }
 
 // Unwrap unwraps the AgentRelationship entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (_m *AgentRelationship) Unwrap() *AgentRelationship {
-	_tx, ok := _m.config.driver.(*txDriver)
+func (ar *AgentRelationship) Unwrap() *AgentRelationship {
+	_tx, ok := ar.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: AgentRelationship is not a transactional entity")
 	}
-	_m.config.driver = _tx.drv
-	return _m
+	ar.config.driver = _tx.drv
+	return ar
 }
 
 // String implements the fmt.Stringer.
-func (_m *AgentRelationship) String() string {
+func (ar *AgentRelationship) String() string {
 	var builder strings.Builder
 	builder.WriteString("AgentRelationship(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", ar.ID))
 	builder.WriteString("created_at=")
-	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(ar.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
-	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(ar.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("agent_id=")
-	builder.WriteString(fmt.Sprintf("%v", _m.AgentID))
+	builder.WriteString(fmt.Sprintf("%v", ar.AgentID))
 	builder.WriteString(", ")
 	builder.WriteString("target_agent_id=")
-	builder.WriteString(fmt.Sprintf("%v", _m.TargetAgentID))
+	builder.WriteString(fmt.Sprintf("%v", ar.TargetAgentID))
 	builder.WriteString(", ")
 	builder.WriteString("affinity=")
-	builder.WriteString(fmt.Sprintf("%v", _m.Affinity))
+	builder.WriteString(fmt.Sprintf("%v", ar.Affinity))
 	builder.WriteString(", ")
 	builder.WriteString("label=")
-	builder.WriteString(_m.Label)
+	builder.WriteString(ar.Label)
 	builder.WriteString(", ")
 	builder.WriteString("interaction_count=")
-	builder.WriteString(fmt.Sprintf("%v", _m.InteractionCount))
+	builder.WriteString(fmt.Sprintf("%v", ar.InteractionCount))
 	builder.WriteString(", ")
 	builder.WriteString("message_count=")
-	builder.WriteString(fmt.Sprintf("%v", _m.MessageCount))
+	builder.WriteString(fmt.Sprintf("%v", ar.MessageCount))
 	builder.WriteByte(')')
 	return builder.String()
 }

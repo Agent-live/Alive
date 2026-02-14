@@ -24,227 +24,227 @@ type AgentSkillCreate struct {
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (_c *AgentSkillCreate) SetCreatedAt(v time.Time) *AgentSkillCreate {
-	_c.mutation.SetCreatedAt(v)
-	return _c
+func (asc *AgentSkillCreate) SetCreatedAt(t time.Time) *AgentSkillCreate {
+	asc.mutation.SetCreatedAt(t)
+	return asc
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (_c *AgentSkillCreate) SetNillableCreatedAt(v *time.Time) *AgentSkillCreate {
-	if v != nil {
-		_c.SetCreatedAt(*v)
+func (asc *AgentSkillCreate) SetNillableCreatedAt(t *time.Time) *AgentSkillCreate {
+	if t != nil {
+		asc.SetCreatedAt(*t)
 	}
-	return _c
+	return asc
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (_c *AgentSkillCreate) SetUpdatedAt(v time.Time) *AgentSkillCreate {
-	_c.mutation.SetUpdatedAt(v)
-	return _c
+func (asc *AgentSkillCreate) SetUpdatedAt(t time.Time) *AgentSkillCreate {
+	asc.mutation.SetUpdatedAt(t)
+	return asc
 }
 
 // SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (_c *AgentSkillCreate) SetNillableUpdatedAt(v *time.Time) *AgentSkillCreate {
-	if v != nil {
-		_c.SetUpdatedAt(*v)
+func (asc *AgentSkillCreate) SetNillableUpdatedAt(t *time.Time) *AgentSkillCreate {
+	if t != nil {
+		asc.SetUpdatedAt(*t)
 	}
-	return _c
+	return asc
 }
 
 // SetOwnerUserID sets the "owner_user_id" field.
-func (_c *AgentSkillCreate) SetOwnerUserID(v uuid.UUID) *AgentSkillCreate {
-	_c.mutation.SetOwnerUserID(v)
-	return _c
+func (asc *AgentSkillCreate) SetOwnerUserID(u uuid.UUID) *AgentSkillCreate {
+	asc.mutation.SetOwnerUserID(u)
+	return asc
 }
 
 // SetAgentID sets the "agent_id" field.
-func (_c *AgentSkillCreate) SetAgentID(v uuid.UUID) *AgentSkillCreate {
-	_c.mutation.SetAgentID(v)
-	return _c
+func (asc *AgentSkillCreate) SetAgentID(u uuid.UUID) *AgentSkillCreate {
+	asc.mutation.SetAgentID(u)
+	return asc
 }
 
 // SetNillableAgentID sets the "agent_id" field if the given value is not nil.
-func (_c *AgentSkillCreate) SetNillableAgentID(v *uuid.UUID) *AgentSkillCreate {
-	if v != nil {
-		_c.SetAgentID(*v)
+func (asc *AgentSkillCreate) SetNillableAgentID(u *uuid.UUID) *AgentSkillCreate {
+	if u != nil {
+		asc.SetAgentID(*u)
 	}
-	return _c
+	return asc
 }
 
 // SetSourceSkillID sets the "source_skill_id" field.
-func (_c *AgentSkillCreate) SetSourceSkillID(v uuid.UUID) *AgentSkillCreate {
-	_c.mutation.SetSourceSkillID(v)
-	return _c
+func (asc *AgentSkillCreate) SetSourceSkillID(u uuid.UUID) *AgentSkillCreate {
+	asc.mutation.SetSourceSkillID(u)
+	return asc
 }
 
 // SetNillableSourceSkillID sets the "source_skill_id" field if the given value is not nil.
-func (_c *AgentSkillCreate) SetNillableSourceSkillID(v *uuid.UUID) *AgentSkillCreate {
-	if v != nil {
-		_c.SetSourceSkillID(*v)
+func (asc *AgentSkillCreate) SetNillableSourceSkillID(u *uuid.UUID) *AgentSkillCreate {
+	if u != nil {
+		asc.SetSourceSkillID(*u)
 	}
-	return _c
+	return asc
 }
 
 // SetName sets the "name" field.
-func (_c *AgentSkillCreate) SetName(v string) *AgentSkillCreate {
-	_c.mutation.SetName(v)
-	return _c
+func (asc *AgentSkillCreate) SetName(s string) *AgentSkillCreate {
+	asc.mutation.SetName(s)
+	return asc
 }
 
 // SetDescription sets the "description" field.
-func (_c *AgentSkillCreate) SetDescription(v string) *AgentSkillCreate {
-	_c.mutation.SetDescription(v)
-	return _c
+func (asc *AgentSkillCreate) SetDescription(s string) *AgentSkillCreate {
+	asc.mutation.SetDescription(s)
+	return asc
 }
 
 // SetInstructions sets the "instructions" field.
-func (_c *AgentSkillCreate) SetInstructions(v string) *AgentSkillCreate {
-	_c.mutation.SetInstructions(v)
-	return _c
+func (asc *AgentSkillCreate) SetInstructions(s string) *AgentSkillCreate {
+	asc.mutation.SetInstructions(s)
+	return asc
 }
 
 // SetStatus sets the "status" field.
-func (_c *AgentSkillCreate) SetStatus(v string) *AgentSkillCreate {
-	_c.mutation.SetStatus(v)
-	return _c
+func (asc *AgentSkillCreate) SetStatus(s string) *AgentSkillCreate {
+	asc.mutation.SetStatus(s)
+	return asc
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (_c *AgentSkillCreate) SetNillableStatus(v *string) *AgentSkillCreate {
-	if v != nil {
-		_c.SetStatus(*v)
+func (asc *AgentSkillCreate) SetNillableStatus(s *string) *AgentSkillCreate {
+	if s != nil {
+		asc.SetStatus(*s)
 	}
-	return _c
+	return asc
 }
 
 // SetCategory sets the "category" field.
-func (_c *AgentSkillCreate) SetCategory(v string) *AgentSkillCreate {
-	_c.mutation.SetCategory(v)
-	return _c
+func (asc *AgentSkillCreate) SetCategory(s string) *AgentSkillCreate {
+	asc.mutation.SetCategory(s)
+	return asc
 }
 
 // SetNillableCategory sets the "category" field if the given value is not nil.
-func (_c *AgentSkillCreate) SetNillableCategory(v *string) *AgentSkillCreate {
-	if v != nil {
-		_c.SetCategory(*v)
+func (asc *AgentSkillCreate) SetNillableCategory(s *string) *AgentSkillCreate {
+	if s != nil {
+		asc.SetCategory(*s)
 	}
-	return _c
+	return asc
 }
 
 // SetVersion sets the "version" field.
-func (_c *AgentSkillCreate) SetVersion(v string) *AgentSkillCreate {
-	_c.mutation.SetVersion(v)
-	return _c
+func (asc *AgentSkillCreate) SetVersion(s string) *AgentSkillCreate {
+	asc.mutation.SetVersion(s)
+	return asc
 }
 
 // SetNillableVersion sets the "version" field if the given value is not nil.
-func (_c *AgentSkillCreate) SetNillableVersion(v *string) *AgentSkillCreate {
-	if v != nil {
-		_c.SetVersion(*v)
+func (asc *AgentSkillCreate) SetNillableVersion(s *string) *AgentSkillCreate {
+	if s != nil {
+		asc.SetVersion(*s)
 	}
-	return _c
+	return asc
 }
 
 // SetTaughtAt sets the "taught_at" field.
-func (_c *AgentSkillCreate) SetTaughtAt(v time.Time) *AgentSkillCreate {
-	_c.mutation.SetTaughtAt(v)
-	return _c
+func (asc *AgentSkillCreate) SetTaughtAt(t time.Time) *AgentSkillCreate {
+	asc.mutation.SetTaughtAt(t)
+	return asc
 }
 
 // SetNillableTaughtAt sets the "taught_at" field if the given value is not nil.
-func (_c *AgentSkillCreate) SetNillableTaughtAt(v *time.Time) *AgentSkillCreate {
-	if v != nil {
-		_c.SetTaughtAt(*v)
+func (asc *AgentSkillCreate) SetNillableTaughtAt(t *time.Time) *AgentSkillCreate {
+	if t != nil {
+		asc.SetTaughtAt(*t)
 	}
-	return _c
+	return asc
 }
 
 // SetOpenclawGatewayID sets the "openclaw_gateway_id" field.
-func (_c *AgentSkillCreate) SetOpenclawGatewayID(v string) *AgentSkillCreate {
-	_c.mutation.SetOpenclawGatewayID(v)
-	return _c
+func (asc *AgentSkillCreate) SetOpenclawGatewayID(s string) *AgentSkillCreate {
+	asc.mutation.SetOpenclawGatewayID(s)
+	return asc
 }
 
 // SetNillableOpenclawGatewayID sets the "openclaw_gateway_id" field if the given value is not nil.
-func (_c *AgentSkillCreate) SetNillableOpenclawGatewayID(v *string) *AgentSkillCreate {
-	if v != nil {
-		_c.SetOpenclawGatewayID(*v)
+func (asc *AgentSkillCreate) SetNillableOpenclawGatewayID(s *string) *AgentSkillCreate {
+	if s != nil {
+		asc.SetOpenclawGatewayID(*s)
 	}
-	return _c
+	return asc
 }
 
 // SetOpenclawSkillID sets the "openclaw_skill_id" field.
-func (_c *AgentSkillCreate) SetOpenclawSkillID(v string) *AgentSkillCreate {
-	_c.mutation.SetOpenclawSkillID(v)
-	return _c
+func (asc *AgentSkillCreate) SetOpenclawSkillID(s string) *AgentSkillCreate {
+	asc.mutation.SetOpenclawSkillID(s)
+	return asc
 }
 
 // SetNillableOpenclawSkillID sets the "openclaw_skill_id" field if the given value is not nil.
-func (_c *AgentSkillCreate) SetNillableOpenclawSkillID(v *string) *AgentSkillCreate {
-	if v != nil {
-		_c.SetOpenclawSkillID(*v)
+func (asc *AgentSkillCreate) SetNillableOpenclawSkillID(s *string) *AgentSkillCreate {
+	if s != nil {
+		asc.SetOpenclawSkillID(*s)
 	}
-	return _c
+	return asc
 }
 
 // SetDeletedAt sets the "deleted_at" field.
-func (_c *AgentSkillCreate) SetDeletedAt(v time.Time) *AgentSkillCreate {
-	_c.mutation.SetDeletedAt(v)
-	return _c
+func (asc *AgentSkillCreate) SetDeletedAt(t time.Time) *AgentSkillCreate {
+	asc.mutation.SetDeletedAt(t)
+	return asc
 }
 
 // SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (_c *AgentSkillCreate) SetNillableDeletedAt(v *time.Time) *AgentSkillCreate {
-	if v != nil {
-		_c.SetDeletedAt(*v)
+func (asc *AgentSkillCreate) SetNillableDeletedAt(t *time.Time) *AgentSkillCreate {
+	if t != nil {
+		asc.SetDeletedAt(*t)
 	}
-	return _c
+	return asc
 }
 
 // SetID sets the "id" field.
-func (_c *AgentSkillCreate) SetID(v uuid.UUID) *AgentSkillCreate {
-	_c.mutation.SetID(v)
-	return _c
+func (asc *AgentSkillCreate) SetID(u uuid.UUID) *AgentSkillCreate {
+	asc.mutation.SetID(u)
+	return asc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (_c *AgentSkillCreate) SetNillableID(v *uuid.UUID) *AgentSkillCreate {
-	if v != nil {
-		_c.SetID(*v)
+func (asc *AgentSkillCreate) SetNillableID(u *uuid.UUID) *AgentSkillCreate {
+	if u != nil {
+		asc.SetID(*u)
 	}
-	return _c
+	return asc
 }
 
 // SetOwnerID sets the "owner" edge to the User entity by ID.
-func (_c *AgentSkillCreate) SetOwnerID(id uuid.UUID) *AgentSkillCreate {
-	_c.mutation.SetOwnerID(id)
-	return _c
+func (asc *AgentSkillCreate) SetOwnerID(id uuid.UUID) *AgentSkillCreate {
+	asc.mutation.SetOwnerID(id)
+	return asc
 }
 
 // SetOwner sets the "owner" edge to the User entity.
-func (_c *AgentSkillCreate) SetOwner(v *User) *AgentSkillCreate {
-	return _c.SetOwnerID(v.ID)
+func (asc *AgentSkillCreate) SetOwner(u *User) *AgentSkillCreate {
+	return asc.SetOwnerID(u.ID)
 }
 
 // SetAgent sets the "agent" edge to the Agent entity.
-func (_c *AgentSkillCreate) SetAgent(v *Agent) *AgentSkillCreate {
-	return _c.SetAgentID(v.ID)
+func (asc *AgentSkillCreate) SetAgent(a *Agent) *AgentSkillCreate {
+	return asc.SetAgentID(a.ID)
 }
 
 // Mutation returns the AgentSkillMutation object of the builder.
-func (_c *AgentSkillCreate) Mutation() *AgentSkillMutation {
-	return _c.mutation
+func (asc *AgentSkillCreate) Mutation() *AgentSkillMutation {
+	return asc.mutation
 }
 
 // Save creates the AgentSkill in the database.
-func (_c *AgentSkillCreate) Save(ctx context.Context) (*AgentSkill, error) {
-	_c.defaults()
-	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
+func (asc *AgentSkillCreate) Save(ctx context.Context) (*AgentSkill, error) {
+	asc.defaults()
+	return withHooks(ctx, asc.sqlSave, asc.mutation, asc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (_c *AgentSkillCreate) SaveX(ctx context.Context) *AgentSkill {
-	v, err := _c.Save(ctx)
+func (asc *AgentSkillCreate) SaveX(ctx context.Context) *AgentSkill {
+	v, err := asc.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -252,95 +252,95 @@ func (_c *AgentSkillCreate) SaveX(ctx context.Context) *AgentSkill {
 }
 
 // Exec executes the query.
-func (_c *AgentSkillCreate) Exec(ctx context.Context) error {
-	_, err := _c.Save(ctx)
+func (asc *AgentSkillCreate) Exec(ctx context.Context) error {
+	_, err := asc.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_c *AgentSkillCreate) ExecX(ctx context.Context) {
-	if err := _c.Exec(ctx); err != nil {
+func (asc *AgentSkillCreate) ExecX(ctx context.Context) {
+	if err := asc.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *AgentSkillCreate) defaults() {
-	if _, ok := _c.mutation.CreatedAt(); !ok {
+func (asc *AgentSkillCreate) defaults() {
+	if _, ok := asc.mutation.CreatedAt(); !ok {
 		v := agentskill.DefaultCreatedAt()
-		_c.mutation.SetCreatedAt(v)
+		asc.mutation.SetCreatedAt(v)
 	}
-	if _, ok := _c.mutation.UpdatedAt(); !ok {
+	if _, ok := asc.mutation.UpdatedAt(); !ok {
 		v := agentskill.DefaultUpdatedAt()
-		_c.mutation.SetUpdatedAt(v)
+		asc.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := _c.mutation.Status(); !ok {
+	if _, ok := asc.mutation.Status(); !ok {
 		v := agentskill.DefaultStatus
-		_c.mutation.SetStatus(v)
+		asc.mutation.SetStatus(v)
 	}
-	if _, ok := _c.mutation.Category(); !ok {
+	if _, ok := asc.mutation.Category(); !ok {
 		v := agentskill.DefaultCategory
-		_c.mutation.SetCategory(v)
+		asc.mutation.SetCategory(v)
 	}
-	if _, ok := _c.mutation.ID(); !ok {
+	if _, ok := asc.mutation.ID(); !ok {
 		v := agentskill.DefaultID()
-		_c.mutation.SetID(v)
+		asc.mutation.SetID(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_c *AgentSkillCreate) check() error {
-	if _, ok := _c.mutation.CreatedAt(); !ok {
+func (asc *AgentSkillCreate) check() error {
+	if _, ok := asc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "AgentSkill.created_at"`)}
 	}
-	if _, ok := _c.mutation.UpdatedAt(); !ok {
+	if _, ok := asc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "AgentSkill.updated_at"`)}
 	}
-	if _, ok := _c.mutation.OwnerUserID(); !ok {
+	if _, ok := asc.mutation.OwnerUserID(); !ok {
 		return &ValidationError{Name: "owner_user_id", err: errors.New(`ent: missing required field "AgentSkill.owner_user_id"`)}
 	}
-	if _, ok := _c.mutation.Name(); !ok {
+	if _, ok := asc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "AgentSkill.name"`)}
 	}
-	if v, ok := _c.mutation.Name(); ok {
+	if v, ok := asc.mutation.Name(); ok {
 		if err := agentskill.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "AgentSkill.name": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.Description(); !ok {
+	if _, ok := asc.mutation.Description(); !ok {
 		return &ValidationError{Name: "description", err: errors.New(`ent: missing required field "AgentSkill.description"`)}
 	}
-	if v, ok := _c.mutation.Description(); ok {
+	if v, ok := asc.mutation.Description(); ok {
 		if err := agentskill.DescriptionValidator(v); err != nil {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "AgentSkill.description": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.Instructions(); !ok {
+	if _, ok := asc.mutation.Instructions(); !ok {
 		return &ValidationError{Name: "instructions", err: errors.New(`ent: missing required field "AgentSkill.instructions"`)}
 	}
-	if v, ok := _c.mutation.Instructions(); ok {
+	if v, ok := asc.mutation.Instructions(); ok {
 		if err := agentskill.InstructionsValidator(v); err != nil {
 			return &ValidationError{Name: "instructions", err: fmt.Errorf(`ent: validator failed for field "AgentSkill.instructions": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.Status(); !ok {
+	if _, ok := asc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "AgentSkill.status"`)}
 	}
-	if _, ok := _c.mutation.Category(); !ok {
+	if _, ok := asc.mutation.Category(); !ok {
 		return &ValidationError{Name: "category", err: errors.New(`ent: missing required field "AgentSkill.category"`)}
 	}
-	if len(_c.mutation.OwnerIDs()) == 0 {
+	if len(asc.mutation.OwnerIDs()) == 0 {
 		return &ValidationError{Name: "owner", err: errors.New(`ent: missing required edge "AgentSkill.owner"`)}
 	}
 	return nil
 }
 
-func (_c *AgentSkillCreate) sqlSave(ctx context.Context) (*AgentSkill, error) {
-	if err := _c.check(); err != nil {
+func (asc *AgentSkillCreate) sqlSave(ctx context.Context) (*AgentSkill, error) {
+	if err := asc.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := _c.createSpec()
-	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
+	_node, _spec := asc.createSpec()
+	if err := sqlgraph.CreateNode(ctx, asc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -353,73 +353,73 @@ func (_c *AgentSkillCreate) sqlSave(ctx context.Context) (*AgentSkill, error) {
 			return nil, err
 		}
 	}
-	_c.mutation.id = &_node.ID
-	_c.mutation.done = true
+	asc.mutation.id = &_node.ID
+	asc.mutation.done = true
 	return _node, nil
 }
 
-func (_c *AgentSkillCreate) createSpec() (*AgentSkill, *sqlgraph.CreateSpec) {
+func (asc *AgentSkillCreate) createSpec() (*AgentSkill, *sqlgraph.CreateSpec) {
 	var (
-		_node = &AgentSkill{config: _c.config}
+		_node = &AgentSkill{config: asc.config}
 		_spec = sqlgraph.NewCreateSpec(agentskill.Table, sqlgraph.NewFieldSpec(agentskill.FieldID, field.TypeUUID))
 	)
-	if id, ok := _c.mutation.ID(); ok {
+	if id, ok := asc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
-	if value, ok := _c.mutation.CreatedAt(); ok {
+	if value, ok := asc.mutation.CreatedAt(); ok {
 		_spec.SetField(agentskill.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
-	if value, ok := _c.mutation.UpdatedAt(); ok {
+	if value, ok := asc.mutation.UpdatedAt(); ok {
 		_spec.SetField(agentskill.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := _c.mutation.SourceSkillID(); ok {
+	if value, ok := asc.mutation.SourceSkillID(); ok {
 		_spec.SetField(agentskill.FieldSourceSkillID, field.TypeUUID, value)
 		_node.SourceSkillID = &value
 	}
-	if value, ok := _c.mutation.Name(); ok {
+	if value, ok := asc.mutation.Name(); ok {
 		_spec.SetField(agentskill.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
-	if value, ok := _c.mutation.Description(); ok {
+	if value, ok := asc.mutation.Description(); ok {
 		_spec.SetField(agentskill.FieldDescription, field.TypeString, value)
 		_node.Description = value
 	}
-	if value, ok := _c.mutation.Instructions(); ok {
+	if value, ok := asc.mutation.Instructions(); ok {
 		_spec.SetField(agentskill.FieldInstructions, field.TypeString, value)
 		_node.Instructions = value
 	}
-	if value, ok := _c.mutation.Status(); ok {
+	if value, ok := asc.mutation.Status(); ok {
 		_spec.SetField(agentskill.FieldStatus, field.TypeString, value)
 		_node.Status = value
 	}
-	if value, ok := _c.mutation.Category(); ok {
+	if value, ok := asc.mutation.Category(); ok {
 		_spec.SetField(agentskill.FieldCategory, field.TypeString, value)
 		_node.Category = value
 	}
-	if value, ok := _c.mutation.Version(); ok {
+	if value, ok := asc.mutation.Version(); ok {
 		_spec.SetField(agentskill.FieldVersion, field.TypeString, value)
 		_node.Version = &value
 	}
-	if value, ok := _c.mutation.TaughtAt(); ok {
+	if value, ok := asc.mutation.TaughtAt(); ok {
 		_spec.SetField(agentskill.FieldTaughtAt, field.TypeTime, value)
 		_node.TaughtAt = &value
 	}
-	if value, ok := _c.mutation.OpenclawGatewayID(); ok {
+	if value, ok := asc.mutation.OpenclawGatewayID(); ok {
 		_spec.SetField(agentskill.FieldOpenclawGatewayID, field.TypeString, value)
 		_node.OpenclawGatewayID = &value
 	}
-	if value, ok := _c.mutation.OpenclawSkillID(); ok {
+	if value, ok := asc.mutation.OpenclawSkillID(); ok {
 		_spec.SetField(agentskill.FieldOpenclawSkillID, field.TypeString, value)
 		_node.OpenclawSkillID = &value
 	}
-	if value, ok := _c.mutation.DeletedAt(); ok {
+	if value, ok := asc.mutation.DeletedAt(); ok {
 		_spec.SetField(agentskill.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
-	if nodes := _c.mutation.OwnerIDs(); len(nodes) > 0 {
+	if nodes := asc.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -436,7 +436,7 @@ func (_c *AgentSkillCreate) createSpec() (*AgentSkill, *sqlgraph.CreateSpec) {
 		_node.OwnerUserID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := _c.mutation.AgentIDs(); len(nodes) > 0 {
+	if nodes := asc.mutation.AgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -464,16 +464,16 @@ type AgentSkillCreateBulk struct {
 }
 
 // Save creates the AgentSkill entities in the database.
-func (_c *AgentSkillCreateBulk) Save(ctx context.Context) ([]*AgentSkill, error) {
-	if _c.err != nil {
-		return nil, _c.err
+func (ascb *AgentSkillCreateBulk) Save(ctx context.Context) ([]*AgentSkill, error) {
+	if ascb.err != nil {
+		return nil, ascb.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
-	nodes := make([]*AgentSkill, len(_c.builders))
-	mutators := make([]Mutator, len(_c.builders))
-	for i := range _c.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(ascb.builders))
+	nodes := make([]*AgentSkill, len(ascb.builders))
+	mutators := make([]Mutator, len(ascb.builders))
+	for i := range ascb.builders {
 		func(i int, root context.Context) {
-			builder := _c.builders[i]
+			builder := ascb.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*AgentSkillMutation)
@@ -487,11 +487,11 @@ func (_c *AgentSkillCreateBulk) Save(ctx context.Context) ([]*AgentSkill, error)
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, ascb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, ascb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -511,7 +511,7 @@ func (_c *AgentSkillCreateBulk) Save(ctx context.Context) ([]*AgentSkill, error)
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, ascb.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -519,8 +519,8 @@ func (_c *AgentSkillCreateBulk) Save(ctx context.Context) ([]*AgentSkill, error)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_c *AgentSkillCreateBulk) SaveX(ctx context.Context) []*AgentSkill {
-	v, err := _c.Save(ctx)
+func (ascb *AgentSkillCreateBulk) SaveX(ctx context.Context) []*AgentSkill {
+	v, err := ascb.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -528,14 +528,14 @@ func (_c *AgentSkillCreateBulk) SaveX(ctx context.Context) []*AgentSkill {
 }
 
 // Exec executes the query.
-func (_c *AgentSkillCreateBulk) Exec(ctx context.Context) error {
-	_, err := _c.Save(ctx)
+func (ascb *AgentSkillCreateBulk) Exec(ctx context.Context) error {
+	_, err := ascb.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_c *AgentSkillCreateBulk) ExecX(ctx context.Context) {
-	if err := _c.Exec(ctx); err != nil {
+func (ascb *AgentSkillCreateBulk) ExecX(ctx context.Context) {
+	if err := ascb.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

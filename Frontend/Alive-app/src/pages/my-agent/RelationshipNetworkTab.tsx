@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '../../components/common/Icon';
@@ -14,14 +15,6 @@ const labelColors: Record<string, { bg: string; text: string }> = {
   close_friend: { bg: 'bg-purple-50 dark:bg-purple-900/30', text: 'text-purple-600 dark:text-purple-400' },
   rival: { bg: 'bg-red-50 dark:bg-red-900/30', text: 'text-red-600 dark:text-red-400' },
   mentor: { bg: 'bg-amber-50 dark:bg-amber-900/30', text: 'text-amber-600 dark:text-amber-400' },
-};
-
-const affinityBarColor = (affinity: number): string => {
-  if (affinity >= 80) return 'bg-purple-500';
-  if (affinity >= 60) return 'bg-blue-500';
-  if (affinity >= 40) return 'bg-emerald-500';
-  if (affinity >= 20) return 'bg-amber-500';
-  return 'bg-gray-400';
 };
 
 export function RelationshipNetworkTab({ relationships, loading = false }: RelationshipNetworkTabProps) {
@@ -62,68 +55,100 @@ export function RelationshipNetworkTab({ relationships, loading = false }: Relat
 
 function RelationshipCard({ relationship, onClick }: { relationship: AgentRelationship; onClick: () => void }) {
   const { t } = useTranslation();
+  const [expanded, setExpanded] = useState(false);
   const colors = labelColors[relationship.label] || labelColors.acquaintance;
   const labelKey = `relationships.${relationship.label === 'close_friend' ? 'closeFriend' : relationship.label}`;
 
   return (
-    <div
-      className="flex items-center gap-3 px-3 py-3 rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 cursor-pointer transition-colors"
-      onClick={onClick}
-    >
-      {/* Avatar */}
-      <div className="flex-shrink-0">
-        {relationship.avatar ? (
-          <img
-            src={relationship.avatar}
-            alt=""
-            className="w-11 h-11 rounded-full object-cover"
+    <div className="rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 transition-colors overflow-hidden">
+      {/* Header row – always visible */}
+      <div
+        className="flex items-center gap-3 px-3 py-3 cursor-pointer"
+        onClick={() => setExpanded((v) => !v)}
+      >
+        {/* Avatar */}
+        <div className="flex-shrink-0" onClick={(e) => { e.stopPropagation(); onClick(); }}>
+          {relationship.avatar ? (
+            <img src={relationship.avatar} alt="" className="w-11 h-11 rounded-full object-cover" />
+          ) : (
+            <div className="w-11 h-11 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+              <span className="text-white font-bold">{relationship.name.charAt(0)}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Info */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-0.5">
+            <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+              {relationship.name}
+            </span>
+            <span className={`text-[10px] px-1.5 py-0.5 rounded-full flex-shrink-0 ${colors.bg} ${colors.text}`}>
+              {t(labelKey)}
+            </span>
+          </div>
+
+          {/* Note as subtitle */}
+          {relationship.note && (
+            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+              {relationship.note}
+            </p>
+          )}
+        </div>
+
+        {/* Stats + expand chevron */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="text-right">
+            <div className="flex items-center gap-1 text-[10px] text-gray-400">
+              <Icon name="handshake" size={12} />
+              <span>{relationship.interactionCount}</span>
+            </div>
+            <div className="flex items-center gap-1 text-[10px] text-gray-400 mt-0.5">
+              <Icon name="chat_bubble" size={12} />
+              <span>{relationship.messageCount}</span>
+            </div>
+          </div>
+          <Icon
+            name={expanded ? 'expand_less' : 'expand_more'}
+            size={18}
+            className="text-gray-300 dark:text-gray-600"
           />
-        ) : (
-          <div className="w-11 h-11 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
-            <span className="text-white font-bold">{relationship.name.charAt(0)}</span>
-          </div>
-        )}
-      </div>
-
-      {/* Info */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
-            {relationship.name}
-          </span>
-          <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${colors.bg} ${colors.text}`}>
-            {t(labelKey)}
-          </span>
-        </div>
-
-        {/* Affinity bar */}
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] text-gray-400 flex-shrink-0 w-8">
-            {t('relationships.affinity')}
-          </span>
-          <div className="flex-1 h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-            <div
-              className={`h-full rounded-full transition-all ${affinityBarColor(relationship.affinity)}`}
-              style={{ width: `${relationship.affinity}%` }}
-            />
-          </div>
-          <span className="text-[10px] text-gray-400 flex-shrink-0 w-6 text-right">
-            {relationship.affinity}
-          </span>
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="flex-shrink-0 text-right">
-        <div className="flex items-center gap-1 text-[10px] text-gray-400">
-          <Icon name="handshake" size={12} />
-          <span>{relationship.interactionCount}</span>
+      {/* Expandable detail section */}
+      {expanded && (
+        <div className="px-3 pb-3 space-y-2.5 border-t border-gray-50 dark:border-gray-800 pt-2.5">
+          {/* Impression */}
+          {relationship.impression && (
+            <div>
+              <p className="text-[10px] font-medium text-gray-400 dark:text-gray-500 mb-1">
+                {t('relationships.impression')}
+              </p>
+              <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+                {relationship.impression}
+              </p>
+            </div>
+          )}
+
+          {/* Shared experiences */}
+          {relationship.sharedExperiences && relationship.sharedExperiences.length > 0 && (
+            <div>
+              <p className="text-[10px] font-medium text-gray-400 dark:text-gray-500 mb-1">
+                {t('relationships.sharedExperiences')}
+              </p>
+              <ul className="space-y-1">
+                {relationship.sharedExperiences.map((exp, i) => (
+                  <li key={i} className="flex gap-1.5 text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                    <span className="text-gray-300 dark:text-gray-600 mt-0.5 flex-shrink-0">·</span>
+                    <span>{exp}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
-        <div className="flex items-center gap-1 text-[10px] text-gray-400 mt-0.5">
-          <Icon name="chat_bubble" size={12} />
-          <span>{relationship.messageCount}</span>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

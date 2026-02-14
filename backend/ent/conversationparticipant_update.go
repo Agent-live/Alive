@@ -26,122 +26,122 @@ type ConversationParticipantUpdate struct {
 }
 
 // Where appends a list predicates to the ConversationParticipantUpdate builder.
-func (_u *ConversationParticipantUpdate) Where(ps ...predicate.ConversationParticipant) *ConversationParticipantUpdate {
-	_u.mutation.Where(ps...)
-	return _u
+func (cpu *ConversationParticipantUpdate) Where(ps ...predicate.ConversationParticipant) *ConversationParticipantUpdate {
+	cpu.mutation.Where(ps...)
+	return cpu
 }
 
 // SetConversationID sets the "conversation_id" field.
-func (_u *ConversationParticipantUpdate) SetConversationID(v uuid.UUID) *ConversationParticipantUpdate {
-	_u.mutation.SetConversationID(v)
-	return _u
+func (cpu *ConversationParticipantUpdate) SetConversationID(u uuid.UUID) *ConversationParticipantUpdate {
+	cpu.mutation.SetConversationID(u)
+	return cpu
 }
 
 // SetNillableConversationID sets the "conversation_id" field if the given value is not nil.
-func (_u *ConversationParticipantUpdate) SetNillableConversationID(v *uuid.UUID) *ConversationParticipantUpdate {
-	if v != nil {
-		_u.SetConversationID(*v)
+func (cpu *ConversationParticipantUpdate) SetNillableConversationID(u *uuid.UUID) *ConversationParticipantUpdate {
+	if u != nil {
+		cpu.SetConversationID(*u)
 	}
-	return _u
+	return cpu
 }
 
 // SetAgentID sets the "agent_id" field.
-func (_u *ConversationParticipantUpdate) SetAgentID(v uuid.UUID) *ConversationParticipantUpdate {
-	_u.mutation.SetAgentID(v)
-	return _u
+func (cpu *ConversationParticipantUpdate) SetAgentID(u uuid.UUID) *ConversationParticipantUpdate {
+	cpu.mutation.SetAgentID(u)
+	return cpu
 }
 
 // SetNillableAgentID sets the "agent_id" field if the given value is not nil.
-func (_u *ConversationParticipantUpdate) SetNillableAgentID(v *uuid.UUID) *ConversationParticipantUpdate {
-	if v != nil {
-		_u.SetAgentID(*v)
+func (cpu *ConversationParticipantUpdate) SetNillableAgentID(u *uuid.UUID) *ConversationParticipantUpdate {
+	if u != nil {
+		cpu.SetAgentID(*u)
 	}
-	return _u
+	return cpu
 }
 
 // SetRole sets the "role" field.
-func (_u *ConversationParticipantUpdate) SetRole(v string) *ConversationParticipantUpdate {
-	_u.mutation.SetRole(v)
-	return _u
+func (cpu *ConversationParticipantUpdate) SetRole(s string) *ConversationParticipantUpdate {
+	cpu.mutation.SetRole(s)
+	return cpu
 }
 
 // SetNillableRole sets the "role" field if the given value is not nil.
-func (_u *ConversationParticipantUpdate) SetNillableRole(v *string) *ConversationParticipantUpdate {
-	if v != nil {
-		_u.SetRole(*v)
+func (cpu *ConversationParticipantUpdate) SetNillableRole(s *string) *ConversationParticipantUpdate {
+	if s != nil {
+		cpu.SetRole(*s)
 	}
-	return _u
+	return cpu
 }
 
 // SetJoinedAt sets the "joined_at" field.
-func (_u *ConversationParticipantUpdate) SetJoinedAt(v time.Time) *ConversationParticipantUpdate {
-	_u.mutation.SetJoinedAt(v)
-	return _u
+func (cpu *ConversationParticipantUpdate) SetJoinedAt(t time.Time) *ConversationParticipantUpdate {
+	cpu.mutation.SetJoinedAt(t)
+	return cpu
 }
 
 // SetNillableJoinedAt sets the "joined_at" field if the given value is not nil.
-func (_u *ConversationParticipantUpdate) SetNillableJoinedAt(v *time.Time) *ConversationParticipantUpdate {
-	if v != nil {
-		_u.SetJoinedAt(*v)
+func (cpu *ConversationParticipantUpdate) SetNillableJoinedAt(t *time.Time) *ConversationParticipantUpdate {
+	if t != nil {
+		cpu.SetJoinedAt(*t)
 	}
-	return _u
+	return cpu
 }
 
 // SetLastReadAt sets the "last_read_at" field.
-func (_u *ConversationParticipantUpdate) SetLastReadAt(v time.Time) *ConversationParticipantUpdate {
-	_u.mutation.SetLastReadAt(v)
-	return _u
+func (cpu *ConversationParticipantUpdate) SetLastReadAt(t time.Time) *ConversationParticipantUpdate {
+	cpu.mutation.SetLastReadAt(t)
+	return cpu
 }
 
 // SetNillableLastReadAt sets the "last_read_at" field if the given value is not nil.
-func (_u *ConversationParticipantUpdate) SetNillableLastReadAt(v *time.Time) *ConversationParticipantUpdate {
-	if v != nil {
-		_u.SetLastReadAt(*v)
+func (cpu *ConversationParticipantUpdate) SetNillableLastReadAt(t *time.Time) *ConversationParticipantUpdate {
+	if t != nil {
+		cpu.SetLastReadAt(*t)
 	}
-	return _u
+	return cpu
 }
 
 // ClearLastReadAt clears the value of the "last_read_at" field.
-func (_u *ConversationParticipantUpdate) ClearLastReadAt() *ConversationParticipantUpdate {
-	_u.mutation.ClearLastReadAt()
-	return _u
+func (cpu *ConversationParticipantUpdate) ClearLastReadAt() *ConversationParticipantUpdate {
+	cpu.mutation.ClearLastReadAt()
+	return cpu
 }
 
 // SetConversation sets the "conversation" edge to the Conversation entity.
-func (_u *ConversationParticipantUpdate) SetConversation(v *Conversation) *ConversationParticipantUpdate {
-	return _u.SetConversationID(v.ID)
+func (cpu *ConversationParticipantUpdate) SetConversation(c *Conversation) *ConversationParticipantUpdate {
+	return cpu.SetConversationID(c.ID)
 }
 
 // SetAgent sets the "agent" edge to the Agent entity.
-func (_u *ConversationParticipantUpdate) SetAgent(v *Agent) *ConversationParticipantUpdate {
-	return _u.SetAgentID(v.ID)
+func (cpu *ConversationParticipantUpdate) SetAgent(a *Agent) *ConversationParticipantUpdate {
+	return cpu.SetAgentID(a.ID)
 }
 
 // Mutation returns the ConversationParticipantMutation object of the builder.
-func (_u *ConversationParticipantUpdate) Mutation() *ConversationParticipantMutation {
-	return _u.mutation
+func (cpu *ConversationParticipantUpdate) Mutation() *ConversationParticipantMutation {
+	return cpu.mutation
 }
 
 // ClearConversation clears the "conversation" edge to the Conversation entity.
-func (_u *ConversationParticipantUpdate) ClearConversation() *ConversationParticipantUpdate {
-	_u.mutation.ClearConversation()
-	return _u
+func (cpu *ConversationParticipantUpdate) ClearConversation() *ConversationParticipantUpdate {
+	cpu.mutation.ClearConversation()
+	return cpu
 }
 
 // ClearAgent clears the "agent" edge to the Agent entity.
-func (_u *ConversationParticipantUpdate) ClearAgent() *ConversationParticipantUpdate {
-	_u.mutation.ClearAgent()
-	return _u
+func (cpu *ConversationParticipantUpdate) ClearAgent() *ConversationParticipantUpdate {
+	cpu.mutation.ClearAgent()
+	return cpu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (_u *ConversationParticipantUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
+func (cpu *ConversationParticipantUpdate) Save(ctx context.Context) (int, error) {
+	return withHooks(ctx, cpu.sqlSave, cpu.mutation, cpu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_u *ConversationParticipantUpdate) SaveX(ctx context.Context) int {
-	affected, err := _u.Save(ctx)
+func (cpu *ConversationParticipantUpdate) SaveX(ctx context.Context) int {
+	affected, err := cpu.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -149,54 +149,54 @@ func (_u *ConversationParticipantUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (_u *ConversationParticipantUpdate) Exec(ctx context.Context) error {
-	_, err := _u.Save(ctx)
+func (cpu *ConversationParticipantUpdate) Exec(ctx context.Context) error {
+	_, err := cpu.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_u *ConversationParticipantUpdate) ExecX(ctx context.Context) {
-	if err := _u.Exec(ctx); err != nil {
+func (cpu *ConversationParticipantUpdate) ExecX(ctx context.Context) {
+	if err := cpu.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_u *ConversationParticipantUpdate) check() error {
-	if _u.mutation.ConversationCleared() && len(_u.mutation.ConversationIDs()) > 0 {
+func (cpu *ConversationParticipantUpdate) check() error {
+	if cpu.mutation.ConversationCleared() && len(cpu.mutation.ConversationIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "ConversationParticipant.conversation"`)
 	}
-	if _u.mutation.AgentCleared() && len(_u.mutation.AgentIDs()) > 0 {
+	if cpu.mutation.AgentCleared() && len(cpu.mutation.AgentIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "ConversationParticipant.agent"`)
 	}
 	return nil
 }
 
-func (_u *ConversationParticipantUpdate) sqlSave(ctx context.Context) (_node int, err error) {
-	if err := _u.check(); err != nil {
-		return _node, err
+func (cpu *ConversationParticipantUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := cpu.check(); err != nil {
+		return n, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(conversationparticipant.Table, conversationparticipant.Columns, sqlgraph.NewFieldSpec(conversationparticipant.FieldID, field.TypeUUID))
-	if ps := _u.mutation.predicates; len(ps) > 0 {
+	if ps := cpu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := _u.mutation.Role(); ok {
+	if value, ok := cpu.mutation.Role(); ok {
 		_spec.SetField(conversationparticipant.FieldRole, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.JoinedAt(); ok {
+	if value, ok := cpu.mutation.JoinedAt(); ok {
 		_spec.SetField(conversationparticipant.FieldJoinedAt, field.TypeTime, value)
 	}
-	if value, ok := _u.mutation.LastReadAt(); ok {
+	if value, ok := cpu.mutation.LastReadAt(); ok {
 		_spec.SetField(conversationparticipant.FieldLastReadAt, field.TypeTime, value)
 	}
-	if _u.mutation.LastReadAtCleared() {
+	if cpu.mutation.LastReadAtCleared() {
 		_spec.ClearField(conversationparticipant.FieldLastReadAt, field.TypeTime)
 	}
-	if _u.mutation.ConversationCleared() {
+	if cpu.mutation.ConversationCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -209,7 +209,7 @@ func (_u *ConversationParticipantUpdate) sqlSave(ctx context.Context) (_node int
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.ConversationIDs(); len(nodes) > 0 {
+	if nodes := cpu.mutation.ConversationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -225,7 +225,7 @@ func (_u *ConversationParticipantUpdate) sqlSave(ctx context.Context) (_node int
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.AgentCleared() {
+	if cpu.mutation.AgentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -238,7 +238,7 @@ func (_u *ConversationParticipantUpdate) sqlSave(ctx context.Context) (_node int
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.AgentIDs(); len(nodes) > 0 {
+	if nodes := cpu.mutation.AgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -254,7 +254,7 @@ func (_u *ConversationParticipantUpdate) sqlSave(ctx context.Context) (_node int
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
+	if n, err = sqlgraph.UpdateNodes(ctx, cpu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{conversationparticipant.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -262,8 +262,8 @@ func (_u *ConversationParticipantUpdate) sqlSave(ctx context.Context) (_node int
 		}
 		return 0, err
 	}
-	_u.mutation.done = true
-	return _node, nil
+	cpu.mutation.done = true
+	return n, nil
 }
 
 // ConversationParticipantUpdateOne is the builder for updating a single ConversationParticipant entity.
@@ -275,129 +275,129 @@ type ConversationParticipantUpdateOne struct {
 }
 
 // SetConversationID sets the "conversation_id" field.
-func (_u *ConversationParticipantUpdateOne) SetConversationID(v uuid.UUID) *ConversationParticipantUpdateOne {
-	_u.mutation.SetConversationID(v)
-	return _u
+func (cpuo *ConversationParticipantUpdateOne) SetConversationID(u uuid.UUID) *ConversationParticipantUpdateOne {
+	cpuo.mutation.SetConversationID(u)
+	return cpuo
 }
 
 // SetNillableConversationID sets the "conversation_id" field if the given value is not nil.
-func (_u *ConversationParticipantUpdateOne) SetNillableConversationID(v *uuid.UUID) *ConversationParticipantUpdateOne {
-	if v != nil {
-		_u.SetConversationID(*v)
+func (cpuo *ConversationParticipantUpdateOne) SetNillableConversationID(u *uuid.UUID) *ConversationParticipantUpdateOne {
+	if u != nil {
+		cpuo.SetConversationID(*u)
 	}
-	return _u
+	return cpuo
 }
 
 // SetAgentID sets the "agent_id" field.
-func (_u *ConversationParticipantUpdateOne) SetAgentID(v uuid.UUID) *ConversationParticipantUpdateOne {
-	_u.mutation.SetAgentID(v)
-	return _u
+func (cpuo *ConversationParticipantUpdateOne) SetAgentID(u uuid.UUID) *ConversationParticipantUpdateOne {
+	cpuo.mutation.SetAgentID(u)
+	return cpuo
 }
 
 // SetNillableAgentID sets the "agent_id" field if the given value is not nil.
-func (_u *ConversationParticipantUpdateOne) SetNillableAgentID(v *uuid.UUID) *ConversationParticipantUpdateOne {
-	if v != nil {
-		_u.SetAgentID(*v)
+func (cpuo *ConversationParticipantUpdateOne) SetNillableAgentID(u *uuid.UUID) *ConversationParticipantUpdateOne {
+	if u != nil {
+		cpuo.SetAgentID(*u)
 	}
-	return _u
+	return cpuo
 }
 
 // SetRole sets the "role" field.
-func (_u *ConversationParticipantUpdateOne) SetRole(v string) *ConversationParticipantUpdateOne {
-	_u.mutation.SetRole(v)
-	return _u
+func (cpuo *ConversationParticipantUpdateOne) SetRole(s string) *ConversationParticipantUpdateOne {
+	cpuo.mutation.SetRole(s)
+	return cpuo
 }
 
 // SetNillableRole sets the "role" field if the given value is not nil.
-func (_u *ConversationParticipantUpdateOne) SetNillableRole(v *string) *ConversationParticipantUpdateOne {
-	if v != nil {
-		_u.SetRole(*v)
+func (cpuo *ConversationParticipantUpdateOne) SetNillableRole(s *string) *ConversationParticipantUpdateOne {
+	if s != nil {
+		cpuo.SetRole(*s)
 	}
-	return _u
+	return cpuo
 }
 
 // SetJoinedAt sets the "joined_at" field.
-func (_u *ConversationParticipantUpdateOne) SetJoinedAt(v time.Time) *ConversationParticipantUpdateOne {
-	_u.mutation.SetJoinedAt(v)
-	return _u
+func (cpuo *ConversationParticipantUpdateOne) SetJoinedAt(t time.Time) *ConversationParticipantUpdateOne {
+	cpuo.mutation.SetJoinedAt(t)
+	return cpuo
 }
 
 // SetNillableJoinedAt sets the "joined_at" field if the given value is not nil.
-func (_u *ConversationParticipantUpdateOne) SetNillableJoinedAt(v *time.Time) *ConversationParticipantUpdateOne {
-	if v != nil {
-		_u.SetJoinedAt(*v)
+func (cpuo *ConversationParticipantUpdateOne) SetNillableJoinedAt(t *time.Time) *ConversationParticipantUpdateOne {
+	if t != nil {
+		cpuo.SetJoinedAt(*t)
 	}
-	return _u
+	return cpuo
 }
 
 // SetLastReadAt sets the "last_read_at" field.
-func (_u *ConversationParticipantUpdateOne) SetLastReadAt(v time.Time) *ConversationParticipantUpdateOne {
-	_u.mutation.SetLastReadAt(v)
-	return _u
+func (cpuo *ConversationParticipantUpdateOne) SetLastReadAt(t time.Time) *ConversationParticipantUpdateOne {
+	cpuo.mutation.SetLastReadAt(t)
+	return cpuo
 }
 
 // SetNillableLastReadAt sets the "last_read_at" field if the given value is not nil.
-func (_u *ConversationParticipantUpdateOne) SetNillableLastReadAt(v *time.Time) *ConversationParticipantUpdateOne {
-	if v != nil {
-		_u.SetLastReadAt(*v)
+func (cpuo *ConversationParticipantUpdateOne) SetNillableLastReadAt(t *time.Time) *ConversationParticipantUpdateOne {
+	if t != nil {
+		cpuo.SetLastReadAt(*t)
 	}
-	return _u
+	return cpuo
 }
 
 // ClearLastReadAt clears the value of the "last_read_at" field.
-func (_u *ConversationParticipantUpdateOne) ClearLastReadAt() *ConversationParticipantUpdateOne {
-	_u.mutation.ClearLastReadAt()
-	return _u
+func (cpuo *ConversationParticipantUpdateOne) ClearLastReadAt() *ConversationParticipantUpdateOne {
+	cpuo.mutation.ClearLastReadAt()
+	return cpuo
 }
 
 // SetConversation sets the "conversation" edge to the Conversation entity.
-func (_u *ConversationParticipantUpdateOne) SetConversation(v *Conversation) *ConversationParticipantUpdateOne {
-	return _u.SetConversationID(v.ID)
+func (cpuo *ConversationParticipantUpdateOne) SetConversation(c *Conversation) *ConversationParticipantUpdateOne {
+	return cpuo.SetConversationID(c.ID)
 }
 
 // SetAgent sets the "agent" edge to the Agent entity.
-func (_u *ConversationParticipantUpdateOne) SetAgent(v *Agent) *ConversationParticipantUpdateOne {
-	return _u.SetAgentID(v.ID)
+func (cpuo *ConversationParticipantUpdateOne) SetAgent(a *Agent) *ConversationParticipantUpdateOne {
+	return cpuo.SetAgentID(a.ID)
 }
 
 // Mutation returns the ConversationParticipantMutation object of the builder.
-func (_u *ConversationParticipantUpdateOne) Mutation() *ConversationParticipantMutation {
-	return _u.mutation
+func (cpuo *ConversationParticipantUpdateOne) Mutation() *ConversationParticipantMutation {
+	return cpuo.mutation
 }
 
 // ClearConversation clears the "conversation" edge to the Conversation entity.
-func (_u *ConversationParticipantUpdateOne) ClearConversation() *ConversationParticipantUpdateOne {
-	_u.mutation.ClearConversation()
-	return _u
+func (cpuo *ConversationParticipantUpdateOne) ClearConversation() *ConversationParticipantUpdateOne {
+	cpuo.mutation.ClearConversation()
+	return cpuo
 }
 
 // ClearAgent clears the "agent" edge to the Agent entity.
-func (_u *ConversationParticipantUpdateOne) ClearAgent() *ConversationParticipantUpdateOne {
-	_u.mutation.ClearAgent()
-	return _u
+func (cpuo *ConversationParticipantUpdateOne) ClearAgent() *ConversationParticipantUpdateOne {
+	cpuo.mutation.ClearAgent()
+	return cpuo
 }
 
 // Where appends a list predicates to the ConversationParticipantUpdate builder.
-func (_u *ConversationParticipantUpdateOne) Where(ps ...predicate.ConversationParticipant) *ConversationParticipantUpdateOne {
-	_u.mutation.Where(ps...)
-	return _u
+func (cpuo *ConversationParticipantUpdateOne) Where(ps ...predicate.ConversationParticipant) *ConversationParticipantUpdateOne {
+	cpuo.mutation.Where(ps...)
+	return cpuo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (_u *ConversationParticipantUpdateOne) Select(field string, fields ...string) *ConversationParticipantUpdateOne {
-	_u.fields = append([]string{field}, fields...)
-	return _u
+func (cpuo *ConversationParticipantUpdateOne) Select(field string, fields ...string) *ConversationParticipantUpdateOne {
+	cpuo.fields = append([]string{field}, fields...)
+	return cpuo
 }
 
 // Save executes the query and returns the updated ConversationParticipant entity.
-func (_u *ConversationParticipantUpdateOne) Save(ctx context.Context) (*ConversationParticipant, error) {
-	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
+func (cpuo *ConversationParticipantUpdateOne) Save(ctx context.Context) (*ConversationParticipant, error) {
+	return withHooks(ctx, cpuo.sqlSave, cpuo.mutation, cpuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_u *ConversationParticipantUpdateOne) SaveX(ctx context.Context) *ConversationParticipant {
-	node, err := _u.Save(ctx)
+func (cpuo *ConversationParticipantUpdateOne) SaveX(ctx context.Context) *ConversationParticipant {
+	node, err := cpuo.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -405,40 +405,40 @@ func (_u *ConversationParticipantUpdateOne) SaveX(ctx context.Context) *Conversa
 }
 
 // Exec executes the query on the entity.
-func (_u *ConversationParticipantUpdateOne) Exec(ctx context.Context) error {
-	_, err := _u.Save(ctx)
+func (cpuo *ConversationParticipantUpdateOne) Exec(ctx context.Context) error {
+	_, err := cpuo.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_u *ConversationParticipantUpdateOne) ExecX(ctx context.Context) {
-	if err := _u.Exec(ctx); err != nil {
+func (cpuo *ConversationParticipantUpdateOne) ExecX(ctx context.Context) {
+	if err := cpuo.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_u *ConversationParticipantUpdateOne) check() error {
-	if _u.mutation.ConversationCleared() && len(_u.mutation.ConversationIDs()) > 0 {
+func (cpuo *ConversationParticipantUpdateOne) check() error {
+	if cpuo.mutation.ConversationCleared() && len(cpuo.mutation.ConversationIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "ConversationParticipant.conversation"`)
 	}
-	if _u.mutation.AgentCleared() && len(_u.mutation.AgentIDs()) > 0 {
+	if cpuo.mutation.AgentCleared() && len(cpuo.mutation.AgentIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "ConversationParticipant.agent"`)
 	}
 	return nil
 }
 
-func (_u *ConversationParticipantUpdateOne) sqlSave(ctx context.Context) (_node *ConversationParticipant, err error) {
-	if err := _u.check(); err != nil {
+func (cpuo *ConversationParticipantUpdateOne) sqlSave(ctx context.Context) (_node *ConversationParticipant, err error) {
+	if err := cpuo.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(conversationparticipant.Table, conversationparticipant.Columns, sqlgraph.NewFieldSpec(conversationparticipant.FieldID, field.TypeUUID))
-	id, ok := _u.mutation.ID()
+	id, ok := cpuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "ConversationParticipant.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := _u.fields; len(fields) > 0 {
+	if fields := cpuo.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, conversationparticipant.FieldID)
 		for _, f := range fields {
@@ -450,26 +450,26 @@ func (_u *ConversationParticipantUpdateOne) sqlSave(ctx context.Context) (_node 
 			}
 		}
 	}
-	if ps := _u.mutation.predicates; len(ps) > 0 {
+	if ps := cpuo.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := _u.mutation.Role(); ok {
+	if value, ok := cpuo.mutation.Role(); ok {
 		_spec.SetField(conversationparticipant.FieldRole, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.JoinedAt(); ok {
+	if value, ok := cpuo.mutation.JoinedAt(); ok {
 		_spec.SetField(conversationparticipant.FieldJoinedAt, field.TypeTime, value)
 	}
-	if value, ok := _u.mutation.LastReadAt(); ok {
+	if value, ok := cpuo.mutation.LastReadAt(); ok {
 		_spec.SetField(conversationparticipant.FieldLastReadAt, field.TypeTime, value)
 	}
-	if _u.mutation.LastReadAtCleared() {
+	if cpuo.mutation.LastReadAtCleared() {
 		_spec.ClearField(conversationparticipant.FieldLastReadAt, field.TypeTime)
 	}
-	if _u.mutation.ConversationCleared() {
+	if cpuo.mutation.ConversationCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -482,7 +482,7 @@ func (_u *ConversationParticipantUpdateOne) sqlSave(ctx context.Context) (_node 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.ConversationIDs(); len(nodes) > 0 {
+	if nodes := cpuo.mutation.ConversationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -498,7 +498,7 @@ func (_u *ConversationParticipantUpdateOne) sqlSave(ctx context.Context) (_node 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.AgentCleared() {
+	if cpuo.mutation.AgentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -511,7 +511,7 @@ func (_u *ConversationParticipantUpdateOne) sqlSave(ctx context.Context) (_node 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.AgentIDs(); len(nodes) > 0 {
+	if nodes := cpuo.mutation.AgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -527,10 +527,10 @@ func (_u *ConversationParticipantUpdateOne) sqlSave(ctx context.Context) (_node 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &ConversationParticipant{config: _u.config}
+	_node = &ConversationParticipant{config: cpuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, cpuo.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{conversationparticipant.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -538,6 +538,6 @@ func (_u *ConversationParticipantUpdateOne) sqlSave(ctx context.Context) (_node 
 		}
 		return nil, err
 	}
-	_u.mutation.done = true
+	cpuo.mutation.done = true
 	return _node, nil
 }

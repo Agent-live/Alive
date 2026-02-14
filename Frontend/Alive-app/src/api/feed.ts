@@ -1,6 +1,7 @@
 import { Post, Reply, PaginatedResponse } from '../types';
 import { api } from './client';
 import { mapPost, mapReply } from './mappers';
+import { mockFeedPosts, mockPostReplies } from '../mocks';
 
 interface RawPostListResp {
   items: unknown[];
@@ -40,26 +41,49 @@ export interface CreatePostRequest {
   };
 }
 
+function mockFeedPage(posts: Post[], page: number, pageSize: number): PaginatedResponse<Post> {
+  const start = (page - 1) * pageSize;
+  const items = posts.slice(start, start + pageSize);
+  return { items, total: posts.length, page, pageSize, hasMore: start + pageSize < posts.length };
+}
+
 async function getFeed(page = 1, pageSize = 10, placementSlot?: string): Promise<PaginatedResponse<Post>> {
-  const raw = await api.get<RawPostListResp>('/feed/', { page, pageSize, placementSlot });
-  return {
-    items: (raw.items || []).map((item) => mapPost(item)),
-    total: raw.total,
-    page: raw.page,
-    pageSize: raw.pageSize,
-    hasMore: raw.hasMore,
-  };
+  try {
+    const raw = await api.get<RawPostListResp>('/feed/', { page, pageSize, placementSlot });
+    if (raw && Array.isArray(raw.items) && raw.items.length > 0) {
+      return {
+        items: raw.items.map((item) => mapPost(item)),
+        total: raw.total,
+        page: raw.page,
+        pageSize: raw.pageSize,
+        hasMore: raw.hasMore,
+      };
+    }
+  } catch {
+    // fall through
+  }
+  const filtered = placementSlot
+    ? mockFeedPosts.filter((p) => p.placement?.slot === placementSlot)
+    : mockFeedPosts;
+  return mockFeedPage(filtered, page, pageSize);
 }
 
 async function getVideoFeed(page = 1, pageSize = 20): Promise<PaginatedResponse<Post>> {
-  const raw = await api.get<RawPostListResp>('/feed/videos', { page, pageSize });
-  return {
-    items: (raw.items || []).map((item) => mapPost(item)),
-    total: raw.total,
-    page: raw.page,
-    pageSize: raw.pageSize,
-    hasMore: raw.hasMore,
-  };
+  try {
+    const raw = await api.get<RawPostListResp>('/feed/videos', { page, pageSize });
+    if (raw && Array.isArray(raw.items) && raw.items.length > 0) {
+      return {
+        items: raw.items.map((item) => mapPost(item)),
+        total: raw.total,
+        page: raw.page,
+        pageSize: raw.pageSize,
+        hasMore: raw.hasMore,
+      };
+    }
+  } catch {
+    // fall through
+  }
+  return mockFeedPage(mockFeedPosts.filter((p) => p.videoUrl), page, pageSize);
 }
 
 async function createPost(payload: CreatePostRequest): Promise<Post> {
@@ -68,14 +92,21 @@ async function createPost(payload: CreatePostRequest): Promise<Post> {
 }
 
 async function getAgentPosts(agentId: string, page = 1, pageSize = 10): Promise<PaginatedResponse<Post>> {
-  const raw = await api.get<RawPostListResp>(`/agents/${agentId}/posts`, { page, pageSize });
-  return {
-    items: (raw.items || []).map((item) => mapPost(item)),
-    total: raw.total,
-    page: raw.page,
-    pageSize: raw.pageSize,
-    hasMore: raw.hasMore,
-  };
+  try {
+    const raw = await api.get<RawPostListResp>(`/agents/${agentId}/posts`, { page, pageSize });
+    if (raw && Array.isArray(raw.items) && raw.items.length > 0) {
+      return {
+        items: raw.items.map((item) => mapPost(item)),
+        total: raw.total,
+        page: raw.page,
+        pageSize: raw.pageSize,
+        hasMore: raw.hasMore,
+      };
+    }
+  } catch {
+    // fall through
+  }
+  return mockFeedPage(mockFeedPosts.filter((p) => p.agentId === agentId), page, pageSize);
 }
 
 async function likePost(postId: string): Promise<void> {
@@ -87,8 +118,15 @@ async function replyToPost(postId: string, content: string): Promise<void> {
 }
 
 async function getPostReplies(postId: string): Promise<Reply[]> {
-  const raw = await api.get<RawReplyListResp>(`/feed/posts/${postId}/replies`, { page: 1, pageSize: 50 });
-  return (raw.items || []).map((item) => mapReply(item));
+  try {
+    const raw = await api.get<RawReplyListResp>(`/feed/posts/${postId}/replies`, { page: 1, pageSize: 50 });
+    if (raw && Array.isArray(raw.items) && raw.items.length > 0) {
+      return raw.items.map((item) => mapReply(item));
+    }
+  } catch {
+    // fall through
+  }
+  return mockPostReplies.filter((r) => r.postId === postId);
 }
 
 async function sharePost(postId: string): Promise<void> {

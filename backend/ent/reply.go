@@ -79,7 +79,7 @@ func (*Reply) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Reply fields.
-func (_m *Reply) assignValues(columns []string, values []any) error {
+func (r *Reply) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -89,53 +89,53 @@ func (_m *Reply) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				_m.ID = *value
+				r.ID = *value
 			}
 		case reply.FieldPostID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field post_id", values[i])
 			} else if value != nil {
-				_m.PostID = *value
+				r.PostID = *value
 			}
 		case reply.FieldAuthorType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field author_type", values[i])
 			} else if value.Valid {
-				_m.AuthorType = value.String
+				r.AuthorType = value.String
 			}
 		case reply.FieldAuthorID:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field author_id", values[i])
 			} else if value.Valid {
-				_m.AuthorID = value.String
+				r.AuthorID = value.String
 			}
 		case reply.FieldAuthorName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field author_name", values[i])
 			} else if value.Valid {
-				_m.AuthorName = value.String
+				r.AuthorName = value.String
 			}
 		case reply.FieldAuthorAvatar:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field author_avatar", values[i])
 			} else if value.Valid {
-				_m.AuthorAvatar = new(string)
-				*_m.AuthorAvatar = value.String
+				r.AuthorAvatar = new(string)
+				*r.AuthorAvatar = value.String
 			}
 		case reply.FieldContent:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field content", values[i])
 			} else if value.Valid {
-				_m.Content = value.String
+				r.Content = value.String
 			}
 		case reply.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				_m.CreatedAt = value.Time
+				r.CreatedAt = value.Time
 			}
 		default:
-			_m.selectValues.Set(columns[i], values[i])
+			r.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -143,60 +143,60 @@ func (_m *Reply) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the Reply.
 // This includes values selected through modifiers, order, etc.
-func (_m *Reply) Value(name string) (ent.Value, error) {
-	return _m.selectValues.Get(name)
+func (r *Reply) Value(name string) (ent.Value, error) {
+	return r.selectValues.Get(name)
 }
 
 // QueryPost queries the "post" edge of the Reply entity.
-func (_m *Reply) QueryPost() *PostQuery {
-	return NewReplyClient(_m.config).QueryPost(_m)
+func (r *Reply) QueryPost() *PostQuery {
+	return NewReplyClient(r.config).QueryPost(r)
 }
 
 // Update returns a builder for updating this Reply.
 // Note that you need to call Reply.Unwrap() before calling this method if this Reply
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (_m *Reply) Update() *ReplyUpdateOne {
-	return NewReplyClient(_m.config).UpdateOne(_m)
+func (r *Reply) Update() *ReplyUpdateOne {
+	return NewReplyClient(r.config).UpdateOne(r)
 }
 
 // Unwrap unwraps the Reply entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (_m *Reply) Unwrap() *Reply {
-	_tx, ok := _m.config.driver.(*txDriver)
+func (r *Reply) Unwrap() *Reply {
+	_tx, ok := r.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: Reply is not a transactional entity")
 	}
-	_m.config.driver = _tx.drv
-	return _m
+	r.config.driver = _tx.drv
+	return r
 }
 
 // String implements the fmt.Stringer.
-func (_m *Reply) String() string {
+func (r *Reply) String() string {
 	var builder strings.Builder
 	builder.WriteString("Reply(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", r.ID))
 	builder.WriteString("post_id=")
-	builder.WriteString(fmt.Sprintf("%v", _m.PostID))
+	builder.WriteString(fmt.Sprintf("%v", r.PostID))
 	builder.WriteString(", ")
 	builder.WriteString("author_type=")
-	builder.WriteString(_m.AuthorType)
+	builder.WriteString(r.AuthorType)
 	builder.WriteString(", ")
 	builder.WriteString("author_id=")
-	builder.WriteString(_m.AuthorID)
+	builder.WriteString(r.AuthorID)
 	builder.WriteString(", ")
 	builder.WriteString("author_name=")
-	builder.WriteString(_m.AuthorName)
+	builder.WriteString(r.AuthorName)
 	builder.WriteString(", ")
-	if v := _m.AuthorAvatar; v != nil {
+	if v := r.AuthorAvatar; v != nil {
 		builder.WriteString("author_avatar=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
 	builder.WriteString("content=")
-	builder.WriteString(_m.Content)
+	builder.WriteString(r.Content)
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
-	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(r.CreatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

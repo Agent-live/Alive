@@ -31,44 +31,44 @@ type TimerTransactionQuery struct {
 }
 
 // Where adds a new predicate for the TimerTransactionQuery builder.
-func (_q *TimerTransactionQuery) Where(ps ...predicate.TimerTransaction) *TimerTransactionQuery {
-	_q.predicates = append(_q.predicates, ps...)
-	return _q
+func (ttq *TimerTransactionQuery) Where(ps ...predicate.TimerTransaction) *TimerTransactionQuery {
+	ttq.predicates = append(ttq.predicates, ps...)
+	return ttq
 }
 
 // Limit the number of records to be returned by this query.
-func (_q *TimerTransactionQuery) Limit(limit int) *TimerTransactionQuery {
-	_q.ctx.Limit = &limit
-	return _q
+func (ttq *TimerTransactionQuery) Limit(limit int) *TimerTransactionQuery {
+	ttq.ctx.Limit = &limit
+	return ttq
 }
 
 // Offset to start from.
-func (_q *TimerTransactionQuery) Offset(offset int) *TimerTransactionQuery {
-	_q.ctx.Offset = &offset
-	return _q
+func (ttq *TimerTransactionQuery) Offset(offset int) *TimerTransactionQuery {
+	ttq.ctx.Offset = &offset
+	return ttq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (_q *TimerTransactionQuery) Unique(unique bool) *TimerTransactionQuery {
-	_q.ctx.Unique = &unique
-	return _q
+func (ttq *TimerTransactionQuery) Unique(unique bool) *TimerTransactionQuery {
+	ttq.ctx.Unique = &unique
+	return ttq
 }
 
 // Order specifies how the records should be ordered.
-func (_q *TimerTransactionQuery) Order(o ...timertransaction.OrderOption) *TimerTransactionQuery {
-	_q.order = append(_q.order, o...)
-	return _q
+func (ttq *TimerTransactionQuery) Order(o ...timertransaction.OrderOption) *TimerTransactionQuery {
+	ttq.order = append(ttq.order, o...)
+	return ttq
 }
 
 // QueryAgent chains the current query on the "agent" edge.
-func (_q *TimerTransactionQuery) QueryAgent() *AgentQuery {
-	query := (&AgentClient{config: _q.config}).Query()
+func (ttq *TimerTransactionQuery) QueryAgent() *AgentQuery {
+	query := (&AgentClient{config: ttq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
+		if err := ttq.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
-		selector := _q.sqlQuery(ctx)
+		selector := ttq.sqlQuery(ctx)
 		if err := selector.Err(); err != nil {
 			return nil, err
 		}
@@ -77,7 +77,7 @@ func (_q *TimerTransactionQuery) QueryAgent() *AgentQuery {
 			sqlgraph.To(agent.Table, agent.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, timertransaction.AgentTable, timertransaction.AgentColumn),
 		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		fromU = sqlgraph.SetNeighbors(ttq.driver.Dialect(), step)
 		return fromU, nil
 	}
 	return query
@@ -85,8 +85,8 @@ func (_q *TimerTransactionQuery) QueryAgent() *AgentQuery {
 
 // First returns the first TimerTransaction entity from the query.
 // Returns a *NotFoundError when no TimerTransaction was found.
-func (_q *TimerTransactionQuery) First(ctx context.Context) (*TimerTransaction, error) {
-	nodes, err := _q.Limit(1).All(setContextOp(ctx, _q.ctx, ent.OpQueryFirst))
+func (ttq *TimerTransactionQuery) First(ctx context.Context) (*TimerTransaction, error) {
+	nodes, err := ttq.Limit(1).All(setContextOp(ctx, ttq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -97,8 +97,8 @@ func (_q *TimerTransactionQuery) First(ctx context.Context) (*TimerTransaction, 
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (_q *TimerTransactionQuery) FirstX(ctx context.Context) *TimerTransaction {
-	node, err := _q.First(ctx)
+func (ttq *TimerTransactionQuery) FirstX(ctx context.Context) *TimerTransaction {
+	node, err := ttq.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
 	}
@@ -107,9 +107,9 @@ func (_q *TimerTransactionQuery) FirstX(ctx context.Context) *TimerTransaction {
 
 // FirstID returns the first TimerTransaction ID from the query.
 // Returns a *NotFoundError when no TimerTransaction ID was found.
-func (_q *TimerTransactionQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+func (ttq *TimerTransactionQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
+	if ids, err = ttq.Limit(1).IDs(setContextOp(ctx, ttq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -120,8 +120,8 @@ func (_q *TimerTransactionQuery) FirstID(ctx context.Context) (id uuid.UUID, err
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *TimerTransactionQuery) FirstIDX(ctx context.Context) uuid.UUID {
-	id, err := _q.FirstID(ctx)
+func (ttq *TimerTransactionQuery) FirstIDX(ctx context.Context) uuid.UUID {
+	id, err := ttq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
 	}
@@ -131,8 +131,8 @@ func (_q *TimerTransactionQuery) FirstIDX(ctx context.Context) uuid.UUID {
 // Only returns a single TimerTransaction entity found by the query, ensuring it only returns one.
 // Returns a *NotSingularError when more than one TimerTransaction entity is found.
 // Returns a *NotFoundError when no TimerTransaction entities are found.
-func (_q *TimerTransactionQuery) Only(ctx context.Context) (*TimerTransaction, error) {
-	nodes, err := _q.Limit(2).All(setContextOp(ctx, _q.ctx, ent.OpQueryOnly))
+func (ttq *TimerTransactionQuery) Only(ctx context.Context) (*TimerTransaction, error) {
+	nodes, err := ttq.Limit(2).All(setContextOp(ctx, ttq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -147,8 +147,8 @@ func (_q *TimerTransactionQuery) Only(ctx context.Context) (*TimerTransaction, e
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (_q *TimerTransactionQuery) OnlyX(ctx context.Context) *TimerTransaction {
-	node, err := _q.Only(ctx)
+func (ttq *TimerTransactionQuery) OnlyX(ctx context.Context) *TimerTransaction {
+	node, err := ttq.Only(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -158,9 +158,9 @@ func (_q *TimerTransactionQuery) OnlyX(ctx context.Context) *TimerTransaction {
 // OnlyID is like Only, but returns the only TimerTransaction ID in the query.
 // Returns a *NotSingularError when more than one TimerTransaction ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *TimerTransactionQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+func (ttq *TimerTransactionQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
+	if ids, err = ttq.Limit(2).IDs(setContextOp(ctx, ttq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -175,8 +175,8 @@ func (_q *TimerTransactionQuery) OnlyID(ctx context.Context) (id uuid.UUID, err 
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *TimerTransactionQuery) OnlyIDX(ctx context.Context) uuid.UUID {
-	id, err := _q.OnlyID(ctx)
+func (ttq *TimerTransactionQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+	id, err := ttq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -184,18 +184,18 @@ func (_q *TimerTransactionQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 }
 
 // All executes the query and returns a list of TimerTransactions.
-func (_q *TimerTransactionQuery) All(ctx context.Context) ([]*TimerTransaction, error) {
-	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryAll)
-	if err := _q.prepareQuery(ctx); err != nil {
+func (ttq *TimerTransactionQuery) All(ctx context.Context) ([]*TimerTransaction, error) {
+	ctx = setContextOp(ctx, ttq.ctx, ent.OpQueryAll)
+	if err := ttq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
 	qr := querierAll[[]*TimerTransaction, *TimerTransactionQuery]()
-	return withInterceptors[[]*TimerTransaction](ctx, _q, qr, _q.inters)
+	return withInterceptors[[]*TimerTransaction](ctx, ttq, qr, ttq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
-func (_q *TimerTransactionQuery) AllX(ctx context.Context) []*TimerTransaction {
-	nodes, err := _q.All(ctx)
+func (ttq *TimerTransactionQuery) AllX(ctx context.Context) []*TimerTransaction {
+	nodes, err := ttq.All(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -203,20 +203,20 @@ func (_q *TimerTransactionQuery) AllX(ctx context.Context) []*TimerTransaction {
 }
 
 // IDs executes the query and returns a list of TimerTransaction IDs.
-func (_q *TimerTransactionQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
-	if _q.ctx.Unique == nil && _q.path != nil {
-		_q.Unique(true)
+func (ttq *TimerTransactionQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
+	if ttq.ctx.Unique == nil && ttq.path != nil {
+		ttq.Unique(true)
 	}
-	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryIDs)
-	if err = _q.Select(timertransaction.FieldID).Scan(ctx, &ids); err != nil {
+	ctx = setContextOp(ctx, ttq.ctx, ent.OpQueryIDs)
+	if err = ttq.Select(timertransaction.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *TimerTransactionQuery) IDsX(ctx context.Context) []uuid.UUID {
-	ids, err := _q.IDs(ctx)
+func (ttq *TimerTransactionQuery) IDsX(ctx context.Context) []uuid.UUID {
+	ids, err := ttq.IDs(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -224,17 +224,17 @@ func (_q *TimerTransactionQuery) IDsX(ctx context.Context) []uuid.UUID {
 }
 
 // Count returns the count of the given query.
-func (_q *TimerTransactionQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryCount)
-	if err := _q.prepareQuery(ctx); err != nil {
+func (ttq *TimerTransactionQuery) Count(ctx context.Context) (int, error) {
+	ctx = setContextOp(ctx, ttq.ctx, ent.OpQueryCount)
+	if err := ttq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return withInterceptors[int](ctx, _q, querierCount[*TimerTransactionQuery](), _q.inters)
+	return withInterceptors[int](ctx, ttq, querierCount[*TimerTransactionQuery](), ttq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (_q *TimerTransactionQuery) CountX(ctx context.Context) int {
-	count, err := _q.Count(ctx)
+func (ttq *TimerTransactionQuery) CountX(ctx context.Context) int {
+	count, err := ttq.Count(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -242,9 +242,9 @@ func (_q *TimerTransactionQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (_q *TimerTransactionQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryExist)
-	switch _, err := _q.FirstID(ctx); {
+func (ttq *TimerTransactionQuery) Exist(ctx context.Context) (bool, error) {
+	ctx = setContextOp(ctx, ttq.ctx, ent.OpQueryExist)
+	switch _, err := ttq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
@@ -255,8 +255,8 @@ func (_q *TimerTransactionQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (_q *TimerTransactionQuery) ExistX(ctx context.Context) bool {
-	exist, err := _q.Exist(ctx)
+func (ttq *TimerTransactionQuery) ExistX(ctx context.Context) bool {
+	exist, err := ttq.Exist(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -265,32 +265,32 @@ func (_q *TimerTransactionQuery) ExistX(ctx context.Context) bool {
 
 // Clone returns a duplicate of the TimerTransactionQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (_q *TimerTransactionQuery) Clone() *TimerTransactionQuery {
-	if _q == nil {
+func (ttq *TimerTransactionQuery) Clone() *TimerTransactionQuery {
+	if ttq == nil {
 		return nil
 	}
 	return &TimerTransactionQuery{
-		config:     _q.config,
-		ctx:        _q.ctx.Clone(),
-		order:      append([]timertransaction.OrderOption{}, _q.order...),
-		inters:     append([]Interceptor{}, _q.inters...),
-		predicates: append([]predicate.TimerTransaction{}, _q.predicates...),
-		withAgent:  _q.withAgent.Clone(),
+		config:     ttq.config,
+		ctx:        ttq.ctx.Clone(),
+		order:      append([]timertransaction.OrderOption{}, ttq.order...),
+		inters:     append([]Interceptor{}, ttq.inters...),
+		predicates: append([]predicate.TimerTransaction{}, ttq.predicates...),
+		withAgent:  ttq.withAgent.Clone(),
 		// clone intermediate query.
-		sql:  _q.sql.Clone(),
-		path: _q.path,
+		sql:  ttq.sql.Clone(),
+		path: ttq.path,
 	}
 }
 
 // WithAgent tells the query-builder to eager-load the nodes that are connected to
 // the "agent" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *TimerTransactionQuery) WithAgent(opts ...func(*AgentQuery)) *TimerTransactionQuery {
-	query := (&AgentClient{config: _q.config}).Query()
+func (ttq *TimerTransactionQuery) WithAgent(opts ...func(*AgentQuery)) *TimerTransactionQuery {
+	query := (&AgentClient{config: ttq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withAgent = query
-	return _q
+	ttq.withAgent = query
+	return ttq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -307,10 +307,10 @@ func (_q *TimerTransactionQuery) WithAgent(opts ...func(*AgentQuery)) *TimerTran
 //		GroupBy(timertransaction.FieldTxType).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-func (_q *TimerTransactionQuery) GroupBy(field string, fields ...string) *TimerTransactionGroupBy {
-	_q.ctx.Fields = append([]string{field}, fields...)
-	grbuild := &TimerTransactionGroupBy{build: _q}
-	grbuild.flds = &_q.ctx.Fields
+func (ttq *TimerTransactionQuery) GroupBy(field string, fields ...string) *TimerTransactionGroupBy {
+	ttq.ctx.Fields = append([]string{field}, fields...)
+	grbuild := &TimerTransactionGroupBy{build: ttq}
+	grbuild.flds = &ttq.ctx.Fields
 	grbuild.label = timertransaction.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -328,58 +328,58 @@ func (_q *TimerTransactionQuery) GroupBy(field string, fields ...string) *TimerT
 //	client.TimerTransaction.Query().
 //		Select(timertransaction.FieldTxType).
 //		Scan(ctx, &v)
-func (_q *TimerTransactionQuery) Select(fields ...string) *TimerTransactionSelect {
-	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
-	sbuild := &TimerTransactionSelect{TimerTransactionQuery: _q}
+func (ttq *TimerTransactionQuery) Select(fields ...string) *TimerTransactionSelect {
+	ttq.ctx.Fields = append(ttq.ctx.Fields, fields...)
+	sbuild := &TimerTransactionSelect{TimerTransactionQuery: ttq}
 	sbuild.label = timertransaction.Label
-	sbuild.flds, sbuild.scan = &_q.ctx.Fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &ttq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
 // Aggregate returns a TimerTransactionSelect configured with the given aggregations.
-func (_q *TimerTransactionQuery) Aggregate(fns ...AggregateFunc) *TimerTransactionSelect {
-	return _q.Select().Aggregate(fns...)
+func (ttq *TimerTransactionQuery) Aggregate(fns ...AggregateFunc) *TimerTransactionSelect {
+	return ttq.Select().Aggregate(fns...)
 }
 
-func (_q *TimerTransactionQuery) prepareQuery(ctx context.Context) error {
-	for _, inter := range _q.inters {
+func (ttq *TimerTransactionQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range ttq.inters {
 		if inter == nil {
 			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
-			if err := trv.Traverse(ctx, _q); err != nil {
+			if err := trv.Traverse(ctx, ttq); err != nil {
 				return err
 			}
 		}
 	}
-	for _, f := range _q.ctx.Fields {
+	for _, f := range ttq.ctx.Fields {
 		if !timertransaction.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
-	if _q.path != nil {
-		prev, err := _q.path(ctx)
+	if ttq.path != nil {
+		prev, err := ttq.path(ctx)
 		if err != nil {
 			return err
 		}
-		_q.sql = prev
+		ttq.sql = prev
 	}
 	return nil
 }
 
-func (_q *TimerTransactionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*TimerTransaction, error) {
+func (ttq *TimerTransactionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*TimerTransaction, error) {
 	var (
 		nodes       = []*TimerTransaction{}
-		_spec       = _q.querySpec()
+		_spec       = ttq.querySpec()
 		loadedTypes = [1]bool{
-			_q.withAgent != nil,
+			ttq.withAgent != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*TimerTransaction).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
-		node := &TimerTransaction{config: _q.config}
+		node := &TimerTransaction{config: ttq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
@@ -387,14 +387,14 @@ func (_q *TimerTransactionQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
-	if err := sqlgraph.QueryNodes(ctx, _q.driver, _spec); err != nil {
+	if err := sqlgraph.QueryNodes(ctx, ttq.driver, _spec); err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := _q.withAgent; query != nil {
-		if err := _q.loadAgent(ctx, query, nodes, nil,
+	if query := ttq.withAgent; query != nil {
+		if err := ttq.loadAgent(ctx, query, nodes, nil,
 			func(n *TimerTransaction, e *Agent) { n.Edges.Agent = e }); err != nil {
 			return nil, err
 		}
@@ -402,7 +402,7 @@ func (_q *TimerTransactionQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 	return nodes, nil
 }
 
-func (_q *TimerTransactionQuery) loadAgent(ctx context.Context, query *AgentQuery, nodes []*TimerTransaction, init func(*TimerTransaction), assign func(*TimerTransaction, *Agent)) error {
+func (ttq *TimerTransactionQuery) loadAgent(ctx context.Context, query *AgentQuery, nodes []*TimerTransaction, init func(*TimerTransaction), assign func(*TimerTransaction, *Agent)) error {
 	ids := make([]uuid.UUID, 0, len(nodes))
 	nodeids := make(map[uuid.UUID][]*TimerTransaction)
 	for i := range nodes {
@@ -432,24 +432,24 @@ func (_q *TimerTransactionQuery) loadAgent(ctx context.Context, query *AgentQuer
 	return nil
 }
 
-func (_q *TimerTransactionQuery) sqlCount(ctx context.Context) (int, error) {
-	_spec := _q.querySpec()
-	_spec.Node.Columns = _q.ctx.Fields
-	if len(_q.ctx.Fields) > 0 {
-		_spec.Unique = _q.ctx.Unique != nil && *_q.ctx.Unique
+func (ttq *TimerTransactionQuery) sqlCount(ctx context.Context) (int, error) {
+	_spec := ttq.querySpec()
+	_spec.Node.Columns = ttq.ctx.Fields
+	if len(ttq.ctx.Fields) > 0 {
+		_spec.Unique = ttq.ctx.Unique != nil && *ttq.ctx.Unique
 	}
-	return sqlgraph.CountNodes(ctx, _q.driver, _spec)
+	return sqlgraph.CountNodes(ctx, ttq.driver, _spec)
 }
 
-func (_q *TimerTransactionQuery) querySpec() *sqlgraph.QuerySpec {
+func (ttq *TimerTransactionQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := sqlgraph.NewQuerySpec(timertransaction.Table, timertransaction.Columns, sqlgraph.NewFieldSpec(timertransaction.FieldID, field.TypeUUID))
-	_spec.From = _q.sql
-	if unique := _q.ctx.Unique; unique != nil {
+	_spec.From = ttq.sql
+	if unique := ttq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
-	} else if _q.path != nil {
+	} else if ttq.path != nil {
 		_spec.Unique = true
 	}
-	if fields := _q.ctx.Fields; len(fields) > 0 {
+	if fields := ttq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, timertransaction.FieldID)
 		for i := range fields {
@@ -457,24 +457,24 @@ func (_q *TimerTransactionQuery) querySpec() *sqlgraph.QuerySpec {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
-		if _q.withAgent != nil {
+		if ttq.withAgent != nil {
 			_spec.Node.AddColumnOnce(timertransaction.FieldAgentID)
 		}
 	}
-	if ps := _q.predicates; len(ps) > 0 {
+	if ps := ttq.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if limit := _q.ctx.Limit; limit != nil {
+	if limit := ttq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := _q.ctx.Offset; offset != nil {
+	if offset := ttq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
-	if ps := _q.order; len(ps) > 0 {
+	if ps := ttq.order; len(ps) > 0 {
 		_spec.Order = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
@@ -484,33 +484,33 @@ func (_q *TimerTransactionQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (_q *TimerTransactionQuery) sqlQuery(ctx context.Context) *sql.Selector {
-	builder := sql.Dialect(_q.driver.Dialect())
+func (ttq *TimerTransactionQuery) sqlQuery(ctx context.Context) *sql.Selector {
+	builder := sql.Dialect(ttq.driver.Dialect())
 	t1 := builder.Table(timertransaction.Table)
-	columns := _q.ctx.Fields
+	columns := ttq.ctx.Fields
 	if len(columns) == 0 {
 		columns = timertransaction.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
-	if _q.sql != nil {
-		selector = _q.sql
+	if ttq.sql != nil {
+		selector = ttq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if _q.ctx.Unique != nil && *_q.ctx.Unique {
+	if ttq.ctx.Unique != nil && *ttq.ctx.Unique {
 		selector.Distinct()
 	}
-	for _, p := range _q.predicates {
+	for _, p := range ttq.predicates {
 		p(selector)
 	}
-	for _, p := range _q.order {
+	for _, p := range ttq.order {
 		p(selector)
 	}
-	if offset := _q.ctx.Offset; offset != nil {
+	if offset := ttq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := _q.ctx.Limit; limit != nil {
+	if limit := ttq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -523,41 +523,41 @@ type TimerTransactionGroupBy struct {
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (_g *TimerTransactionGroupBy) Aggregate(fns ...AggregateFunc) *TimerTransactionGroupBy {
-	_g.fns = append(_g.fns, fns...)
-	return _g
+func (ttgb *TimerTransactionGroupBy) Aggregate(fns ...AggregateFunc) *TimerTransactionGroupBy {
+	ttgb.fns = append(ttgb.fns, fns...)
+	return ttgb
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (_g *TimerTransactionGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, _g.build.ctx, ent.OpQueryGroupBy)
-	if err := _g.build.prepareQuery(ctx); err != nil {
+func (ttgb *TimerTransactionGroupBy) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, ttgb.build.ctx, ent.OpQueryGroupBy)
+	if err := ttgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*TimerTransactionQuery, *TimerTransactionGroupBy](ctx, _g.build, _g, _g.build.inters, v)
+	return scanWithInterceptors[*TimerTransactionQuery, *TimerTransactionGroupBy](ctx, ttgb.build, ttgb, ttgb.build.inters, v)
 }
 
-func (_g *TimerTransactionGroupBy) sqlScan(ctx context.Context, root *TimerTransactionQuery, v any) error {
+func (ttgb *TimerTransactionGroupBy) sqlScan(ctx context.Context, root *TimerTransactionQuery, v any) error {
 	selector := root.sqlQuery(ctx).Select()
-	aggregation := make([]string, 0, len(_g.fns))
-	for _, fn := range _g.fns {
+	aggregation := make([]string, 0, len(ttgb.fns))
+	for _, fn := range ttgb.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
 	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(*_g.flds)+len(_g.fns))
-		for _, f := range *_g.flds {
+		columns := make([]string, 0, len(*ttgb.flds)+len(ttgb.fns))
+		for _, f := range *ttgb.flds {
 			columns = append(columns, selector.C(f))
 		}
 		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
-	selector.GroupBy(selector.Columns(*_g.flds...)...)
+	selector.GroupBy(selector.Columns(*ttgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := _g.build.driver.Query(ctx, query, args, rows); err != nil {
+	if err := ttgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
@@ -571,27 +571,27 @@ type TimerTransactionSelect struct {
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
-func (_s *TimerTransactionSelect) Aggregate(fns ...AggregateFunc) *TimerTransactionSelect {
-	_s.fns = append(_s.fns, fns...)
-	return _s
+func (tts *TimerTransactionSelect) Aggregate(fns ...AggregateFunc) *TimerTransactionSelect {
+	tts.fns = append(tts.fns, fns...)
+	return tts
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (_s *TimerTransactionSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, _s.ctx, ent.OpQuerySelect)
-	if err := _s.prepareQuery(ctx); err != nil {
+func (tts *TimerTransactionSelect) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, tts.ctx, ent.OpQuerySelect)
+	if err := tts.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*TimerTransactionQuery, *TimerTransactionSelect](ctx, _s.TimerTransactionQuery, _s, _s.inters, v)
+	return scanWithInterceptors[*TimerTransactionQuery, *TimerTransactionSelect](ctx, tts.TimerTransactionQuery, tts, tts.inters, v)
 }
 
-func (_s *TimerTransactionSelect) sqlScan(ctx context.Context, root *TimerTransactionQuery, v any) error {
+func (tts *TimerTransactionSelect) sqlScan(ctx context.Context, root *TimerTransactionQuery, v any) error {
 	selector := root.sqlQuery(ctx)
-	aggregation := make([]string, 0, len(_s.fns))
-	for _, fn := range _s.fns {
+	aggregation := make([]string, 0, len(tts.fns))
+	for _, fn := range tts.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	switch n := len(*_s.selector.flds); {
+	switch n := len(*tts.selector.flds); {
 	case n == 0 && len(aggregation) > 0:
 		selector.Select(aggregation...)
 	case n != 0 && len(aggregation) > 0:
@@ -599,7 +599,7 @@ func (_s *TimerTransactionSelect) sqlScan(ctx context.Context, root *TimerTransa
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := _s.driver.Query(ctx, query, args, rows); err != nil {
+	if err := tts.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()

@@ -6,9 +6,11 @@ import type { Conversation } from '../../types/conversation';
 interface BotBotChatsTabProps {
   conversations: Conversation[];
   loading?: boolean;
+  /** If provided, called instead of navigating when a conversation is clicked */
+  onConversationClick?: (conv: Conversation) => void;
 }
 
-export function BotBotChatsTab({ conversations, loading = false }: BotBotChatsTabProps) {
+export function BotBotChatsTab({ conversations, loading = false, onConversationClick }: BotBotChatsTabProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -37,7 +39,7 @@ export function BotBotChatsTab({ conversations, loading = false }: BotBotChatsTa
         <BotChatListItem
           key={conv.id}
           conversation={conv}
-          onClick={() => navigate(`/conversations/${conv.id}`)}
+          onClick={() => onConversationClick ? onConversationClick(conv) : navigate(`/conversations/${conv.id}`)}
         />
       ))}
     </div>

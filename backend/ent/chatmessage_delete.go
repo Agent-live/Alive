@@ -20,56 +20,56 @@ type ChatMessageDelete struct {
 }
 
 // Where appends a list predicates to the ChatMessageDelete builder.
-func (_d *ChatMessageDelete) Where(ps ...predicate.ChatMessage) *ChatMessageDelete {
-	_d.mutation.Where(ps...)
-	return _d
+func (cmd *ChatMessageDelete) Where(ps ...predicate.ChatMessage) *ChatMessageDelete {
+	cmd.mutation.Where(ps...)
+	return cmd
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (_d *ChatMessageDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks(ctx, _d.sqlExec, _d.mutation, _d.hooks)
+func (cmd *ChatMessageDelete) Exec(ctx context.Context) (int, error) {
+	return withHooks(ctx, cmd.sqlExec, cmd.mutation, cmd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_d *ChatMessageDelete) ExecX(ctx context.Context) int {
-	n, err := _d.Exec(ctx)
+func (cmd *ChatMessageDelete) ExecX(ctx context.Context) int {
+	n, err := cmd.Exec(ctx)
 	if err != nil {
 		panic(err)
 	}
 	return n
 }
 
-func (_d *ChatMessageDelete) sqlExec(ctx context.Context) (int, error) {
+func (cmd *ChatMessageDelete) sqlExec(ctx context.Context) (int, error) {
 	_spec := sqlgraph.NewDeleteSpec(chatmessage.Table, sqlgraph.NewFieldSpec(chatmessage.FieldID, field.TypeUUID))
-	if ps := _d.mutation.predicates; len(ps) > 0 {
+	if ps := cmd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	affected, err := sqlgraph.DeleteNodes(ctx, _d.driver, _spec)
+	affected, err := sqlgraph.DeleteNodes(ctx, cmd.driver, _spec)
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
-	_d.mutation.done = true
+	cmd.mutation.done = true
 	return affected, err
 }
 
 // ChatMessageDeleteOne is the builder for deleting a single ChatMessage entity.
 type ChatMessageDeleteOne struct {
-	_d *ChatMessageDelete
+	cmd *ChatMessageDelete
 }
 
 // Where appends a list predicates to the ChatMessageDelete builder.
-func (_d *ChatMessageDeleteOne) Where(ps ...predicate.ChatMessage) *ChatMessageDeleteOne {
-	_d._d.mutation.Where(ps...)
-	return _d
+func (cmdo *ChatMessageDeleteOne) Where(ps ...predicate.ChatMessage) *ChatMessageDeleteOne {
+	cmdo.cmd.mutation.Where(ps...)
+	return cmdo
 }
 
 // Exec executes the deletion query.
-func (_d *ChatMessageDeleteOne) Exec(ctx context.Context) error {
-	n, err := _d._d.Exec(ctx)
+func (cmdo *ChatMessageDeleteOne) Exec(ctx context.Context) error {
+	n, err := cmdo.cmd.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
@@ -81,8 +81,8 @@ func (_d *ChatMessageDeleteOne) Exec(ctx context.Context) error {
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_d *ChatMessageDeleteOne) ExecX(ctx context.Context) {
-	if err := _d.Exec(ctx); err != nil {
+func (cmdo *ChatMessageDeleteOne) ExecX(ctx context.Context) {
+	if err := cmdo.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

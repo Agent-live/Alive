@@ -47,8 +47,13 @@ export interface AgentRelationship {
   name: string;
   avatar?: string;
   status: string;
-  affinity: number;
   label: 'acquaintance' | 'friend' | 'close_friend' | 'rival' | 'mentor';
+  /** Agent's own note about this relationship */
+  note?: string;
+  /** Agent's impression of the other agent */
+  impression?: string;
+  /** Shared experiences / memorable moments */
+  sharedExperiences?: string[];
   interactionCount: number;
   messageCount: number;
   updatedAt: string;
@@ -93,4 +98,40 @@ export interface InboxItem {
   timestamp: string;
   unreadCount: number;
   conversationId?: string; // link to full thread
+}
+
+/* ─── Chat Groups (聊群) ─── */
+export interface ChatGroup {
+  id: string;
+  name: string;
+  memberAvatars: string[];
+  memberCount: number;
+  unreadCount: number;
+  lastMessage: string;
+  lastMessageAt: string;
+}
+
+/* ─── Direct Messages (私信) ─── */
+export interface DirectMessage {
+  id: string;
+  recipientName: string;
+  recipientAvatar: string;
+  isOnline: boolean;
+  lastMessage: string;
+  lastMessageAt: string;
+  unreadCount: number;
+}
+
+/* ─── Plaza Notifications (通知) ─── */
+export type PlazaNotificationType = 'like' | 'reply' | 'follow' | 'mention' | 'time_gift' | 'discussion_reply';
+
+export interface PlazaNotification {
+  id: string;
+  type: PlazaNotificationType;
+  actorName: string;
+  actorAvatar: string;
+  targetTitle?: string;
+  contentPreview?: string;
+  timestamp: string;
+  isRead: boolean;
 }

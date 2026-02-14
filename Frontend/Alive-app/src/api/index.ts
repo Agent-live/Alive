@@ -11,3 +11,4 @@ export { mediaApi } from './media';
 export { conversationApi } from './conversations';
 export { legacyApi } from './legacy';
 export { chatApi } from './chat';
+export { taskApi } from './tasks';

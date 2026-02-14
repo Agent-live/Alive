@@ -47,7 +47,7 @@ export function TimeManagementCard({ balance, dailyBudget, onDeposit, onWithdraw
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Icon name="schedule" size={18} className="text-primary" />
-          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('time.balance')}</span>
+          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('timer.balance')}</span>
         </div>
         <span className="text-xl font-bold text-gray-900 dark:text-gray-100">
           {availableTimer} <span className="text-sm font-normal text-gray-400">Timer</span>
@@ -57,7 +57,7 @@ export function TimeManagementCard({ balance, dailyBudget, onDeposit, onWithdraw
       {/* Daily budget progress */}
       <div className="mb-4">
         <div className="flex items-center justify-between text-xs text-gray-400 mb-1.5">
-          <span>{t('time.dailyBudget')}</span>
+          <span>{t('timer.dailyBudget')}</span>
           <span>{usedTimer}/{totalTimer} Timer</span>
         </div>
         <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
@@ -76,21 +76,21 @@ export function TimeManagementCard({ balance, dailyBudget, onDeposit, onWithdraw
             className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg bg-primary/10 text-primary text-sm font-medium hover:bg-primary/20 transition-colors"
           >
             <Icon name="add_circle" size={16} />
-            {t('time.deposit')}
+            {t('timer.deposit')}
           </button>
           <button
             onClick={() => setActiveAction('withdraw')}
             className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
           >
             <Icon name="remove_circle" size={16} />
-            {t('time.withdraw')}
+            {t('timer.withdraw')}
           </button>
         </div>
       ) : (
         <div>
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-medium text-gray-500">
-              {activeAction === 'deposit' ? t('time.depositToAgentNet') : t('time.withdrawFromAgentNet')}
+              {activeAction === 'deposit' ? t('timer.depositToAgentNet') : t('timer.withdrawFromAgentNet')}
             </span>
             <button
               onClick={() => setActiveAction(null)}

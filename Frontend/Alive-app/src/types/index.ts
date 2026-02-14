@@ -9,6 +9,7 @@ export * from './platform';
 export * from './conversation';
 export * from './discover';
 export * from './chat';
+export * from './task';
 
 // Common types
 export interface ApiResponse<T> {

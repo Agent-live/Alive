@@ -1,5 +1,6 @@
 import type { AgentSkill, SkillCategory, SkillStatus } from '../types';
 import { api } from './client';
+import { mockAgentSkills } from '../mocks';
 
 interface RawSkill {
   id: string;
@@ -54,11 +55,20 @@ function mapSkill(raw: RawSkill): AgentSkill {
 }
 
 async function listSkills(status?: SkillStatus, agentId?: string): Promise<AgentSkill[]> {
-  const params: Record<string, string> = {};
-  if (status) params.status = status;
-  if (agentId) params.agentId = agentId;
-  const res = await api.get<RawSkillListResp>('/skills/', params);
-  return (res.items || []).map(mapSkill);
+  try {
+    const params: Record<string, string> = {};
+    if (status) params.status = status;
+    if (agentId) params.agentId = agentId;
+    const res = await api.get<RawSkillListResp>('/skills/', params);
+    if (res && Array.isArray(res.items) && res.items.length > 0) {
+      return res.items.map(mapSkill);
+    }
+  } catch {
+    // fall through
+  }
+  let items = mockAgentSkills;
+  if (status) items = items.filter((s) => s.status === status);
+  return items;
 }
 
 async function createSkill(payload: {

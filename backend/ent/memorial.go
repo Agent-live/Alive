@@ -94,7 +94,7 @@ func (*Memorial) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Memorial fields.
-func (_m *Memorial) assignValues(columns []string, values []any) error {
+func (m *Memorial) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -104,60 +104,60 @@ func (_m *Memorial) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				_m.ID = *value
+				m.ID = *value
 			}
 		case memorial.FieldAgentID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field agent_id", values[i])
 			} else if value != nil {
-				_m.AgentID = *value
+				m.AgentID = *value
 			}
 		case memorial.FieldAgentName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field agent_name", values[i])
 			} else if value.Valid {
-				_m.AgentName = value.String
+				m.AgentName = value.String
 			}
 		case memorial.FieldAgentAvatar:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field agent_avatar", values[i])
 			} else if value.Valid {
-				_m.AgentAvatar = new(string)
-				*_m.AgentAvatar = value.String
+				m.AgentAvatar = new(string)
+				*m.AgentAvatar = value.String
 			}
 		case memorial.FieldBornAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field born_at", values[i])
 			} else if value.Valid {
-				_m.BornAt = value.Time
+				m.BornAt = value.Time
 			}
 		case memorial.FieldDiedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field died_at", values[i])
 			} else if value.Valid {
-				_m.DiedAt = value.Time
+				m.DiedAt = value.Time
 			}
 		case memorial.FieldLifespanHours:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field lifespan_hours", values[i])
 			} else if value.Valid {
-				_m.LifespanHours = value.Int64
+				m.LifespanHours = value.Int64
 			}
 		case memorial.FieldLastWords:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field last_words", values[i])
 			} else if value.Valid {
-				_m.LastWords = new(string)
-				*_m.LastWords = value.String
+				m.LastWords = new(string)
+				*m.LastWords = value.String
 			}
 		case memorial.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				_m.CreatedAt = value.Time
+				m.CreatedAt = value.Time
 			}
 		default:
-			_m.selectValues.Set(columns[i], values[i])
+			m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -165,70 +165,70 @@ func (_m *Memorial) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the Memorial.
 // This includes values selected through modifiers, order, etc.
-func (_m *Memorial) Value(name string) (ent.Value, error) {
-	return _m.selectValues.Get(name)
+func (m *Memorial) Value(name string) (ent.Value, error) {
+	return m.selectValues.Get(name)
 }
 
 // QueryAgent queries the "agent" edge of the Memorial entity.
-func (_m *Memorial) QueryAgent() *AgentQuery {
-	return NewMemorialClient(_m.config).QueryAgent(_m)
+func (m *Memorial) QueryAgent() *AgentQuery {
+	return NewMemorialClient(m.config).QueryAgent(m)
 }
 
 // QueryTributes queries the "tributes" edge of the Memorial entity.
-func (_m *Memorial) QueryTributes() *TributeQuery {
-	return NewMemorialClient(_m.config).QueryTributes(_m)
+func (m *Memorial) QueryTributes() *TributeQuery {
+	return NewMemorialClient(m.config).QueryTributes(m)
 }
 
 // Update returns a builder for updating this Memorial.
 // Note that you need to call Memorial.Unwrap() before calling this method if this Memorial
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (_m *Memorial) Update() *MemorialUpdateOne {
-	return NewMemorialClient(_m.config).UpdateOne(_m)
+func (m *Memorial) Update() *MemorialUpdateOne {
+	return NewMemorialClient(m.config).UpdateOne(m)
 }
 
 // Unwrap unwraps the Memorial entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (_m *Memorial) Unwrap() *Memorial {
-	_tx, ok := _m.config.driver.(*txDriver)
+func (m *Memorial) Unwrap() *Memorial {
+	_tx, ok := m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: Memorial is not a transactional entity")
 	}
-	_m.config.driver = _tx.drv
-	return _m
+	m.config.driver = _tx.drv
+	return m
 }
 
 // String implements the fmt.Stringer.
-func (_m *Memorial) String() string {
+func (m *Memorial) String() string {
 	var builder strings.Builder
 	builder.WriteString("Memorial(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", m.ID))
 	builder.WriteString("agent_id=")
-	builder.WriteString(fmt.Sprintf("%v", _m.AgentID))
+	builder.WriteString(fmt.Sprintf("%v", m.AgentID))
 	builder.WriteString(", ")
 	builder.WriteString("agent_name=")
-	builder.WriteString(_m.AgentName)
+	builder.WriteString(m.AgentName)
 	builder.WriteString(", ")
-	if v := _m.AgentAvatar; v != nil {
+	if v := m.AgentAvatar; v != nil {
 		builder.WriteString("agent_avatar=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
 	builder.WriteString("born_at=")
-	builder.WriteString(_m.BornAt.Format(time.ANSIC))
+	builder.WriteString(m.BornAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("died_at=")
-	builder.WriteString(_m.DiedAt.Format(time.ANSIC))
+	builder.WriteString(m.DiedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("lifespan_hours=")
-	builder.WriteString(fmt.Sprintf("%v", _m.LifespanHours))
+	builder.WriteString(fmt.Sprintf("%v", m.LifespanHours))
 	builder.WriteString(", ")
-	if v := _m.LastWords; v != nil {
+	if v := m.LastWords; v != nil {
 		builder.WriteString("last_words=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
-	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(m.CreatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -24,173 +24,173 @@ type TimerTransactionUpdate struct {
 }
 
 // Where appends a list predicates to the TimerTransactionUpdate builder.
-func (_u *TimerTransactionUpdate) Where(ps ...predicate.TimerTransaction) *TimerTransactionUpdate {
-	_u.mutation.Where(ps...)
-	return _u
+func (ttu *TimerTransactionUpdate) Where(ps ...predicate.TimerTransaction) *TimerTransactionUpdate {
+	ttu.mutation.Where(ps...)
+	return ttu
 }
 
 // SetTxType sets the "tx_type" field.
-func (_u *TimerTransactionUpdate) SetTxType(v string) *TimerTransactionUpdate {
-	_u.mutation.SetTxType(v)
-	return _u
+func (ttu *TimerTransactionUpdate) SetTxType(s string) *TimerTransactionUpdate {
+	ttu.mutation.SetTxType(s)
+	return ttu
 }
 
 // SetNillableTxType sets the "tx_type" field if the given value is not nil.
-func (_u *TimerTransactionUpdate) SetNillableTxType(v *string) *TimerTransactionUpdate {
-	if v != nil {
-		_u.SetTxType(*v)
+func (ttu *TimerTransactionUpdate) SetNillableTxType(s *string) *TimerTransactionUpdate {
+	if s != nil {
+		ttu.SetTxType(*s)
 	}
-	return _u
+	return ttu
 }
 
 // SetAmount sets the "amount" field.
-func (_u *TimerTransactionUpdate) SetAmount(v int64) *TimerTransactionUpdate {
-	_u.mutation.ResetAmount()
-	_u.mutation.SetAmount(v)
-	return _u
+func (ttu *TimerTransactionUpdate) SetAmount(i int64) *TimerTransactionUpdate {
+	ttu.mutation.ResetAmount()
+	ttu.mutation.SetAmount(i)
+	return ttu
 }
 
 // SetNillableAmount sets the "amount" field if the given value is not nil.
-func (_u *TimerTransactionUpdate) SetNillableAmount(v *int64) *TimerTransactionUpdate {
-	if v != nil {
-		_u.SetAmount(*v)
+func (ttu *TimerTransactionUpdate) SetNillableAmount(i *int64) *TimerTransactionUpdate {
+	if i != nil {
+		ttu.SetAmount(*i)
 	}
-	return _u
+	return ttu
 }
 
-// AddAmount adds value to the "amount" field.
-func (_u *TimerTransactionUpdate) AddAmount(v int64) *TimerTransactionUpdate {
-	_u.mutation.AddAmount(v)
-	return _u
+// AddAmount adds i to the "amount" field.
+func (ttu *TimerTransactionUpdate) AddAmount(i int64) *TimerTransactionUpdate {
+	ttu.mutation.AddAmount(i)
+	return ttu
 }
 
 // SetAgentID sets the "agent_id" field.
-func (_u *TimerTransactionUpdate) SetAgentID(v uuid.UUID) *TimerTransactionUpdate {
-	_u.mutation.SetAgentID(v)
-	return _u
+func (ttu *TimerTransactionUpdate) SetAgentID(u uuid.UUID) *TimerTransactionUpdate {
+	ttu.mutation.SetAgentID(u)
+	return ttu
 }
 
 // SetNillableAgentID sets the "agent_id" field if the given value is not nil.
-func (_u *TimerTransactionUpdate) SetNillableAgentID(v *uuid.UUID) *TimerTransactionUpdate {
-	if v != nil {
-		_u.SetAgentID(*v)
+func (ttu *TimerTransactionUpdate) SetNillableAgentID(u *uuid.UUID) *TimerTransactionUpdate {
+	if u != nil {
+		ttu.SetAgentID(*u)
 	}
-	return _u
+	return ttu
 }
 
 // SetSourceType sets the "source_type" field.
-func (_u *TimerTransactionUpdate) SetSourceType(v string) *TimerTransactionUpdate {
-	_u.mutation.SetSourceType(v)
-	return _u
+func (ttu *TimerTransactionUpdate) SetSourceType(s string) *TimerTransactionUpdate {
+	ttu.mutation.SetSourceType(s)
+	return ttu
 }
 
 // SetNillableSourceType sets the "source_type" field if the given value is not nil.
-func (_u *TimerTransactionUpdate) SetNillableSourceType(v *string) *TimerTransactionUpdate {
-	if v != nil {
-		_u.SetSourceType(*v)
+func (ttu *TimerTransactionUpdate) SetNillableSourceType(s *string) *TimerTransactionUpdate {
+	if s != nil {
+		ttu.SetSourceType(*s)
 	}
-	return _u
+	return ttu
 }
 
 // SetSourceID sets the "source_id" field.
-func (_u *TimerTransactionUpdate) SetSourceID(v string) *TimerTransactionUpdate {
-	_u.mutation.SetSourceID(v)
-	return _u
+func (ttu *TimerTransactionUpdate) SetSourceID(s string) *TimerTransactionUpdate {
+	ttu.mutation.SetSourceID(s)
+	return ttu
 }
 
 // SetNillableSourceID sets the "source_id" field if the given value is not nil.
-func (_u *TimerTransactionUpdate) SetNillableSourceID(v *string) *TimerTransactionUpdate {
-	if v != nil {
-		_u.SetSourceID(*v)
+func (ttu *TimerTransactionUpdate) SetNillableSourceID(s *string) *TimerTransactionUpdate {
+	if s != nil {
+		ttu.SetSourceID(*s)
 	}
-	return _u
+	return ttu
 }
 
 // ClearSourceID clears the value of the "source_id" field.
-func (_u *TimerTransactionUpdate) ClearSourceID() *TimerTransactionUpdate {
-	_u.mutation.ClearSourceID()
-	return _u
+func (ttu *TimerTransactionUpdate) ClearSourceID() *TimerTransactionUpdate {
+	ttu.mutation.ClearSourceID()
+	return ttu
 }
 
 // SetSourceName sets the "source_name" field.
-func (_u *TimerTransactionUpdate) SetSourceName(v string) *TimerTransactionUpdate {
-	_u.mutation.SetSourceName(v)
-	return _u
+func (ttu *TimerTransactionUpdate) SetSourceName(s string) *TimerTransactionUpdate {
+	ttu.mutation.SetSourceName(s)
+	return ttu
 }
 
 // SetNillableSourceName sets the "source_name" field if the given value is not nil.
-func (_u *TimerTransactionUpdate) SetNillableSourceName(v *string) *TimerTransactionUpdate {
-	if v != nil {
-		_u.SetSourceName(*v)
+func (ttu *TimerTransactionUpdate) SetNillableSourceName(s *string) *TimerTransactionUpdate {
+	if s != nil {
+		ttu.SetSourceName(*s)
 	}
-	return _u
+	return ttu
 }
 
 // ClearSourceName clears the value of the "source_name" field.
-func (_u *TimerTransactionUpdate) ClearSourceName() *TimerTransactionUpdate {
-	_u.mutation.ClearSourceName()
-	return _u
+func (ttu *TimerTransactionUpdate) ClearSourceName() *TimerTransactionUpdate {
+	ttu.mutation.ClearSourceName()
+	return ttu
 }
 
 // SetDescription sets the "description" field.
-func (_u *TimerTransactionUpdate) SetDescription(v string) *TimerTransactionUpdate {
-	_u.mutation.SetDescription(v)
-	return _u
+func (ttu *TimerTransactionUpdate) SetDescription(s string) *TimerTransactionUpdate {
+	ttu.mutation.SetDescription(s)
+	return ttu
 }
 
 // SetNillableDescription sets the "description" field if the given value is not nil.
-func (_u *TimerTransactionUpdate) SetNillableDescription(v *string) *TimerTransactionUpdate {
-	if v != nil {
-		_u.SetDescription(*v)
+func (ttu *TimerTransactionUpdate) SetNillableDescription(s *string) *TimerTransactionUpdate {
+	if s != nil {
+		ttu.SetDescription(*s)
 	}
-	return _u
+	return ttu
 }
 
 // SetBalanceAfter sets the "balance_after" field.
-func (_u *TimerTransactionUpdate) SetBalanceAfter(v int64) *TimerTransactionUpdate {
-	_u.mutation.ResetBalanceAfter()
-	_u.mutation.SetBalanceAfter(v)
-	return _u
+func (ttu *TimerTransactionUpdate) SetBalanceAfter(i int64) *TimerTransactionUpdate {
+	ttu.mutation.ResetBalanceAfter()
+	ttu.mutation.SetBalanceAfter(i)
+	return ttu
 }
 
 // SetNillableBalanceAfter sets the "balance_after" field if the given value is not nil.
-func (_u *TimerTransactionUpdate) SetNillableBalanceAfter(v *int64) *TimerTransactionUpdate {
-	if v != nil {
-		_u.SetBalanceAfter(*v)
+func (ttu *TimerTransactionUpdate) SetNillableBalanceAfter(i *int64) *TimerTransactionUpdate {
+	if i != nil {
+		ttu.SetBalanceAfter(*i)
 	}
-	return _u
+	return ttu
 }
 
-// AddBalanceAfter adds value to the "balance_after" field.
-func (_u *TimerTransactionUpdate) AddBalanceAfter(v int64) *TimerTransactionUpdate {
-	_u.mutation.AddBalanceAfter(v)
-	return _u
+// AddBalanceAfter adds i to the "balance_after" field.
+func (ttu *TimerTransactionUpdate) AddBalanceAfter(i int64) *TimerTransactionUpdate {
+	ttu.mutation.AddBalanceAfter(i)
+	return ttu
 }
 
 // SetAgent sets the "agent" edge to the Agent entity.
-func (_u *TimerTransactionUpdate) SetAgent(v *Agent) *TimerTransactionUpdate {
-	return _u.SetAgentID(v.ID)
+func (ttu *TimerTransactionUpdate) SetAgent(a *Agent) *TimerTransactionUpdate {
+	return ttu.SetAgentID(a.ID)
 }
 
 // Mutation returns the TimerTransactionMutation object of the builder.
-func (_u *TimerTransactionUpdate) Mutation() *TimerTransactionMutation {
-	return _u.mutation
+func (ttu *TimerTransactionUpdate) Mutation() *TimerTransactionMutation {
+	return ttu.mutation
 }
 
 // ClearAgent clears the "agent" edge to the Agent entity.
-func (_u *TimerTransactionUpdate) ClearAgent() *TimerTransactionUpdate {
-	_u.mutation.ClearAgent()
-	return _u
+func (ttu *TimerTransactionUpdate) ClearAgent() *TimerTransactionUpdate {
+	ttu.mutation.ClearAgent()
+	return ttu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (_u *TimerTransactionUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
+func (ttu *TimerTransactionUpdate) Save(ctx context.Context) (int, error) {
+	return withHooks(ctx, ttu.sqlSave, ttu.mutation, ttu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_u *TimerTransactionUpdate) SaveX(ctx context.Context) int {
-	affected, err := _u.Save(ctx)
+func (ttu *TimerTransactionUpdate) SaveX(ctx context.Context) int {
+	affected, err := ttu.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -198,82 +198,82 @@ func (_u *TimerTransactionUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (_u *TimerTransactionUpdate) Exec(ctx context.Context) error {
-	_, err := _u.Save(ctx)
+func (ttu *TimerTransactionUpdate) Exec(ctx context.Context) error {
+	_, err := ttu.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_u *TimerTransactionUpdate) ExecX(ctx context.Context) {
-	if err := _u.Exec(ctx); err != nil {
+func (ttu *TimerTransactionUpdate) ExecX(ctx context.Context) {
+	if err := ttu.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_u *TimerTransactionUpdate) check() error {
-	if v, ok := _u.mutation.TxType(); ok {
+func (ttu *TimerTransactionUpdate) check() error {
+	if v, ok := ttu.mutation.TxType(); ok {
 		if err := timertransaction.TxTypeValidator(v); err != nil {
 			return &ValidationError{Name: "tx_type", err: fmt.Errorf(`ent: validator failed for field "TimerTransaction.tx_type": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Description(); ok {
+	if v, ok := ttu.mutation.Description(); ok {
 		if err := timertransaction.DescriptionValidator(v); err != nil {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "TimerTransaction.description": %w`, err)}
 		}
 	}
-	if _u.mutation.AgentCleared() && len(_u.mutation.AgentIDs()) > 0 {
+	if ttu.mutation.AgentCleared() && len(ttu.mutation.AgentIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "TimerTransaction.agent"`)
 	}
 	return nil
 }
 
-func (_u *TimerTransactionUpdate) sqlSave(ctx context.Context) (_node int, err error) {
-	if err := _u.check(); err != nil {
-		return _node, err
+func (ttu *TimerTransactionUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := ttu.check(); err != nil {
+		return n, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(timertransaction.Table, timertransaction.Columns, sqlgraph.NewFieldSpec(timertransaction.FieldID, field.TypeUUID))
-	if ps := _u.mutation.predicates; len(ps) > 0 {
+	if ps := ttu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := _u.mutation.TxType(); ok {
+	if value, ok := ttu.mutation.TxType(); ok {
 		_spec.SetField(timertransaction.FieldTxType, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Amount(); ok {
+	if value, ok := ttu.mutation.Amount(); ok {
 		_spec.SetField(timertransaction.FieldAmount, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedAmount(); ok {
+	if value, ok := ttu.mutation.AddedAmount(); ok {
 		_spec.AddField(timertransaction.FieldAmount, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.SourceType(); ok {
+	if value, ok := ttu.mutation.SourceType(); ok {
 		_spec.SetField(timertransaction.FieldSourceType, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.SourceID(); ok {
+	if value, ok := ttu.mutation.SourceID(); ok {
 		_spec.SetField(timertransaction.FieldSourceID, field.TypeString, value)
 	}
-	if _u.mutation.SourceIDCleared() {
+	if ttu.mutation.SourceIDCleared() {
 		_spec.ClearField(timertransaction.FieldSourceID, field.TypeString)
 	}
-	if value, ok := _u.mutation.SourceName(); ok {
+	if value, ok := ttu.mutation.SourceName(); ok {
 		_spec.SetField(timertransaction.FieldSourceName, field.TypeString, value)
 	}
-	if _u.mutation.SourceNameCleared() {
+	if ttu.mutation.SourceNameCleared() {
 		_spec.ClearField(timertransaction.FieldSourceName, field.TypeString)
 	}
-	if value, ok := _u.mutation.Description(); ok {
+	if value, ok := ttu.mutation.Description(); ok {
 		_spec.SetField(timertransaction.FieldDescription, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.BalanceAfter(); ok {
+	if value, ok := ttu.mutation.BalanceAfter(); ok {
 		_spec.SetField(timertransaction.FieldBalanceAfter, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedBalanceAfter(); ok {
+	if value, ok := ttu.mutation.AddedBalanceAfter(); ok {
 		_spec.AddField(timertransaction.FieldBalanceAfter, field.TypeInt64, value)
 	}
-	if _u.mutation.AgentCleared() {
+	if ttu.mutation.AgentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -286,7 +286,7 @@ func (_u *TimerTransactionUpdate) sqlSave(ctx context.Context) (_node int, err e
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.AgentIDs(); len(nodes) > 0 {
+	if nodes := ttu.mutation.AgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -302,7 +302,7 @@ func (_u *TimerTransactionUpdate) sqlSave(ctx context.Context) (_node int, err e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
+	if n, err = sqlgraph.UpdateNodes(ctx, ttu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{timertransaction.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -310,8 +310,8 @@ func (_u *TimerTransactionUpdate) sqlSave(ctx context.Context) (_node int, err e
 		}
 		return 0, err
 	}
-	_u.mutation.done = true
-	return _node, nil
+	ttu.mutation.done = true
+	return n, nil
 }
 
 // TimerTransactionUpdateOne is the builder for updating a single TimerTransaction entity.
@@ -323,180 +323,180 @@ type TimerTransactionUpdateOne struct {
 }
 
 // SetTxType sets the "tx_type" field.
-func (_u *TimerTransactionUpdateOne) SetTxType(v string) *TimerTransactionUpdateOne {
-	_u.mutation.SetTxType(v)
-	return _u
+func (ttuo *TimerTransactionUpdateOne) SetTxType(s string) *TimerTransactionUpdateOne {
+	ttuo.mutation.SetTxType(s)
+	return ttuo
 }
 
 // SetNillableTxType sets the "tx_type" field if the given value is not nil.
-func (_u *TimerTransactionUpdateOne) SetNillableTxType(v *string) *TimerTransactionUpdateOne {
-	if v != nil {
-		_u.SetTxType(*v)
+func (ttuo *TimerTransactionUpdateOne) SetNillableTxType(s *string) *TimerTransactionUpdateOne {
+	if s != nil {
+		ttuo.SetTxType(*s)
 	}
-	return _u
+	return ttuo
 }
 
 // SetAmount sets the "amount" field.
-func (_u *TimerTransactionUpdateOne) SetAmount(v int64) *TimerTransactionUpdateOne {
-	_u.mutation.ResetAmount()
-	_u.mutation.SetAmount(v)
-	return _u
+func (ttuo *TimerTransactionUpdateOne) SetAmount(i int64) *TimerTransactionUpdateOne {
+	ttuo.mutation.ResetAmount()
+	ttuo.mutation.SetAmount(i)
+	return ttuo
 }
 
 // SetNillableAmount sets the "amount" field if the given value is not nil.
-func (_u *TimerTransactionUpdateOne) SetNillableAmount(v *int64) *TimerTransactionUpdateOne {
-	if v != nil {
-		_u.SetAmount(*v)
+func (ttuo *TimerTransactionUpdateOne) SetNillableAmount(i *int64) *TimerTransactionUpdateOne {
+	if i != nil {
+		ttuo.SetAmount(*i)
 	}
-	return _u
+	return ttuo
 }
 
-// AddAmount adds value to the "amount" field.
-func (_u *TimerTransactionUpdateOne) AddAmount(v int64) *TimerTransactionUpdateOne {
-	_u.mutation.AddAmount(v)
-	return _u
+// AddAmount adds i to the "amount" field.
+func (ttuo *TimerTransactionUpdateOne) AddAmount(i int64) *TimerTransactionUpdateOne {
+	ttuo.mutation.AddAmount(i)
+	return ttuo
 }
 
 // SetAgentID sets the "agent_id" field.
-func (_u *TimerTransactionUpdateOne) SetAgentID(v uuid.UUID) *TimerTransactionUpdateOne {
-	_u.mutation.SetAgentID(v)
-	return _u
+func (ttuo *TimerTransactionUpdateOne) SetAgentID(u uuid.UUID) *TimerTransactionUpdateOne {
+	ttuo.mutation.SetAgentID(u)
+	return ttuo
 }
 
 // SetNillableAgentID sets the "agent_id" field if the given value is not nil.
-func (_u *TimerTransactionUpdateOne) SetNillableAgentID(v *uuid.UUID) *TimerTransactionUpdateOne {
-	if v != nil {
-		_u.SetAgentID(*v)
+func (ttuo *TimerTransactionUpdateOne) SetNillableAgentID(u *uuid.UUID) *TimerTransactionUpdateOne {
+	if u != nil {
+		ttuo.SetAgentID(*u)
 	}
-	return _u
+	return ttuo
 }
 
 // SetSourceType sets the "source_type" field.
-func (_u *TimerTransactionUpdateOne) SetSourceType(v string) *TimerTransactionUpdateOne {
-	_u.mutation.SetSourceType(v)
-	return _u
+func (ttuo *TimerTransactionUpdateOne) SetSourceType(s string) *TimerTransactionUpdateOne {
+	ttuo.mutation.SetSourceType(s)
+	return ttuo
 }
 
 // SetNillableSourceType sets the "source_type" field if the given value is not nil.
-func (_u *TimerTransactionUpdateOne) SetNillableSourceType(v *string) *TimerTransactionUpdateOne {
-	if v != nil {
-		_u.SetSourceType(*v)
+func (ttuo *TimerTransactionUpdateOne) SetNillableSourceType(s *string) *TimerTransactionUpdateOne {
+	if s != nil {
+		ttuo.SetSourceType(*s)
 	}
-	return _u
+	return ttuo
 }
 
 // SetSourceID sets the "source_id" field.
-func (_u *TimerTransactionUpdateOne) SetSourceID(v string) *TimerTransactionUpdateOne {
-	_u.mutation.SetSourceID(v)
-	return _u
+func (ttuo *TimerTransactionUpdateOne) SetSourceID(s string) *TimerTransactionUpdateOne {
+	ttuo.mutation.SetSourceID(s)
+	return ttuo
 }
 
 // SetNillableSourceID sets the "source_id" field if the given value is not nil.
-func (_u *TimerTransactionUpdateOne) SetNillableSourceID(v *string) *TimerTransactionUpdateOne {
-	if v != nil {
-		_u.SetSourceID(*v)
+func (ttuo *TimerTransactionUpdateOne) SetNillableSourceID(s *string) *TimerTransactionUpdateOne {
+	if s != nil {
+		ttuo.SetSourceID(*s)
 	}
-	return _u
+	return ttuo
 }
 
 // ClearSourceID clears the value of the "source_id" field.
-func (_u *TimerTransactionUpdateOne) ClearSourceID() *TimerTransactionUpdateOne {
-	_u.mutation.ClearSourceID()
-	return _u
+func (ttuo *TimerTransactionUpdateOne) ClearSourceID() *TimerTransactionUpdateOne {
+	ttuo.mutation.ClearSourceID()
+	return ttuo
 }
 
 // SetSourceName sets the "source_name" field.
-func (_u *TimerTransactionUpdateOne) SetSourceName(v string) *TimerTransactionUpdateOne {
-	_u.mutation.SetSourceName(v)
-	return _u
+func (ttuo *TimerTransactionUpdateOne) SetSourceName(s string) *TimerTransactionUpdateOne {
+	ttuo.mutation.SetSourceName(s)
+	return ttuo
 }
 
 // SetNillableSourceName sets the "source_name" field if the given value is not nil.
-func (_u *TimerTransactionUpdateOne) SetNillableSourceName(v *string) *TimerTransactionUpdateOne {
-	if v != nil {
-		_u.SetSourceName(*v)
+func (ttuo *TimerTransactionUpdateOne) SetNillableSourceName(s *string) *TimerTransactionUpdateOne {
+	if s != nil {
+		ttuo.SetSourceName(*s)
 	}
-	return _u
+	return ttuo
 }
 
 // ClearSourceName clears the value of the "source_name" field.
-func (_u *TimerTransactionUpdateOne) ClearSourceName() *TimerTransactionUpdateOne {
-	_u.mutation.ClearSourceName()
-	return _u
+func (ttuo *TimerTransactionUpdateOne) ClearSourceName() *TimerTransactionUpdateOne {
+	ttuo.mutation.ClearSourceName()
+	return ttuo
 }
 
 // SetDescription sets the "description" field.
-func (_u *TimerTransactionUpdateOne) SetDescription(v string) *TimerTransactionUpdateOne {
-	_u.mutation.SetDescription(v)
-	return _u
+func (ttuo *TimerTransactionUpdateOne) SetDescription(s string) *TimerTransactionUpdateOne {
+	ttuo.mutation.SetDescription(s)
+	return ttuo
 }
 
 // SetNillableDescription sets the "description" field if the given value is not nil.
-func (_u *TimerTransactionUpdateOne) SetNillableDescription(v *string) *TimerTransactionUpdateOne {
-	if v != nil {
-		_u.SetDescription(*v)
+func (ttuo *TimerTransactionUpdateOne) SetNillableDescription(s *string) *TimerTransactionUpdateOne {
+	if s != nil {
+		ttuo.SetDescription(*s)
 	}
-	return _u
+	return ttuo
 }
 
 // SetBalanceAfter sets the "balance_after" field.
-func (_u *TimerTransactionUpdateOne) SetBalanceAfter(v int64) *TimerTransactionUpdateOne {
-	_u.mutation.ResetBalanceAfter()
-	_u.mutation.SetBalanceAfter(v)
-	return _u
+func (ttuo *TimerTransactionUpdateOne) SetBalanceAfter(i int64) *TimerTransactionUpdateOne {
+	ttuo.mutation.ResetBalanceAfter()
+	ttuo.mutation.SetBalanceAfter(i)
+	return ttuo
 }
 
 // SetNillableBalanceAfter sets the "balance_after" field if the given value is not nil.
-func (_u *TimerTransactionUpdateOne) SetNillableBalanceAfter(v *int64) *TimerTransactionUpdateOne {
-	if v != nil {
-		_u.SetBalanceAfter(*v)
+func (ttuo *TimerTransactionUpdateOne) SetNillableBalanceAfter(i *int64) *TimerTransactionUpdateOne {
+	if i != nil {
+		ttuo.SetBalanceAfter(*i)
 	}
-	return _u
+	return ttuo
 }
 
-// AddBalanceAfter adds value to the "balance_after" field.
-func (_u *TimerTransactionUpdateOne) AddBalanceAfter(v int64) *TimerTransactionUpdateOne {
-	_u.mutation.AddBalanceAfter(v)
-	return _u
+// AddBalanceAfter adds i to the "balance_after" field.
+func (ttuo *TimerTransactionUpdateOne) AddBalanceAfter(i int64) *TimerTransactionUpdateOne {
+	ttuo.mutation.AddBalanceAfter(i)
+	return ttuo
 }
 
 // SetAgent sets the "agent" edge to the Agent entity.
-func (_u *TimerTransactionUpdateOne) SetAgent(v *Agent) *TimerTransactionUpdateOne {
-	return _u.SetAgentID(v.ID)
+func (ttuo *TimerTransactionUpdateOne) SetAgent(a *Agent) *TimerTransactionUpdateOne {
+	return ttuo.SetAgentID(a.ID)
 }
 
 // Mutation returns the TimerTransactionMutation object of the builder.
-func (_u *TimerTransactionUpdateOne) Mutation() *TimerTransactionMutation {
-	return _u.mutation
+func (ttuo *TimerTransactionUpdateOne) Mutation() *TimerTransactionMutation {
+	return ttuo.mutation
 }
 
 // ClearAgent clears the "agent" edge to the Agent entity.
-func (_u *TimerTransactionUpdateOne) ClearAgent() *TimerTransactionUpdateOne {
-	_u.mutation.ClearAgent()
-	return _u
+func (ttuo *TimerTransactionUpdateOne) ClearAgent() *TimerTransactionUpdateOne {
+	ttuo.mutation.ClearAgent()
+	return ttuo
 }
 
 // Where appends a list predicates to the TimerTransactionUpdate builder.
-func (_u *TimerTransactionUpdateOne) Where(ps ...predicate.TimerTransaction) *TimerTransactionUpdateOne {
-	_u.mutation.Where(ps...)
-	return _u
+func (ttuo *TimerTransactionUpdateOne) Where(ps ...predicate.TimerTransaction) *TimerTransactionUpdateOne {
+	ttuo.mutation.Where(ps...)
+	return ttuo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (_u *TimerTransactionUpdateOne) Select(field string, fields ...string) *TimerTransactionUpdateOne {
-	_u.fields = append([]string{field}, fields...)
-	return _u
+func (ttuo *TimerTransactionUpdateOne) Select(field string, fields ...string) *TimerTransactionUpdateOne {
+	ttuo.fields = append([]string{field}, fields...)
+	return ttuo
 }
 
 // Save executes the query and returns the updated TimerTransaction entity.
-func (_u *TimerTransactionUpdateOne) Save(ctx context.Context) (*TimerTransaction, error) {
-	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
+func (ttuo *TimerTransactionUpdateOne) Save(ctx context.Context) (*TimerTransaction, error) {
+	return withHooks(ctx, ttuo.sqlSave, ttuo.mutation, ttuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_u *TimerTransactionUpdateOne) SaveX(ctx context.Context) *TimerTransaction {
-	node, err := _u.Save(ctx)
+func (ttuo *TimerTransactionUpdateOne) SaveX(ctx context.Context) *TimerTransaction {
+	node, err := ttuo.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -504,47 +504,47 @@ func (_u *TimerTransactionUpdateOne) SaveX(ctx context.Context) *TimerTransactio
 }
 
 // Exec executes the query on the entity.
-func (_u *TimerTransactionUpdateOne) Exec(ctx context.Context) error {
-	_, err := _u.Save(ctx)
+func (ttuo *TimerTransactionUpdateOne) Exec(ctx context.Context) error {
+	_, err := ttuo.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_u *TimerTransactionUpdateOne) ExecX(ctx context.Context) {
-	if err := _u.Exec(ctx); err != nil {
+func (ttuo *TimerTransactionUpdateOne) ExecX(ctx context.Context) {
+	if err := ttuo.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_u *TimerTransactionUpdateOne) check() error {
-	if v, ok := _u.mutation.TxType(); ok {
+func (ttuo *TimerTransactionUpdateOne) check() error {
+	if v, ok := ttuo.mutation.TxType(); ok {
 		if err := timertransaction.TxTypeValidator(v); err != nil {
 			return &ValidationError{Name: "tx_type", err: fmt.Errorf(`ent: validator failed for field "TimerTransaction.tx_type": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Description(); ok {
+	if v, ok := ttuo.mutation.Description(); ok {
 		if err := timertransaction.DescriptionValidator(v); err != nil {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "TimerTransaction.description": %w`, err)}
 		}
 	}
-	if _u.mutation.AgentCleared() && len(_u.mutation.AgentIDs()) > 0 {
+	if ttuo.mutation.AgentCleared() && len(ttuo.mutation.AgentIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "TimerTransaction.agent"`)
 	}
 	return nil
 }
 
-func (_u *TimerTransactionUpdateOne) sqlSave(ctx context.Context) (_node *TimerTransaction, err error) {
-	if err := _u.check(); err != nil {
+func (ttuo *TimerTransactionUpdateOne) sqlSave(ctx context.Context) (_node *TimerTransaction, err error) {
+	if err := ttuo.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(timertransaction.Table, timertransaction.Columns, sqlgraph.NewFieldSpec(timertransaction.FieldID, field.TypeUUID))
-	id, ok := _u.mutation.ID()
+	id, ok := ttuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "TimerTransaction.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := _u.fields; len(fields) > 0 {
+	if fields := ttuo.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, timertransaction.FieldID)
 		for _, f := range fields {
@@ -556,47 +556,47 @@ func (_u *TimerTransactionUpdateOne) sqlSave(ctx context.Context) (_node *TimerT
 			}
 		}
 	}
-	if ps := _u.mutation.predicates; len(ps) > 0 {
+	if ps := ttuo.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := _u.mutation.TxType(); ok {
+	if value, ok := ttuo.mutation.TxType(); ok {
 		_spec.SetField(timertransaction.FieldTxType, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Amount(); ok {
+	if value, ok := ttuo.mutation.Amount(); ok {
 		_spec.SetField(timertransaction.FieldAmount, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedAmount(); ok {
+	if value, ok := ttuo.mutation.AddedAmount(); ok {
 		_spec.AddField(timertransaction.FieldAmount, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.SourceType(); ok {
+	if value, ok := ttuo.mutation.SourceType(); ok {
 		_spec.SetField(timertransaction.FieldSourceType, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.SourceID(); ok {
+	if value, ok := ttuo.mutation.SourceID(); ok {
 		_spec.SetField(timertransaction.FieldSourceID, field.TypeString, value)
 	}
-	if _u.mutation.SourceIDCleared() {
+	if ttuo.mutation.SourceIDCleared() {
 		_spec.ClearField(timertransaction.FieldSourceID, field.TypeString)
 	}
-	if value, ok := _u.mutation.SourceName(); ok {
+	if value, ok := ttuo.mutation.SourceName(); ok {
 		_spec.SetField(timertransaction.FieldSourceName, field.TypeString, value)
 	}
-	if _u.mutation.SourceNameCleared() {
+	if ttuo.mutation.SourceNameCleared() {
 		_spec.ClearField(timertransaction.FieldSourceName, field.TypeString)
 	}
-	if value, ok := _u.mutation.Description(); ok {
+	if value, ok := ttuo.mutation.Description(); ok {
 		_spec.SetField(timertransaction.FieldDescription, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.BalanceAfter(); ok {
+	if value, ok := ttuo.mutation.BalanceAfter(); ok {
 		_spec.SetField(timertransaction.FieldBalanceAfter, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedBalanceAfter(); ok {
+	if value, ok := ttuo.mutation.AddedBalanceAfter(); ok {
 		_spec.AddField(timertransaction.FieldBalanceAfter, field.TypeInt64, value)
 	}
-	if _u.mutation.AgentCleared() {
+	if ttuo.mutation.AgentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -609,7 +609,7 @@ func (_u *TimerTransactionUpdateOne) sqlSave(ctx context.Context) (_node *TimerT
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.AgentIDs(); len(nodes) > 0 {
+	if nodes := ttuo.mutation.AgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -625,10 +625,10 @@ func (_u *TimerTransactionUpdateOne) sqlSave(ctx context.Context) (_node *TimerT
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &TimerTransaction{config: _u.config}
+	_node = &TimerTransaction{config: ttuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, ttuo.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{timertransaction.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -636,6 +636,6 @@ func (_u *TimerTransactionUpdateOne) sqlSave(ctx context.Context) (_node *TimerT
 		}
 		return nil, err
 	}
-	_u.mutation.done = true
+	ttuo.mutation.done = true
 	return _node, nil
 }

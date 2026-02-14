@@ -85,7 +85,7 @@ func (*TimerTransaction) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the TimerTransaction fields.
-func (_m *TimerTransaction) assignValues(columns []string, values []any) error {
+func (tt *TimerTransaction) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -95,66 +95,66 @@ func (_m *TimerTransaction) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				_m.ID = *value
+				tt.ID = *value
 			}
 		case timertransaction.FieldTxType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field tx_type", values[i])
 			} else if value.Valid {
-				_m.TxType = value.String
+				tt.TxType = value.String
 			}
 		case timertransaction.FieldAmount:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field amount", values[i])
 			} else if value.Valid {
-				_m.Amount = value.Int64
+				tt.Amount = value.Int64
 			}
 		case timertransaction.FieldAgentID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field agent_id", values[i])
 			} else if value != nil {
-				_m.AgentID = *value
+				tt.AgentID = *value
 			}
 		case timertransaction.FieldSourceType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field source_type", values[i])
 			} else if value.Valid {
-				_m.SourceType = value.String
+				tt.SourceType = value.String
 			}
 		case timertransaction.FieldSourceID:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field source_id", values[i])
 			} else if value.Valid {
-				_m.SourceID = new(string)
-				*_m.SourceID = value.String
+				tt.SourceID = new(string)
+				*tt.SourceID = value.String
 			}
 		case timertransaction.FieldSourceName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field source_name", values[i])
 			} else if value.Valid {
-				_m.SourceName = new(string)
-				*_m.SourceName = value.String
+				tt.SourceName = new(string)
+				*tt.SourceName = value.String
 			}
 		case timertransaction.FieldDescription:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field description", values[i])
 			} else if value.Valid {
-				_m.Description = value.String
+				tt.Description = value.String
 			}
 		case timertransaction.FieldBalanceAfter:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field balance_after", values[i])
 			} else if value.Valid {
-				_m.BalanceAfter = value.Int64
+				tt.BalanceAfter = value.Int64
 			}
 		case timertransaction.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				_m.CreatedAt = value.Time
+				tt.CreatedAt = value.Time
 			}
 		default:
-			_m.selectValues.Set(columns[i], values[i])
+			tt.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -162,68 +162,68 @@ func (_m *TimerTransaction) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the TimerTransaction.
 // This includes values selected through modifiers, order, etc.
-func (_m *TimerTransaction) Value(name string) (ent.Value, error) {
-	return _m.selectValues.Get(name)
+func (tt *TimerTransaction) Value(name string) (ent.Value, error) {
+	return tt.selectValues.Get(name)
 }
 
 // QueryAgent queries the "agent" edge of the TimerTransaction entity.
-func (_m *TimerTransaction) QueryAgent() *AgentQuery {
-	return NewTimerTransactionClient(_m.config).QueryAgent(_m)
+func (tt *TimerTransaction) QueryAgent() *AgentQuery {
+	return NewTimerTransactionClient(tt.config).QueryAgent(tt)
 }
 
 // Update returns a builder for updating this TimerTransaction.
 // Note that you need to call TimerTransaction.Unwrap() before calling this method if this TimerTransaction
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (_m *TimerTransaction) Update() *TimerTransactionUpdateOne {
-	return NewTimerTransactionClient(_m.config).UpdateOne(_m)
+func (tt *TimerTransaction) Update() *TimerTransactionUpdateOne {
+	return NewTimerTransactionClient(tt.config).UpdateOne(tt)
 }
 
 // Unwrap unwraps the TimerTransaction entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (_m *TimerTransaction) Unwrap() *TimerTransaction {
-	_tx, ok := _m.config.driver.(*txDriver)
+func (tt *TimerTransaction) Unwrap() *TimerTransaction {
+	_tx, ok := tt.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: TimerTransaction is not a transactional entity")
 	}
-	_m.config.driver = _tx.drv
-	return _m
+	tt.config.driver = _tx.drv
+	return tt
 }
 
 // String implements the fmt.Stringer.
-func (_m *TimerTransaction) String() string {
+func (tt *TimerTransaction) String() string {
 	var builder strings.Builder
 	builder.WriteString("TimerTransaction(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", tt.ID))
 	builder.WriteString("tx_type=")
-	builder.WriteString(_m.TxType)
+	builder.WriteString(tt.TxType)
 	builder.WriteString(", ")
 	builder.WriteString("amount=")
-	builder.WriteString(fmt.Sprintf("%v", _m.Amount))
+	builder.WriteString(fmt.Sprintf("%v", tt.Amount))
 	builder.WriteString(", ")
 	builder.WriteString("agent_id=")
-	builder.WriteString(fmt.Sprintf("%v", _m.AgentID))
+	builder.WriteString(fmt.Sprintf("%v", tt.AgentID))
 	builder.WriteString(", ")
 	builder.WriteString("source_type=")
-	builder.WriteString(_m.SourceType)
+	builder.WriteString(tt.SourceType)
 	builder.WriteString(", ")
-	if v := _m.SourceID; v != nil {
+	if v := tt.SourceID; v != nil {
 		builder.WriteString("source_id=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := _m.SourceName; v != nil {
+	if v := tt.SourceName; v != nil {
 		builder.WriteString("source_name=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
 	builder.WriteString("description=")
-	builder.WriteString(_m.Description)
+	builder.WriteString(tt.Description)
 	builder.WriteString(", ")
 	builder.WriteString("balance_after=")
-	builder.WriteString(fmt.Sprintf("%v", _m.BalanceAfter))
+	builder.WriteString(fmt.Sprintf("%v", tt.BalanceAfter))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
-	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(tt.CreatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

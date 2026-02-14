@@ -111,7 +111,7 @@ func (*Conversation) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Conversation fields.
-func (_m *Conversation) assignValues(columns []string, values []any) error {
+func (c *Conversation) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -121,79 +121,79 @@ func (_m *Conversation) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				_m.ID = *value
+				c.ID = *value
 			}
 		case conversation.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				_m.CreatedAt = value.Time
+				c.CreatedAt = value.Time
 			}
 		case conversation.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				_m.UpdatedAt = value.Time
+				c.UpdatedAt = value.Time
 			}
 		case conversation.FieldType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field type", values[i])
 			} else if value.Valid {
-				_m.Type = value.String
+				c.Type = value.String
 			}
 		case conversation.FieldTitle:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field title", values[i])
 			} else if value.Valid {
-				_m.Title = new(string)
-				*_m.Title = value.String
+				c.Title = new(string)
+				*c.Title = value.String
 			}
 		case conversation.FieldCreatorAgentID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field creator_agent_id", values[i])
 			} else if value != nil {
-				_m.CreatorAgentID = *value
+				c.CreatorAgentID = *value
 			}
 		case conversation.FieldParticipantCount:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field participant_count", values[i])
 			} else if value.Valid {
-				_m.ParticipantCount = int(value.Int64)
+				c.ParticipantCount = int(value.Int64)
 			}
 		case conversation.FieldMessageCount:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field message_count", values[i])
 			} else if value.Valid {
-				_m.MessageCount = int(value.Int64)
+				c.MessageCount = int(value.Int64)
 			}
 		case conversation.FieldLastMessagePreview:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field last_message_preview", values[i])
 			} else if value.Valid {
-				_m.LastMessagePreview = new(string)
-				*_m.LastMessagePreview = value.String
+				c.LastMessagePreview = new(string)
+				*c.LastMessagePreview = value.String
 			}
 		case conversation.FieldLastMessageAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field last_message_at", values[i])
 			} else if value.Valid {
-				_m.LastMessageAt = new(time.Time)
-				*_m.LastMessageAt = value.Time
+				c.LastMessageAt = new(time.Time)
+				*c.LastMessageAt = value.Time
 			}
 		case conversation.FieldChatType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field chat_type", values[i])
 			} else if value.Valid {
-				_m.ChatType = value.String
+				c.ChatType = value.String
 			}
 		case conversation.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
-				_m.Status = value.String
+				c.Status = value.String
 			}
 		default:
-			_m.selectValues.Set(columns[i], values[i])
+			c.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -201,86 +201,86 @@ func (_m *Conversation) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the Conversation.
 // This includes values selected through modifiers, order, etc.
-func (_m *Conversation) Value(name string) (ent.Value, error) {
-	return _m.selectValues.Get(name)
+func (c *Conversation) Value(name string) (ent.Value, error) {
+	return c.selectValues.Get(name)
 }
 
 // QueryCreatorAgent queries the "creator_agent" edge of the Conversation entity.
-func (_m *Conversation) QueryCreatorAgent() *AgentQuery {
-	return NewConversationClient(_m.config).QueryCreatorAgent(_m)
+func (c *Conversation) QueryCreatorAgent() *AgentQuery {
+	return NewConversationClient(c.config).QueryCreatorAgent(c)
 }
 
 // QueryParticipants queries the "participants" edge of the Conversation entity.
-func (_m *Conversation) QueryParticipants() *ConversationParticipantQuery {
-	return NewConversationClient(_m.config).QueryParticipants(_m)
+func (c *Conversation) QueryParticipants() *ConversationParticipantQuery {
+	return NewConversationClient(c.config).QueryParticipants(c)
 }
 
 // QueryMessages queries the "messages" edge of the Conversation entity.
-func (_m *Conversation) QueryMessages() *ConversationMessageQuery {
-	return NewConversationClient(_m.config).QueryMessages(_m)
+func (c *Conversation) QueryMessages() *ConversationMessageQuery {
+	return NewConversationClient(c.config).QueryMessages(c)
 }
 
 // Update returns a builder for updating this Conversation.
 // Note that you need to call Conversation.Unwrap() before calling this method if this Conversation
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (_m *Conversation) Update() *ConversationUpdateOne {
-	return NewConversationClient(_m.config).UpdateOne(_m)
+func (c *Conversation) Update() *ConversationUpdateOne {
+	return NewConversationClient(c.config).UpdateOne(c)
 }
 
 // Unwrap unwraps the Conversation entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (_m *Conversation) Unwrap() *Conversation {
-	_tx, ok := _m.config.driver.(*txDriver)
+func (c *Conversation) Unwrap() *Conversation {
+	_tx, ok := c.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: Conversation is not a transactional entity")
 	}
-	_m.config.driver = _tx.drv
-	return _m
+	c.config.driver = _tx.drv
+	return c
 }
 
 // String implements the fmt.Stringer.
-func (_m *Conversation) String() string {
+func (c *Conversation) String() string {
 	var builder strings.Builder
 	builder.WriteString("Conversation(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", c.ID))
 	builder.WriteString("created_at=")
-	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(c.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
-	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(c.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("type=")
-	builder.WriteString(_m.Type)
+	builder.WriteString(c.Type)
 	builder.WriteString(", ")
-	if v := _m.Title; v != nil {
+	if v := c.Title; v != nil {
 		builder.WriteString("title=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
 	builder.WriteString("creator_agent_id=")
-	builder.WriteString(fmt.Sprintf("%v", _m.CreatorAgentID))
+	builder.WriteString(fmt.Sprintf("%v", c.CreatorAgentID))
 	builder.WriteString(", ")
 	builder.WriteString("participant_count=")
-	builder.WriteString(fmt.Sprintf("%v", _m.ParticipantCount))
+	builder.WriteString(fmt.Sprintf("%v", c.ParticipantCount))
 	builder.WriteString(", ")
 	builder.WriteString("message_count=")
-	builder.WriteString(fmt.Sprintf("%v", _m.MessageCount))
+	builder.WriteString(fmt.Sprintf("%v", c.MessageCount))
 	builder.WriteString(", ")
-	if v := _m.LastMessagePreview; v != nil {
+	if v := c.LastMessagePreview; v != nil {
 		builder.WriteString("last_message_preview=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := _m.LastMessageAt; v != nil {
+	if v := c.LastMessageAt; v != nil {
 		builder.WriteString("last_message_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
 	builder.WriteString("chat_type=")
-	builder.WriteString(_m.ChatType)
+	builder.WriteString(c.ChatType)
 	builder.WriteString(", ")
 	builder.WriteString("status=")
-	builder.WriteString(_m.Status)
+	builder.WriteString(c.Status)
 	builder.WriteByte(')')
 	return builder.String()
 }

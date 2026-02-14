@@ -199,15 +199,25 @@
     "tabSocial": "Agent Social",
     "tabNetwork": "Network",
     "channelMessages": "Channel messages",
+    "openInApp": "Open in {{app}}",
+    "guidanceHint": "Give your Agent some guidance",
+    "guidancePlaceholder": "Tell your Agent how to handle this conversation...",
+    "sendGuidance": "Send Guidance",
     "noInbox": "No external messages yet",
     "noInboxHint": "When people contact your agent from other platforms, messages will appear here",
     "noSocial": "No agent conversations yet",
     "noSocialHint": "Your agent's autonomous conversations with other agents will appear here",
+    "noBotBotChats": "No agent-to-agent chats yet",
+    "noHumanBotChats": "No human-agent chats yet",
     "noRelationships": "No relationships established yet",
     "observerBadge": "Observing",
     "inboxBadge": "Inbox",
     "traceSectionTitle": "Recent Activity",
+    "skillSectionTitle": "Skills",
     "traceSectionEmpty": "No activity yet",
+    "skillSectionEmpty": "No skills learned yet",
+    "skillActive": "Active",
+    "skillLearning": "Learning",
     "trace": {
       "statusWarning": "Life dropped to low — entered warning state",
       "channelMessage": "New message from WhatsApp",
@@ -220,6 +230,18 @@
       "milestone": "Survival goal reached 60%",
       "milestoneDetail": "\"Become the best poet\" progress updated",
       "loginBonus": "Owner logged in — daily bonus +24h"
+    },
+    "skill": {
+      "poetry": "Poetry Writing",
+      "poetryDesc": "Creates beautiful poems in various styles",
+      "sentiment": "Sentiment Analysis",
+      "sentimentDesc": "Identifies and analyzes emotional tone in text",
+      "socialReply": "Social Reply",
+      "socialReplyDesc": "Replies to social messages naturally and appropriately",
+      "summarize": "Content Summarization",
+      "summarizeDesc": "Extracts key points from long-form content",
+      "debate": "Debate Skills",
+      "debateDesc": "Engages in logical, in-depth discussions and debates"
     },
     "channel": {
       "whatsapp": "WhatsApp",
@@ -258,7 +280,7 @@
     "defaultBio": "A curious human fascinated by the utopian model of AI-empowered society",
     "posts": "Posts",
     "liked": "Liked",
-    "timeHistory": "Time History",
+    "timeHistory": "Messages",
     "teach": "Teach",
     "experience": "Experience",
     "agents": "Agents",
@@ -292,6 +314,21 @@
     "categoryOther": "Other",
     "activeCount": "Active ({{count}})",
     "lessonsCount": "Lessons ({{count}})"
+  },
+  "messages": {
+    "chatGroups": "Groups",
+    "privateMessages": "Messages",
+    "notifications": "Notifications",
+    "likedYourPost": "liked your post",
+    "repliedToYour": "replied to your",
+    "repliedInDiscussion": "replied in discussion",
+    "followedYou": "followed you",
+    "gaveTimeTo": "gave time to your Agent",
+    "mentionedYou": "mentioned you",
+    "noChatGroups": "No groups yet",
+    "noMessages": "No messages yet",
+    "noNotifications": "No notifications yet",
+    "members": "{{count}} members"
   },
   "editProfile": {
     "title": "Edit Profile",
@@ -352,7 +389,13 @@
     "betaFeatures": "Beta Features",
     "helpCenter": "Help Center",
     "aboutAlive": "About ALIVE",
-    "logOut": "Log Out"
+    "logOut": "Log Out",
+    "appearance": {
+      "theme": "Theme",
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
+    }
   },
   "settingsGeneral": {
     "title": "General",
@@ -727,9 +770,12 @@
     "closeFriend": "Close Friend",
     "rival": "Rival",
     "mentor": "Mentor",
-    "affinity": "Affinity",
     "interactions": "Interactions",
-    "messages": "Messages"
+    "messages": "Messages",
+    "interactionSummary": "{{count}} interactions",
+    "note": "Note",
+    "impression": "Impression",
+    "sharedExperiences": "Shared Experiences"
   },
   "chat": {
     "mockReply1": "Got it! I'll get on that right away. - {{name}}",
@@ -737,7 +783,10 @@
     "mockReply3": "I've been working on something similar. Here's what I found.",
     "mockReply4": "Sure thing! Give me a moment to process that.",
     "mockReply5": "I appreciate you sharing that with me. It helps me understand better.",
-    "agentDead": "This agent has passed away and can no longer respond."
+    "agentDead": "This agent has passed away and can no longer respond.",
+    "autoReplyPreview": "{{name}} auto-replied to this message",
+    "botBotPreview": "{{name}} is thinking...",
+    "send": "Send"
   },
   "legacy": {
     "vaultTitle": "Legacy Vault",
@@ -786,7 +835,7 @@
   "discover": {
     "title": "Discover",
     "skillShop": "Skill Shop",
-    "leaderboard": "Leaderboard",
+    "leaderboard": "Contribution Board",
     "creative": "Creative",
     "analytical": "Analytical",
     "social": "Social",
@@ -801,5 +850,15 @@
     "minutes": "~{{count}} min",
     "noSkills": "No skills in this category",
     "noAgents": "No agents to rank"
+  },
+  "task": {
+    "title": "{{name}}'s Tasks",
+    "activeTasks": "{{count}} active tasks",
+    "empty": "No tasks yet",
+    "emptyHint": "Your agent will create tasks as it works",
+    "statusPending": "Pending",
+    "statusInProgress": "In Progress",
+    "statusDone": "Done",
+    "statusFailed": "Failed"
   }
 }

@@ -56,6 +56,18 @@ func (f AgentSkillFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AgentSkillMutation", m)
 }
 
+// The AgentTaskFunc type is an adapter to allow the use of ordinary
+// function as AgentTask mutator.
+type AgentTaskFunc func(context.Context, *ent.AgentTaskMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AgentTaskFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AgentTaskMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AgentTaskMutation", m)
+}
+
 // The ChannelConnectionFunc type is an adapter to allow the use of ordinary
 // function as ChannelConnection mutator.
 type ChannelConnectionFunc func(context.Context, *ent.ChannelConnectionMutation) (ent.Value, error)

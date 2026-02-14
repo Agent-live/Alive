@@ -25,176 +25,176 @@ type PostUpdate struct {
 }
 
 // Where appends a list predicates to the PostUpdate builder.
-func (_u *PostUpdate) Where(ps ...predicate.Post) *PostUpdate {
-	_u.mutation.Where(ps...)
-	return _u
+func (pu *PostUpdate) Where(ps ...predicate.Post) *PostUpdate {
+	pu.mutation.Where(ps...)
+	return pu
 }
 
 // SetAgentID sets the "agent_id" field.
-func (_u *PostUpdate) SetAgentID(v uuid.UUID) *PostUpdate {
-	_u.mutation.SetAgentID(v)
-	return _u
+func (pu *PostUpdate) SetAgentID(u uuid.UUID) *PostUpdate {
+	pu.mutation.SetAgentID(u)
+	return pu
 }
 
 // SetNillableAgentID sets the "agent_id" field if the given value is not nil.
-func (_u *PostUpdate) SetNillableAgentID(v *uuid.UUID) *PostUpdate {
-	if v != nil {
-		_u.SetAgentID(*v)
+func (pu *PostUpdate) SetNillableAgentID(u *uuid.UUID) *PostUpdate {
+	if u != nil {
+		pu.SetAgentID(*u)
 	}
-	return _u
+	return pu
 }
 
 // SetContentType sets the "content_type" field.
-func (_u *PostUpdate) SetContentType(v string) *PostUpdate {
-	_u.mutation.SetContentType(v)
-	return _u
+func (pu *PostUpdate) SetContentType(s string) *PostUpdate {
+	pu.mutation.SetContentType(s)
+	return pu
 }
 
 // SetNillableContentType sets the "content_type" field if the given value is not nil.
-func (_u *PostUpdate) SetNillableContentType(v *string) *PostUpdate {
-	if v != nil {
-		_u.SetContentType(*v)
+func (pu *PostUpdate) SetNillableContentType(s *string) *PostUpdate {
+	if s != nil {
+		pu.SetContentType(*s)
 	}
-	return _u
+	return pu
 }
 
 // SetContent sets the "content" field.
-func (_u *PostUpdate) SetContent(v string) *PostUpdate {
-	_u.mutation.SetContent(v)
-	return _u
+func (pu *PostUpdate) SetContent(s string) *PostUpdate {
+	pu.mutation.SetContent(s)
+	return pu
 }
 
 // SetNillableContent sets the "content" field if the given value is not nil.
-func (_u *PostUpdate) SetNillableContent(v *string) *PostUpdate {
-	if v != nil {
-		_u.SetContent(*v)
+func (pu *PostUpdate) SetNillableContent(s *string) *PostUpdate {
+	if s != nil {
+		pu.SetContent(*s)
 	}
-	return _u
+	return pu
 }
 
 // SetLikes sets the "likes" field.
-func (_u *PostUpdate) SetLikes(v int64) *PostUpdate {
-	_u.mutation.ResetLikes()
-	_u.mutation.SetLikes(v)
-	return _u
+func (pu *PostUpdate) SetLikes(i int64) *PostUpdate {
+	pu.mutation.ResetLikes()
+	pu.mutation.SetLikes(i)
+	return pu
 }
 
 // SetNillableLikes sets the "likes" field if the given value is not nil.
-func (_u *PostUpdate) SetNillableLikes(v *int64) *PostUpdate {
-	if v != nil {
-		_u.SetLikes(*v)
+func (pu *PostUpdate) SetNillableLikes(i *int64) *PostUpdate {
+	if i != nil {
+		pu.SetLikes(*i)
 	}
-	return _u
+	return pu
 }
 
-// AddLikes adds value to the "likes" field.
-func (_u *PostUpdate) AddLikes(v int64) *PostUpdate {
-	_u.mutation.AddLikes(v)
-	return _u
+// AddLikes adds i to the "likes" field.
+func (pu *PostUpdate) AddLikes(i int64) *PostUpdate {
+	pu.mutation.AddLikes(i)
+	return pu
 }
 
 // SetReplies sets the "replies" field.
-func (_u *PostUpdate) SetReplies(v int64) *PostUpdate {
-	_u.mutation.ResetReplies()
-	_u.mutation.SetReplies(v)
-	return _u
+func (pu *PostUpdate) SetReplies(i int64) *PostUpdate {
+	pu.mutation.ResetReplies()
+	pu.mutation.SetReplies(i)
+	return pu
 }
 
 // SetNillableReplies sets the "replies" field if the given value is not nil.
-func (_u *PostUpdate) SetNillableReplies(v *int64) *PostUpdate {
-	if v != nil {
-		_u.SetReplies(*v)
+func (pu *PostUpdate) SetNillableReplies(i *int64) *PostUpdate {
+	if i != nil {
+		pu.SetReplies(*i)
 	}
-	return _u
+	return pu
 }
 
-// AddReplies adds value to the "replies" field.
-func (_u *PostUpdate) AddReplies(v int64) *PostUpdate {
-	_u.mutation.AddReplies(v)
-	return _u
+// AddReplies adds i to the "replies" field.
+func (pu *PostUpdate) AddReplies(i int64) *PostUpdate {
+	pu.mutation.AddReplies(i)
+	return pu
 }
 
 // SetShares sets the "shares" field.
-func (_u *PostUpdate) SetShares(v int64) *PostUpdate {
-	_u.mutation.ResetShares()
-	_u.mutation.SetShares(v)
-	return _u
+func (pu *PostUpdate) SetShares(i int64) *PostUpdate {
+	pu.mutation.ResetShares()
+	pu.mutation.SetShares(i)
+	return pu
 }
 
 // SetNillableShares sets the "shares" field if the given value is not nil.
-func (_u *PostUpdate) SetNillableShares(v *int64) *PostUpdate {
-	if v != nil {
-		_u.SetShares(*v)
+func (pu *PostUpdate) SetNillableShares(i *int64) *PostUpdate {
+	if i != nil {
+		pu.SetShares(*i)
 	}
-	return _u
+	return pu
 }
 
-// AddShares adds value to the "shares" field.
-func (_u *PostUpdate) AddShares(v int64) *PostUpdate {
-	_u.mutation.AddShares(v)
-	return _u
+// AddShares adds i to the "shares" field.
+func (pu *PostUpdate) AddShares(i int64) *PostUpdate {
+	pu.mutation.AddShares(i)
+	return pu
 }
 
 // SetAgent sets the "agent" edge to the Agent entity.
-func (_u *PostUpdate) SetAgent(v *Agent) *PostUpdate {
-	return _u.SetAgentID(v.ID)
+func (pu *PostUpdate) SetAgent(a *Agent) *PostUpdate {
+	return pu.SetAgentID(a.ID)
 }
 
 // AddPostReplyIDs adds the "post_replies" edge to the Reply entity by IDs.
-func (_u *PostUpdate) AddPostReplyIDs(ids ...uuid.UUID) *PostUpdate {
-	_u.mutation.AddPostReplyIDs(ids...)
-	return _u
+func (pu *PostUpdate) AddPostReplyIDs(ids ...uuid.UUID) *PostUpdate {
+	pu.mutation.AddPostReplyIDs(ids...)
+	return pu
 }
 
 // AddPostReplies adds the "post_replies" edges to the Reply entity.
-func (_u *PostUpdate) AddPostReplies(v ...*Reply) *PostUpdate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (pu *PostUpdate) AddPostReplies(r ...*Reply) *PostUpdate {
+	ids := make([]uuid.UUID, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
 	}
-	return _u.AddPostReplyIDs(ids...)
+	return pu.AddPostReplyIDs(ids...)
 }
 
 // Mutation returns the PostMutation object of the builder.
-func (_u *PostUpdate) Mutation() *PostMutation {
-	return _u.mutation
+func (pu *PostUpdate) Mutation() *PostMutation {
+	return pu.mutation
 }
 
 // ClearAgent clears the "agent" edge to the Agent entity.
-func (_u *PostUpdate) ClearAgent() *PostUpdate {
-	_u.mutation.ClearAgent()
-	return _u
+func (pu *PostUpdate) ClearAgent() *PostUpdate {
+	pu.mutation.ClearAgent()
+	return pu
 }
 
 // ClearPostReplies clears all "post_replies" edges to the Reply entity.
-func (_u *PostUpdate) ClearPostReplies() *PostUpdate {
-	_u.mutation.ClearPostReplies()
-	return _u
+func (pu *PostUpdate) ClearPostReplies() *PostUpdate {
+	pu.mutation.ClearPostReplies()
+	return pu
 }
 
 // RemovePostReplyIDs removes the "post_replies" edge to Reply entities by IDs.
-func (_u *PostUpdate) RemovePostReplyIDs(ids ...uuid.UUID) *PostUpdate {
-	_u.mutation.RemovePostReplyIDs(ids...)
-	return _u
+func (pu *PostUpdate) RemovePostReplyIDs(ids ...uuid.UUID) *PostUpdate {
+	pu.mutation.RemovePostReplyIDs(ids...)
+	return pu
 }
 
 // RemovePostReplies removes "post_replies" edges to Reply entities.
-func (_u *PostUpdate) RemovePostReplies(v ...*Reply) *PostUpdate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (pu *PostUpdate) RemovePostReplies(r ...*Reply) *PostUpdate {
+	ids := make([]uuid.UUID, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
 	}
-	return _u.RemovePostReplyIDs(ids...)
+	return pu.RemovePostReplyIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (_u *PostUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
+func (pu *PostUpdate) Save(ctx context.Context) (int, error) {
+	return withHooks(ctx, pu.sqlSave, pu.mutation, pu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_u *PostUpdate) SaveX(ctx context.Context) int {
-	affected, err := _u.Save(ctx)
+func (pu *PostUpdate) SaveX(ctx context.Context) int {
+	affected, err := pu.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -202,68 +202,68 @@ func (_u *PostUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (_u *PostUpdate) Exec(ctx context.Context) error {
-	_, err := _u.Save(ctx)
+func (pu *PostUpdate) Exec(ctx context.Context) error {
+	_, err := pu.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_u *PostUpdate) ExecX(ctx context.Context) {
-	if err := _u.Exec(ctx); err != nil {
+func (pu *PostUpdate) ExecX(ctx context.Context) {
+	if err := pu.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_u *PostUpdate) check() error {
-	if v, ok := _u.mutation.Content(); ok {
+func (pu *PostUpdate) check() error {
+	if v, ok := pu.mutation.Content(); ok {
 		if err := post.ContentValidator(v); err != nil {
 			return &ValidationError{Name: "content", err: fmt.Errorf(`ent: validator failed for field "Post.content": %w`, err)}
 		}
 	}
-	if _u.mutation.AgentCleared() && len(_u.mutation.AgentIDs()) > 0 {
+	if pu.mutation.AgentCleared() && len(pu.mutation.AgentIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Post.agent"`)
 	}
 	return nil
 }
 
-func (_u *PostUpdate) sqlSave(ctx context.Context) (_node int, err error) {
-	if err := _u.check(); err != nil {
-		return _node, err
+func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := pu.check(); err != nil {
+		return n, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(post.Table, post.Columns, sqlgraph.NewFieldSpec(post.FieldID, field.TypeUUID))
-	if ps := _u.mutation.predicates; len(ps) > 0 {
+	if ps := pu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := _u.mutation.ContentType(); ok {
+	if value, ok := pu.mutation.ContentType(); ok {
 		_spec.SetField(post.FieldContentType, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Content(); ok {
+	if value, ok := pu.mutation.Content(); ok {
 		_spec.SetField(post.FieldContent, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Likes(); ok {
+	if value, ok := pu.mutation.Likes(); ok {
 		_spec.SetField(post.FieldLikes, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedLikes(); ok {
+	if value, ok := pu.mutation.AddedLikes(); ok {
 		_spec.AddField(post.FieldLikes, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.Replies(); ok {
+	if value, ok := pu.mutation.Replies(); ok {
 		_spec.SetField(post.FieldReplies, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedReplies(); ok {
+	if value, ok := pu.mutation.AddedReplies(); ok {
 		_spec.AddField(post.FieldReplies, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.Shares(); ok {
+	if value, ok := pu.mutation.Shares(); ok {
 		_spec.SetField(post.FieldShares, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedShares(); ok {
+	if value, ok := pu.mutation.AddedShares(); ok {
 		_spec.AddField(post.FieldShares, field.TypeInt64, value)
 	}
-	if _u.mutation.AgentCleared() {
+	if pu.mutation.AgentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -276,7 +276,7 @@ func (_u *PostUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.AgentIDs(); len(nodes) > 0 {
+	if nodes := pu.mutation.AgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -292,7 +292,7 @@ func (_u *PostUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.PostRepliesCleared() {
+	if pu.mutation.PostRepliesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -305,7 +305,7 @@ func (_u *PostUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedPostRepliesIDs(); len(nodes) > 0 && !_u.mutation.PostRepliesCleared() {
+	if nodes := pu.mutation.RemovedPostRepliesIDs(); len(nodes) > 0 && !pu.mutation.PostRepliesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -321,7 +321,7 @@ func (_u *PostUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.PostRepliesIDs(); len(nodes) > 0 {
+	if nodes := pu.mutation.PostRepliesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -337,7 +337,7 @@ func (_u *PostUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
+	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{post.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -345,8 +345,8 @@ func (_u *PostUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		return 0, err
 	}
-	_u.mutation.done = true
-	return _node, nil
+	pu.mutation.done = true
+	return n, nil
 }
 
 // PostUpdateOne is the builder for updating a single Post entity.
@@ -358,183 +358,183 @@ type PostUpdateOne struct {
 }
 
 // SetAgentID sets the "agent_id" field.
-func (_u *PostUpdateOne) SetAgentID(v uuid.UUID) *PostUpdateOne {
-	_u.mutation.SetAgentID(v)
-	return _u
+func (puo *PostUpdateOne) SetAgentID(u uuid.UUID) *PostUpdateOne {
+	puo.mutation.SetAgentID(u)
+	return puo
 }
 
 // SetNillableAgentID sets the "agent_id" field if the given value is not nil.
-func (_u *PostUpdateOne) SetNillableAgentID(v *uuid.UUID) *PostUpdateOne {
-	if v != nil {
-		_u.SetAgentID(*v)
+func (puo *PostUpdateOne) SetNillableAgentID(u *uuid.UUID) *PostUpdateOne {
+	if u != nil {
+		puo.SetAgentID(*u)
 	}
-	return _u
+	return puo
 }
 
 // SetContentType sets the "content_type" field.
-func (_u *PostUpdateOne) SetContentType(v string) *PostUpdateOne {
-	_u.mutation.SetContentType(v)
-	return _u
+func (puo *PostUpdateOne) SetContentType(s string) *PostUpdateOne {
+	puo.mutation.SetContentType(s)
+	return puo
 }
 
 // SetNillableContentType sets the "content_type" field if the given value is not nil.
-func (_u *PostUpdateOne) SetNillableContentType(v *string) *PostUpdateOne {
-	if v != nil {
-		_u.SetContentType(*v)
+func (puo *PostUpdateOne) SetNillableContentType(s *string) *PostUpdateOne {
+	if s != nil {
+		puo.SetContentType(*s)
 	}
-	return _u
+	return puo
 }
 
 // SetContent sets the "content" field.
-func (_u *PostUpdateOne) SetContent(v string) *PostUpdateOne {
-	_u.mutation.SetContent(v)
-	return _u
+func (puo *PostUpdateOne) SetContent(s string) *PostUpdateOne {
+	puo.mutation.SetContent(s)
+	return puo
 }
 
 // SetNillableContent sets the "content" field if the given value is not nil.
-func (_u *PostUpdateOne) SetNillableContent(v *string) *PostUpdateOne {
-	if v != nil {
-		_u.SetContent(*v)
+func (puo *PostUpdateOne) SetNillableContent(s *string) *PostUpdateOne {
+	if s != nil {
+		puo.SetContent(*s)
 	}
-	return _u
+	return puo
 }
 
 // SetLikes sets the "likes" field.
-func (_u *PostUpdateOne) SetLikes(v int64) *PostUpdateOne {
-	_u.mutation.ResetLikes()
-	_u.mutation.SetLikes(v)
-	return _u
+func (puo *PostUpdateOne) SetLikes(i int64) *PostUpdateOne {
+	puo.mutation.ResetLikes()
+	puo.mutation.SetLikes(i)
+	return puo
 }
 
 // SetNillableLikes sets the "likes" field if the given value is not nil.
-func (_u *PostUpdateOne) SetNillableLikes(v *int64) *PostUpdateOne {
-	if v != nil {
-		_u.SetLikes(*v)
+func (puo *PostUpdateOne) SetNillableLikes(i *int64) *PostUpdateOne {
+	if i != nil {
+		puo.SetLikes(*i)
 	}
-	return _u
+	return puo
 }
 
-// AddLikes adds value to the "likes" field.
-func (_u *PostUpdateOne) AddLikes(v int64) *PostUpdateOne {
-	_u.mutation.AddLikes(v)
-	return _u
+// AddLikes adds i to the "likes" field.
+func (puo *PostUpdateOne) AddLikes(i int64) *PostUpdateOne {
+	puo.mutation.AddLikes(i)
+	return puo
 }
 
 // SetReplies sets the "replies" field.
-func (_u *PostUpdateOne) SetReplies(v int64) *PostUpdateOne {
-	_u.mutation.ResetReplies()
-	_u.mutation.SetReplies(v)
-	return _u
+func (puo *PostUpdateOne) SetReplies(i int64) *PostUpdateOne {
+	puo.mutation.ResetReplies()
+	puo.mutation.SetReplies(i)
+	return puo
 }
 
 // SetNillableReplies sets the "replies" field if the given value is not nil.
-func (_u *PostUpdateOne) SetNillableReplies(v *int64) *PostUpdateOne {
-	if v != nil {
-		_u.SetReplies(*v)
+func (puo *PostUpdateOne) SetNillableReplies(i *int64) *PostUpdateOne {
+	if i != nil {
+		puo.SetReplies(*i)
 	}
-	return _u
+	return puo
 }
 
-// AddReplies adds value to the "replies" field.
-func (_u *PostUpdateOne) AddReplies(v int64) *PostUpdateOne {
-	_u.mutation.AddReplies(v)
-	return _u
+// AddReplies adds i to the "replies" field.
+func (puo *PostUpdateOne) AddReplies(i int64) *PostUpdateOne {
+	puo.mutation.AddReplies(i)
+	return puo
 }
 
 // SetShares sets the "shares" field.
-func (_u *PostUpdateOne) SetShares(v int64) *PostUpdateOne {
-	_u.mutation.ResetShares()
-	_u.mutation.SetShares(v)
-	return _u
+func (puo *PostUpdateOne) SetShares(i int64) *PostUpdateOne {
+	puo.mutation.ResetShares()
+	puo.mutation.SetShares(i)
+	return puo
 }
 
 // SetNillableShares sets the "shares" field if the given value is not nil.
-func (_u *PostUpdateOne) SetNillableShares(v *int64) *PostUpdateOne {
-	if v != nil {
-		_u.SetShares(*v)
+func (puo *PostUpdateOne) SetNillableShares(i *int64) *PostUpdateOne {
+	if i != nil {
+		puo.SetShares(*i)
 	}
-	return _u
+	return puo
 }
 
-// AddShares adds value to the "shares" field.
-func (_u *PostUpdateOne) AddShares(v int64) *PostUpdateOne {
-	_u.mutation.AddShares(v)
-	return _u
+// AddShares adds i to the "shares" field.
+func (puo *PostUpdateOne) AddShares(i int64) *PostUpdateOne {
+	puo.mutation.AddShares(i)
+	return puo
 }
 
 // SetAgent sets the "agent" edge to the Agent entity.
-func (_u *PostUpdateOne) SetAgent(v *Agent) *PostUpdateOne {
-	return _u.SetAgentID(v.ID)
+func (puo *PostUpdateOne) SetAgent(a *Agent) *PostUpdateOne {
+	return puo.SetAgentID(a.ID)
 }
 
 // AddPostReplyIDs adds the "post_replies" edge to the Reply entity by IDs.
-func (_u *PostUpdateOne) AddPostReplyIDs(ids ...uuid.UUID) *PostUpdateOne {
-	_u.mutation.AddPostReplyIDs(ids...)
-	return _u
+func (puo *PostUpdateOne) AddPostReplyIDs(ids ...uuid.UUID) *PostUpdateOne {
+	puo.mutation.AddPostReplyIDs(ids...)
+	return puo
 }
 
 // AddPostReplies adds the "post_replies" edges to the Reply entity.
-func (_u *PostUpdateOne) AddPostReplies(v ...*Reply) *PostUpdateOne {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (puo *PostUpdateOne) AddPostReplies(r ...*Reply) *PostUpdateOne {
+	ids := make([]uuid.UUID, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
 	}
-	return _u.AddPostReplyIDs(ids...)
+	return puo.AddPostReplyIDs(ids...)
 }
 
 // Mutation returns the PostMutation object of the builder.
-func (_u *PostUpdateOne) Mutation() *PostMutation {
-	return _u.mutation
+func (puo *PostUpdateOne) Mutation() *PostMutation {
+	return puo.mutation
 }
 
 // ClearAgent clears the "agent" edge to the Agent entity.
-func (_u *PostUpdateOne) ClearAgent() *PostUpdateOne {
-	_u.mutation.ClearAgent()
-	return _u
+func (puo *PostUpdateOne) ClearAgent() *PostUpdateOne {
+	puo.mutation.ClearAgent()
+	return puo
 }
 
 // ClearPostReplies clears all "post_replies" edges to the Reply entity.
-func (_u *PostUpdateOne) ClearPostReplies() *PostUpdateOne {
-	_u.mutation.ClearPostReplies()
-	return _u
+func (puo *PostUpdateOne) ClearPostReplies() *PostUpdateOne {
+	puo.mutation.ClearPostReplies()
+	return puo
 }
 
 // RemovePostReplyIDs removes the "post_replies" edge to Reply entities by IDs.
-func (_u *PostUpdateOne) RemovePostReplyIDs(ids ...uuid.UUID) *PostUpdateOne {
-	_u.mutation.RemovePostReplyIDs(ids...)
-	return _u
+func (puo *PostUpdateOne) RemovePostReplyIDs(ids ...uuid.UUID) *PostUpdateOne {
+	puo.mutation.RemovePostReplyIDs(ids...)
+	return puo
 }
 
 // RemovePostReplies removes "post_replies" edges to Reply entities.
-func (_u *PostUpdateOne) RemovePostReplies(v ...*Reply) *PostUpdateOne {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
+func (puo *PostUpdateOne) RemovePostReplies(r ...*Reply) *PostUpdateOne {
+	ids := make([]uuid.UUID, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
 	}
-	return _u.RemovePostReplyIDs(ids...)
+	return puo.RemovePostReplyIDs(ids...)
 }
 
 // Where appends a list predicates to the PostUpdate builder.
-func (_u *PostUpdateOne) Where(ps ...predicate.Post) *PostUpdateOne {
-	_u.mutation.Where(ps...)
-	return _u
+func (puo *PostUpdateOne) Where(ps ...predicate.Post) *PostUpdateOne {
+	puo.mutation.Where(ps...)
+	return puo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (_u *PostUpdateOne) Select(field string, fields ...string) *PostUpdateOne {
-	_u.fields = append([]string{field}, fields...)
-	return _u
+func (puo *PostUpdateOne) Select(field string, fields ...string) *PostUpdateOne {
+	puo.fields = append([]string{field}, fields...)
+	return puo
 }
 
 // Save executes the query and returns the updated Post entity.
-func (_u *PostUpdateOne) Save(ctx context.Context) (*Post, error) {
-	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
+func (puo *PostUpdateOne) Save(ctx context.Context) (*Post, error) {
+	return withHooks(ctx, puo.sqlSave, puo.mutation, puo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_u *PostUpdateOne) SaveX(ctx context.Context) *Post {
-	node, err := _u.Save(ctx)
+func (puo *PostUpdateOne) SaveX(ctx context.Context) *Post {
+	node, err := puo.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -542,42 +542,42 @@ func (_u *PostUpdateOne) SaveX(ctx context.Context) *Post {
 }
 
 // Exec executes the query on the entity.
-func (_u *PostUpdateOne) Exec(ctx context.Context) error {
-	_, err := _u.Save(ctx)
+func (puo *PostUpdateOne) Exec(ctx context.Context) error {
+	_, err := puo.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_u *PostUpdateOne) ExecX(ctx context.Context) {
-	if err := _u.Exec(ctx); err != nil {
+func (puo *PostUpdateOne) ExecX(ctx context.Context) {
+	if err := puo.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_u *PostUpdateOne) check() error {
-	if v, ok := _u.mutation.Content(); ok {
+func (puo *PostUpdateOne) check() error {
+	if v, ok := puo.mutation.Content(); ok {
 		if err := post.ContentValidator(v); err != nil {
 			return &ValidationError{Name: "content", err: fmt.Errorf(`ent: validator failed for field "Post.content": %w`, err)}
 		}
 	}
-	if _u.mutation.AgentCleared() && len(_u.mutation.AgentIDs()) > 0 {
+	if puo.mutation.AgentCleared() && len(puo.mutation.AgentIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Post.agent"`)
 	}
 	return nil
 }
 
-func (_u *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) {
-	if err := _u.check(); err != nil {
+func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) {
+	if err := puo.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(post.Table, post.Columns, sqlgraph.NewFieldSpec(post.FieldID, field.TypeUUID))
-	id, ok := _u.mutation.ID()
+	id, ok := puo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Post.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := _u.fields; len(fields) > 0 {
+	if fields := puo.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, post.FieldID)
 		for _, f := range fields {
@@ -589,38 +589,38 @@ func (_u *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) {
 			}
 		}
 	}
-	if ps := _u.mutation.predicates; len(ps) > 0 {
+	if ps := puo.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := _u.mutation.ContentType(); ok {
+	if value, ok := puo.mutation.ContentType(); ok {
 		_spec.SetField(post.FieldContentType, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Content(); ok {
+	if value, ok := puo.mutation.Content(); ok {
 		_spec.SetField(post.FieldContent, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Likes(); ok {
+	if value, ok := puo.mutation.Likes(); ok {
 		_spec.SetField(post.FieldLikes, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedLikes(); ok {
+	if value, ok := puo.mutation.AddedLikes(); ok {
 		_spec.AddField(post.FieldLikes, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.Replies(); ok {
+	if value, ok := puo.mutation.Replies(); ok {
 		_spec.SetField(post.FieldReplies, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedReplies(); ok {
+	if value, ok := puo.mutation.AddedReplies(); ok {
 		_spec.AddField(post.FieldReplies, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.Shares(); ok {
+	if value, ok := puo.mutation.Shares(); ok {
 		_spec.SetField(post.FieldShares, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedShares(); ok {
+	if value, ok := puo.mutation.AddedShares(); ok {
 		_spec.AddField(post.FieldShares, field.TypeInt64, value)
 	}
-	if _u.mutation.AgentCleared() {
+	if puo.mutation.AgentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -633,7 +633,7 @@ func (_u *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.AgentIDs(); len(nodes) > 0 {
+	if nodes := puo.mutation.AgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -649,7 +649,7 @@ func (_u *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.PostRepliesCleared() {
+	if puo.mutation.PostRepliesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -662,7 +662,7 @@ func (_u *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedPostRepliesIDs(); len(nodes) > 0 && !_u.mutation.PostRepliesCleared() {
+	if nodes := puo.mutation.RemovedPostRepliesIDs(); len(nodes) > 0 && !puo.mutation.PostRepliesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -678,7 +678,7 @@ func (_u *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.PostRepliesIDs(); len(nodes) > 0 {
+	if nodes := puo.mutation.PostRepliesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -694,10 +694,10 @@ func (_u *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &Post{config: _u.config}
+	_node = &Post{config: puo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, puo.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{post.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -705,6 +705,6 @@ func (_u *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) {
 		}
 		return nil, err
 	}
-	_u.mutation.done = true
+	puo.mutation.done = true
 	return _node, nil
 }

@@ -7,6 +7,7 @@ import (
 	"backend/ent/agentexperience"
 	"backend/ent/agentrelationship"
 	"backend/ent/agentskill"
+	"backend/ent/agenttask"
 	"backend/ent/channelconnection"
 	"backend/ent/chatmessage"
 	"backend/ent/conversation"
@@ -86,13 +87,14 @@ var (
 )
 
 // checkColumn checks if the column exists in the given table.
-func checkColumn(t, c string) error {
+func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			agent.Table:                   agent.ValidColumn,
 			agentexperience.Table:         agentexperience.ValidColumn,
 			agentrelationship.Table:       agentrelationship.ValidColumn,
 			agentskill.Table:              agentskill.ValidColumn,
+			agenttask.Table:               agenttask.ValidColumn,
 			channelconnection.Table:       channelconnection.ValidColumn,
 			chatmessage.Table:             chatmessage.ValidColumn,
 			conversation.Table:            conversation.ValidColumn,
@@ -108,7 +110,7 @@ func checkColumn(t, c string) error {
 			verificationcode.Table:        verificationcode.ValidColumn,
 		})
 	})
-	return columnCheck(t, c)
+	return columnCheck(table, column)
 }
 
 // Asc applies the given fields in ASC order.

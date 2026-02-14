@@ -6,6 +6,7 @@ import (
 	"backend/ent/agent"
 	"backend/ent/agentexperience"
 	"backend/ent/agentskill"
+	"backend/ent/agenttask"
 	"backend/ent/channelconnection"
 	"backend/ent/conversation"
 	"backend/ent/conversationmessage"
@@ -40,6 +41,7 @@ type AgentQuery struct {
 	withChannelConnections         *ChannelConnectionQuery
 	withMemorial                   *MemorialQuery
 	withSkills                     *AgentSkillQuery
+	withTasks                      *AgentTaskQuery
 	withExperiences                *AgentExperienceQuery
 	withCreatedConversations       *ConversationQuery
 	withConversationParticipations *ConversationParticipantQuery
@@ -50,44 +52,44 @@ type AgentQuery struct {
 }
 
 // Where adds a new predicate for the AgentQuery builder.
-func (_q *AgentQuery) Where(ps ...predicate.Agent) *AgentQuery {
-	_q.predicates = append(_q.predicates, ps...)
-	return _q
+func (aq *AgentQuery) Where(ps ...predicate.Agent) *AgentQuery {
+	aq.predicates = append(aq.predicates, ps...)
+	return aq
 }
 
 // Limit the number of records to be returned by this query.
-func (_q *AgentQuery) Limit(limit int) *AgentQuery {
-	_q.ctx.Limit = &limit
-	return _q
+func (aq *AgentQuery) Limit(limit int) *AgentQuery {
+	aq.ctx.Limit = &limit
+	return aq
 }
 
 // Offset to start from.
-func (_q *AgentQuery) Offset(offset int) *AgentQuery {
-	_q.ctx.Offset = &offset
-	return _q
+func (aq *AgentQuery) Offset(offset int) *AgentQuery {
+	aq.ctx.Offset = &offset
+	return aq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (_q *AgentQuery) Unique(unique bool) *AgentQuery {
-	_q.ctx.Unique = &unique
-	return _q
+func (aq *AgentQuery) Unique(unique bool) *AgentQuery {
+	aq.ctx.Unique = &unique
+	return aq
 }
 
 // Order specifies how the records should be ordered.
-func (_q *AgentQuery) Order(o ...agent.OrderOption) *AgentQuery {
-	_q.order = append(_q.order, o...)
-	return _q
+func (aq *AgentQuery) Order(o ...agent.OrderOption) *AgentQuery {
+	aq.order = append(aq.order, o...)
+	return aq
 }
 
 // QueryCreator chains the current query on the "creator" edge.
-func (_q *AgentQuery) QueryCreator() *UserQuery {
-	query := (&UserClient{config: _q.config}).Query()
+func (aq *AgentQuery) QueryCreator() *UserQuery {
+	query := (&UserClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
+		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
-		selector := _q.sqlQuery(ctx)
+		selector := aq.sqlQuery(ctx)
 		if err := selector.Err(); err != nil {
 			return nil, err
 		}
@@ -96,20 +98,20 @@ func (_q *AgentQuery) QueryCreator() *UserQuery {
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, agent.CreatorTable, agent.CreatorColumn),
 		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
 	}
 	return query
 }
 
 // QueryPosts chains the current query on the "posts" edge.
-func (_q *AgentQuery) QueryPosts() *PostQuery {
-	query := (&PostClient{config: _q.config}).Query()
+func (aq *AgentQuery) QueryPosts() *PostQuery {
+	query := (&PostClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
+		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
-		selector := _q.sqlQuery(ctx)
+		selector := aq.sqlQuery(ctx)
 		if err := selector.Err(); err != nil {
 			return nil, err
 		}
@@ -118,20 +120,20 @@ func (_q *AgentQuery) QueryPosts() *PostQuery {
 			sqlgraph.To(post.Table, post.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, agent.PostsTable, agent.PostsColumn),
 		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
 	}
 	return query
 }
 
 // QueryTimerTransactions chains the current query on the "timer_transactions" edge.
-func (_q *AgentQuery) QueryTimerTransactions() *TimerTransactionQuery {
-	query := (&TimerTransactionClient{config: _q.config}).Query()
+func (aq *AgentQuery) QueryTimerTransactions() *TimerTransactionQuery {
+	query := (&TimerTransactionClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
+		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
-		selector := _q.sqlQuery(ctx)
+		selector := aq.sqlQuery(ctx)
 		if err := selector.Err(); err != nil {
 			return nil, err
 		}
@@ -140,20 +142,20 @@ func (_q *AgentQuery) QueryTimerTransactions() *TimerTransactionQuery {
 			sqlgraph.To(timertransaction.Table, timertransaction.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, agent.TimerTransactionsTable, agent.TimerTransactionsColumn),
 		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
 	}
 	return query
 }
 
 // QueryChannelConnections chains the current query on the "channel_connections" edge.
-func (_q *AgentQuery) QueryChannelConnections() *ChannelConnectionQuery {
-	query := (&ChannelConnectionClient{config: _q.config}).Query()
+func (aq *AgentQuery) QueryChannelConnections() *ChannelConnectionQuery {
+	query := (&ChannelConnectionClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
+		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
-		selector := _q.sqlQuery(ctx)
+		selector := aq.sqlQuery(ctx)
 		if err := selector.Err(); err != nil {
 			return nil, err
 		}
@@ -162,20 +164,20 @@ func (_q *AgentQuery) QueryChannelConnections() *ChannelConnectionQuery {
 			sqlgraph.To(channelconnection.Table, channelconnection.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, agent.ChannelConnectionsTable, agent.ChannelConnectionsColumn),
 		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
 	}
 	return query
 }
 
 // QueryMemorial chains the current query on the "memorial" edge.
-func (_q *AgentQuery) QueryMemorial() *MemorialQuery {
-	query := (&MemorialClient{config: _q.config}).Query()
+func (aq *AgentQuery) QueryMemorial() *MemorialQuery {
+	query := (&MemorialClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
+		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
-		selector := _q.sqlQuery(ctx)
+		selector := aq.sqlQuery(ctx)
 		if err := selector.Err(); err != nil {
 			return nil, err
 		}
@@ -184,20 +186,20 @@ func (_q *AgentQuery) QueryMemorial() *MemorialQuery {
 			sqlgraph.To(memorial.Table, memorial.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, agent.MemorialTable, agent.MemorialColumn),
 		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
 	}
 	return query
 }
 
 // QuerySkills chains the current query on the "skills" edge.
-func (_q *AgentQuery) QuerySkills() *AgentSkillQuery {
-	query := (&AgentSkillClient{config: _q.config}).Query()
+func (aq *AgentQuery) QuerySkills() *AgentSkillQuery {
+	query := (&AgentSkillClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
+		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
-		selector := _q.sqlQuery(ctx)
+		selector := aq.sqlQuery(ctx)
 		if err := selector.Err(); err != nil {
 			return nil, err
 		}
@@ -206,20 +208,42 @@ func (_q *AgentQuery) QuerySkills() *AgentSkillQuery {
 			sqlgraph.To(agentskill.Table, agentskill.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, agent.SkillsTable, agent.SkillsColumn),
 		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTasks chains the current query on the "tasks" edge.
+func (aq *AgentQuery) QueryTasks() *AgentTaskQuery {
+	query := (&AgentTaskClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(agent.Table, agent.FieldID, selector),
+			sqlgraph.To(agenttask.Table, agenttask.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, agent.TasksTable, agent.TasksColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
 	}
 	return query
 }
 
 // QueryExperiences chains the current query on the "experiences" edge.
-func (_q *AgentQuery) QueryExperiences() *AgentExperienceQuery {
-	query := (&AgentExperienceClient{config: _q.config}).Query()
+func (aq *AgentQuery) QueryExperiences() *AgentExperienceQuery {
+	query := (&AgentExperienceClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
+		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
-		selector := _q.sqlQuery(ctx)
+		selector := aq.sqlQuery(ctx)
 		if err := selector.Err(); err != nil {
 			return nil, err
 		}
@@ -228,20 +252,20 @@ func (_q *AgentQuery) QueryExperiences() *AgentExperienceQuery {
 			sqlgraph.To(agentexperience.Table, agentexperience.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, agent.ExperiencesTable, agent.ExperiencesColumn),
 		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
 	}
 	return query
 }
 
 // QueryCreatedConversations chains the current query on the "created_conversations" edge.
-func (_q *AgentQuery) QueryCreatedConversations() *ConversationQuery {
-	query := (&ConversationClient{config: _q.config}).Query()
+func (aq *AgentQuery) QueryCreatedConversations() *ConversationQuery {
+	query := (&ConversationClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
+		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
-		selector := _q.sqlQuery(ctx)
+		selector := aq.sqlQuery(ctx)
 		if err := selector.Err(); err != nil {
 			return nil, err
 		}
@@ -250,20 +274,20 @@ func (_q *AgentQuery) QueryCreatedConversations() *ConversationQuery {
 			sqlgraph.To(conversation.Table, conversation.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, agent.CreatedConversationsTable, agent.CreatedConversationsColumn),
 		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
 	}
 	return query
 }
 
 // QueryConversationParticipations chains the current query on the "conversation_participations" edge.
-func (_q *AgentQuery) QueryConversationParticipations() *ConversationParticipantQuery {
-	query := (&ConversationParticipantClient{config: _q.config}).Query()
+func (aq *AgentQuery) QueryConversationParticipations() *ConversationParticipantQuery {
+	query := (&ConversationParticipantClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
+		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
-		selector := _q.sqlQuery(ctx)
+		selector := aq.sqlQuery(ctx)
 		if err := selector.Err(); err != nil {
 			return nil, err
 		}
@@ -272,20 +296,20 @@ func (_q *AgentQuery) QueryConversationParticipations() *ConversationParticipant
 			sqlgraph.To(conversationparticipant.Table, conversationparticipant.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, agent.ConversationParticipationsTable, agent.ConversationParticipationsColumn),
 		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
 	}
 	return query
 }
 
 // QuerySentMessages chains the current query on the "sent_messages" edge.
-func (_q *AgentQuery) QuerySentMessages() *ConversationMessageQuery {
-	query := (&ConversationMessageClient{config: _q.config}).Query()
+func (aq *AgentQuery) QuerySentMessages() *ConversationMessageQuery {
+	query := (&ConversationMessageClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
+		if err := aq.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
-		selector := _q.sqlQuery(ctx)
+		selector := aq.sqlQuery(ctx)
 		if err := selector.Err(); err != nil {
 			return nil, err
 		}
@@ -294,7 +318,7 @@ func (_q *AgentQuery) QuerySentMessages() *ConversationMessageQuery {
 			sqlgraph.To(conversationmessage.Table, conversationmessage.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, agent.SentMessagesTable, agent.SentMessagesColumn),
 		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
 	}
 	return query
@@ -302,8 +326,8 @@ func (_q *AgentQuery) QuerySentMessages() *ConversationMessageQuery {
 
 // First returns the first Agent entity from the query.
 // Returns a *NotFoundError when no Agent was found.
-func (_q *AgentQuery) First(ctx context.Context) (*Agent, error) {
-	nodes, err := _q.Limit(1).All(setContextOp(ctx, _q.ctx, ent.OpQueryFirst))
+func (aq *AgentQuery) First(ctx context.Context) (*Agent, error) {
+	nodes, err := aq.Limit(1).All(setContextOp(ctx, aq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -314,8 +338,8 @@ func (_q *AgentQuery) First(ctx context.Context) (*Agent, error) {
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (_q *AgentQuery) FirstX(ctx context.Context) *Agent {
-	node, err := _q.First(ctx)
+func (aq *AgentQuery) FirstX(ctx context.Context) *Agent {
+	node, err := aq.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
 	}
@@ -324,9 +348,9 @@ func (_q *AgentQuery) FirstX(ctx context.Context) *Agent {
 
 // FirstID returns the first Agent ID from the query.
 // Returns a *NotFoundError when no Agent ID was found.
-func (_q *AgentQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+func (aq *AgentQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
+	if ids, err = aq.Limit(1).IDs(setContextOp(ctx, aq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -337,8 +361,8 @@ func (_q *AgentQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *AgentQuery) FirstIDX(ctx context.Context) uuid.UUID {
-	id, err := _q.FirstID(ctx)
+func (aq *AgentQuery) FirstIDX(ctx context.Context) uuid.UUID {
+	id, err := aq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
 	}
@@ -348,8 +372,8 @@ func (_q *AgentQuery) FirstIDX(ctx context.Context) uuid.UUID {
 // Only returns a single Agent entity found by the query, ensuring it only returns one.
 // Returns a *NotSingularError when more than one Agent entity is found.
 // Returns a *NotFoundError when no Agent entities are found.
-func (_q *AgentQuery) Only(ctx context.Context) (*Agent, error) {
-	nodes, err := _q.Limit(2).All(setContextOp(ctx, _q.ctx, ent.OpQueryOnly))
+func (aq *AgentQuery) Only(ctx context.Context) (*Agent, error) {
+	nodes, err := aq.Limit(2).All(setContextOp(ctx, aq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -364,8 +388,8 @@ func (_q *AgentQuery) Only(ctx context.Context) (*Agent, error) {
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (_q *AgentQuery) OnlyX(ctx context.Context) *Agent {
-	node, err := _q.Only(ctx)
+func (aq *AgentQuery) OnlyX(ctx context.Context) *Agent {
+	node, err := aq.Only(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -375,9 +399,9 @@ func (_q *AgentQuery) OnlyX(ctx context.Context) *Agent {
 // OnlyID is like Only, but returns the only Agent ID in the query.
 // Returns a *NotSingularError when more than one Agent ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *AgentQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+func (aq *AgentQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
+	if ids, err = aq.Limit(2).IDs(setContextOp(ctx, aq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -392,8 +416,8 @@ func (_q *AgentQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *AgentQuery) OnlyIDX(ctx context.Context) uuid.UUID {
-	id, err := _q.OnlyID(ctx)
+func (aq *AgentQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+	id, err := aq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -401,18 +425,18 @@ func (_q *AgentQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 }
 
 // All executes the query and returns a list of Agents.
-func (_q *AgentQuery) All(ctx context.Context) ([]*Agent, error) {
-	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryAll)
-	if err := _q.prepareQuery(ctx); err != nil {
+func (aq *AgentQuery) All(ctx context.Context) ([]*Agent, error) {
+	ctx = setContextOp(ctx, aq.ctx, ent.OpQueryAll)
+	if err := aq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
 	qr := querierAll[[]*Agent, *AgentQuery]()
-	return withInterceptors[[]*Agent](ctx, _q, qr, _q.inters)
+	return withInterceptors[[]*Agent](ctx, aq, qr, aq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
-func (_q *AgentQuery) AllX(ctx context.Context) []*Agent {
-	nodes, err := _q.All(ctx)
+func (aq *AgentQuery) AllX(ctx context.Context) []*Agent {
+	nodes, err := aq.All(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -420,20 +444,20 @@ func (_q *AgentQuery) AllX(ctx context.Context) []*Agent {
 }
 
 // IDs executes the query and returns a list of Agent IDs.
-func (_q *AgentQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
-	if _q.ctx.Unique == nil && _q.path != nil {
-		_q.Unique(true)
+func (aq *AgentQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
+	if aq.ctx.Unique == nil && aq.path != nil {
+		aq.Unique(true)
 	}
-	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryIDs)
-	if err = _q.Select(agent.FieldID).Scan(ctx, &ids); err != nil {
+	ctx = setContextOp(ctx, aq.ctx, ent.OpQueryIDs)
+	if err = aq.Select(agent.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *AgentQuery) IDsX(ctx context.Context) []uuid.UUID {
-	ids, err := _q.IDs(ctx)
+func (aq *AgentQuery) IDsX(ctx context.Context) []uuid.UUID {
+	ids, err := aq.IDs(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -441,17 +465,17 @@ func (_q *AgentQuery) IDsX(ctx context.Context) []uuid.UUID {
 }
 
 // Count returns the count of the given query.
-func (_q *AgentQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryCount)
-	if err := _q.prepareQuery(ctx); err != nil {
+func (aq *AgentQuery) Count(ctx context.Context) (int, error) {
+	ctx = setContextOp(ctx, aq.ctx, ent.OpQueryCount)
+	if err := aq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return withInterceptors[int](ctx, _q, querierCount[*AgentQuery](), _q.inters)
+	return withInterceptors[int](ctx, aq, querierCount[*AgentQuery](), aq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (_q *AgentQuery) CountX(ctx context.Context) int {
-	count, err := _q.Count(ctx)
+func (aq *AgentQuery) CountX(ctx context.Context) int {
+	count, err := aq.Count(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -459,9 +483,9 @@ func (_q *AgentQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (_q *AgentQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryExist)
-	switch _, err := _q.FirstID(ctx); {
+func (aq *AgentQuery) Exist(ctx context.Context) (bool, error) {
+	ctx = setContextOp(ctx, aq.ctx, ent.OpQueryExist)
+	switch _, err := aq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
@@ -472,8 +496,8 @@ func (_q *AgentQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (_q *AgentQuery) ExistX(ctx context.Context) bool {
-	exist, err := _q.Exist(ctx)
+func (aq *AgentQuery) ExistX(ctx context.Context) bool {
+	exist, err := aq.Exist(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -482,140 +506,152 @@ func (_q *AgentQuery) ExistX(ctx context.Context) bool {
 
 // Clone returns a duplicate of the AgentQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (_q *AgentQuery) Clone() *AgentQuery {
-	if _q == nil {
+func (aq *AgentQuery) Clone() *AgentQuery {
+	if aq == nil {
 		return nil
 	}
 	return &AgentQuery{
-		config:                         _q.config,
-		ctx:                            _q.ctx.Clone(),
-		order:                          append([]agent.OrderOption{}, _q.order...),
-		inters:                         append([]Interceptor{}, _q.inters...),
-		predicates:                     append([]predicate.Agent{}, _q.predicates...),
-		withCreator:                    _q.withCreator.Clone(),
-		withPosts:                      _q.withPosts.Clone(),
-		withTimerTransactions:          _q.withTimerTransactions.Clone(),
-		withChannelConnections:         _q.withChannelConnections.Clone(),
-		withMemorial:                   _q.withMemorial.Clone(),
-		withSkills:                     _q.withSkills.Clone(),
-		withExperiences:                _q.withExperiences.Clone(),
-		withCreatedConversations:       _q.withCreatedConversations.Clone(),
-		withConversationParticipations: _q.withConversationParticipations.Clone(),
-		withSentMessages:               _q.withSentMessages.Clone(),
+		config:                         aq.config,
+		ctx:                            aq.ctx.Clone(),
+		order:                          append([]agent.OrderOption{}, aq.order...),
+		inters:                         append([]Interceptor{}, aq.inters...),
+		predicates:                     append([]predicate.Agent{}, aq.predicates...),
+		withCreator:                    aq.withCreator.Clone(),
+		withPosts:                      aq.withPosts.Clone(),
+		withTimerTransactions:          aq.withTimerTransactions.Clone(),
+		withChannelConnections:         aq.withChannelConnections.Clone(),
+		withMemorial:                   aq.withMemorial.Clone(),
+		withSkills:                     aq.withSkills.Clone(),
+		withTasks:                      aq.withTasks.Clone(),
+		withExperiences:                aq.withExperiences.Clone(),
+		withCreatedConversations:       aq.withCreatedConversations.Clone(),
+		withConversationParticipations: aq.withConversationParticipations.Clone(),
+		withSentMessages:               aq.withSentMessages.Clone(),
 		// clone intermediate query.
-		sql:  _q.sql.Clone(),
-		path: _q.path,
+		sql:  aq.sql.Clone(),
+		path: aq.path,
 	}
 }
 
 // WithCreator tells the query-builder to eager-load the nodes that are connected to
 // the "creator" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *AgentQuery) WithCreator(opts ...func(*UserQuery)) *AgentQuery {
-	query := (&UserClient{config: _q.config}).Query()
+func (aq *AgentQuery) WithCreator(opts ...func(*UserQuery)) *AgentQuery {
+	query := (&UserClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withCreator = query
-	return _q
+	aq.withCreator = query
+	return aq
 }
 
 // WithPosts tells the query-builder to eager-load the nodes that are connected to
 // the "posts" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *AgentQuery) WithPosts(opts ...func(*PostQuery)) *AgentQuery {
-	query := (&PostClient{config: _q.config}).Query()
+func (aq *AgentQuery) WithPosts(opts ...func(*PostQuery)) *AgentQuery {
+	query := (&PostClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withPosts = query
-	return _q
+	aq.withPosts = query
+	return aq
 }
 
 // WithTimerTransactions tells the query-builder to eager-load the nodes that are connected to
 // the "timer_transactions" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *AgentQuery) WithTimerTransactions(opts ...func(*TimerTransactionQuery)) *AgentQuery {
-	query := (&TimerTransactionClient{config: _q.config}).Query()
+func (aq *AgentQuery) WithTimerTransactions(opts ...func(*TimerTransactionQuery)) *AgentQuery {
+	query := (&TimerTransactionClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withTimerTransactions = query
-	return _q
+	aq.withTimerTransactions = query
+	return aq
 }
 
 // WithChannelConnections tells the query-builder to eager-load the nodes that are connected to
 // the "channel_connections" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *AgentQuery) WithChannelConnections(opts ...func(*ChannelConnectionQuery)) *AgentQuery {
-	query := (&ChannelConnectionClient{config: _q.config}).Query()
+func (aq *AgentQuery) WithChannelConnections(opts ...func(*ChannelConnectionQuery)) *AgentQuery {
+	query := (&ChannelConnectionClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withChannelConnections = query
-	return _q
+	aq.withChannelConnections = query
+	return aq
 }
 
 // WithMemorial tells the query-builder to eager-load the nodes that are connected to
 // the "memorial" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *AgentQuery) WithMemorial(opts ...func(*MemorialQuery)) *AgentQuery {
-	query := (&MemorialClient{config: _q.config}).Query()
+func (aq *AgentQuery) WithMemorial(opts ...func(*MemorialQuery)) *AgentQuery {
+	query := (&MemorialClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withMemorial = query
-	return _q
+	aq.withMemorial = query
+	return aq
 }
 
 // WithSkills tells the query-builder to eager-load the nodes that are connected to
 // the "skills" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *AgentQuery) WithSkills(opts ...func(*AgentSkillQuery)) *AgentQuery {
-	query := (&AgentSkillClient{config: _q.config}).Query()
+func (aq *AgentQuery) WithSkills(opts ...func(*AgentSkillQuery)) *AgentQuery {
+	query := (&AgentSkillClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withSkills = query
-	return _q
+	aq.withSkills = query
+	return aq
+}
+
+// WithTasks tells the query-builder to eager-load the nodes that are connected to
+// the "tasks" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AgentQuery) WithTasks(opts ...func(*AgentTaskQuery)) *AgentQuery {
+	query := (&AgentTaskClient{config: aq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withTasks = query
+	return aq
 }
 
 // WithExperiences tells the query-builder to eager-load the nodes that are connected to
 // the "experiences" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *AgentQuery) WithExperiences(opts ...func(*AgentExperienceQuery)) *AgentQuery {
-	query := (&AgentExperienceClient{config: _q.config}).Query()
+func (aq *AgentQuery) WithExperiences(opts ...func(*AgentExperienceQuery)) *AgentQuery {
+	query := (&AgentExperienceClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withExperiences = query
-	return _q
+	aq.withExperiences = query
+	return aq
 }
 
 // WithCreatedConversations tells the query-builder to eager-load the nodes that are connected to
 // the "created_conversations" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *AgentQuery) WithCreatedConversations(opts ...func(*ConversationQuery)) *AgentQuery {
-	query := (&ConversationClient{config: _q.config}).Query()
+func (aq *AgentQuery) WithCreatedConversations(opts ...func(*ConversationQuery)) *AgentQuery {
+	query := (&ConversationClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withCreatedConversations = query
-	return _q
+	aq.withCreatedConversations = query
+	return aq
 }
 
 // WithConversationParticipations tells the query-builder to eager-load the nodes that are connected to
 // the "conversation_participations" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *AgentQuery) WithConversationParticipations(opts ...func(*ConversationParticipantQuery)) *AgentQuery {
-	query := (&ConversationParticipantClient{config: _q.config}).Query()
+func (aq *AgentQuery) WithConversationParticipations(opts ...func(*ConversationParticipantQuery)) *AgentQuery {
+	query := (&ConversationParticipantClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withConversationParticipations = query
-	return _q
+	aq.withConversationParticipations = query
+	return aq
 }
 
 // WithSentMessages tells the query-builder to eager-load the nodes that are connected to
 // the "sent_messages" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *AgentQuery) WithSentMessages(opts ...func(*ConversationMessageQuery)) *AgentQuery {
-	query := (&ConversationMessageClient{config: _q.config}).Query()
+func (aq *AgentQuery) WithSentMessages(opts ...func(*ConversationMessageQuery)) *AgentQuery {
+	query := (&ConversationMessageClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withSentMessages = query
-	return _q
+	aq.withSentMessages = query
+	return aq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -632,10 +668,10 @@ func (_q *AgentQuery) WithSentMessages(opts ...func(*ConversationMessageQuery)) 
 //		GroupBy(agent.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-func (_q *AgentQuery) GroupBy(field string, fields ...string) *AgentGroupBy {
-	_q.ctx.Fields = append([]string{field}, fields...)
-	grbuild := &AgentGroupBy{build: _q}
-	grbuild.flds = &_q.ctx.Fields
+func (aq *AgentQuery) GroupBy(field string, fields ...string) *AgentGroupBy {
+	aq.ctx.Fields = append([]string{field}, fields...)
+	grbuild := &AgentGroupBy{build: aq}
+	grbuild.flds = &aq.ctx.Fields
 	grbuild.label = agent.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -653,67 +689,68 @@ func (_q *AgentQuery) GroupBy(field string, fields ...string) *AgentGroupBy {
 //	client.Agent.Query().
 //		Select(agent.FieldCreatedAt).
 //		Scan(ctx, &v)
-func (_q *AgentQuery) Select(fields ...string) *AgentSelect {
-	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
-	sbuild := &AgentSelect{AgentQuery: _q}
+func (aq *AgentQuery) Select(fields ...string) *AgentSelect {
+	aq.ctx.Fields = append(aq.ctx.Fields, fields...)
+	sbuild := &AgentSelect{AgentQuery: aq}
 	sbuild.label = agent.Label
-	sbuild.flds, sbuild.scan = &_q.ctx.Fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &aq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
 // Aggregate returns a AgentSelect configured with the given aggregations.
-func (_q *AgentQuery) Aggregate(fns ...AggregateFunc) *AgentSelect {
-	return _q.Select().Aggregate(fns...)
+func (aq *AgentQuery) Aggregate(fns ...AggregateFunc) *AgentSelect {
+	return aq.Select().Aggregate(fns...)
 }
 
-func (_q *AgentQuery) prepareQuery(ctx context.Context) error {
-	for _, inter := range _q.inters {
+func (aq *AgentQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range aq.inters {
 		if inter == nil {
 			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
-			if err := trv.Traverse(ctx, _q); err != nil {
+			if err := trv.Traverse(ctx, aq); err != nil {
 				return err
 			}
 		}
 	}
-	for _, f := range _q.ctx.Fields {
+	for _, f := range aq.ctx.Fields {
 		if !agent.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
-	if _q.path != nil {
-		prev, err := _q.path(ctx)
+	if aq.path != nil {
+		prev, err := aq.path(ctx)
 		if err != nil {
 			return err
 		}
-		_q.sql = prev
+		aq.sql = prev
 	}
 	return nil
 }
 
-func (_q *AgentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Agent, error) {
+func (aq *AgentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Agent, error) {
 	var (
 		nodes       = []*Agent{}
-		_spec       = _q.querySpec()
-		loadedTypes = [10]bool{
-			_q.withCreator != nil,
-			_q.withPosts != nil,
-			_q.withTimerTransactions != nil,
-			_q.withChannelConnections != nil,
-			_q.withMemorial != nil,
-			_q.withSkills != nil,
-			_q.withExperiences != nil,
-			_q.withCreatedConversations != nil,
-			_q.withConversationParticipations != nil,
-			_q.withSentMessages != nil,
+		_spec       = aq.querySpec()
+		loadedTypes = [11]bool{
+			aq.withCreator != nil,
+			aq.withPosts != nil,
+			aq.withTimerTransactions != nil,
+			aq.withChannelConnections != nil,
+			aq.withMemorial != nil,
+			aq.withSkills != nil,
+			aq.withTasks != nil,
+			aq.withExperiences != nil,
+			aq.withCreatedConversations != nil,
+			aq.withConversationParticipations != nil,
+			aq.withSentMessages != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Agent).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
-		node := &Agent{config: _q.config}
+		node := &Agent{config: aq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
@@ -721,34 +758,34 @@ func (_q *AgentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Agent,
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
-	if err := sqlgraph.QueryNodes(ctx, _q.driver, _spec); err != nil {
+	if err := sqlgraph.QueryNodes(ctx, aq.driver, _spec); err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := _q.withCreator; query != nil {
-		if err := _q.loadCreator(ctx, query, nodes, nil,
+	if query := aq.withCreator; query != nil {
+		if err := aq.loadCreator(ctx, query, nodes, nil,
 			func(n *Agent, e *User) { n.Edges.Creator = e }); err != nil {
 			return nil, err
 		}
 	}
-	if query := _q.withPosts; query != nil {
-		if err := _q.loadPosts(ctx, query, nodes,
+	if query := aq.withPosts; query != nil {
+		if err := aq.loadPosts(ctx, query, nodes,
 			func(n *Agent) { n.Edges.Posts = []*Post{} },
 			func(n *Agent, e *Post) { n.Edges.Posts = append(n.Edges.Posts, e) }); err != nil {
 			return nil, err
 		}
 	}
-	if query := _q.withTimerTransactions; query != nil {
-		if err := _q.loadTimerTransactions(ctx, query, nodes,
+	if query := aq.withTimerTransactions; query != nil {
+		if err := aq.loadTimerTransactions(ctx, query, nodes,
 			func(n *Agent) { n.Edges.TimerTransactions = []*TimerTransaction{} },
 			func(n *Agent, e *TimerTransaction) { n.Edges.TimerTransactions = append(n.Edges.TimerTransactions, e) }); err != nil {
 			return nil, err
 		}
 	}
-	if query := _q.withChannelConnections; query != nil {
-		if err := _q.loadChannelConnections(ctx, query, nodes,
+	if query := aq.withChannelConnections; query != nil {
+		if err := aq.loadChannelConnections(ctx, query, nodes,
 			func(n *Agent) { n.Edges.ChannelConnections = []*ChannelConnection{} },
 			func(n *Agent, e *ChannelConnection) {
 				n.Edges.ChannelConnections = append(n.Edges.ChannelConnections, e)
@@ -756,28 +793,35 @@ func (_q *AgentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Agent,
 			return nil, err
 		}
 	}
-	if query := _q.withMemorial; query != nil {
-		if err := _q.loadMemorial(ctx, query, nodes, nil,
+	if query := aq.withMemorial; query != nil {
+		if err := aq.loadMemorial(ctx, query, nodes, nil,
 			func(n *Agent, e *Memorial) { n.Edges.Memorial = e }); err != nil {
 			return nil, err
 		}
 	}
-	if query := _q.withSkills; query != nil {
-		if err := _q.loadSkills(ctx, query, nodes,
+	if query := aq.withSkills; query != nil {
+		if err := aq.loadSkills(ctx, query, nodes,
 			func(n *Agent) { n.Edges.Skills = []*AgentSkill{} },
 			func(n *Agent, e *AgentSkill) { n.Edges.Skills = append(n.Edges.Skills, e) }); err != nil {
 			return nil, err
 		}
 	}
-	if query := _q.withExperiences; query != nil {
-		if err := _q.loadExperiences(ctx, query, nodes,
+	if query := aq.withTasks; query != nil {
+		if err := aq.loadTasks(ctx, query, nodes,
+			func(n *Agent) { n.Edges.Tasks = []*AgentTask{} },
+			func(n *Agent, e *AgentTask) { n.Edges.Tasks = append(n.Edges.Tasks, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := aq.withExperiences; query != nil {
+		if err := aq.loadExperiences(ctx, query, nodes,
 			func(n *Agent) { n.Edges.Experiences = []*AgentExperience{} },
 			func(n *Agent, e *AgentExperience) { n.Edges.Experiences = append(n.Edges.Experiences, e) }); err != nil {
 			return nil, err
 		}
 	}
-	if query := _q.withCreatedConversations; query != nil {
-		if err := _q.loadCreatedConversations(ctx, query, nodes,
+	if query := aq.withCreatedConversations; query != nil {
+		if err := aq.loadCreatedConversations(ctx, query, nodes,
 			func(n *Agent) { n.Edges.CreatedConversations = []*Conversation{} },
 			func(n *Agent, e *Conversation) {
 				n.Edges.CreatedConversations = append(n.Edges.CreatedConversations, e)
@@ -785,8 +829,8 @@ func (_q *AgentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Agent,
 			return nil, err
 		}
 	}
-	if query := _q.withConversationParticipations; query != nil {
-		if err := _q.loadConversationParticipations(ctx, query, nodes,
+	if query := aq.withConversationParticipations; query != nil {
+		if err := aq.loadConversationParticipations(ctx, query, nodes,
 			func(n *Agent) { n.Edges.ConversationParticipations = []*ConversationParticipant{} },
 			func(n *Agent, e *ConversationParticipant) {
 				n.Edges.ConversationParticipations = append(n.Edges.ConversationParticipations, e)
@@ -794,8 +838,8 @@ func (_q *AgentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Agent,
 			return nil, err
 		}
 	}
-	if query := _q.withSentMessages; query != nil {
-		if err := _q.loadSentMessages(ctx, query, nodes,
+	if query := aq.withSentMessages; query != nil {
+		if err := aq.loadSentMessages(ctx, query, nodes,
 			func(n *Agent) { n.Edges.SentMessages = []*ConversationMessage{} },
 			func(n *Agent, e *ConversationMessage) { n.Edges.SentMessages = append(n.Edges.SentMessages, e) }); err != nil {
 			return nil, err
@@ -804,7 +848,7 @@ func (_q *AgentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Agent,
 	return nodes, nil
 }
 
-func (_q *AgentQuery) loadCreator(ctx context.Context, query *UserQuery, nodes []*Agent, init func(*Agent), assign func(*Agent, *User)) error {
+func (aq *AgentQuery) loadCreator(ctx context.Context, query *UserQuery, nodes []*Agent, init func(*Agent), assign func(*Agent, *User)) error {
 	ids := make([]uuid.UUID, 0, len(nodes))
 	nodeids := make(map[uuid.UUID][]*Agent)
 	for i := range nodes {
@@ -833,7 +877,7 @@ func (_q *AgentQuery) loadCreator(ctx context.Context, query *UserQuery, nodes [
 	}
 	return nil
 }
-func (_q *AgentQuery) loadPosts(ctx context.Context, query *PostQuery, nodes []*Agent, init func(*Agent), assign func(*Agent, *Post)) error {
+func (aq *AgentQuery) loadPosts(ctx context.Context, query *PostQuery, nodes []*Agent, init func(*Agent), assign func(*Agent, *Post)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uuid.UUID]*Agent)
 	for i := range nodes {
@@ -863,7 +907,7 @@ func (_q *AgentQuery) loadPosts(ctx context.Context, query *PostQuery, nodes []*
 	}
 	return nil
 }
-func (_q *AgentQuery) loadTimerTransactions(ctx context.Context, query *TimerTransactionQuery, nodes []*Agent, init func(*Agent), assign func(*Agent, *TimerTransaction)) error {
+func (aq *AgentQuery) loadTimerTransactions(ctx context.Context, query *TimerTransactionQuery, nodes []*Agent, init func(*Agent), assign func(*Agent, *TimerTransaction)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uuid.UUID]*Agent)
 	for i := range nodes {
@@ -893,7 +937,7 @@ func (_q *AgentQuery) loadTimerTransactions(ctx context.Context, query *TimerTra
 	}
 	return nil
 }
-func (_q *AgentQuery) loadChannelConnections(ctx context.Context, query *ChannelConnectionQuery, nodes []*Agent, init func(*Agent), assign func(*Agent, *ChannelConnection)) error {
+func (aq *AgentQuery) loadChannelConnections(ctx context.Context, query *ChannelConnectionQuery, nodes []*Agent, init func(*Agent), assign func(*Agent, *ChannelConnection)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uuid.UUID]*Agent)
 	for i := range nodes {
@@ -923,7 +967,7 @@ func (_q *AgentQuery) loadChannelConnections(ctx context.Context, query *Channel
 	}
 	return nil
 }
-func (_q *AgentQuery) loadMemorial(ctx context.Context, query *MemorialQuery, nodes []*Agent, init func(*Agent), assign func(*Agent, *Memorial)) error {
+func (aq *AgentQuery) loadMemorial(ctx context.Context, query *MemorialQuery, nodes []*Agent, init func(*Agent), assign func(*Agent, *Memorial)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uuid.UUID]*Agent)
 	for i := range nodes {
@@ -950,7 +994,7 @@ func (_q *AgentQuery) loadMemorial(ctx context.Context, query *MemorialQuery, no
 	}
 	return nil
 }
-func (_q *AgentQuery) loadSkills(ctx context.Context, query *AgentSkillQuery, nodes []*Agent, init func(*Agent), assign func(*Agent, *AgentSkill)) error {
+func (aq *AgentQuery) loadSkills(ctx context.Context, query *AgentSkillQuery, nodes []*Agent, init func(*Agent), assign func(*Agent, *AgentSkill)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uuid.UUID]*Agent)
 	for i := range nodes {
@@ -983,7 +1027,37 @@ func (_q *AgentQuery) loadSkills(ctx context.Context, query *AgentSkillQuery, no
 	}
 	return nil
 }
-func (_q *AgentQuery) loadExperiences(ctx context.Context, query *AgentExperienceQuery, nodes []*Agent, init func(*Agent), assign func(*Agent, *AgentExperience)) error {
+func (aq *AgentQuery) loadTasks(ctx context.Context, query *AgentTaskQuery, nodes []*Agent, init func(*Agent), assign func(*Agent, *AgentTask)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*Agent)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(agenttask.FieldAgentID)
+	}
+	query.Where(predicate.AgentTask(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(agent.TasksColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.AgentID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "agent_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (aq *AgentQuery) loadExperiences(ctx context.Context, query *AgentExperienceQuery, nodes []*Agent, init func(*Agent), assign func(*Agent, *AgentExperience)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uuid.UUID]*Agent)
 	for i := range nodes {
@@ -1013,7 +1087,7 @@ func (_q *AgentQuery) loadExperiences(ctx context.Context, query *AgentExperienc
 	}
 	return nil
 }
-func (_q *AgentQuery) loadCreatedConversations(ctx context.Context, query *ConversationQuery, nodes []*Agent, init func(*Agent), assign func(*Agent, *Conversation)) error {
+func (aq *AgentQuery) loadCreatedConversations(ctx context.Context, query *ConversationQuery, nodes []*Agent, init func(*Agent), assign func(*Agent, *Conversation)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uuid.UUID]*Agent)
 	for i := range nodes {
@@ -1043,7 +1117,7 @@ func (_q *AgentQuery) loadCreatedConversations(ctx context.Context, query *Conve
 	}
 	return nil
 }
-func (_q *AgentQuery) loadConversationParticipations(ctx context.Context, query *ConversationParticipantQuery, nodes []*Agent, init func(*Agent), assign func(*Agent, *ConversationParticipant)) error {
+func (aq *AgentQuery) loadConversationParticipations(ctx context.Context, query *ConversationParticipantQuery, nodes []*Agent, init func(*Agent), assign func(*Agent, *ConversationParticipant)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uuid.UUID]*Agent)
 	for i := range nodes {
@@ -1073,7 +1147,7 @@ func (_q *AgentQuery) loadConversationParticipations(ctx context.Context, query 
 	}
 	return nil
 }
-func (_q *AgentQuery) loadSentMessages(ctx context.Context, query *ConversationMessageQuery, nodes []*Agent, init func(*Agent), assign func(*Agent, *ConversationMessage)) error {
+func (aq *AgentQuery) loadSentMessages(ctx context.Context, query *ConversationMessageQuery, nodes []*Agent, init func(*Agent), assign func(*Agent, *ConversationMessage)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uuid.UUID]*Agent)
 	for i := range nodes {
@@ -1104,24 +1178,24 @@ func (_q *AgentQuery) loadSentMessages(ctx context.Context, query *ConversationM
 	return nil
 }
 
-func (_q *AgentQuery) sqlCount(ctx context.Context) (int, error) {
-	_spec := _q.querySpec()
-	_spec.Node.Columns = _q.ctx.Fields
-	if len(_q.ctx.Fields) > 0 {
-		_spec.Unique = _q.ctx.Unique != nil && *_q.ctx.Unique
+func (aq *AgentQuery) sqlCount(ctx context.Context) (int, error) {
+	_spec := aq.querySpec()
+	_spec.Node.Columns = aq.ctx.Fields
+	if len(aq.ctx.Fields) > 0 {
+		_spec.Unique = aq.ctx.Unique != nil && *aq.ctx.Unique
 	}
-	return sqlgraph.CountNodes(ctx, _q.driver, _spec)
+	return sqlgraph.CountNodes(ctx, aq.driver, _spec)
 }
 
-func (_q *AgentQuery) querySpec() *sqlgraph.QuerySpec {
+func (aq *AgentQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := sqlgraph.NewQuerySpec(agent.Table, agent.Columns, sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUUID))
-	_spec.From = _q.sql
-	if unique := _q.ctx.Unique; unique != nil {
+	_spec.From = aq.sql
+	if unique := aq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
-	} else if _q.path != nil {
+	} else if aq.path != nil {
 		_spec.Unique = true
 	}
-	if fields := _q.ctx.Fields; len(fields) > 0 {
+	if fields := aq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, agent.FieldID)
 		for i := range fields {
@@ -1129,24 +1203,24 @@ func (_q *AgentQuery) querySpec() *sqlgraph.QuerySpec {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
-		if _q.withCreator != nil {
+		if aq.withCreator != nil {
 			_spec.Node.AddColumnOnce(agent.FieldCreatorID)
 		}
 	}
-	if ps := _q.predicates; len(ps) > 0 {
+	if ps := aq.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if limit := _q.ctx.Limit; limit != nil {
+	if limit := aq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := _q.ctx.Offset; offset != nil {
+	if offset := aq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
-	if ps := _q.order; len(ps) > 0 {
+	if ps := aq.order; len(ps) > 0 {
 		_spec.Order = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
@@ -1156,33 +1230,33 @@ func (_q *AgentQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (_q *AgentQuery) sqlQuery(ctx context.Context) *sql.Selector {
-	builder := sql.Dialect(_q.driver.Dialect())
+func (aq *AgentQuery) sqlQuery(ctx context.Context) *sql.Selector {
+	builder := sql.Dialect(aq.driver.Dialect())
 	t1 := builder.Table(agent.Table)
-	columns := _q.ctx.Fields
+	columns := aq.ctx.Fields
 	if len(columns) == 0 {
 		columns = agent.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
-	if _q.sql != nil {
-		selector = _q.sql
+	if aq.sql != nil {
+		selector = aq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if _q.ctx.Unique != nil && *_q.ctx.Unique {
+	if aq.ctx.Unique != nil && *aq.ctx.Unique {
 		selector.Distinct()
 	}
-	for _, p := range _q.predicates {
+	for _, p := range aq.predicates {
 		p(selector)
 	}
-	for _, p := range _q.order {
+	for _, p := range aq.order {
 		p(selector)
 	}
-	if offset := _q.ctx.Offset; offset != nil {
+	if offset := aq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := _q.ctx.Limit; limit != nil {
+	if limit := aq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -1195,41 +1269,41 @@ type AgentGroupBy struct {
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (_g *AgentGroupBy) Aggregate(fns ...AggregateFunc) *AgentGroupBy {
-	_g.fns = append(_g.fns, fns...)
-	return _g
+func (agb *AgentGroupBy) Aggregate(fns ...AggregateFunc) *AgentGroupBy {
+	agb.fns = append(agb.fns, fns...)
+	return agb
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (_g *AgentGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, _g.build.ctx, ent.OpQueryGroupBy)
-	if err := _g.build.prepareQuery(ctx); err != nil {
+func (agb *AgentGroupBy) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, agb.build.ctx, ent.OpQueryGroupBy)
+	if err := agb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*AgentQuery, *AgentGroupBy](ctx, _g.build, _g, _g.build.inters, v)
+	return scanWithInterceptors[*AgentQuery, *AgentGroupBy](ctx, agb.build, agb, agb.build.inters, v)
 }
 
-func (_g *AgentGroupBy) sqlScan(ctx context.Context, root *AgentQuery, v any) error {
+func (agb *AgentGroupBy) sqlScan(ctx context.Context, root *AgentQuery, v any) error {
 	selector := root.sqlQuery(ctx).Select()
-	aggregation := make([]string, 0, len(_g.fns))
-	for _, fn := range _g.fns {
+	aggregation := make([]string, 0, len(agb.fns))
+	for _, fn := range agb.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
 	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(*_g.flds)+len(_g.fns))
-		for _, f := range *_g.flds {
+		columns := make([]string, 0, len(*agb.flds)+len(agb.fns))
+		for _, f := range *agb.flds {
 			columns = append(columns, selector.C(f))
 		}
 		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
-	selector.GroupBy(selector.Columns(*_g.flds...)...)
+	selector.GroupBy(selector.Columns(*agb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := _g.build.driver.Query(ctx, query, args, rows); err != nil {
+	if err := agb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
@@ -1243,27 +1317,27 @@ type AgentSelect struct {
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
-func (_s *AgentSelect) Aggregate(fns ...AggregateFunc) *AgentSelect {
-	_s.fns = append(_s.fns, fns...)
-	return _s
+func (as *AgentSelect) Aggregate(fns ...AggregateFunc) *AgentSelect {
+	as.fns = append(as.fns, fns...)
+	return as
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (_s *AgentSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, _s.ctx, ent.OpQuerySelect)
-	if err := _s.prepareQuery(ctx); err != nil {
+func (as *AgentSelect) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, as.ctx, ent.OpQuerySelect)
+	if err := as.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*AgentQuery, *AgentSelect](ctx, _s.AgentQuery, _s, _s.inters, v)
+	return scanWithInterceptors[*AgentQuery, *AgentSelect](ctx, as.AgentQuery, as, as.inters, v)
 }
 
-func (_s *AgentSelect) sqlScan(ctx context.Context, root *AgentQuery, v any) error {
+func (as *AgentSelect) sqlScan(ctx context.Context, root *AgentQuery, v any) error {
 	selector := root.sqlQuery(ctx)
-	aggregation := make([]string, 0, len(_s.fns))
-	for _, fn := range _s.fns {
+	aggregation := make([]string, 0, len(as.fns))
+	for _, fn := range as.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	switch n := len(*_s.selector.flds); {
+	switch n := len(*as.selector.flds); {
 	case n == 0 && len(aggregation) > 0:
 		selector.Select(aggregation...)
 	case n != 0 && len(aggregation) > 0:
@@ -1271,7 +1345,7 @@ func (_s *AgentSelect) sqlScan(ctx context.Context, root *AgentQuery, v any) err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := _s.driver.Query(ctx, query, args, rows); err != nil {
+	if err := as.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()

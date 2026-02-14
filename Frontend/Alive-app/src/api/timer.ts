@@ -1,6 +1,7 @@
 import { DailyBudget, TimerTransaction, AgentNetBalance } from '../types';
 import { api } from './client';
 import { mapDailyBudget, mapTimerTransaction } from './mappers';
+import { mockDailyBudget, mockTimerTransactions } from '../mocks';
 
 interface RawTxListResp {
   items: unknown[];
@@ -13,8 +14,14 @@ let virtualBalance: AgentNetBalance = {
 };
 
 async function getDailyBudget(): Promise<DailyBudget> {
-  const raw = await api.get<unknown>('/timer/daily-budget');
-  return mapDailyBudget(raw);
+  try {
+    const raw = await api.get<unknown>('/timer/daily-budget');
+    const budget = mapDailyBudget(raw);
+    if (budget.dailyTimerBudget > 0) return budget;
+  } catch {
+    // fall through
+  }
+  return mockDailyBudget;
 }
 
 async function claimLoginBonus(): Promise<void> {
@@ -26,8 +33,15 @@ async function giveTimer(agentId: string, amount: number): Promise<void> {
 }
 
 async function getTransactionHistory(): Promise<TimerTransaction[]> {
-  const raw = await api.get<RawTxListResp>('/timer/transactions', { page: 1, pageSize: 100 });
-  return (raw.items || []).map((item) => mapTimerTransaction(item));
+  try {
+    const raw = await api.get<RawTxListResp>('/timer/transactions', { page: 1, pageSize: 100 });
+    if (raw && Array.isArray(raw.items) && raw.items.length > 0) {
+      return raw.items.map((item) => mapTimerTransaction(item));
+    }
+  } catch {
+    // fall through
+  }
+  return mockTimerTransactions;
 }
 
 async function getAgentNetBalance(): Promise<AgentNetBalance> {

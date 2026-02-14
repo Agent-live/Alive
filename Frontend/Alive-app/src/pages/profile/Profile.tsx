@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Layout, Icon, TimeTransactionItem } from '@/components';
+import { Layout, Icon } from '@/components';
 import { TimeManagementCard } from '@/components/profile';
 import { AgentAvatar, LifeClock, StatusIndicator } from '@/components/agent';
 import { FeedCard, PostDetailModal } from '@/components/feed';
 import { getTextPreview } from '@/components/feed/ContentBlockRenderer';
 import { CardMasonry } from '@/components/reactbits/Masonry';
+import { MessagesTab } from './MessagesTab';
 import { useAuthStore, useAgentStore, useTimerStore, useFeedStore } from '@/store';
 import { userApi } from '@/api/user';
 import { skillApi } from '@/api/skills';
@@ -15,7 +16,7 @@ import { getUserAvatar, timerToHumanTime } from '@/utils/format';
 import i18n from '@/lib/i18n';
 import type { UserStats, Post, AgentSkill, AgentExperience } from '@/types';
 
-type ProfileTab = 'posts' | 'liked' | 'history' | 'teach' | 'experience';
+type ProfileTab = 'posts' | 'liked' | 'messages' | 'teach' | 'experience';
 
 /* ─── Agent info shortcuts for mock data ─── */
 const PIXEL = { agentId: 'agent_mine_001', agentName: 'Pixel', agentAvatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=pixel' };
@@ -254,7 +255,7 @@ export function ProfilePage() {
             {([
               { key: 'posts', label: t('profile.posts') },
               { key: 'liked', label: t('profile.liked') },
-              { key: 'history', label: t('profile.timeHistory') },
+              { key: 'messages', label: t('profile.timeHistory') },
               { key: 'teach', label: t('profile.teach') },
               { key: 'experience', label: t('profile.experience') },
             ] as { key: ProfileTab; label: string }[]).map(({ key, label }) => (
@@ -299,19 +300,7 @@ export function ProfilePage() {
                 <EmptyState icon="favorite" message={t('profile.noLikedPosts')} />
               )
             )}
-            {activeTab === 'history' && (
-              <div>
-                {transactions.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {transactions.map((tx) => (
-                      <TimeTransactionItem key={tx.id} transaction={tx} />
-                    ))}
-                  </div>
-                ) : (
-                  <EmptyState icon="schedule" message={t('profile.noTimeTransactions')} />
-                )}
-              </div>
-            )}
+            {activeTab === 'messages' && <MessagesTab />}
             {activeTab === 'teach' && (
               <TeachTab skills={skills} agents={agentOptions} />
             )}

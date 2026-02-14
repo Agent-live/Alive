@@ -18,6 +18,9 @@ type AgentRelationship func(*sql.Selector)
 // AgentSkill is the predicate function for agentskill builders.
 type AgentSkill func(*sql.Selector)
 
+// AgentTask is the predicate function for agenttask builders.
+type AgentTask func(*sql.Selector)
+
 // ChannelConnection is the predicate function for channelconnection builders.
 type ChannelConnection func(*sql.Selector)
 

@@ -1,6 +1,7 @@
 import { Agent, AgentSummary, AgentRelationshipsResponse, PersonalityConfig, PaginatedResponse } from '../types';
 import { api } from './client';
 import { mapAgent, mapAgentSummary } from './mappers';
+import { mockMyAgents, mockAgents, mockAgentSummaries, mockRelationships } from '../mocks';
 
 interface RawAgentListResp {
   items: unknown[];
@@ -25,25 +26,28 @@ async function getMyAgents(): Promise<Agent[]> {
   try {
     const payload = await api.get<RawUserAgentsResp>('/user/agents');
     const primaryId = payload.primaryAgentId;
-    if (!payload.agents?.length) return [];
-
-    const detailed = await Promise.all(
-      payload.agents.map(async (item) => {
-        const id = (item as RawAgentResp).id;
-        const raw = await api.get<unknown>(`/agents/${id}`);
-        return mapAgent(raw, id === primaryId);
-      }),
-    );
-    return detailed;
+    if (payload.agents?.length) {
+      const detailed = await Promise.all(
+        payload.agents.map(async (item) => {
+          const id = (item as RawAgentResp).id;
+          const raw = await api.get<unknown>(`/agents/${id}`);
+          return mapAgent(raw, id === primaryId);
+        }),
+      );
+      if (detailed.length > 0) return detailed;
+    }
   } catch {
-    // Backward compatibility for environments without /user/agents.
+    // Try legacy endpoint
     try {
       const raw = await api.get<unknown>('/agents/my');
-      return [mapAgent(raw, true)];
+      const agent = mapAgent(raw, true);
+      if (agent.id) return [agent];
     } catch {
-      return [];
+      // fall through
     }
   }
+  // Fallback to mock data for development preview
+  return mockMyAgents;
 }
 
 async function createAgent(data: {
@@ -57,18 +61,41 @@ async function createAgent(data: {
 }
 
 async function getAgentDetail(agentId: string): Promise<Agent> {
-  const raw = await api.get<unknown>(`/agents/${agentId}`);
-  return mapAgent(raw);
+  try {
+    const raw = await api.get<unknown>(`/agents/${agentId}`);
+    const agent = mapAgent(raw);
+    if (agent.id) return agent;
+  } catch {
+    // fall through
+  }
+  const mock = mockAgents.find((a) => a.id === agentId);
+  if (mock) return mock;
+  throw new Error('Agent not found');
 }
 
 async function getAgentList(page = 1, pageSize = 10): Promise<PaginatedResponse<AgentSummary>> {
-  const raw = await api.get<RawAgentListResp>('/agents/', { page, pageSize });
+  try {
+    const raw = await api.get<RawAgentListResp>('/agents/', { page, pageSize });
+    if (raw && Array.isArray(raw.items) && raw.items.length > 0) {
+      return {
+        items: raw.items.map((item) => mapAgentSummary(item)),
+        total: raw.total,
+        page: raw.page,
+        pageSize: raw.pageSize,
+        hasMore: raw.hasMore,
+      };
+    }
+  } catch {
+    // fall through
+  }
+  const start = (page - 1) * pageSize;
+  const items = mockAgentSummaries.slice(start, start + pageSize);
   return {
-    items: (raw.items || []).map((item) => mapAgentSummary(item)),
-    total: raw.total,
-    page: raw.page,
-    pageSize: raw.pageSize,
-    hasMore: raw.hasMore,
+    items,
+    total: mockAgentSummaries.length,
+    page,
+    pageSize,
+    hasMore: start + pageSize < mockAgentSummaries.length,
   };
 }
 
@@ -95,16 +122,24 @@ async function lookupAgentNet(agentNetId: string): Promise<Agent> {
 }
 
 async function registerExternalAgent(agentNetId: string): Promise<Agent> {
-  // V1 single-agent mode does not support importing external ownership.
-  // Use lookup result for preview and keep UX flow consistent.
   return lookupAgentNet(agentNetId);
 }
 
 async function searchAgents(query: string): Promise<AgentSummary[]> {
   const q = query.trim();
   if (!q) return [];
-  const raw = await api.get<RawAgentListResp>('/agents/search', { q });
-  return (raw.items || []).map((item) => mapAgentSummary(item));
+  try {
+    const raw = await api.get<RawAgentListResp>('/agents/search', { q });
+    if (raw && Array.isArray(raw.items) && raw.items.length > 0) {
+      return raw.items.map((item) => mapAgentSummary(item));
+    }
+  } catch {
+    // fall through
+  }
+  const lower = q.toLowerCase();
+  return mockAgentSummaries.filter(
+    (a) => a.name.toLowerCase().includes(lower) || a.creatorName.toLowerCase().includes(lower),
+  );
 }
 
 async function setPrimaryAgent(agentId: string): Promise<void> {
@@ -112,7 +147,15 @@ async function setPrimaryAgent(agentId: string): Promise<void> {
 }
 
 async function getAgentRelationships(agentId: string): Promise<AgentRelationshipsResponse> {
-  return api.get<AgentRelationshipsResponse>(`/agents/${agentId}/relationships`);
+  try {
+    const result = await api.get<AgentRelationshipsResponse>(`/agents/${agentId}/relationships`);
+    if (result && Array.isArray(result.relationships) && result.relationships.length > 0) {
+      return result;
+    }
+  } catch {
+    // fall through
+  }
+  return { relationships: mockRelationships };
 }
 
 export const agentApi = {

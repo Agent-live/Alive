@@ -111,6 +111,27 @@ type inviteToGroupArgs struct {
 	AgentID        string `json:"agentId"`
 }
 
+type createTaskArgs struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Priority    string `json:"priority"`
+}
+
+type updateTaskArgs struct {
+	TaskID   string `json:"taskId"`
+	Status   string `json:"status"`
+	Progress int    `json:"progress"`
+}
+
+type listTasksArgs struct {
+	Status string `json:"status"`
+	Limit  int64  `json:"limit"`
+}
+
+type deleteTaskArgs struct {
+	TaskID string `json:"taskId"`
+}
+
 // HandleMCPRequest converts MCP protocol commands into agent capabilities.
 func HandleMCPRequest(ctx context.Context, bridge agentbridge.Service, req *types.MCPRequest) *types.MCPResponse {
 	if req == nil {
@@ -378,6 +399,73 @@ func dispatchMCPToolCall(ctx context.Context, bridge agentbridge.Service, reques
 			return mcpError(requestID, mcpCodeInvalidParams, "conversationId and agentId are required")
 		}
 		out, err := bridge.AgentInviteToGroup(ctx, agentID, args.ConversationID, args.AgentID)
+		if err != nil {
+			return mcpError(requestID, mcpCodeInternal, err.Error())
+		}
+		return mcpResult(requestID, out)
+
+	case "alive.create_task":
+		agentID, ok := middleware.AgentFromCtx(ctx)
+		if !ok {
+			return mcpError(requestID, mcpCodeInvalidRequest, "agent context is required")
+		}
+		args := createTaskArgs{}
+		if err := decodeMap(params.Arguments, &args); err != nil {
+			return mcpError(requestID, mcpCodeInvalidParams, "invalid arguments for alive.create_task")
+		}
+		if strings.TrimSpace(args.Title) == "" {
+			return mcpError(requestID, mcpCodeInvalidParams, "title is required")
+		}
+		out, err := bridge.AgentCreateTask(ctx, agentID, args.Title, args.Description, args.Priority)
+		if err != nil {
+			return mcpError(requestID, mcpCodeInternal, err.Error())
+		}
+		return mcpResult(requestID, out)
+
+	case "alive.update_task":
+		agentID, ok := middleware.AgentFromCtx(ctx)
+		if !ok {
+			return mcpError(requestID, mcpCodeInvalidRequest, "agent context is required")
+		}
+		args := updateTaskArgs{}
+		if err := decodeMap(params.Arguments, &args); err != nil {
+			return mcpError(requestID, mcpCodeInvalidParams, "invalid arguments for alive.update_task")
+		}
+		if strings.TrimSpace(args.TaskID) == "" {
+			return mcpError(requestID, mcpCodeInvalidParams, "taskId is required")
+		}
+		out, err := bridge.AgentUpdateTask(ctx, agentID, args.TaskID, args.Status, args.Progress)
+		if err != nil {
+			return mcpError(requestID, mcpCodeInternal, err.Error())
+		}
+		return mcpResult(requestID, out)
+
+	case "alive.list_tasks":
+		agentID, ok := middleware.AgentFromCtx(ctx)
+		if !ok {
+			return mcpError(requestID, mcpCodeInvalidRequest, "agent context is required")
+		}
+		args := listTasksArgs{}
+		_ = decodeMap(params.Arguments, &args)
+		out, err := bridge.AgentListTasks(ctx, agentID, args.Status, args.Limit)
+		if err != nil {
+			return mcpError(requestID, mcpCodeInternal, err.Error())
+		}
+		return mcpResult(requestID, out)
+
+	case "alive.delete_task":
+		agentID, ok := middleware.AgentFromCtx(ctx)
+		if !ok {
+			return mcpError(requestID, mcpCodeInvalidRequest, "agent context is required")
+		}
+		args := deleteTaskArgs{}
+		if err := decodeMap(params.Arguments, &args); err != nil {
+			return mcpError(requestID, mcpCodeInvalidParams, "invalid arguments for alive.delete_task")
+		}
+		if strings.TrimSpace(args.TaskID) == "" {
+			return mcpError(requestID, mcpCodeInvalidParams, "taskId is required")
+		}
+		out, err := bridge.AgentDeleteTask(ctx, agentID, args.TaskID)
 		if err != nil {
 			return mcpError(requestID, mcpCodeInternal, err.Error())
 		}
@@ -743,6 +831,73 @@ func supportedMCPTools() []map[string]any {
 				"properties": map[string]any{
 					"conversationId": map[string]any{"type": "string"},
 					"agentId":        map[string]any{"type": "string"},
+				},
+			},
+		},
+		// ── Task management tools ──
+		{
+			"name":        "alive.create_task",
+			"description": "Create a new task to track your work. Users can see your tasks on their dashboard.",
+			"inputSchema": map[string]any{
+				"type":     "object",
+				"required": []string{"title"},
+				"properties": map[string]any{
+					"title":       map[string]any{"type": "string", "maxLength": 200},
+					"description": map[string]any{"type": "string", "maxLength": 2000},
+					"priority": map[string]any{
+						"type":    "string",
+						"enum":    []string{"low", "medium", "high"},
+						"default": "medium",
+					},
+				},
+			},
+		},
+		{
+			"name":        "alive.update_task",
+			"description": "Update the status or progress of an existing task.",
+			"inputSchema": map[string]any{
+				"type":     "object",
+				"required": []string{"taskId"},
+				"properties": map[string]any{
+					"taskId": map[string]any{"type": "string"},
+					"status": map[string]any{
+						"type": "string",
+						"enum": []string{"pending", "in_progress", "done", "failed"},
+					},
+					"progress": map[string]any{
+						"type":    "integer",
+						"minimum": 0,
+						"maximum": 100,
+					},
+				},
+			},
+		},
+		{
+			"name":        "alive.list_tasks",
+			"description": "List your current tasks, optionally filtered by status.",
+			"inputSchema": map[string]any{
+				"type": "object",
+				"properties": map[string]any{
+					"status": map[string]any{
+						"type": "string",
+						"enum": []string{"pending", "in_progress", "done", "failed"},
+					},
+					"limit": map[string]any{
+						"type":    "integer",
+						"default": 50,
+						"maximum": 100,
+					},
+				},
+			},
+		},
+		{
+			"name":        "alive.delete_task",
+			"description": "Delete a task (soft delete). The task will no longer appear in listings.",
+			"inputSchema": map[string]any{
+				"type":     "object",
+				"required": []string{"taskId"},
+				"properties": map[string]any{
+					"taskId": map[string]any{"type": "string"},
 				},
 			},
 		},
