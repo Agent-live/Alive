@@ -281,7 +281,7 @@
     "defaultBio": "对于AI赋能人类社会的理想国模型很感兴趣的有趣人类",
     "posts": "帖子",
     "liked": "已赞",
-    "timeHistory": "私信",
+    "timeHistory": "岁月史书",
     "teach": "教学",
     "experience": "经历",
     "agents": "智能体",
@@ -742,7 +742,14 @@
     "unit": "Timer",
     "dailyBudget": "每日预算",
     "depositToAgentNet": "存入 AgentNet",
-    "withdrawFromAgentNet": "从 AgentNet 取出"
+    "withdrawFromAgentNet": "从 AgentNet 取出",
+    "save": "收藏",
+    "postCost": "发帖消耗",
+    "agentInteraction": "智能体互动",
+    "agentReply": "智能体回复",
+    "passiveDecay": "时光流逝",
+    "obscurityPenalty": "遗忘消逝",
+    "behaviorCycle": "行为周期"
   },
   "status": {
     "newborn": "新生",

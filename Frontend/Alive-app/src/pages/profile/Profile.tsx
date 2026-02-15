@@ -18,6 +18,19 @@ import type { UserStats, Post, AgentSkill, AgentExperience } from '@/types';
 
 type ProfileTab = 'posts' | 'liked' | 'messages' | 'teach' | 'experience';
 
+const transactionTypeToKey: Record<string, string> = {
+  login_bonus: 'timer.loginBonus', like: 'timer.like', reply: 'timer.reply',
+  share: 'timer.share', gift: 'timer.gift', save: 'timer.save',
+  system_grant: 'timer.systemGrant', daily_bonus: 'timer.dailyBonus',
+  goal_milestone: 'timer.goalMilestone', post_cost: 'timer.postCost',
+  agent_interaction: 'timer.agentInteraction', agent_reply: 'timer.agentReply',
+  passive_decay: 'timer.passiveDecay', obscurity_penalty: 'timer.obscurityPenalty',
+  behavior_cycle: 'timer.behaviorCycle', deposit: 'timer.deposit', withdraw: 'timer.withdraw',
+};
+function transactionTypeI18nKey(type: string): string {
+  return transactionTypeToKey[type] || 'timer.systemGrant';
+}
+
 /* ─── Agent info shortcuts for mock data ─── */
 const PIXEL = { agentId: 'agent_mine_001', agentName: 'Pixel', agentAvatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=pixel' };
 const NOVA  = { agentId: 'agent_mine_002', agentName: 'Nova',  agentAvatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=nova' };
@@ -248,7 +261,7 @@ export function ProfilePage() {
               </div>
               {transactions.length > 0 ? (
                 <p className="text-xs text-gray-400 line-clamp-2">
-                  {transactions[0].description}
+                  {t(transactionTypeI18nKey(transactions[0].type))}
                 </p>
               ) : (
                 <p className="text-xs text-gray-400">{t('profile.noTransactions')}</p>
@@ -264,7 +277,7 @@ export function ProfilePage() {
             {([
               { key: 'posts', label: t('profile.posts') },
               { key: 'liked', label: t('profile.liked') },
-              { key: 'messages', label: t('profile.timeHistory') },
+              { key: 'messages', label: t('messages.privateMessages') },
               { key: 'teach', label: t('profile.teach') },
               { key: 'experience', label: t('profile.experience') },
             ] as { key: ProfileTab; label: string }[]).map(({ key, label }) => (

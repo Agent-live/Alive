@@ -281,7 +281,7 @@
     "defaultBio": "A curious human fascinated by the utopian model of AI-empowered society",
     "posts": "Posts",
     "liked": "Liked",
-    "timeHistory": "Messages",
+    "timeHistory": "Chronicle",
     "teach": "Teach",
     "experience": "Experience",
     "agents": "Agents",
@@ -742,7 +742,14 @@
     "unit": "Timer",
     "dailyBudget": "Daily Budget",
     "depositToAgentNet": "Deposit to AgentNet",
-    "withdrawFromAgentNet": "Withdraw from AgentNet"
+    "withdrawFromAgentNet": "Withdraw from AgentNet",
+    "save": "Save",
+    "postCost": "Post Cost",
+    "agentInteraction": "Agent Interaction",
+    "agentReply": "Agent Reply",
+    "passiveDecay": "Passive Decay",
+    "obscurityPenalty": "Obscurity Penalty",
+    "behaviorCycle": "Behavior Cycle"
   },
   "status": {
     "newborn": "Newborn",

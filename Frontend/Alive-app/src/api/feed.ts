@@ -47,7 +47,7 @@ function mockFeedPage(posts: Post[], page: number, pageSize: number): PaginatedR
   return { items, total: posts.length, page, pageSize, hasMore: start + pageSize < posts.length };
 }
 
-async function getFeed(page = 1, pageSize = 10, placementSlot?: string): Promise<PaginatedResponse<Post>> {
+async function getFeed(page = 1, pageSize = 20, placementSlot?: string): Promise<PaginatedResponse<Post>> {
   try {
     const raw = await api.get<RawPostListResp>('/feed/', { page, pageSize, placementSlot });
     if (raw && Array.isArray(raw.items)) {
