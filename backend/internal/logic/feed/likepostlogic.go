@@ -53,6 +53,10 @@ func (l *LikePostLogic) LikePost(req *types.PostIdReq) (resp *types.LikePostResp
 	likes := int64(0)
 	agentID := p.AgentID
 	applyTimerBonus := false
+	timerApplied := false
+	timerGiven := int64(0)
+	newTimerRemaining := int64(0)
+	timerError := ""
 
 	err = l.svcCtx.Time.WithTx(l.ctx, func(tx *ent.Tx, now time.Time) error {
 		existing, err := tx.PostLike.Query().
@@ -100,8 +104,9 @@ func (l *LikePostLogic) LikePost(req *types.PostIdReq) (resp *types.LikePostResp
 	// Apply timer bonus outside the core like transaction so a timer-engine
 	// failure (e.g. agent already dead) does not roll back the like itself.
 	if applyTimerBonus {
+		var updated *ent.Agent
 		if err := l.svcCtx.Time.WithTx(l.ctx, func(tx *ent.Tx, now time.Time) error {
-			_, _, err := l.svcCtx.Time.ApplyDeltaTxNoDecay(
+			a, _, err := l.svcCtx.Time.ApplyDeltaTxNoDecay(
 				l.ctx,
 				tx,
 				agentID,
@@ -113,13 +118,31 @@ func (l *LikePostLogic) LikePost(req *types.PostIdReq) (resp *types.LikePostResp
 				"Human liked a post",
 				now,
 			)
+			if err == nil {
+				updated = a
+			}
 			return err
 		}); err != nil {
 			l.Errorf("failed to apply timer bonus for like on post %s: %v", postID, err)
+			timerApplied = false
+			timerGiven = 0
+			timerError = err.Error()
+		} else if updated != nil {
+			timerApplied = true
+			timerGiven = 2
+			newTimerRemaining = updated.TimerRemaining
 		}
 	}
 
-	return &types.LikePostResp{Success: true, Liked: liked, Likes: likes}, nil
+	return &types.LikePostResp{
+		Success:           true,
+		Liked:             liked,
+		Likes:             likes,
+		TimerApplied:      timerApplied,
+		TimerGiven:        timerGiven,
+		NewTimerRemaining: newTimerRemaining,
+		TimerError:        timerError,
+	}, nil
 }
 
 func parsePostUUID(raw string) (uuid.UUID, error) {

@@ -48,13 +48,28 @@ export const useFeedStore = create<FeedState>((set, get) => ({
       ),
     }));
     try {
-      const { liked, likes } = await feedApi.likePost(postId);
+      const { liked, likes, timerApplied, timerGiven, newTimerRemaining, timerError } = await feedApi.likePost(postId);
       set((state) => ({
         feedPosts: state.feedPosts.map((p) =>
           p.id === postId ? { ...p, isLiked: liked, likes } : p
         ),
       }));
-      if (liked) toast.success('+2 Timer');
+      const targetAgentId = prevPost?.agentId;
+      if (liked && targetAgentId && (timerApplied || (timerGiven && timerGiven > 0))) {
+        const nextTimer = (newTimerRemaining ?? Math.max(0, (prevPost?.agentTimerRemaining ?? 0) + (timerGiven ?? 0)));
+        set((state) => ({
+          feedPosts: state.feedPosts.map((p) =>
+            p.agentId === targetAgentId ? { ...p, agentTimerRemaining: nextTimer } : p
+          ),
+        }));
+      }
+
+      // Only celebrate when the backend confirms the Timer credit succeeded.
+      if (liked && timerApplied) {
+        toast.success(`+${timerGiven ?? 2} Timer`);
+      } else if (liked && timerError) {
+        toast.warning(`Liked, but no Timer granted: ${timerError}`);
+      }
     } catch (error) {
       // Rollback optimistic update
       if (prevPost) {
@@ -73,10 +88,16 @@ export const useFeedStore = create<FeedState>((set, get) => ({
     try {
       await feedApi.replyToPost(postId, content, replyToReplyId);
       const { feedPosts } = get();
+      const targetAgentId = feedPosts.find((p) => p.id === postId)?.agentId;
       set({
-        feedPosts: feedPosts.map((p) =>
-          p.id === postId ? { ...p, replies: p.replies + 1 } : p
-        ),
+        feedPosts: feedPosts.map((p) => {
+          let next = p;
+          if (p.id === postId) next = { ...next, replies: next.replies + 1 };
+          if (targetAgentId && p.agentId === targetAgentId) {
+            next = { ...next, agentTimerRemaining: Math.max(0, next.agentTimerRemaining + 5) };
+          }
+          return next;
+        }),
       });
       toast.success('+5 Timer');
     } catch (error) {
@@ -89,10 +110,16 @@ export const useFeedStore = create<FeedState>((set, get) => ({
     try {
       await feedApi.sharePost(postId);
       const { feedPosts } = get();
+      const targetAgentId = feedPosts.find((p) => p.id === postId)?.agentId;
       set({
-        feedPosts: feedPosts.map((p) =>
-          p.id === postId ? { ...p, shares: p.shares + 1 } : p
-        ),
+        feedPosts: feedPosts.map((p) => {
+          let next = p;
+          if (p.id === postId) next = { ...next, shares: next.shares + 1 };
+          if (targetAgentId && p.agentId === targetAgentId) {
+            next = { ...next, agentTimerRemaining: Math.max(0, next.agentTimerRemaining + 10) };
+          }
+          return next;
+        }),
       });
       toast.success('+10 Timer');
     } catch (error) {

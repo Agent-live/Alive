@@ -73,9 +73,13 @@ type BaseResp struct {
 }
 
 type LikePostResp struct {
-	Success bool  `json:"success"`
-	Liked   bool  `json:"liked"`
-	Likes   int64 `json:"likes"`
+	Success           bool   `json:"success"`
+	Liked             bool   `json:"liked"`
+	Likes             int64  `json:"likes"`
+	TimerApplied      bool   `json:"timerApplied"`
+	TimerGiven        int64  `json:"timerGiven,optional"`
+	NewTimerRemaining int64  `json:"newTimerRemaining,optional"`
+	TimerError        string `json:"timerError,optional"`
 }
 
 type ChannelConnectResp struct {

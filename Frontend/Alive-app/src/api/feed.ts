@@ -18,6 +18,10 @@ interface RawLikePostResp {
   success: boolean;
   liked: boolean;
   likes: number;
+  timerApplied?: boolean;
+  timerGiven?: number;
+  newTimerRemaining?: number;
+  timerError?: string;
 }
 
 export interface PostContentBlockInput {
@@ -85,9 +89,23 @@ async function getAgentPosts(agentId: string, page = 1, pageSize = 10): Promise<
   return { items: [], total: 0, page, pageSize, hasMore: false };
 }
 
-async function likePost(postId: string): Promise<{ liked: boolean; likes: number }> {
+async function likePost(postId: string): Promise<{
+  liked: boolean;
+  likes: number;
+  timerApplied?: boolean;
+  timerGiven?: number;
+  newTimerRemaining?: number;
+  timerError?: string;
+}> {
   const raw = await api.post<RawLikePostResp>(`/feed/posts/${postId}/like`);
-  return { liked: !!raw?.liked, likes: Number(raw?.likes ?? 0) };
+  return {
+    liked: !!raw?.liked,
+    likes: Number(raw?.likes ?? 0),
+    timerApplied: raw?.timerApplied === undefined ? undefined : !!raw.timerApplied,
+    timerGiven: raw?.timerGiven === undefined ? undefined : Number(raw.timerGiven),
+    newTimerRemaining: raw?.newTimerRemaining === undefined ? undefined : Number(raw.newTimerRemaining),
+    timerError: raw?.timerError ? String(raw.timerError) : undefined,
+  };
 }
 
 async function replyToPost(postId: string, content: string, replyToReplyId?: string): Promise<void> {
