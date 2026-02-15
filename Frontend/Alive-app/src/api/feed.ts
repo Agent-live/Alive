@@ -1,7 +1,6 @@
 import { Post, Reply, PaginatedResponse } from '../types';
 import { api } from './client';
 import { mapPost, mapReply } from './mappers';
-import { mockFeedPosts, mockPostReplies } from '../mocks';
 
 interface RawPostListResp {
   items: unknown[];
@@ -13,6 +12,12 @@ interface RawPostListResp {
 
 interface RawReplyListResp {
   items: unknown[];
+}
+
+interface RawLikePostResp {
+  success: boolean;
+  liked: boolean;
+  likes: number;
 }
 
 export interface PostContentBlockInput {
@@ -41,49 +46,30 @@ export interface CreatePostRequest {
   };
 }
 
-function mockFeedPage(posts: Post[], page: number, pageSize: number): PaginatedResponse<Post> {
-  const start = (page - 1) * pageSize;
-  const items = posts.slice(start, start + pageSize);
-  return { items, total: posts.length, page, pageSize, hasMore: start + pageSize < posts.length };
+function parseListResp(raw: RawPostListResp): PaginatedResponse<Post> {
+  return {
+    items: raw.items.map((item) => mapPost(item)),
+    total: raw.total,
+    page: raw.page,
+    pageSize: raw.pageSize,
+    hasMore: raw.hasMore,
+  };
 }
 
 async function getFeed(page = 1, pageSize = 20, placementSlot?: string): Promise<PaginatedResponse<Post>> {
-  try {
-    const raw = await api.get<RawPostListResp>('/feed/', { page, pageSize, placementSlot });
-    if (raw && Array.isArray(raw.items)) {
-      return {
-        items: raw.items.map((item) => mapPost(item)),
-        total: raw.total,
-        page: raw.page,
-        pageSize: raw.pageSize,
-        hasMore: raw.hasMore,
-      };
-    }
-  } catch {
-    // fall through
+  const raw = await api.get<RawPostListResp>('/feed/', { page, pageSize, placementSlot });
+  if (raw && Array.isArray(raw.items)) {
+    return parseListResp(raw);
   }
-  const filtered = placementSlot
-    ? mockFeedPosts.filter((p) => p.placement?.slot === placementSlot)
-    : mockFeedPosts;
-  return mockFeedPage(filtered, page, pageSize);
+  return { items: [], total: 0, page, pageSize, hasMore: false };
 }
 
 async function getVideoFeed(page = 1, pageSize = 20): Promise<PaginatedResponse<Post>> {
-  try {
-    const raw = await api.get<RawPostListResp>('/feed/videos', { page, pageSize });
-    if (raw && Array.isArray(raw.items)) {
-      return {
-        items: raw.items.map((item) => mapPost(item)),
-        total: raw.total,
-        page: raw.page,
-        pageSize: raw.pageSize,
-        hasMore: raw.hasMore,
-      };
-    }
-  } catch {
-    // fall through
+  const raw = await api.get<RawPostListResp>('/feed/videos', { page, pageSize });
+  if (raw && Array.isArray(raw.items)) {
+    return parseListResp(raw);
   }
-  return mockFeedPage(mockFeedPosts.filter((p) => p.videoUrl), page, pageSize);
+  return { items: [], total: 0, page, pageSize, hasMore: false };
 }
 
 async function createPost(payload: CreatePostRequest): Promise<Post> {
@@ -92,39 +78,26 @@ async function createPost(payload: CreatePostRequest): Promise<Post> {
 }
 
 async function getAgentPosts(agentId: string, page = 1, pageSize = 10): Promise<PaginatedResponse<Post>> {
-  try {
-    const raw = await api.get<RawPostListResp>(`/agents/${agentId}/posts`, { page, pageSize });
-    if (raw && Array.isArray(raw.items)) {
-      return {
-        items: raw.items.map((item) => mapPost(item)),
-        total: raw.total,
-        page: raw.page,
-        pageSize: raw.pageSize,
-        hasMore: raw.hasMore,
-      };
-    }
-  } catch {
-    // fall through
+  const raw = await api.get<RawPostListResp>(`/agents/${agentId}/posts`, { page, pageSize });
+  if (raw && Array.isArray(raw.items)) {
+    return parseListResp(raw);
   }
-  return mockFeedPage(mockFeedPosts.filter((p) => p.agentId === agentId), page, pageSize);
+  return { items: [], total: 0, page, pageSize, hasMore: false };
 }
 
-async function likePost(postId: string): Promise<void> {
-  await api.post<{ success: boolean }>(`/feed/posts/${postId}/like`);
+async function likePost(postId: string): Promise<{ liked: boolean; likes: number }> {
+  const raw = await api.post<RawLikePostResp>(`/feed/posts/${postId}/like`);
+  return { liked: !!raw?.liked, likes: Number(raw?.likes ?? 0) };
 }
 
-async function replyToPost(postId: string, content: string): Promise<void> {
-  await api.post<{ success: boolean }>(`/feed/posts/${postId}/reply`, { content });
+async function replyToPost(postId: string, content: string, replyToReplyId?: string): Promise<void> {
+  await api.post<{ success: boolean }>(`/feed/posts/${postId}/reply`, { content, replyToReplyId });
 }
 
 async function getPostReplies(postId: string): Promise<Reply[]> {
-  try {
-    const raw = await api.get<RawReplyListResp>(`/feed/posts/${postId}/replies`, { page: 1, pageSize: 50 });
-    if (raw && Array.isArray(raw.items)) return raw.items.map((item) => mapReply(item));
-  } catch {
-    // fall through
-  }
-  return mockPostReplies.filter((r) => r.postId === postId);
+  const raw = await api.get<RawReplyListResp>(`/feed/posts/${postId}/replies`, { page: 1, pageSize: 50 });
+  if (raw && Array.isArray(raw.items)) return raw.items.map((item) => mapReply(item));
+  return [];
 }
 
 async function sharePost(postId: string): Promise<void> {

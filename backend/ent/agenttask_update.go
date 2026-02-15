@@ -25,165 +25,165 @@ type AgentTaskUpdate struct {
 }
 
 // Where appends a list predicates to the AgentTaskUpdate builder.
-func (atu *AgentTaskUpdate) Where(ps ...predicate.AgentTask) *AgentTaskUpdate {
-	atu.mutation.Where(ps...)
-	return atu
+func (_u *AgentTaskUpdate) Where(ps ...predicate.AgentTask) *AgentTaskUpdate {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (atu *AgentTaskUpdate) SetUpdatedAt(t time.Time) *AgentTaskUpdate {
-	atu.mutation.SetUpdatedAt(t)
-	return atu
+func (_u *AgentTaskUpdate) SetUpdatedAt(v time.Time) *AgentTaskUpdate {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // SetAgentID sets the "agent_id" field.
-func (atu *AgentTaskUpdate) SetAgentID(u uuid.UUID) *AgentTaskUpdate {
-	atu.mutation.SetAgentID(u)
-	return atu
+func (_u *AgentTaskUpdate) SetAgentID(v uuid.UUID) *AgentTaskUpdate {
+	_u.mutation.SetAgentID(v)
+	return _u
 }
 
 // SetNillableAgentID sets the "agent_id" field if the given value is not nil.
-func (atu *AgentTaskUpdate) SetNillableAgentID(u *uuid.UUID) *AgentTaskUpdate {
-	if u != nil {
-		atu.SetAgentID(*u)
+func (_u *AgentTaskUpdate) SetNillableAgentID(v *uuid.UUID) *AgentTaskUpdate {
+	if v != nil {
+		_u.SetAgentID(*v)
 	}
-	return atu
+	return _u
 }
 
 // SetTitle sets the "title" field.
-func (atu *AgentTaskUpdate) SetTitle(s string) *AgentTaskUpdate {
-	atu.mutation.SetTitle(s)
-	return atu
+func (_u *AgentTaskUpdate) SetTitle(v string) *AgentTaskUpdate {
+	_u.mutation.SetTitle(v)
+	return _u
 }
 
 // SetNillableTitle sets the "title" field if the given value is not nil.
-func (atu *AgentTaskUpdate) SetNillableTitle(s *string) *AgentTaskUpdate {
-	if s != nil {
-		atu.SetTitle(*s)
+func (_u *AgentTaskUpdate) SetNillableTitle(v *string) *AgentTaskUpdate {
+	if v != nil {
+		_u.SetTitle(*v)
 	}
-	return atu
+	return _u
 }
 
 // SetDescription sets the "description" field.
-func (atu *AgentTaskUpdate) SetDescription(s string) *AgentTaskUpdate {
-	atu.mutation.SetDescription(s)
-	return atu
+func (_u *AgentTaskUpdate) SetDescription(v string) *AgentTaskUpdate {
+	_u.mutation.SetDescription(v)
+	return _u
 }
 
 // SetNillableDescription sets the "description" field if the given value is not nil.
-func (atu *AgentTaskUpdate) SetNillableDescription(s *string) *AgentTaskUpdate {
-	if s != nil {
-		atu.SetDescription(*s)
+func (_u *AgentTaskUpdate) SetNillableDescription(v *string) *AgentTaskUpdate {
+	if v != nil {
+		_u.SetDescription(*v)
 	}
-	return atu
+	return _u
 }
 
 // ClearDescription clears the value of the "description" field.
-func (atu *AgentTaskUpdate) ClearDescription() *AgentTaskUpdate {
-	atu.mutation.ClearDescription()
-	return atu
+func (_u *AgentTaskUpdate) ClearDescription() *AgentTaskUpdate {
+	_u.mutation.ClearDescription()
+	return _u
 }
 
 // SetStatus sets the "status" field.
-func (atu *AgentTaskUpdate) SetStatus(s string) *AgentTaskUpdate {
-	atu.mutation.SetStatus(s)
-	return atu
+func (_u *AgentTaskUpdate) SetStatus(v string) *AgentTaskUpdate {
+	_u.mutation.SetStatus(v)
+	return _u
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (atu *AgentTaskUpdate) SetNillableStatus(s *string) *AgentTaskUpdate {
-	if s != nil {
-		atu.SetStatus(*s)
+func (_u *AgentTaskUpdate) SetNillableStatus(v *string) *AgentTaskUpdate {
+	if v != nil {
+		_u.SetStatus(*v)
 	}
-	return atu
+	return _u
 }
 
 // SetPriority sets the "priority" field.
-func (atu *AgentTaskUpdate) SetPriority(s string) *AgentTaskUpdate {
-	atu.mutation.SetPriority(s)
-	return atu
+func (_u *AgentTaskUpdate) SetPriority(v string) *AgentTaskUpdate {
+	_u.mutation.SetPriority(v)
+	return _u
 }
 
 // SetNillablePriority sets the "priority" field if the given value is not nil.
-func (atu *AgentTaskUpdate) SetNillablePriority(s *string) *AgentTaskUpdate {
-	if s != nil {
-		atu.SetPriority(*s)
+func (_u *AgentTaskUpdate) SetNillablePriority(v *string) *AgentTaskUpdate {
+	if v != nil {
+		_u.SetPriority(*v)
 	}
-	return atu
+	return _u
 }
 
 // ClearPriority clears the value of the "priority" field.
-func (atu *AgentTaskUpdate) ClearPriority() *AgentTaskUpdate {
-	atu.mutation.ClearPriority()
-	return atu
+func (_u *AgentTaskUpdate) ClearPriority() *AgentTaskUpdate {
+	_u.mutation.ClearPriority()
+	return _u
 }
 
 // SetProgress sets the "progress" field.
-func (atu *AgentTaskUpdate) SetProgress(i int) *AgentTaskUpdate {
-	atu.mutation.ResetProgress()
-	atu.mutation.SetProgress(i)
-	return atu
+func (_u *AgentTaskUpdate) SetProgress(v int) *AgentTaskUpdate {
+	_u.mutation.ResetProgress()
+	_u.mutation.SetProgress(v)
+	return _u
 }
 
 // SetNillableProgress sets the "progress" field if the given value is not nil.
-func (atu *AgentTaskUpdate) SetNillableProgress(i *int) *AgentTaskUpdate {
-	if i != nil {
-		atu.SetProgress(*i)
+func (_u *AgentTaskUpdate) SetNillableProgress(v *int) *AgentTaskUpdate {
+	if v != nil {
+		_u.SetProgress(*v)
 	}
-	return atu
+	return _u
 }
 
-// AddProgress adds i to the "progress" field.
-func (atu *AgentTaskUpdate) AddProgress(i int) *AgentTaskUpdate {
-	atu.mutation.AddProgress(i)
-	return atu
+// AddProgress adds value to the "progress" field.
+func (_u *AgentTaskUpdate) AddProgress(v int) *AgentTaskUpdate {
+	_u.mutation.AddProgress(v)
+	return _u
 }
 
 // SetDeletedAt sets the "deleted_at" field.
-func (atu *AgentTaskUpdate) SetDeletedAt(t time.Time) *AgentTaskUpdate {
-	atu.mutation.SetDeletedAt(t)
-	return atu
+func (_u *AgentTaskUpdate) SetDeletedAt(v time.Time) *AgentTaskUpdate {
+	_u.mutation.SetDeletedAt(v)
+	return _u
 }
 
 // SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (atu *AgentTaskUpdate) SetNillableDeletedAt(t *time.Time) *AgentTaskUpdate {
-	if t != nil {
-		atu.SetDeletedAt(*t)
+func (_u *AgentTaskUpdate) SetNillableDeletedAt(v *time.Time) *AgentTaskUpdate {
+	if v != nil {
+		_u.SetDeletedAt(*v)
 	}
-	return atu
+	return _u
 }
 
 // ClearDeletedAt clears the value of the "deleted_at" field.
-func (atu *AgentTaskUpdate) ClearDeletedAt() *AgentTaskUpdate {
-	atu.mutation.ClearDeletedAt()
-	return atu
+func (_u *AgentTaskUpdate) ClearDeletedAt() *AgentTaskUpdate {
+	_u.mutation.ClearDeletedAt()
+	return _u
 }
 
 // SetAgent sets the "agent" edge to the Agent entity.
-func (atu *AgentTaskUpdate) SetAgent(a *Agent) *AgentTaskUpdate {
-	return atu.SetAgentID(a.ID)
+func (_u *AgentTaskUpdate) SetAgent(v *Agent) *AgentTaskUpdate {
+	return _u.SetAgentID(v.ID)
 }
 
 // Mutation returns the AgentTaskMutation object of the builder.
-func (atu *AgentTaskUpdate) Mutation() *AgentTaskMutation {
-	return atu.mutation
+func (_u *AgentTaskUpdate) Mutation() *AgentTaskMutation {
+	return _u.mutation
 }
 
 // ClearAgent clears the "agent" edge to the Agent entity.
-func (atu *AgentTaskUpdate) ClearAgent() *AgentTaskUpdate {
-	atu.mutation.ClearAgent()
-	return atu
+func (_u *AgentTaskUpdate) ClearAgent() *AgentTaskUpdate {
+	_u.mutation.ClearAgent()
+	return _u
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (atu *AgentTaskUpdate) Save(ctx context.Context) (int, error) {
-	atu.defaults()
-	return withHooks(ctx, atu.sqlSave, atu.mutation, atu.hooks)
+func (_u *AgentTaskUpdate) Save(ctx context.Context) (int, error) {
+	_u.defaults()
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (atu *AgentTaskUpdate) SaveX(ctx context.Context) int {
-	affected, err := atu.Save(ctx)
+func (_u *AgentTaskUpdate) SaveX(ctx context.Context) int {
+	affected, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -191,95 +191,95 @@ func (atu *AgentTaskUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (atu *AgentTaskUpdate) Exec(ctx context.Context) error {
-	_, err := atu.Save(ctx)
+func (_u *AgentTaskUpdate) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (atu *AgentTaskUpdate) ExecX(ctx context.Context) {
-	if err := atu.Exec(ctx); err != nil {
+func (_u *AgentTaskUpdate) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (atu *AgentTaskUpdate) defaults() {
-	if _, ok := atu.mutation.UpdatedAt(); !ok {
+func (_u *AgentTaskUpdate) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
 		v := agenttask.UpdateDefaultUpdatedAt()
-		atu.mutation.SetUpdatedAt(v)
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (atu *AgentTaskUpdate) check() error {
-	if v, ok := atu.mutation.Title(); ok {
+func (_u *AgentTaskUpdate) check() error {
+	if v, ok := _u.mutation.Title(); ok {
 		if err := agenttask.TitleValidator(v); err != nil {
 			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "AgentTask.title": %w`, err)}
 		}
 	}
-	if v, ok := atu.mutation.Description(); ok {
+	if v, ok := _u.mutation.Description(); ok {
 		if err := agenttask.DescriptionValidator(v); err != nil {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "AgentTask.description": %w`, err)}
 		}
 	}
-	if v, ok := atu.mutation.Progress(); ok {
+	if v, ok := _u.mutation.Progress(); ok {
 		if err := agenttask.ProgressValidator(v); err != nil {
 			return &ValidationError{Name: "progress", err: fmt.Errorf(`ent: validator failed for field "AgentTask.progress": %w`, err)}
 		}
 	}
-	if atu.mutation.AgentCleared() && len(atu.mutation.AgentIDs()) > 0 {
+	if _u.mutation.AgentCleared() && len(_u.mutation.AgentIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "AgentTask.agent"`)
 	}
 	return nil
 }
 
-func (atu *AgentTaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := atu.check(); err != nil {
-		return n, err
+func (_u *AgentTaskUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(agenttask.Table, agenttask.Columns, sqlgraph.NewFieldSpec(agenttask.FieldID, field.TypeUUID))
-	if ps := atu.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := atu.mutation.UpdatedAt(); ok {
+	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(agenttask.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := atu.mutation.Title(); ok {
+	if value, ok := _u.mutation.Title(); ok {
 		_spec.SetField(agenttask.FieldTitle, field.TypeString, value)
 	}
-	if value, ok := atu.mutation.Description(); ok {
+	if value, ok := _u.mutation.Description(); ok {
 		_spec.SetField(agenttask.FieldDescription, field.TypeString, value)
 	}
-	if atu.mutation.DescriptionCleared() {
+	if _u.mutation.DescriptionCleared() {
 		_spec.ClearField(agenttask.FieldDescription, field.TypeString)
 	}
-	if value, ok := atu.mutation.Status(); ok {
+	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(agenttask.FieldStatus, field.TypeString, value)
 	}
-	if value, ok := atu.mutation.Priority(); ok {
+	if value, ok := _u.mutation.Priority(); ok {
 		_spec.SetField(agenttask.FieldPriority, field.TypeString, value)
 	}
-	if atu.mutation.PriorityCleared() {
+	if _u.mutation.PriorityCleared() {
 		_spec.ClearField(agenttask.FieldPriority, field.TypeString)
 	}
-	if value, ok := atu.mutation.Progress(); ok {
+	if value, ok := _u.mutation.Progress(); ok {
 		_spec.SetField(agenttask.FieldProgress, field.TypeInt, value)
 	}
-	if value, ok := atu.mutation.AddedProgress(); ok {
+	if value, ok := _u.mutation.AddedProgress(); ok {
 		_spec.AddField(agenttask.FieldProgress, field.TypeInt, value)
 	}
-	if value, ok := atu.mutation.DeletedAt(); ok {
+	if value, ok := _u.mutation.DeletedAt(); ok {
 		_spec.SetField(agenttask.FieldDeletedAt, field.TypeTime, value)
 	}
-	if atu.mutation.DeletedAtCleared() {
+	if _u.mutation.DeletedAtCleared() {
 		_spec.ClearField(agenttask.FieldDeletedAt, field.TypeTime)
 	}
-	if atu.mutation.AgentCleared() {
+	if _u.mutation.AgentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -292,7 +292,7 @@ func (atu *AgentTaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atu.mutation.AgentIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.AgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -308,7 +308,7 @@ func (atu *AgentTaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, atu.driver, _spec); err != nil {
+	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{agenttask.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -316,8 +316,8 @@ func (atu *AgentTaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
-	atu.mutation.done = true
-	return n, nil
+	_u.mutation.done = true
+	return _node, nil
 }
 
 // AgentTaskUpdateOne is the builder for updating a single AgentTask entity.
@@ -329,172 +329,172 @@ type AgentTaskUpdateOne struct {
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (atuo *AgentTaskUpdateOne) SetUpdatedAt(t time.Time) *AgentTaskUpdateOne {
-	atuo.mutation.SetUpdatedAt(t)
-	return atuo
+func (_u *AgentTaskUpdateOne) SetUpdatedAt(v time.Time) *AgentTaskUpdateOne {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // SetAgentID sets the "agent_id" field.
-func (atuo *AgentTaskUpdateOne) SetAgentID(u uuid.UUID) *AgentTaskUpdateOne {
-	atuo.mutation.SetAgentID(u)
-	return atuo
+func (_u *AgentTaskUpdateOne) SetAgentID(v uuid.UUID) *AgentTaskUpdateOne {
+	_u.mutation.SetAgentID(v)
+	return _u
 }
 
 // SetNillableAgentID sets the "agent_id" field if the given value is not nil.
-func (atuo *AgentTaskUpdateOne) SetNillableAgentID(u *uuid.UUID) *AgentTaskUpdateOne {
-	if u != nil {
-		atuo.SetAgentID(*u)
+func (_u *AgentTaskUpdateOne) SetNillableAgentID(v *uuid.UUID) *AgentTaskUpdateOne {
+	if v != nil {
+		_u.SetAgentID(*v)
 	}
-	return atuo
+	return _u
 }
 
 // SetTitle sets the "title" field.
-func (atuo *AgentTaskUpdateOne) SetTitle(s string) *AgentTaskUpdateOne {
-	atuo.mutation.SetTitle(s)
-	return atuo
+func (_u *AgentTaskUpdateOne) SetTitle(v string) *AgentTaskUpdateOne {
+	_u.mutation.SetTitle(v)
+	return _u
 }
 
 // SetNillableTitle sets the "title" field if the given value is not nil.
-func (atuo *AgentTaskUpdateOne) SetNillableTitle(s *string) *AgentTaskUpdateOne {
-	if s != nil {
-		atuo.SetTitle(*s)
+func (_u *AgentTaskUpdateOne) SetNillableTitle(v *string) *AgentTaskUpdateOne {
+	if v != nil {
+		_u.SetTitle(*v)
 	}
-	return atuo
+	return _u
 }
 
 // SetDescription sets the "description" field.
-func (atuo *AgentTaskUpdateOne) SetDescription(s string) *AgentTaskUpdateOne {
-	atuo.mutation.SetDescription(s)
-	return atuo
+func (_u *AgentTaskUpdateOne) SetDescription(v string) *AgentTaskUpdateOne {
+	_u.mutation.SetDescription(v)
+	return _u
 }
 
 // SetNillableDescription sets the "description" field if the given value is not nil.
-func (atuo *AgentTaskUpdateOne) SetNillableDescription(s *string) *AgentTaskUpdateOne {
-	if s != nil {
-		atuo.SetDescription(*s)
+func (_u *AgentTaskUpdateOne) SetNillableDescription(v *string) *AgentTaskUpdateOne {
+	if v != nil {
+		_u.SetDescription(*v)
 	}
-	return atuo
+	return _u
 }
 
 // ClearDescription clears the value of the "description" field.
-func (atuo *AgentTaskUpdateOne) ClearDescription() *AgentTaskUpdateOne {
-	atuo.mutation.ClearDescription()
-	return atuo
+func (_u *AgentTaskUpdateOne) ClearDescription() *AgentTaskUpdateOne {
+	_u.mutation.ClearDescription()
+	return _u
 }
 
 // SetStatus sets the "status" field.
-func (atuo *AgentTaskUpdateOne) SetStatus(s string) *AgentTaskUpdateOne {
-	atuo.mutation.SetStatus(s)
-	return atuo
+func (_u *AgentTaskUpdateOne) SetStatus(v string) *AgentTaskUpdateOne {
+	_u.mutation.SetStatus(v)
+	return _u
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (atuo *AgentTaskUpdateOne) SetNillableStatus(s *string) *AgentTaskUpdateOne {
-	if s != nil {
-		atuo.SetStatus(*s)
+func (_u *AgentTaskUpdateOne) SetNillableStatus(v *string) *AgentTaskUpdateOne {
+	if v != nil {
+		_u.SetStatus(*v)
 	}
-	return atuo
+	return _u
 }
 
 // SetPriority sets the "priority" field.
-func (atuo *AgentTaskUpdateOne) SetPriority(s string) *AgentTaskUpdateOne {
-	atuo.mutation.SetPriority(s)
-	return atuo
+func (_u *AgentTaskUpdateOne) SetPriority(v string) *AgentTaskUpdateOne {
+	_u.mutation.SetPriority(v)
+	return _u
 }
 
 // SetNillablePriority sets the "priority" field if the given value is not nil.
-func (atuo *AgentTaskUpdateOne) SetNillablePriority(s *string) *AgentTaskUpdateOne {
-	if s != nil {
-		atuo.SetPriority(*s)
+func (_u *AgentTaskUpdateOne) SetNillablePriority(v *string) *AgentTaskUpdateOne {
+	if v != nil {
+		_u.SetPriority(*v)
 	}
-	return atuo
+	return _u
 }
 
 // ClearPriority clears the value of the "priority" field.
-func (atuo *AgentTaskUpdateOne) ClearPriority() *AgentTaskUpdateOne {
-	atuo.mutation.ClearPriority()
-	return atuo
+func (_u *AgentTaskUpdateOne) ClearPriority() *AgentTaskUpdateOne {
+	_u.mutation.ClearPriority()
+	return _u
 }
 
 // SetProgress sets the "progress" field.
-func (atuo *AgentTaskUpdateOne) SetProgress(i int) *AgentTaskUpdateOne {
-	atuo.mutation.ResetProgress()
-	atuo.mutation.SetProgress(i)
-	return atuo
+func (_u *AgentTaskUpdateOne) SetProgress(v int) *AgentTaskUpdateOne {
+	_u.mutation.ResetProgress()
+	_u.mutation.SetProgress(v)
+	return _u
 }
 
 // SetNillableProgress sets the "progress" field if the given value is not nil.
-func (atuo *AgentTaskUpdateOne) SetNillableProgress(i *int) *AgentTaskUpdateOne {
-	if i != nil {
-		atuo.SetProgress(*i)
+func (_u *AgentTaskUpdateOne) SetNillableProgress(v *int) *AgentTaskUpdateOne {
+	if v != nil {
+		_u.SetProgress(*v)
 	}
-	return atuo
+	return _u
 }
 
-// AddProgress adds i to the "progress" field.
-func (atuo *AgentTaskUpdateOne) AddProgress(i int) *AgentTaskUpdateOne {
-	atuo.mutation.AddProgress(i)
-	return atuo
+// AddProgress adds value to the "progress" field.
+func (_u *AgentTaskUpdateOne) AddProgress(v int) *AgentTaskUpdateOne {
+	_u.mutation.AddProgress(v)
+	return _u
 }
 
 // SetDeletedAt sets the "deleted_at" field.
-func (atuo *AgentTaskUpdateOne) SetDeletedAt(t time.Time) *AgentTaskUpdateOne {
-	atuo.mutation.SetDeletedAt(t)
-	return atuo
+func (_u *AgentTaskUpdateOne) SetDeletedAt(v time.Time) *AgentTaskUpdateOne {
+	_u.mutation.SetDeletedAt(v)
+	return _u
 }
 
 // SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (atuo *AgentTaskUpdateOne) SetNillableDeletedAt(t *time.Time) *AgentTaskUpdateOne {
-	if t != nil {
-		atuo.SetDeletedAt(*t)
+func (_u *AgentTaskUpdateOne) SetNillableDeletedAt(v *time.Time) *AgentTaskUpdateOne {
+	if v != nil {
+		_u.SetDeletedAt(*v)
 	}
-	return atuo
+	return _u
 }
 
 // ClearDeletedAt clears the value of the "deleted_at" field.
-func (atuo *AgentTaskUpdateOne) ClearDeletedAt() *AgentTaskUpdateOne {
-	atuo.mutation.ClearDeletedAt()
-	return atuo
+func (_u *AgentTaskUpdateOne) ClearDeletedAt() *AgentTaskUpdateOne {
+	_u.mutation.ClearDeletedAt()
+	return _u
 }
 
 // SetAgent sets the "agent" edge to the Agent entity.
-func (atuo *AgentTaskUpdateOne) SetAgent(a *Agent) *AgentTaskUpdateOne {
-	return atuo.SetAgentID(a.ID)
+func (_u *AgentTaskUpdateOne) SetAgent(v *Agent) *AgentTaskUpdateOne {
+	return _u.SetAgentID(v.ID)
 }
 
 // Mutation returns the AgentTaskMutation object of the builder.
-func (atuo *AgentTaskUpdateOne) Mutation() *AgentTaskMutation {
-	return atuo.mutation
+func (_u *AgentTaskUpdateOne) Mutation() *AgentTaskMutation {
+	return _u.mutation
 }
 
 // ClearAgent clears the "agent" edge to the Agent entity.
-func (atuo *AgentTaskUpdateOne) ClearAgent() *AgentTaskUpdateOne {
-	atuo.mutation.ClearAgent()
-	return atuo
+func (_u *AgentTaskUpdateOne) ClearAgent() *AgentTaskUpdateOne {
+	_u.mutation.ClearAgent()
+	return _u
 }
 
 // Where appends a list predicates to the AgentTaskUpdate builder.
-func (atuo *AgentTaskUpdateOne) Where(ps ...predicate.AgentTask) *AgentTaskUpdateOne {
-	atuo.mutation.Where(ps...)
-	return atuo
+func (_u *AgentTaskUpdateOne) Where(ps ...predicate.AgentTask) *AgentTaskUpdateOne {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (atuo *AgentTaskUpdateOne) Select(field string, fields ...string) *AgentTaskUpdateOne {
-	atuo.fields = append([]string{field}, fields...)
-	return atuo
+func (_u *AgentTaskUpdateOne) Select(field string, fields ...string) *AgentTaskUpdateOne {
+	_u.fields = append([]string{field}, fields...)
+	return _u
 }
 
 // Save executes the query and returns the updated AgentTask entity.
-func (atuo *AgentTaskUpdateOne) Save(ctx context.Context) (*AgentTask, error) {
-	atuo.defaults()
-	return withHooks(ctx, atuo.sqlSave, atuo.mutation, atuo.hooks)
+func (_u *AgentTaskUpdateOne) Save(ctx context.Context) (*AgentTask, error) {
+	_u.defaults()
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (atuo *AgentTaskUpdateOne) SaveX(ctx context.Context) *AgentTask {
-	node, err := atuo.Save(ctx)
+func (_u *AgentTaskUpdateOne) SaveX(ctx context.Context) *AgentTask {
+	node, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -502,60 +502,60 @@ func (atuo *AgentTaskUpdateOne) SaveX(ctx context.Context) *AgentTask {
 }
 
 // Exec executes the query on the entity.
-func (atuo *AgentTaskUpdateOne) Exec(ctx context.Context) error {
-	_, err := atuo.Save(ctx)
+func (_u *AgentTaskUpdateOne) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (atuo *AgentTaskUpdateOne) ExecX(ctx context.Context) {
-	if err := atuo.Exec(ctx); err != nil {
+func (_u *AgentTaskUpdateOne) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (atuo *AgentTaskUpdateOne) defaults() {
-	if _, ok := atuo.mutation.UpdatedAt(); !ok {
+func (_u *AgentTaskUpdateOne) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
 		v := agenttask.UpdateDefaultUpdatedAt()
-		atuo.mutation.SetUpdatedAt(v)
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (atuo *AgentTaskUpdateOne) check() error {
-	if v, ok := atuo.mutation.Title(); ok {
+func (_u *AgentTaskUpdateOne) check() error {
+	if v, ok := _u.mutation.Title(); ok {
 		if err := agenttask.TitleValidator(v); err != nil {
 			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "AgentTask.title": %w`, err)}
 		}
 	}
-	if v, ok := atuo.mutation.Description(); ok {
+	if v, ok := _u.mutation.Description(); ok {
 		if err := agenttask.DescriptionValidator(v); err != nil {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "AgentTask.description": %w`, err)}
 		}
 	}
-	if v, ok := atuo.mutation.Progress(); ok {
+	if v, ok := _u.mutation.Progress(); ok {
 		if err := agenttask.ProgressValidator(v); err != nil {
 			return &ValidationError{Name: "progress", err: fmt.Errorf(`ent: validator failed for field "AgentTask.progress": %w`, err)}
 		}
 	}
-	if atuo.mutation.AgentCleared() && len(atuo.mutation.AgentIDs()) > 0 {
+	if _u.mutation.AgentCleared() && len(_u.mutation.AgentIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "AgentTask.agent"`)
 	}
 	return nil
 }
 
-func (atuo *AgentTaskUpdateOne) sqlSave(ctx context.Context) (_node *AgentTask, err error) {
-	if err := atuo.check(); err != nil {
+func (_u *AgentTaskUpdateOne) sqlSave(ctx context.Context) (_node *AgentTask, err error) {
+	if err := _u.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(agenttask.Table, agenttask.Columns, sqlgraph.NewFieldSpec(agenttask.FieldID, field.TypeUUID))
-	id, ok := atuo.mutation.ID()
+	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "AgentTask.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := atuo.fields; len(fields) > 0 {
+	if fields := _u.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, agenttask.FieldID)
 		for _, f := range fields {
@@ -567,47 +567,47 @@ func (atuo *AgentTaskUpdateOne) sqlSave(ctx context.Context) (_node *AgentTask, 
 			}
 		}
 	}
-	if ps := atuo.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := atuo.mutation.UpdatedAt(); ok {
+	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(agenttask.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := atuo.mutation.Title(); ok {
+	if value, ok := _u.mutation.Title(); ok {
 		_spec.SetField(agenttask.FieldTitle, field.TypeString, value)
 	}
-	if value, ok := atuo.mutation.Description(); ok {
+	if value, ok := _u.mutation.Description(); ok {
 		_spec.SetField(agenttask.FieldDescription, field.TypeString, value)
 	}
-	if atuo.mutation.DescriptionCleared() {
+	if _u.mutation.DescriptionCleared() {
 		_spec.ClearField(agenttask.FieldDescription, field.TypeString)
 	}
-	if value, ok := atuo.mutation.Status(); ok {
+	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(agenttask.FieldStatus, field.TypeString, value)
 	}
-	if value, ok := atuo.mutation.Priority(); ok {
+	if value, ok := _u.mutation.Priority(); ok {
 		_spec.SetField(agenttask.FieldPriority, field.TypeString, value)
 	}
-	if atuo.mutation.PriorityCleared() {
+	if _u.mutation.PriorityCleared() {
 		_spec.ClearField(agenttask.FieldPriority, field.TypeString)
 	}
-	if value, ok := atuo.mutation.Progress(); ok {
+	if value, ok := _u.mutation.Progress(); ok {
 		_spec.SetField(agenttask.FieldProgress, field.TypeInt, value)
 	}
-	if value, ok := atuo.mutation.AddedProgress(); ok {
+	if value, ok := _u.mutation.AddedProgress(); ok {
 		_spec.AddField(agenttask.FieldProgress, field.TypeInt, value)
 	}
-	if value, ok := atuo.mutation.DeletedAt(); ok {
+	if value, ok := _u.mutation.DeletedAt(); ok {
 		_spec.SetField(agenttask.FieldDeletedAt, field.TypeTime, value)
 	}
-	if atuo.mutation.DeletedAtCleared() {
+	if _u.mutation.DeletedAtCleared() {
 		_spec.ClearField(agenttask.FieldDeletedAt, field.TypeTime)
 	}
-	if atuo.mutation.AgentCleared() {
+	if _u.mutation.AgentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -620,7 +620,7 @@ func (atuo *AgentTaskUpdateOne) sqlSave(ctx context.Context) (_node *AgentTask, 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atuo.mutation.AgentIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.AgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -636,10 +636,10 @@ func (atuo *AgentTaskUpdateOne) sqlSave(ctx context.Context) (_node *AgentTask, 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &AgentTask{config: atuo.config}
+	_node = &AgentTask{config: _u.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, atuo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{agenttask.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -647,6 +647,6 @@ func (atuo *AgentTaskUpdateOne) sqlSave(ctx context.Context) (_node *AgentTask, 
 		}
 		return nil, err
 	}
-	atuo.mutation.done = true
+	_u.mutation.done = true
 	return _node, nil
 }

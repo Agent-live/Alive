@@ -11,7 +11,7 @@ interface FeedState {
 
   fetchFeed: () => Promise<void>;
   likePost: (postId: string) => Promise<void>;
-  replyToPost: (postId: string, content: string) => Promise<void>;
+  replyToPost: (postId: string, content: string, replyToReplyId?: string) => Promise<void>;
   sharePost: (postId: string) => Promise<void>;
   loadMore: () => Promise<void>;
   refreshFeed: () => Promise<void>;
@@ -30,30 +30,48 @@ export const useFeedStore = create<FeedState>((set, get) => ({
       set({ feedPosts: result.items, hasMore: result.hasMore, page: 1, loading: false });
     } catch (error) {
       set({ loading: false });
-      console.error('Failed to fetch feed:', error);
+      const message = error && typeof error === 'object' && 'message' in error
+        ? (error as { message: string }).message
+        : 'Failed to load feed';
+      toast.error(message);
     }
   },
 
   likePost: async (postId) => {
-    const { feedPosts } = get();
-    set({
-      feedPosts: feedPosts.map((p) =>
+    const prevPost = get().feedPosts.find((p) => p.id === postId);
+    const optimisticDelta = prevPost?.isLiked ? -1 : 1;
+    set((state) => ({
+      feedPosts: state.feedPosts.map((p) =>
         p.id === postId
-          ? { ...p, isLiked: !p.isLiked, likes: p.isLiked ? p.likes - 1 : p.likes + 1 }
+          ? { ...p, isLiked: !p.isLiked, likes: Math.max(0, p.likes + optimisticDelta) }
           : p
       ),
-    });
+    }));
     try {
-      await feedApi.likePost(postId);
-      toast.success('+2 Timer');
-    } catch {
-      set({ feedPosts });
+      const { liked, likes } = await feedApi.likePost(postId);
+      set((state) => ({
+        feedPosts: state.feedPosts.map((p) =>
+          p.id === postId ? { ...p, isLiked: liked, likes } : p
+        ),
+      }));
+      if (liked) toast.success('+2 Timer');
+    } catch (error) {
+      // Rollback optimistic update
+      if (prevPost) {
+        set((state) => ({
+          feedPosts: state.feedPosts.map((p) => (p.id === postId ? prevPost : p)),
+        }));
+      }
+      const message = error && typeof error === 'object' && 'message' in error
+        ? (error as { message: string }).message
+        : 'Like failed';
+      toast.error(message);
     }
   },
 
-  replyToPost: async (postId, content) => {
+  replyToPost: async (postId, content, replyToReplyId) => {
     try {
-      await feedApi.replyToPost(postId, content);
+      await feedApi.replyToPost(postId, content, replyToReplyId);
       const { feedPosts } = get();
       set({
         feedPosts: feedPosts.map((p) =>
@@ -98,7 +116,10 @@ export const useFeedStore = create<FeedState>((set, get) => ({
       }));
     } catch (error) {
       set({ loading: false });
-      console.error('Failed to load more:', error);
+      const message = error && typeof error === 'object' && 'message' in error
+        ? (error as { message: string }).message
+        : 'Failed to load more';
+      toast.error(message);
     }
   },
 
@@ -109,7 +130,10 @@ export const useFeedStore = create<FeedState>((set, get) => ({
       set({ feedPosts: result.items, hasMore: result.hasMore, page: 1, loading: false });
     } catch (error) {
       set({ loading: false });
-      console.error('Failed to refresh feed:', error);
+      const message = error && typeof error === 'object' && 'message' in error
+        ? (error as { message: string }).message
+        : 'Failed to refresh feed';
+      toast.error(message);
     }
   },
 }));

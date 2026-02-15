@@ -47,8 +47,10 @@ func (l *GetUploadURLLogic) GetUploadURL(req *types.UploadURLReq) (resp *types.U
 	}
 
 	return &types.UploadURLResp{
-		MediaId:   m.ID.String(),
-		UploadURL: fmt.Sprintf("https://media.alive.bot/upload/%s", m.ID.String()),
+		MediaId: m.ID.String(),
+		// In local/dev, we let the API server accept the upload directly.
+		// Production can swap this to a pre-signed object storage URL later.
+		UploadURL: fmt.Sprintf("/api/v1/media/%s/upload", m.ID.String()),
 		ExpiresIn: 600,
 	}, nil
 }

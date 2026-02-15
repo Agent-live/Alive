@@ -25,9 +25,9 @@ var upgrader = websocket.Upgrader{
 }
 
 type chatMessage struct {
-	Type      string `json:"type"`      // "message", "typing", "error"
+	Type      string `json:"type"` // "message", "typing", "error"
 	Content   string `json:"content"`
-	Role      string `json:"role"`      // "user" or "assistant"
+	Role      string `json:"role"` // "user" or "assistant"
 	SessionID string `json:"sessionId"`
 	Timestamp string `json:"timestamp"`
 }

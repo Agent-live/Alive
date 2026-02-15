@@ -1,4 +1,5 @@
 import { api } from './client';
+import { tokenStorage } from '../utils/storage';
 
 export interface UploadURLPayload {
   fileName: string;
@@ -35,11 +36,27 @@ async function getMedia(mediaId: string): Promise<MediaFile> {
 }
 
 async function uploadToStorage(uploadUrl: string, file: File): Promise<void> {
+  const headers: Record<string, string> = {
+    'Content-Type': file.type || 'application/octet-stream',
+  };
+
+  // Our backend's direct upload endpoint requires JWT. Don't attach auth to
+  // cross-origin pre-signed URLs (e.g. object storage).
+  const token = tokenStorage.get();
+  if (token && typeof window !== 'undefined') {
+    try {
+      const resolved = new URL(uploadUrl, window.location.href);
+      if (resolved.origin === window.location.origin) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+    } catch {
+      // ignore
+    }
+  }
+
   const response = await fetch(uploadUrl, {
     method: 'PUT',
-    headers: {
-      'Content-Type': file.type || 'application/octet-stream',
-    },
+    headers,
     body: file,
   });
 
@@ -55,12 +72,7 @@ async function uploadFile(file: File): Promise<MediaFile> {
     fileSize: file.size,
   });
 
-  try {
-    await uploadToStorage(upload.uploadUrl, file);
-  } catch (error) {
-    // Backend currently allows confirm for metadata-only flow in local/dev environments.
-    console.warn('Avatar storage upload failed, continue with media confirm:', error);
-  }
+  await uploadToStorage(upload.uploadUrl, file);
 
   return confirmUpload(upload.mediaId);
 }

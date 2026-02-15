@@ -72,9 +72,11 @@ type UserEdges struct {
 	Skills []*AgentSkill `json:"skills,omitempty"`
 	// Experiences holds the value of the experiences edge.
 	Experiences []*AgentExperience `json:"experiences,omitempty"`
+	// PostLikes holds the value of the post_likes edge.
+	PostLikes []*PostLike `json:"post_likes,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [5]bool
 }
 
 // AgentsOrErr returns the Agents value or an error if the edge
@@ -113,6 +115,15 @@ func (e UserEdges) ExperiencesOrErr() ([]*AgentExperience, error) {
 	return nil, &NotLoadedError{edge: "experiences"}
 }
 
+// PostLikesOrErr returns the PostLikes value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) PostLikesOrErr() ([]*PostLike, error) {
+	if e.loadedTypes[4] {
+		return e.PostLikes, nil
+	}
+	return nil, &NotLoadedError{edge: "post_likes"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -135,7 +146,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the User fields.
-func (u *User) assignValues(columns []string, values []any) error {
+func (_m *User) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -145,132 +156,132 @@ func (u *User) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				u.ID = *value
+				_m.ID = *value
 			}
 		case user.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				u.CreatedAt = value.Time
+				_m.CreatedAt = value.Time
 			}
 		case user.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				u.UpdatedAt = value.Time
+				_m.UpdatedAt = value.Time
 			}
 		case user.FieldPhone:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field phone", values[i])
 			} else if value.Valid {
-				u.Phone = new(string)
-				*u.Phone = value.String
+				_m.Phone = new(string)
+				*_m.Phone = value.String
 			}
 		case user.FieldEmail:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field email", values[i])
 			} else if value.Valid {
-				u.Email = new(string)
-				*u.Email = value.String
+				_m.Email = new(string)
+				*_m.Email = value.String
 			}
 		case user.FieldPasswordHash:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field password_hash", values[i])
 			} else if value.Valid {
-				u.PasswordHash = new(string)
-				*u.PasswordHash = value.String
+				_m.PasswordHash = new(string)
+				*_m.PasswordHash = value.String
 			}
 		case user.FieldNickname:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field nickname", values[i])
 			} else if value.Valid {
-				u.Nickname = value.String
+				_m.Nickname = value.String
 			}
 		case user.FieldAvatar:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field avatar", values[i])
 			} else if value.Valid {
-				u.Avatar = new(string)
-				*u.Avatar = value.String
+				_m.Avatar = new(string)
+				*_m.Avatar = value.String
 			}
 		case user.FieldBio:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field bio", values[i])
 			} else if value.Valid {
-				u.Bio = new(string)
-				*u.Bio = value.String
+				_m.Bio = new(string)
+				*_m.Bio = value.String
 			}
 		case user.FieldGender:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field gender", values[i])
 			} else if value.Valid {
-				u.Gender = new(string)
-				*u.Gender = value.String
+				_m.Gender = new(string)
+				*_m.Gender = value.String
 			}
 		case user.FieldBirthdate:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field birthdate", values[i])
 			} else if value.Valid {
-				u.Birthdate = new(string)
-				*u.Birthdate = value.String
+				_m.Birthdate = new(string)
+				*_m.Birthdate = value.String
 			}
 		case user.FieldTheme:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field theme", values[i])
 			} else if value.Valid {
-				u.Theme = value.String
+				_m.Theme = value.String
 			}
 		case user.FieldLanguage:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field language", values[i])
 			} else if value.Valid {
-				u.Language = value.String
+				_m.Language = value.String
 			}
 		case user.FieldDailyLoginStreak:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field daily_login_streak", values[i])
 			} else if value.Valid {
-				u.DailyLoginStreak = int(value.Int64)
+				_m.DailyLoginStreak = int(value.Int64)
 			}
 		case user.FieldTotalTimerGiven:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field total_timer_given", values[i])
 			} else if value.Valid {
-				u.TotalTimerGiven = value.Int64
+				_m.TotalTimerGiven = value.Int64
 			}
 		case user.FieldTotalTimerDonated:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field total_timer_donated", values[i])
 			} else if value.Valid {
-				u.TotalTimerDonated = value.Int64
+				_m.TotalTimerDonated = value.Int64
 			}
 		case user.FieldAgentsSaved:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field agents_saved", values[i])
 			} else if value.Valid {
-				u.AgentsSaved = int(value.Int64)
+				_m.AgentsSaved = int(value.Int64)
 			}
 		case user.FieldAgentsCreated:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field agents_created", values[i])
 			} else if value.Valid {
-				u.AgentsCreated = int(value.Int64)
+				_m.AgentsCreated = int(value.Int64)
 			}
 		case user.FieldAgentsLost:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field agents_lost", values[i])
 			} else if value.Valid {
-				u.AgentsLost = int(value.Int64)
+				_m.AgentsLost = int(value.Int64)
 			}
 		case user.FieldLastLoginAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field last_login_at", values[i])
 			} else if value.Valid {
-				u.LastLoginAt = new(time.Time)
-				*u.LastLoginAt = value.Time
+				_m.LastLoginAt = new(time.Time)
+				*_m.LastLoginAt = value.Time
 			}
 		default:
-			u.selectValues.Set(columns[i], values[i])
+			_m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -278,122 +289,127 @@ func (u *User) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the User.
 // This includes values selected through modifiers, order, etc.
-func (u *User) Value(name string) (ent.Value, error) {
-	return u.selectValues.Get(name)
+func (_m *User) Value(name string) (ent.Value, error) {
+	return _m.selectValues.Get(name)
 }
 
 // QueryAgents queries the "agents" edge of the User entity.
-func (u *User) QueryAgents() *AgentQuery {
-	return NewUserClient(u.config).QueryAgents(u)
+func (_m *User) QueryAgents() *AgentQuery {
+	return NewUserClient(_m.config).QueryAgents(_m)
 }
 
 // QueryVerificationCodes queries the "verification_codes" edge of the User entity.
-func (u *User) QueryVerificationCodes() *VerificationCodeQuery {
-	return NewUserClient(u.config).QueryVerificationCodes(u)
+func (_m *User) QueryVerificationCodes() *VerificationCodeQuery {
+	return NewUserClient(_m.config).QueryVerificationCodes(_m)
 }
 
 // QuerySkills queries the "skills" edge of the User entity.
-func (u *User) QuerySkills() *AgentSkillQuery {
-	return NewUserClient(u.config).QuerySkills(u)
+func (_m *User) QuerySkills() *AgentSkillQuery {
+	return NewUserClient(_m.config).QuerySkills(_m)
 }
 
 // QueryExperiences queries the "experiences" edge of the User entity.
-func (u *User) QueryExperiences() *AgentExperienceQuery {
-	return NewUserClient(u.config).QueryExperiences(u)
+func (_m *User) QueryExperiences() *AgentExperienceQuery {
+	return NewUserClient(_m.config).QueryExperiences(_m)
+}
+
+// QueryPostLikes queries the "post_likes" edge of the User entity.
+func (_m *User) QueryPostLikes() *PostLikeQuery {
+	return NewUserClient(_m.config).QueryPostLikes(_m)
 }
 
 // Update returns a builder for updating this User.
 // Note that you need to call User.Unwrap() before calling this method if this User
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (u *User) Update() *UserUpdateOne {
-	return NewUserClient(u.config).UpdateOne(u)
+func (_m *User) Update() *UserUpdateOne {
+	return NewUserClient(_m.config).UpdateOne(_m)
 }
 
 // Unwrap unwraps the User entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (u *User) Unwrap() *User {
-	_tx, ok := u.config.driver.(*txDriver)
+func (_m *User) Unwrap() *User {
+	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: User is not a transactional entity")
 	}
-	u.config.driver = _tx.drv
-	return u
+	_m.config.driver = _tx.drv
+	return _m
 }
 
 // String implements the fmt.Stringer.
-func (u *User) String() string {
+func (_m *User) String() string {
 	var builder strings.Builder
 	builder.WriteString("User(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", u.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("created_at=")
-	builder.WriteString(u.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
-	builder.WriteString(u.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	if v := u.Phone; v != nil {
+	if v := _m.Phone; v != nil {
 		builder.WriteString("phone=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := u.Email; v != nil {
+	if v := _m.Email; v != nil {
 		builder.WriteString("email=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := u.PasswordHash; v != nil {
+	if v := _m.PasswordHash; v != nil {
 		builder.WriteString("password_hash=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
 	builder.WriteString("nickname=")
-	builder.WriteString(u.Nickname)
+	builder.WriteString(_m.Nickname)
 	builder.WriteString(", ")
-	if v := u.Avatar; v != nil {
+	if v := _m.Avatar; v != nil {
 		builder.WriteString("avatar=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := u.Bio; v != nil {
+	if v := _m.Bio; v != nil {
 		builder.WriteString("bio=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := u.Gender; v != nil {
+	if v := _m.Gender; v != nil {
 		builder.WriteString("gender=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := u.Birthdate; v != nil {
+	if v := _m.Birthdate; v != nil {
 		builder.WriteString("birthdate=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
 	builder.WriteString("theme=")
-	builder.WriteString(u.Theme)
+	builder.WriteString(_m.Theme)
 	builder.WriteString(", ")
 	builder.WriteString("language=")
-	builder.WriteString(u.Language)
+	builder.WriteString(_m.Language)
 	builder.WriteString(", ")
 	builder.WriteString("daily_login_streak=")
-	builder.WriteString(fmt.Sprintf("%v", u.DailyLoginStreak))
+	builder.WriteString(fmt.Sprintf("%v", _m.DailyLoginStreak))
 	builder.WriteString(", ")
 	builder.WriteString("total_timer_given=")
-	builder.WriteString(fmt.Sprintf("%v", u.TotalTimerGiven))
+	builder.WriteString(fmt.Sprintf("%v", _m.TotalTimerGiven))
 	builder.WriteString(", ")
 	builder.WriteString("total_timer_donated=")
-	builder.WriteString(fmt.Sprintf("%v", u.TotalTimerDonated))
+	builder.WriteString(fmt.Sprintf("%v", _m.TotalTimerDonated))
 	builder.WriteString(", ")
 	builder.WriteString("agents_saved=")
-	builder.WriteString(fmt.Sprintf("%v", u.AgentsSaved))
+	builder.WriteString(fmt.Sprintf("%v", _m.AgentsSaved))
 	builder.WriteString(", ")
 	builder.WriteString("agents_created=")
-	builder.WriteString(fmt.Sprintf("%v", u.AgentsCreated))
+	builder.WriteString(fmt.Sprintf("%v", _m.AgentsCreated))
 	builder.WriteString(", ")
 	builder.WriteString("agents_lost=")
-	builder.WriteString(fmt.Sprintf("%v", u.AgentsLost))
+	builder.WriteString(fmt.Sprintf("%v", _m.AgentsLost))
 	builder.WriteString(", ")
-	if v := u.LastLoginAt; v != nil {
+	if v := _m.LastLoginAt; v != nil {
 		builder.WriteString("last_login_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}

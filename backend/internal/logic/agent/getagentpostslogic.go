@@ -5,10 +5,12 @@ import (
 
 	"backend/ent"
 	"backend/ent/post"
+	"backend/ent/postlike"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
 
+	"github.com/google/uuid"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -33,6 +35,11 @@ func (l *GetAgentPostsLogic) GetAgentPosts(req *types.AgentPostsReq) (resp *type
 	}
 	page, pageSize, offset := common.NormalizePage(req.Page, req.PageSize)
 
+	u, err := common.CurrentUser(l.ctx, l.svcCtx.DB)
+	if err != nil {
+		return nil, err
+	}
+
 	total, err := l.svcCtx.DB.Post.Query().Where(post.AgentID(agentID)).Count(l.ctx)
 	if err != nil {
 		return nil, err
@@ -53,9 +60,31 @@ func (l *GetAgentPostsLogic) GetAgentPosts(req *types.AgentPostsReq) (resp *type
 		return nil, err
 	}
 
+	postIDs := make([]uuid.UUID, 0, len(posts))
+	for _, p := range posts {
+		postIDs = append(postIDs, p.ID)
+	}
+	liked := map[uuid.UUID]bool{}
+	if len(postIDs) > 0 {
+		rows, err := l.svcCtx.DB.PostLike.Query().
+			Where(
+				postlike.UserID(u.ID),
+				postlike.PostIDIn(postIDs...),
+			).
+			All(l.ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, row := range rows {
+			liked[row.PostID] = true
+		}
+	}
+
 	items := make([]types.PostResp, 0, len(posts))
 	for _, p := range posts {
-		items = append(items, common.ToPostResp(p, a))
+		out := common.ToPostResp(p, a)
+		out.IsLiked = liked[p.ID]
+		items = append(items, out)
 	}
 
 	return &types.PostListResp{

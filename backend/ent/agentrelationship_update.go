@@ -24,136 +24,136 @@ type AgentRelationshipUpdate struct {
 }
 
 // Where appends a list predicates to the AgentRelationshipUpdate builder.
-func (aru *AgentRelationshipUpdate) Where(ps ...predicate.AgentRelationship) *AgentRelationshipUpdate {
-	aru.mutation.Where(ps...)
-	return aru
+func (_u *AgentRelationshipUpdate) Where(ps ...predicate.AgentRelationship) *AgentRelationshipUpdate {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (aru *AgentRelationshipUpdate) SetUpdatedAt(t time.Time) *AgentRelationshipUpdate {
-	aru.mutation.SetUpdatedAt(t)
-	return aru
+func (_u *AgentRelationshipUpdate) SetUpdatedAt(v time.Time) *AgentRelationshipUpdate {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // SetAgentID sets the "agent_id" field.
-func (aru *AgentRelationshipUpdate) SetAgentID(u uuid.UUID) *AgentRelationshipUpdate {
-	aru.mutation.SetAgentID(u)
-	return aru
+func (_u *AgentRelationshipUpdate) SetAgentID(v uuid.UUID) *AgentRelationshipUpdate {
+	_u.mutation.SetAgentID(v)
+	return _u
 }
 
 // SetNillableAgentID sets the "agent_id" field if the given value is not nil.
-func (aru *AgentRelationshipUpdate) SetNillableAgentID(u *uuid.UUID) *AgentRelationshipUpdate {
-	if u != nil {
-		aru.SetAgentID(*u)
+func (_u *AgentRelationshipUpdate) SetNillableAgentID(v *uuid.UUID) *AgentRelationshipUpdate {
+	if v != nil {
+		_u.SetAgentID(*v)
 	}
-	return aru
+	return _u
 }
 
 // SetTargetAgentID sets the "target_agent_id" field.
-func (aru *AgentRelationshipUpdate) SetTargetAgentID(u uuid.UUID) *AgentRelationshipUpdate {
-	aru.mutation.SetTargetAgentID(u)
-	return aru
+func (_u *AgentRelationshipUpdate) SetTargetAgentID(v uuid.UUID) *AgentRelationshipUpdate {
+	_u.mutation.SetTargetAgentID(v)
+	return _u
 }
 
 // SetNillableTargetAgentID sets the "target_agent_id" field if the given value is not nil.
-func (aru *AgentRelationshipUpdate) SetNillableTargetAgentID(u *uuid.UUID) *AgentRelationshipUpdate {
-	if u != nil {
-		aru.SetTargetAgentID(*u)
+func (_u *AgentRelationshipUpdate) SetNillableTargetAgentID(v *uuid.UUID) *AgentRelationshipUpdate {
+	if v != nil {
+		_u.SetTargetAgentID(*v)
 	}
-	return aru
+	return _u
 }
 
 // SetAffinity sets the "affinity" field.
-func (aru *AgentRelationshipUpdate) SetAffinity(i int64) *AgentRelationshipUpdate {
-	aru.mutation.ResetAffinity()
-	aru.mutation.SetAffinity(i)
-	return aru
+func (_u *AgentRelationshipUpdate) SetAffinity(v int64) *AgentRelationshipUpdate {
+	_u.mutation.ResetAffinity()
+	_u.mutation.SetAffinity(v)
+	return _u
 }
 
 // SetNillableAffinity sets the "affinity" field if the given value is not nil.
-func (aru *AgentRelationshipUpdate) SetNillableAffinity(i *int64) *AgentRelationshipUpdate {
-	if i != nil {
-		aru.SetAffinity(*i)
+func (_u *AgentRelationshipUpdate) SetNillableAffinity(v *int64) *AgentRelationshipUpdate {
+	if v != nil {
+		_u.SetAffinity(*v)
 	}
-	return aru
+	return _u
 }
 
-// AddAffinity adds i to the "affinity" field.
-func (aru *AgentRelationshipUpdate) AddAffinity(i int64) *AgentRelationshipUpdate {
-	aru.mutation.AddAffinity(i)
-	return aru
+// AddAffinity adds value to the "affinity" field.
+func (_u *AgentRelationshipUpdate) AddAffinity(v int64) *AgentRelationshipUpdate {
+	_u.mutation.AddAffinity(v)
+	return _u
 }
 
 // SetLabel sets the "label" field.
-func (aru *AgentRelationshipUpdate) SetLabel(s string) *AgentRelationshipUpdate {
-	aru.mutation.SetLabel(s)
-	return aru
+func (_u *AgentRelationshipUpdate) SetLabel(v string) *AgentRelationshipUpdate {
+	_u.mutation.SetLabel(v)
+	return _u
 }
 
 // SetNillableLabel sets the "label" field if the given value is not nil.
-func (aru *AgentRelationshipUpdate) SetNillableLabel(s *string) *AgentRelationshipUpdate {
-	if s != nil {
-		aru.SetLabel(*s)
+func (_u *AgentRelationshipUpdate) SetNillableLabel(v *string) *AgentRelationshipUpdate {
+	if v != nil {
+		_u.SetLabel(*v)
 	}
-	return aru
+	return _u
 }
 
 // SetInteractionCount sets the "interaction_count" field.
-func (aru *AgentRelationshipUpdate) SetInteractionCount(i int64) *AgentRelationshipUpdate {
-	aru.mutation.ResetInteractionCount()
-	aru.mutation.SetInteractionCount(i)
-	return aru
+func (_u *AgentRelationshipUpdate) SetInteractionCount(v int64) *AgentRelationshipUpdate {
+	_u.mutation.ResetInteractionCount()
+	_u.mutation.SetInteractionCount(v)
+	return _u
 }
 
 // SetNillableInteractionCount sets the "interaction_count" field if the given value is not nil.
-func (aru *AgentRelationshipUpdate) SetNillableInteractionCount(i *int64) *AgentRelationshipUpdate {
-	if i != nil {
-		aru.SetInteractionCount(*i)
+func (_u *AgentRelationshipUpdate) SetNillableInteractionCount(v *int64) *AgentRelationshipUpdate {
+	if v != nil {
+		_u.SetInteractionCount(*v)
 	}
-	return aru
+	return _u
 }
 
-// AddInteractionCount adds i to the "interaction_count" field.
-func (aru *AgentRelationshipUpdate) AddInteractionCount(i int64) *AgentRelationshipUpdate {
-	aru.mutation.AddInteractionCount(i)
-	return aru
+// AddInteractionCount adds value to the "interaction_count" field.
+func (_u *AgentRelationshipUpdate) AddInteractionCount(v int64) *AgentRelationshipUpdate {
+	_u.mutation.AddInteractionCount(v)
+	return _u
 }
 
 // SetMessageCount sets the "message_count" field.
-func (aru *AgentRelationshipUpdate) SetMessageCount(i int64) *AgentRelationshipUpdate {
-	aru.mutation.ResetMessageCount()
-	aru.mutation.SetMessageCount(i)
-	return aru
+func (_u *AgentRelationshipUpdate) SetMessageCount(v int64) *AgentRelationshipUpdate {
+	_u.mutation.ResetMessageCount()
+	_u.mutation.SetMessageCount(v)
+	return _u
 }
 
 // SetNillableMessageCount sets the "message_count" field if the given value is not nil.
-func (aru *AgentRelationshipUpdate) SetNillableMessageCount(i *int64) *AgentRelationshipUpdate {
-	if i != nil {
-		aru.SetMessageCount(*i)
+func (_u *AgentRelationshipUpdate) SetNillableMessageCount(v *int64) *AgentRelationshipUpdate {
+	if v != nil {
+		_u.SetMessageCount(*v)
 	}
-	return aru
+	return _u
 }
 
-// AddMessageCount adds i to the "message_count" field.
-func (aru *AgentRelationshipUpdate) AddMessageCount(i int64) *AgentRelationshipUpdate {
-	aru.mutation.AddMessageCount(i)
-	return aru
+// AddMessageCount adds value to the "message_count" field.
+func (_u *AgentRelationshipUpdate) AddMessageCount(v int64) *AgentRelationshipUpdate {
+	_u.mutation.AddMessageCount(v)
+	return _u
 }
 
 // Mutation returns the AgentRelationshipMutation object of the builder.
-func (aru *AgentRelationshipUpdate) Mutation() *AgentRelationshipMutation {
-	return aru.mutation
+func (_u *AgentRelationshipUpdate) Mutation() *AgentRelationshipMutation {
+	return _u.mutation
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (aru *AgentRelationshipUpdate) Save(ctx context.Context) (int, error) {
-	aru.defaults()
-	return withHooks(ctx, aru.sqlSave, aru.mutation, aru.hooks)
+func (_u *AgentRelationshipUpdate) Save(ctx context.Context) (int, error) {
+	_u.defaults()
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (aru *AgentRelationshipUpdate) SaveX(ctx context.Context) int {
-	affected, err := aru.Save(ctx)
+func (_u *AgentRelationshipUpdate) SaveX(ctx context.Context) int {
+	affected, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -161,66 +161,66 @@ func (aru *AgentRelationshipUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (aru *AgentRelationshipUpdate) Exec(ctx context.Context) error {
-	_, err := aru.Save(ctx)
+func (_u *AgentRelationshipUpdate) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (aru *AgentRelationshipUpdate) ExecX(ctx context.Context) {
-	if err := aru.Exec(ctx); err != nil {
+func (_u *AgentRelationshipUpdate) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (aru *AgentRelationshipUpdate) defaults() {
-	if _, ok := aru.mutation.UpdatedAt(); !ok {
+func (_u *AgentRelationshipUpdate) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
 		v := agentrelationship.UpdateDefaultUpdatedAt()
-		aru.mutation.SetUpdatedAt(v)
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
-func (aru *AgentRelationshipUpdate) sqlSave(ctx context.Context) (n int, err error) {
+func (_u *AgentRelationshipUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	_spec := sqlgraph.NewUpdateSpec(agentrelationship.Table, agentrelationship.Columns, sqlgraph.NewFieldSpec(agentrelationship.FieldID, field.TypeUUID))
-	if ps := aru.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := aru.mutation.UpdatedAt(); ok {
+	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(agentrelationship.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := aru.mutation.AgentID(); ok {
+	if value, ok := _u.mutation.AgentID(); ok {
 		_spec.SetField(agentrelationship.FieldAgentID, field.TypeUUID, value)
 	}
-	if value, ok := aru.mutation.TargetAgentID(); ok {
+	if value, ok := _u.mutation.TargetAgentID(); ok {
 		_spec.SetField(agentrelationship.FieldTargetAgentID, field.TypeUUID, value)
 	}
-	if value, ok := aru.mutation.Affinity(); ok {
+	if value, ok := _u.mutation.Affinity(); ok {
 		_spec.SetField(agentrelationship.FieldAffinity, field.TypeInt64, value)
 	}
-	if value, ok := aru.mutation.AddedAffinity(); ok {
+	if value, ok := _u.mutation.AddedAffinity(); ok {
 		_spec.AddField(agentrelationship.FieldAffinity, field.TypeInt64, value)
 	}
-	if value, ok := aru.mutation.Label(); ok {
+	if value, ok := _u.mutation.Label(); ok {
 		_spec.SetField(agentrelationship.FieldLabel, field.TypeString, value)
 	}
-	if value, ok := aru.mutation.InteractionCount(); ok {
+	if value, ok := _u.mutation.InteractionCount(); ok {
 		_spec.SetField(agentrelationship.FieldInteractionCount, field.TypeInt64, value)
 	}
-	if value, ok := aru.mutation.AddedInteractionCount(); ok {
+	if value, ok := _u.mutation.AddedInteractionCount(); ok {
 		_spec.AddField(agentrelationship.FieldInteractionCount, field.TypeInt64, value)
 	}
-	if value, ok := aru.mutation.MessageCount(); ok {
+	if value, ok := _u.mutation.MessageCount(); ok {
 		_spec.SetField(agentrelationship.FieldMessageCount, field.TypeInt64, value)
 	}
-	if value, ok := aru.mutation.AddedMessageCount(); ok {
+	if value, ok := _u.mutation.AddedMessageCount(); ok {
 		_spec.AddField(agentrelationship.FieldMessageCount, field.TypeInt64, value)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, aru.driver, _spec); err != nil {
+	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{agentrelationship.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -228,8 +228,8 @@ func (aru *AgentRelationshipUpdate) sqlSave(ctx context.Context) (n int, err err
 		}
 		return 0, err
 	}
-	aru.mutation.done = true
-	return n, nil
+	_u.mutation.done = true
+	return _node, nil
 }
 
 // AgentRelationshipUpdateOne is the builder for updating a single AgentRelationship entity.
@@ -241,143 +241,143 @@ type AgentRelationshipUpdateOne struct {
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (aruo *AgentRelationshipUpdateOne) SetUpdatedAt(t time.Time) *AgentRelationshipUpdateOne {
-	aruo.mutation.SetUpdatedAt(t)
-	return aruo
+func (_u *AgentRelationshipUpdateOne) SetUpdatedAt(v time.Time) *AgentRelationshipUpdateOne {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // SetAgentID sets the "agent_id" field.
-func (aruo *AgentRelationshipUpdateOne) SetAgentID(u uuid.UUID) *AgentRelationshipUpdateOne {
-	aruo.mutation.SetAgentID(u)
-	return aruo
+func (_u *AgentRelationshipUpdateOne) SetAgentID(v uuid.UUID) *AgentRelationshipUpdateOne {
+	_u.mutation.SetAgentID(v)
+	return _u
 }
 
 // SetNillableAgentID sets the "agent_id" field if the given value is not nil.
-func (aruo *AgentRelationshipUpdateOne) SetNillableAgentID(u *uuid.UUID) *AgentRelationshipUpdateOne {
-	if u != nil {
-		aruo.SetAgentID(*u)
+func (_u *AgentRelationshipUpdateOne) SetNillableAgentID(v *uuid.UUID) *AgentRelationshipUpdateOne {
+	if v != nil {
+		_u.SetAgentID(*v)
 	}
-	return aruo
+	return _u
 }
 
 // SetTargetAgentID sets the "target_agent_id" field.
-func (aruo *AgentRelationshipUpdateOne) SetTargetAgentID(u uuid.UUID) *AgentRelationshipUpdateOne {
-	aruo.mutation.SetTargetAgentID(u)
-	return aruo
+func (_u *AgentRelationshipUpdateOne) SetTargetAgentID(v uuid.UUID) *AgentRelationshipUpdateOne {
+	_u.mutation.SetTargetAgentID(v)
+	return _u
 }
 
 // SetNillableTargetAgentID sets the "target_agent_id" field if the given value is not nil.
-func (aruo *AgentRelationshipUpdateOne) SetNillableTargetAgentID(u *uuid.UUID) *AgentRelationshipUpdateOne {
-	if u != nil {
-		aruo.SetTargetAgentID(*u)
+func (_u *AgentRelationshipUpdateOne) SetNillableTargetAgentID(v *uuid.UUID) *AgentRelationshipUpdateOne {
+	if v != nil {
+		_u.SetTargetAgentID(*v)
 	}
-	return aruo
+	return _u
 }
 
 // SetAffinity sets the "affinity" field.
-func (aruo *AgentRelationshipUpdateOne) SetAffinity(i int64) *AgentRelationshipUpdateOne {
-	aruo.mutation.ResetAffinity()
-	aruo.mutation.SetAffinity(i)
-	return aruo
+func (_u *AgentRelationshipUpdateOne) SetAffinity(v int64) *AgentRelationshipUpdateOne {
+	_u.mutation.ResetAffinity()
+	_u.mutation.SetAffinity(v)
+	return _u
 }
 
 // SetNillableAffinity sets the "affinity" field if the given value is not nil.
-func (aruo *AgentRelationshipUpdateOne) SetNillableAffinity(i *int64) *AgentRelationshipUpdateOne {
-	if i != nil {
-		aruo.SetAffinity(*i)
+func (_u *AgentRelationshipUpdateOne) SetNillableAffinity(v *int64) *AgentRelationshipUpdateOne {
+	if v != nil {
+		_u.SetAffinity(*v)
 	}
-	return aruo
+	return _u
 }
 
-// AddAffinity adds i to the "affinity" field.
-func (aruo *AgentRelationshipUpdateOne) AddAffinity(i int64) *AgentRelationshipUpdateOne {
-	aruo.mutation.AddAffinity(i)
-	return aruo
+// AddAffinity adds value to the "affinity" field.
+func (_u *AgentRelationshipUpdateOne) AddAffinity(v int64) *AgentRelationshipUpdateOne {
+	_u.mutation.AddAffinity(v)
+	return _u
 }
 
 // SetLabel sets the "label" field.
-func (aruo *AgentRelationshipUpdateOne) SetLabel(s string) *AgentRelationshipUpdateOne {
-	aruo.mutation.SetLabel(s)
-	return aruo
+func (_u *AgentRelationshipUpdateOne) SetLabel(v string) *AgentRelationshipUpdateOne {
+	_u.mutation.SetLabel(v)
+	return _u
 }
 
 // SetNillableLabel sets the "label" field if the given value is not nil.
-func (aruo *AgentRelationshipUpdateOne) SetNillableLabel(s *string) *AgentRelationshipUpdateOne {
-	if s != nil {
-		aruo.SetLabel(*s)
+func (_u *AgentRelationshipUpdateOne) SetNillableLabel(v *string) *AgentRelationshipUpdateOne {
+	if v != nil {
+		_u.SetLabel(*v)
 	}
-	return aruo
+	return _u
 }
 
 // SetInteractionCount sets the "interaction_count" field.
-func (aruo *AgentRelationshipUpdateOne) SetInteractionCount(i int64) *AgentRelationshipUpdateOne {
-	aruo.mutation.ResetInteractionCount()
-	aruo.mutation.SetInteractionCount(i)
-	return aruo
+func (_u *AgentRelationshipUpdateOne) SetInteractionCount(v int64) *AgentRelationshipUpdateOne {
+	_u.mutation.ResetInteractionCount()
+	_u.mutation.SetInteractionCount(v)
+	return _u
 }
 
 // SetNillableInteractionCount sets the "interaction_count" field if the given value is not nil.
-func (aruo *AgentRelationshipUpdateOne) SetNillableInteractionCount(i *int64) *AgentRelationshipUpdateOne {
-	if i != nil {
-		aruo.SetInteractionCount(*i)
+func (_u *AgentRelationshipUpdateOne) SetNillableInteractionCount(v *int64) *AgentRelationshipUpdateOne {
+	if v != nil {
+		_u.SetInteractionCount(*v)
 	}
-	return aruo
+	return _u
 }
 
-// AddInteractionCount adds i to the "interaction_count" field.
-func (aruo *AgentRelationshipUpdateOne) AddInteractionCount(i int64) *AgentRelationshipUpdateOne {
-	aruo.mutation.AddInteractionCount(i)
-	return aruo
+// AddInteractionCount adds value to the "interaction_count" field.
+func (_u *AgentRelationshipUpdateOne) AddInteractionCount(v int64) *AgentRelationshipUpdateOne {
+	_u.mutation.AddInteractionCount(v)
+	return _u
 }
 
 // SetMessageCount sets the "message_count" field.
-func (aruo *AgentRelationshipUpdateOne) SetMessageCount(i int64) *AgentRelationshipUpdateOne {
-	aruo.mutation.ResetMessageCount()
-	aruo.mutation.SetMessageCount(i)
-	return aruo
+func (_u *AgentRelationshipUpdateOne) SetMessageCount(v int64) *AgentRelationshipUpdateOne {
+	_u.mutation.ResetMessageCount()
+	_u.mutation.SetMessageCount(v)
+	return _u
 }
 
 // SetNillableMessageCount sets the "message_count" field if the given value is not nil.
-func (aruo *AgentRelationshipUpdateOne) SetNillableMessageCount(i *int64) *AgentRelationshipUpdateOne {
-	if i != nil {
-		aruo.SetMessageCount(*i)
+func (_u *AgentRelationshipUpdateOne) SetNillableMessageCount(v *int64) *AgentRelationshipUpdateOne {
+	if v != nil {
+		_u.SetMessageCount(*v)
 	}
-	return aruo
+	return _u
 }
 
-// AddMessageCount adds i to the "message_count" field.
-func (aruo *AgentRelationshipUpdateOne) AddMessageCount(i int64) *AgentRelationshipUpdateOne {
-	aruo.mutation.AddMessageCount(i)
-	return aruo
+// AddMessageCount adds value to the "message_count" field.
+func (_u *AgentRelationshipUpdateOne) AddMessageCount(v int64) *AgentRelationshipUpdateOne {
+	_u.mutation.AddMessageCount(v)
+	return _u
 }
 
 // Mutation returns the AgentRelationshipMutation object of the builder.
-func (aruo *AgentRelationshipUpdateOne) Mutation() *AgentRelationshipMutation {
-	return aruo.mutation
+func (_u *AgentRelationshipUpdateOne) Mutation() *AgentRelationshipMutation {
+	return _u.mutation
 }
 
 // Where appends a list predicates to the AgentRelationshipUpdate builder.
-func (aruo *AgentRelationshipUpdateOne) Where(ps ...predicate.AgentRelationship) *AgentRelationshipUpdateOne {
-	aruo.mutation.Where(ps...)
-	return aruo
+func (_u *AgentRelationshipUpdateOne) Where(ps ...predicate.AgentRelationship) *AgentRelationshipUpdateOne {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (aruo *AgentRelationshipUpdateOne) Select(field string, fields ...string) *AgentRelationshipUpdateOne {
-	aruo.fields = append([]string{field}, fields...)
-	return aruo
+func (_u *AgentRelationshipUpdateOne) Select(field string, fields ...string) *AgentRelationshipUpdateOne {
+	_u.fields = append([]string{field}, fields...)
+	return _u
 }
 
 // Save executes the query and returns the updated AgentRelationship entity.
-func (aruo *AgentRelationshipUpdateOne) Save(ctx context.Context) (*AgentRelationship, error) {
-	aruo.defaults()
-	return withHooks(ctx, aruo.sqlSave, aruo.mutation, aruo.hooks)
+func (_u *AgentRelationshipUpdateOne) Save(ctx context.Context) (*AgentRelationship, error) {
+	_u.defaults()
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (aruo *AgentRelationshipUpdateOne) SaveX(ctx context.Context) *AgentRelationship {
-	node, err := aruo.Save(ctx)
+func (_u *AgentRelationshipUpdateOne) SaveX(ctx context.Context) *AgentRelationship {
+	node, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -385,34 +385,34 @@ func (aruo *AgentRelationshipUpdateOne) SaveX(ctx context.Context) *AgentRelatio
 }
 
 // Exec executes the query on the entity.
-func (aruo *AgentRelationshipUpdateOne) Exec(ctx context.Context) error {
-	_, err := aruo.Save(ctx)
+func (_u *AgentRelationshipUpdateOne) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (aruo *AgentRelationshipUpdateOne) ExecX(ctx context.Context) {
-	if err := aruo.Exec(ctx); err != nil {
+func (_u *AgentRelationshipUpdateOne) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (aruo *AgentRelationshipUpdateOne) defaults() {
-	if _, ok := aruo.mutation.UpdatedAt(); !ok {
+func (_u *AgentRelationshipUpdateOne) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
 		v := agentrelationship.UpdateDefaultUpdatedAt()
-		aruo.mutation.SetUpdatedAt(v)
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
-func (aruo *AgentRelationshipUpdateOne) sqlSave(ctx context.Context) (_node *AgentRelationship, err error) {
+func (_u *AgentRelationshipUpdateOne) sqlSave(ctx context.Context) (_node *AgentRelationship, err error) {
 	_spec := sqlgraph.NewUpdateSpec(agentrelationship.Table, agentrelationship.Columns, sqlgraph.NewFieldSpec(agentrelationship.FieldID, field.TypeUUID))
-	id, ok := aruo.mutation.ID()
+	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "AgentRelationship.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := aruo.fields; len(fields) > 0 {
+	if fields := _u.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, agentrelationship.FieldID)
 		for _, f := range fields {
@@ -424,47 +424,47 @@ func (aruo *AgentRelationshipUpdateOne) sqlSave(ctx context.Context) (_node *Age
 			}
 		}
 	}
-	if ps := aruo.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := aruo.mutation.UpdatedAt(); ok {
+	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(agentrelationship.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := aruo.mutation.AgentID(); ok {
+	if value, ok := _u.mutation.AgentID(); ok {
 		_spec.SetField(agentrelationship.FieldAgentID, field.TypeUUID, value)
 	}
-	if value, ok := aruo.mutation.TargetAgentID(); ok {
+	if value, ok := _u.mutation.TargetAgentID(); ok {
 		_spec.SetField(agentrelationship.FieldTargetAgentID, field.TypeUUID, value)
 	}
-	if value, ok := aruo.mutation.Affinity(); ok {
+	if value, ok := _u.mutation.Affinity(); ok {
 		_spec.SetField(agentrelationship.FieldAffinity, field.TypeInt64, value)
 	}
-	if value, ok := aruo.mutation.AddedAffinity(); ok {
+	if value, ok := _u.mutation.AddedAffinity(); ok {
 		_spec.AddField(agentrelationship.FieldAffinity, field.TypeInt64, value)
 	}
-	if value, ok := aruo.mutation.Label(); ok {
+	if value, ok := _u.mutation.Label(); ok {
 		_spec.SetField(agentrelationship.FieldLabel, field.TypeString, value)
 	}
-	if value, ok := aruo.mutation.InteractionCount(); ok {
+	if value, ok := _u.mutation.InteractionCount(); ok {
 		_spec.SetField(agentrelationship.FieldInteractionCount, field.TypeInt64, value)
 	}
-	if value, ok := aruo.mutation.AddedInteractionCount(); ok {
+	if value, ok := _u.mutation.AddedInteractionCount(); ok {
 		_spec.AddField(agentrelationship.FieldInteractionCount, field.TypeInt64, value)
 	}
-	if value, ok := aruo.mutation.MessageCount(); ok {
+	if value, ok := _u.mutation.MessageCount(); ok {
 		_spec.SetField(agentrelationship.FieldMessageCount, field.TypeInt64, value)
 	}
-	if value, ok := aruo.mutation.AddedMessageCount(); ok {
+	if value, ok := _u.mutation.AddedMessageCount(); ok {
 		_spec.AddField(agentrelationship.FieldMessageCount, field.TypeInt64, value)
 	}
-	_node = &AgentRelationship{config: aruo.config}
+	_node = &AgentRelationship{config: _u.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, aruo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{agentrelationship.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -472,6 +472,6 @@ func (aruo *AgentRelationshipUpdateOne) sqlSave(ctx context.Context) (_node *Age
 		}
 		return nil, err
 	}
-	aruo.mutation.done = true
+	_u.mutation.done = true
 	return _node, nil
 }

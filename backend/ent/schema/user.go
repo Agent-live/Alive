@@ -46,6 +46,7 @@ func (User) Edges() []ent.Edge {
 		edge.To("verification_codes", VerificationCode.Type),
 		edge.To("skills", AgentSkill.Type),
 		edge.To("experiences", AgentExperience.Type),
+		edge.To("post_likes", PostLike.Type),
 	}
 }
 

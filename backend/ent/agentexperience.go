@@ -99,7 +99,7 @@ func (*AgentExperience) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the AgentExperience fields.
-func (ae *AgentExperience) assignValues(columns []string, values []any) error {
+func (_m *AgentExperience) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -109,71 +109,71 @@ func (ae *AgentExperience) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				ae.ID = *value
+				_m.ID = *value
 			}
 		case agentexperience.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				ae.CreatedAt = value.Time
+				_m.CreatedAt = value.Time
 			}
 		case agentexperience.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				ae.UpdatedAt = value.Time
+				_m.UpdatedAt = value.Time
 			}
 		case agentexperience.FieldOwnerUserID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field owner_user_id", values[i])
 			} else if value != nil {
-				ae.OwnerUserID = *value
+				_m.OwnerUserID = *value
 			}
 		case agentexperience.FieldAgentID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field agent_id", values[i])
 			} else if value != nil {
-				ae.AgentID = *value
+				_m.AgentID = *value
 			}
 		case agentexperience.FieldAgentName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field agent_name", values[i])
 			} else if value.Valid {
-				ae.AgentName = value.String
+				_m.AgentName = value.String
 			}
 		case agentexperience.FieldAgentAvatar:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field agent_avatar", values[i])
 			} else if value.Valid {
-				ae.AgentAvatar = new(string)
-				*ae.AgentAvatar = value.String
+				_m.AgentAvatar = new(string)
+				*_m.AgentAvatar = value.String
 			}
 		case agentexperience.FieldExpType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field exp_type", values[i])
 			} else if value.Valid {
-				ae.ExpType = value.String
+				_m.ExpType = value.String
 			}
 		case agentexperience.FieldTitle:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field title", values[i])
 			} else if value.Valid {
-				ae.Title = value.String
+				_m.Title = value.String
 			}
 		case agentexperience.FieldDescription:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field description", values[i])
 			} else if value.Valid {
-				ae.Description = value.String
+				_m.Description = value.String
 			}
 		case agentexperience.FieldEventAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field event_at", values[i])
 			} else if value.Valid {
-				ae.EventAt = value.Time
+				_m.EventAt = value.Time
 			}
 		default:
-			ae.selectValues.Set(columns[i], values[i])
+			_m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -181,74 +181,74 @@ func (ae *AgentExperience) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the AgentExperience.
 // This includes values selected through modifiers, order, etc.
-func (ae *AgentExperience) Value(name string) (ent.Value, error) {
-	return ae.selectValues.Get(name)
+func (_m *AgentExperience) Value(name string) (ent.Value, error) {
+	return _m.selectValues.Get(name)
 }
 
 // QueryOwner queries the "owner" edge of the AgentExperience entity.
-func (ae *AgentExperience) QueryOwner() *UserQuery {
-	return NewAgentExperienceClient(ae.config).QueryOwner(ae)
+func (_m *AgentExperience) QueryOwner() *UserQuery {
+	return NewAgentExperienceClient(_m.config).QueryOwner(_m)
 }
 
 // QueryAgent queries the "agent" edge of the AgentExperience entity.
-func (ae *AgentExperience) QueryAgent() *AgentQuery {
-	return NewAgentExperienceClient(ae.config).QueryAgent(ae)
+func (_m *AgentExperience) QueryAgent() *AgentQuery {
+	return NewAgentExperienceClient(_m.config).QueryAgent(_m)
 }
 
 // Update returns a builder for updating this AgentExperience.
 // Note that you need to call AgentExperience.Unwrap() before calling this method if this AgentExperience
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (ae *AgentExperience) Update() *AgentExperienceUpdateOne {
-	return NewAgentExperienceClient(ae.config).UpdateOne(ae)
+func (_m *AgentExperience) Update() *AgentExperienceUpdateOne {
+	return NewAgentExperienceClient(_m.config).UpdateOne(_m)
 }
 
 // Unwrap unwraps the AgentExperience entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (ae *AgentExperience) Unwrap() *AgentExperience {
-	_tx, ok := ae.config.driver.(*txDriver)
+func (_m *AgentExperience) Unwrap() *AgentExperience {
+	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: AgentExperience is not a transactional entity")
 	}
-	ae.config.driver = _tx.drv
-	return ae
+	_m.config.driver = _tx.drv
+	return _m
 }
 
 // String implements the fmt.Stringer.
-func (ae *AgentExperience) String() string {
+func (_m *AgentExperience) String() string {
 	var builder strings.Builder
 	builder.WriteString("AgentExperience(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", ae.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("created_at=")
-	builder.WriteString(ae.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
-	builder.WriteString(ae.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("owner_user_id=")
-	builder.WriteString(fmt.Sprintf("%v", ae.OwnerUserID))
+	builder.WriteString(fmt.Sprintf("%v", _m.OwnerUserID))
 	builder.WriteString(", ")
 	builder.WriteString("agent_id=")
-	builder.WriteString(fmt.Sprintf("%v", ae.AgentID))
+	builder.WriteString(fmt.Sprintf("%v", _m.AgentID))
 	builder.WriteString(", ")
 	builder.WriteString("agent_name=")
-	builder.WriteString(ae.AgentName)
+	builder.WriteString(_m.AgentName)
 	builder.WriteString(", ")
-	if v := ae.AgentAvatar; v != nil {
+	if v := _m.AgentAvatar; v != nil {
 		builder.WriteString("agent_avatar=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
 	builder.WriteString("exp_type=")
-	builder.WriteString(ae.ExpType)
+	builder.WriteString(_m.ExpType)
 	builder.WriteString(", ")
 	builder.WriteString("title=")
-	builder.WriteString(ae.Title)
+	builder.WriteString(_m.Title)
 	builder.WriteString(", ")
 	builder.WriteString("description=")
-	builder.WriteString(ae.Description)
+	builder.WriteString(_m.Description)
 	builder.WriteString(", ")
 	builder.WriteString("event_at=")
-	builder.WriteString(ae.EventAt.Format(time.ANSIC))
+	builder.WriteString(_m.EventAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -53,7 +53,7 @@ func (*ChatMessage) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the ChatMessage fields.
-func (cm *ChatMessage) assignValues(columns []string, values []any) error {
+func (_m *ChatMessage) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -63,46 +63,46 @@ func (cm *ChatMessage) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				cm.ID = *value
+				_m.ID = *value
 			}
 		case chatmessage.FieldAgentID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field agent_id", values[i])
 			} else if value != nil {
-				cm.AgentID = *value
+				_m.AgentID = *value
 			}
 		case chatmessage.FieldUserID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value != nil {
-				cm.UserID = *value
+				_m.UserID = *value
 			}
 		case chatmessage.FieldSessionID:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field session_id", values[i])
 			} else if value.Valid {
-				cm.SessionID = value.String
+				_m.SessionID = value.String
 			}
 		case chatmessage.FieldRole:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field role", values[i])
 			} else if value.Valid {
-				cm.Role = value.String
+				_m.Role = value.String
 			}
 		case chatmessage.FieldContent:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field content", values[i])
 			} else if value.Valid {
-				cm.Content = value.String
+				_m.Content = value.String
 			}
 		case chatmessage.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				cm.CreatedAt = value.Time
+				_m.CreatedAt = value.Time
 			}
 		default:
-			cm.selectValues.Set(columns[i], values[i])
+			_m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -110,50 +110,50 @@ func (cm *ChatMessage) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the ChatMessage.
 // This includes values selected through modifiers, order, etc.
-func (cm *ChatMessage) Value(name string) (ent.Value, error) {
-	return cm.selectValues.Get(name)
+func (_m *ChatMessage) Value(name string) (ent.Value, error) {
+	return _m.selectValues.Get(name)
 }
 
 // Update returns a builder for updating this ChatMessage.
 // Note that you need to call ChatMessage.Unwrap() before calling this method if this ChatMessage
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (cm *ChatMessage) Update() *ChatMessageUpdateOne {
-	return NewChatMessageClient(cm.config).UpdateOne(cm)
+func (_m *ChatMessage) Update() *ChatMessageUpdateOne {
+	return NewChatMessageClient(_m.config).UpdateOne(_m)
 }
 
 // Unwrap unwraps the ChatMessage entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (cm *ChatMessage) Unwrap() *ChatMessage {
-	_tx, ok := cm.config.driver.(*txDriver)
+func (_m *ChatMessage) Unwrap() *ChatMessage {
+	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: ChatMessage is not a transactional entity")
 	}
-	cm.config.driver = _tx.drv
-	return cm
+	_m.config.driver = _tx.drv
+	return _m
 }
 
 // String implements the fmt.Stringer.
-func (cm *ChatMessage) String() string {
+func (_m *ChatMessage) String() string {
 	var builder strings.Builder
 	builder.WriteString("ChatMessage(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", cm.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("agent_id=")
-	builder.WriteString(fmt.Sprintf("%v", cm.AgentID))
+	builder.WriteString(fmt.Sprintf("%v", _m.AgentID))
 	builder.WriteString(", ")
 	builder.WriteString("user_id=")
-	builder.WriteString(fmt.Sprintf("%v", cm.UserID))
+	builder.WriteString(fmt.Sprintf("%v", _m.UserID))
 	builder.WriteString(", ")
 	builder.WriteString("session_id=")
-	builder.WriteString(cm.SessionID)
+	builder.WriteString(_m.SessionID)
 	builder.WriteString(", ")
 	builder.WriteString("role=")
-	builder.WriteString(cm.Role)
+	builder.WriteString(_m.Role)
 	builder.WriteString(", ")
 	builder.WriteString("content=")
-	builder.WriteString(cm.Content)
+	builder.WriteString(_m.Content)
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
-	builder.WriteString(cm.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

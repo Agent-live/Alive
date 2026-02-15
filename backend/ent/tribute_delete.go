@@ -20,56 +20,56 @@ type TributeDelete struct {
 }
 
 // Where appends a list predicates to the TributeDelete builder.
-func (td *TributeDelete) Where(ps ...predicate.Tribute) *TributeDelete {
-	td.mutation.Where(ps...)
-	return td
+func (_d *TributeDelete) Where(ps ...predicate.Tribute) *TributeDelete {
+	_d.mutation.Where(ps...)
+	return _d
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (td *TributeDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks(ctx, td.sqlExec, td.mutation, td.hooks)
+func (_d *TributeDelete) Exec(ctx context.Context) (int, error) {
+	return withHooks(ctx, _d.sqlExec, _d.mutation, _d.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (td *TributeDelete) ExecX(ctx context.Context) int {
-	n, err := td.Exec(ctx)
+func (_d *TributeDelete) ExecX(ctx context.Context) int {
+	n, err := _d.Exec(ctx)
 	if err != nil {
 		panic(err)
 	}
 	return n
 }
 
-func (td *TributeDelete) sqlExec(ctx context.Context) (int, error) {
+func (_d *TributeDelete) sqlExec(ctx context.Context) (int, error) {
 	_spec := sqlgraph.NewDeleteSpec(tribute.Table, sqlgraph.NewFieldSpec(tribute.FieldID, field.TypeUUID))
-	if ps := td.mutation.predicates; len(ps) > 0 {
+	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	affected, err := sqlgraph.DeleteNodes(ctx, td.driver, _spec)
+	affected, err := sqlgraph.DeleteNodes(ctx, _d.driver, _spec)
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
-	td.mutation.done = true
+	_d.mutation.done = true
 	return affected, err
 }
 
 // TributeDeleteOne is the builder for deleting a single Tribute entity.
 type TributeDeleteOne struct {
-	td *TributeDelete
+	_d *TributeDelete
 }
 
 // Where appends a list predicates to the TributeDelete builder.
-func (tdo *TributeDeleteOne) Where(ps ...predicate.Tribute) *TributeDeleteOne {
-	tdo.td.mutation.Where(ps...)
-	return tdo
+func (_d *TributeDeleteOne) Where(ps ...predicate.Tribute) *TributeDeleteOne {
+	_d._d.mutation.Where(ps...)
+	return _d
 }
 
 // Exec executes the deletion query.
-func (tdo *TributeDeleteOne) Exec(ctx context.Context) error {
-	n, err := tdo.td.Exec(ctx)
+func (_d *TributeDeleteOne) Exec(ctx context.Context) error {
+	n, err := _d._d.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
@@ -81,8 +81,8 @@ func (tdo *TributeDeleteOne) Exec(ctx context.Context) error {
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (tdo *TributeDeleteOne) ExecX(ctx context.Context) {
-	if err := tdo.Exec(ctx); err != nil {
+func (_d *TributeDeleteOne) ExecX(ctx context.Context) {
+	if err := _d.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

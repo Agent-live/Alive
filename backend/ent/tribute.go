@@ -73,7 +73,7 @@ func (*Tribute) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Tribute fields.
-func (t *Tribute) assignValues(columns []string, values []any) error {
+func (_m *Tribute) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -83,34 +83,34 @@ func (t *Tribute) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				t.ID = *value
+				_m.ID = *value
 			}
 		case tribute.FieldMemorialID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field memorial_id", values[i])
 			} else if value != nil {
-				t.MemorialID = *value
+				_m.MemorialID = *value
 			}
 		case tribute.FieldAuthorName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field author_name", values[i])
 			} else if value.Valid {
-				t.AuthorName = value.String
+				_m.AuthorName = value.String
 			}
 		case tribute.FieldMessage:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field message", values[i])
 			} else if value.Valid {
-				t.Message = value.String
+				_m.Message = value.String
 			}
 		case tribute.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				t.CreatedAt = value.Time
+				_m.CreatedAt = value.Time
 			}
 		default:
-			t.selectValues.Set(columns[i], values[i])
+			_m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -118,49 +118,49 @@ func (t *Tribute) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the Tribute.
 // This includes values selected through modifiers, order, etc.
-func (t *Tribute) Value(name string) (ent.Value, error) {
-	return t.selectValues.Get(name)
+func (_m *Tribute) Value(name string) (ent.Value, error) {
+	return _m.selectValues.Get(name)
 }
 
 // QueryMemorial queries the "memorial" edge of the Tribute entity.
-func (t *Tribute) QueryMemorial() *MemorialQuery {
-	return NewTributeClient(t.config).QueryMemorial(t)
+func (_m *Tribute) QueryMemorial() *MemorialQuery {
+	return NewTributeClient(_m.config).QueryMemorial(_m)
 }
 
 // Update returns a builder for updating this Tribute.
 // Note that you need to call Tribute.Unwrap() before calling this method if this Tribute
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (t *Tribute) Update() *TributeUpdateOne {
-	return NewTributeClient(t.config).UpdateOne(t)
+func (_m *Tribute) Update() *TributeUpdateOne {
+	return NewTributeClient(_m.config).UpdateOne(_m)
 }
 
 // Unwrap unwraps the Tribute entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (t *Tribute) Unwrap() *Tribute {
-	_tx, ok := t.config.driver.(*txDriver)
+func (_m *Tribute) Unwrap() *Tribute {
+	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: Tribute is not a transactional entity")
 	}
-	t.config.driver = _tx.drv
-	return t
+	_m.config.driver = _tx.drv
+	return _m
 }
 
 // String implements the fmt.Stringer.
-func (t *Tribute) String() string {
+func (_m *Tribute) String() string {
 	var builder strings.Builder
 	builder.WriteString("Tribute(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", t.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("memorial_id=")
-	builder.WriteString(fmt.Sprintf("%v", t.MemorialID))
+	builder.WriteString(fmt.Sprintf("%v", _m.MemorialID))
 	builder.WriteString(", ")
 	builder.WriteString("author_name=")
-	builder.WriteString(t.AuthorName)
+	builder.WriteString(_m.AuthorName)
 	builder.WriteString(", ")
 	builder.WriteString("message=")
-	builder.WriteString(t.Message)
+	builder.WriteString(_m.Message)
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
-	builder.WriteString(t.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

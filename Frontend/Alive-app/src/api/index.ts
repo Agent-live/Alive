@@ -9,6 +9,7 @@ export { skillApi } from './skills';
 export { skillShopApi } from './skillShop';
 export { experienceApi } from './experiences';
 export { mediaApi } from './media';
+export { settingsApi } from './settings';
 export { conversationApi } from './conversations';
 export { legacyApi } from './legacy';
 export { chatApi } from './chat';

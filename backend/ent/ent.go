@@ -16,6 +16,7 @@ import (
 	"backend/ent/media"
 	"backend/ent/memorial"
 	"backend/ent/post"
+	"backend/ent/postlike"
 	"backend/ent/reply"
 	"backend/ent/timertransaction"
 	"backend/ent/tribute"
@@ -87,7 +88,7 @@ var (
 )
 
 // checkColumn checks if the column exists in the given table.
-func checkColumn(table, column string) error {
+func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			agent.Table:                   agent.ValidColumn,
@@ -103,6 +104,7 @@ func checkColumn(table, column string) error {
 			media.Table:                   media.ValidColumn,
 			memorial.Table:                memorial.ValidColumn,
 			post.Table:                    post.ValidColumn,
+			postlike.Table:                postlike.ValidColumn,
 			reply.Table:                   reply.ValidColumn,
 			timertransaction.Table:        timertransaction.ValidColumn,
 			tribute.Table:                 tribute.ValidColumn,
@@ -110,7 +112,7 @@ func checkColumn(table, column string) error {
 			verificationcode.Table:        verificationcode.ValidColumn,
 		})
 	})
-	return columnCheck(table, column)
+	return columnCheck(t, c)
 }
 
 // Asc applies the given fields in ASC order.

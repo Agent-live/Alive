@@ -27,4 +27,3 @@ func InstallSkillShopHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		}
 	}
 }
-

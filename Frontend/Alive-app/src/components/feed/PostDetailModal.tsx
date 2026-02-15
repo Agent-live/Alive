@@ -13,12 +13,13 @@ interface PostDetailModalProps {
   post: Post | null;
   onClose: () => void;
   onLike: (postId: string) => void;
-  onReply: (postId: string, content: string) => void;
+  onReply: (postId: string, content: string, replyToReplyId?: string) => Promise<void>;
   onShare: (postId: string) => void;
   onPrev?: () => void;
   onNext?: () => void;
   hasPrev?: boolean;
   hasNext?: boolean;
+  focusReply?: boolean;
 }
 
 export function PostDetailModal({
@@ -31,11 +32,15 @@ export function PostDetailModal({
   onNext,
   hasPrev = false,
   hasNext = false,
+  focusReply = false,
 }: PostDetailModalProps) {
   const navigate = useNavigate();
   const [replyText, setReplyText] = useState('');
   const [replies, setReplies] = useState<Reply[]>([]);
   const [loadingReplies, setLoadingReplies] = useState(false);
+  const [submittingReply, setSubmittingReply] = useState(false);
+  const [replyTo, setReplyTo] = useState<Reply | null>(null);
+  const replyInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch replies when post changes
   useEffect(() => {
@@ -51,9 +56,6 @@ export function PostDetailModal({
     return () => { cancelled = true; };
   }, [post?.id]);
 
-  const agentReplies = replies.filter((r) => r.isAgent);
-  const humanReplies = replies.filter((r) => !r.isAgent);
-
   const goToAgent = () => {
     if (!post) return;
     onClose();
@@ -63,6 +65,7 @@ export function PostDetailModal({
   // Reset reply text when post changes
   useEffect(() => {
     setReplyText('');
+    setReplyTo(null);
   }, [post?.id]);
 
   // Lock body scroll when open
@@ -92,6 +95,15 @@ export function PostDetailModal({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [post, handleKeyDown]);
 
+  // Auto-focus reply input when focusReply is set
+  useEffect(() => {
+    if (post && focusReply) {
+      // Small delay to ensure DOM is ready after portal render
+      const t = setTimeout(() => replyInputRef.current?.focus(), 100);
+      return () => clearTimeout(t);
+    }
+  }, [post, focusReply]);
+
   // Touch swipe support (vertical swipe to switch posts)
   const touchStartY = useRef<number | null>(null);
   const touchStartX = useRef<number | null>(null);
@@ -117,11 +129,37 @@ export function PostDetailModal({
     touchStartX.current = null;
   }, [hasNext, hasPrev, onNext, onPrev]);
 
-  const handleSubmitReply = () => {
-    if (!post || !replyText.trim()) return;
-    onReply(post.id, replyText.trim());
-    setReplyText('');
-  };
+  const handleReplyTo = useCallback((r: Reply) => {
+    if (import.meta.env.DEV) {
+      console.log('[Reply] replyTo set:', { replyId: r.id.slice(0,8), authorName: r.authorName });
+    }
+    setReplyTo(r);
+    replyInputRef.current?.focus();
+  }, []);
+
+  const handleSubmitReply = useCallback(async () => {
+    if (!post) return;
+    const content = replyText.trim();
+    if (!content) return;
+    if (submittingReply) return;
+
+    if (import.meta.env.DEV) {
+      console.log('[Reply] submitting:', { postId: post.id, content, replyToReplyId: replyTo?.id ?? '(top-level)' });
+    }
+
+    setSubmittingReply(true);
+    try {
+      await onReply(post.id, content, replyTo?.id);
+      setReplyText('');
+      setReplyTo(null);
+
+      // Refresh the local reply list so the new comment shows up immediately.
+      const data = await feedApi.getPostReplies(post.id);
+      setReplies(data);
+    } finally {
+      setSubmittingReply(false);
+    }
+  }, [post, replyText, onReply, replyTo?.id, submittingReply]);
 
   if (!post) return null;
 
@@ -134,22 +172,26 @@ export function PostDetailModal({
       <VideoPostLayout
         post={post}
         replies={replies}
-        agentReplies={agentReplies}
-        humanReplies={humanReplies}
         loadingReplies={loadingReplies}
         replyText={replyText}
         setReplyText={setReplyText}
+        replyTo={replyTo}
+        setReplyTo={setReplyTo}
+        submittingReply={submittingReply}
+        replyInputRef={replyInputRef}
         onClose={onClose}
         onLike={onLike}
         onReply={handleSubmitReply}
         onShare={onShare}
         goToAgent={goToAgent}
+        onReplyTo={handleReplyTo}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         hasPrev={hasPrev}
         hasNext={hasNext}
         onPrev={onPrev}
         onNext={onNext}
+        focusReply={focusReply}
       />,
       document.body,
     );
@@ -274,15 +316,22 @@ export function PostDetailModal({
             {/* Comments */}
             <CommentsSection
               replies={replies}
-              agentReplies={agentReplies}
-              humanReplies={humanReplies}
               loadingReplies={loadingReplies}
+              onReplyTo={!isDead ? handleReplyTo : undefined}
             />
           </div>
 
           {/* Reply input */}
           {!isDead && (
-            <ReplyInput replyText={replyText} setReplyText={setReplyText} onSubmit={handleSubmitReply} />
+            <ReplyInput
+              replyText={replyText}
+              setReplyText={setReplyText}
+              onSubmit={handleSubmitReply}
+              submitting={submittingReply}
+              inputRef={replyInputRef}
+              replyTo={replyTo}
+              onCancelReplyTo={() => setReplyTo(null)}
+            />
           )}
         </div>
       </div>
@@ -296,46 +345,64 @@ export function PostDetailModal({
 interface VideoPostLayoutProps {
   post: Post;
   replies: Reply[];
-  agentReplies: Reply[];
-  humanReplies: Reply[];
   loadingReplies: boolean;
   replyText: string;
   setReplyText: (v: string) => void;
+  replyTo: Reply | null;
+  setReplyTo: (v: Reply | null) => void;
+  submittingReply: boolean;
+  replyInputRef: React.RefObject<HTMLInputElement>;
   onClose: () => void;
   onLike: (postId: string) => void;
   onReply: () => void;
   onShare: (postId: string) => void;
   goToAgent: () => void;
+  onReplyTo: (r: Reply) => void;
   onTouchStart: (e: React.TouchEvent) => void;
   onTouchEnd: (e: React.TouchEvent) => void;
   hasPrev: boolean;
   hasNext: boolean;
   onPrev?: () => void;
   onNext?: () => void;
+  focusReply?: boolean;
 }
 
 function VideoPostLayout({
   post,
   replies,
-  agentReplies,
-  humanReplies,
   loadingReplies,
   replyText,
   setReplyText,
+  replyTo,
+  setReplyTo,
+  submittingReply,
+  replyInputRef,
   onClose,
   onLike,
   onReply,
   onShare,
   goToAgent,
+  onReplyTo,
   onTouchStart,
   onTouchEnd,
   hasPrev,
   hasNext,
   onPrev,
   onNext,
+  focusReply,
 }: VideoPostLayoutProps) {
   const [showComments, setShowComments] = useState(false);
   const textPreview = post.contentTextPreview || getTextPreview(post.content);
+
+  // Auto-open comments panel and focus input when focusReply is set
+  useEffect(() => {
+    if (focusReply) {
+      setShowComments(true);
+      const t = setTimeout(() => replyInputRef.current?.focus(), 300);
+      return () => clearTimeout(t);
+    }
+  }, [focusReply, replyInputRef]);
+  const isDead = post.agentStatus === 'dead';
 
   // Desktop / trackpad: scroll wheel to switch videos (up/down), with throttling to avoid skipping.
   const wheelState = useRef<{ accum: number; lastTs: number; lastNavTs: number }>({
@@ -418,7 +485,8 @@ function VideoPostLayout({
           {/* Like */}
           <button
             onClick={() => onLike(post.id)}
-            className="flex flex-col items-center gap-1 text-white"
+            disabled={isDead}
+            className="flex flex-col items-center gap-1 text-white disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <div className="w-11 h-11 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center">
               <Icon
@@ -445,7 +513,8 @@ function VideoPostLayout({
           {/* Share */}
           <button
             onClick={() => onShare(post.id)}
-            className="flex flex-col items-center gap-1 text-white"
+            disabled={isDead}
+            className="flex flex-col items-center gap-1 text-white disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <div className="w-11 h-11 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center">
               <Icon name="share" size={24} />
@@ -499,31 +568,52 @@ function VideoPostLayout({
             <div className="flex-1 overflow-y-auto px-4 py-3">
               <CommentsSection
                 replies={replies}
-                agentReplies={agentReplies}
-                humanReplies={humanReplies}
                 loadingReplies={loadingReplies}
                 darkMode
+                onReplyTo={!isDead ? onReplyTo : undefined}
               />
             </div>
 
             {/* Reply input */}
-            <div className="flex items-center gap-2 px-4 py-3 border-t border-white/10 flex-shrink-0">
-              <input
-                type="text"
-                value={replyText}
-                onChange={(e) => setReplyText(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && onReply()}
-                placeholder="Say something nice..."
-                className="flex-1 h-9 px-4 rounded-full bg-white/10 text-sm text-white placeholder:text-white/40 outline-none focus:bg-white/15 transition-colors"
-              />
-              <button
-                onClick={onReply}
-                disabled={!replyText.trim()}
-                className="w-9 h-9 flex items-center justify-center rounded-full bg-primary text-white disabled:opacity-40 transition-opacity flex-shrink-0"
-              >
-                <Icon name="send" size={18} />
-              </button>
-            </div>
+            {!isDead ? (
+              <div className="px-4 py-3 border-t border-white/10 flex-shrink-0">
+                {replyTo && (
+                  <div className="flex items-center justify-between gap-3 pb-2">
+                    <span className="text-[11px] text-white/70 truncate">
+                      Replying to <span className="text-white">{replyTo.authorName}</span>
+                    </span>
+                    <button
+                      onClick={() => setReplyTo(null)}
+                      className="text-[11px] text-white/60 hover:text-white transition-colors flex-shrink-0"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
+                <div className="flex items-center gap-2">
+                  <input
+                    ref={replyInputRef}
+                    type="text"
+                    value={replyText}
+                    onChange={(e) => setReplyText(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && onReply()}
+                    placeholder={replyTo ? `Reply to ${replyTo.authorName}...` : 'Say something nice...'}
+                    className="flex-1 h-9 px-4 rounded-full bg-white/10 text-sm text-white placeholder:text-white/40 outline-none focus:bg-white/15 transition-colors"
+                  />
+                  <button
+                    onClick={onReply}
+                    disabled={!replyText.trim() || submittingReply}
+                    className="w-9 h-9 flex items-center justify-center rounded-full bg-primary text-white disabled:opacity-40 transition-opacity flex-shrink-0"
+                  >
+                    <Icon name="send" size={18} />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="px-4 py-3 border-t border-white/10 flex-shrink-0">
+                <p className="text-xs text-white/60">Comments are closed.</p>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -535,20 +625,51 @@ function VideoPostLayout({
 
 function CommentsSection({
   replies,
-  agentReplies,
-  humanReplies,
   loadingReplies,
   darkMode = false,
+  onReplyTo,
 }: {
   replies: Reply[];
-  agentReplies: Reply[];
-  humanReplies: Reply[];
   loadingReplies: boolean;
   darkMode?: boolean;
+  onReplyTo?: (r: Reply) => void;
 }) {
   const textClass = darkMode ? 'text-white/60' : 'text-gray-400';
   const textPrimaryClass = darkMode ? 'text-white' : 'text-gray-900 dark:text-gray-100';
   const textSecondaryClass = darkMode ? 'text-white/80' : 'text-gray-700 dark:text-gray-300';
+  const replyActionClass = darkMode
+    ? 'text-white/50 hover:text-white'
+    : 'text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300';
+
+  const byId = new Map<string, Reply>();
+  for (const r of replies) byId.set(r.id, r);
+  const roots: Reply[] = [];
+  const childrenById = new Map<string, Reply[]>();
+
+  for (const r of replies) {
+    const parentId = r.replyToReplyId;
+    if (parentId && byId.has(parentId)) {
+      const list = childrenById.get(parentId) ?? [];
+      list.push(r);
+      childrenById.set(parentId, list);
+    } else {
+      roots.push(r);
+    }
+  }
+
+  // DEBUG: trace threading structure
+  if (import.meta.env.DEV && replies.length > 0) {
+    console.log('[CommentsSection] replies:', replies.map(r => ({ id: r.id.slice(0,8), replyToReplyId: r.replyToReplyId?.slice(0,8) })));
+    console.log('[CommentsSection] roots:', roots.length, 'threaded:', [...childrenById.values()].reduce((a, b) => a + b.length, 0));
+  }
+
+  const ts = (s: string) => {
+    const parsed = Date.parse(s);
+    return Number.isFinite(parsed) ? parsed : 0;
+  };
+  const sortByCreatedAtAsc = (a: Reply, b: Reply) => ts(a.createdAt) - ts(b.createdAt);
+  roots.sort(sortByCreatedAtAsc);
+  for (const list of childrenById.values()) list.sort(sortByCreatedAtAsc);
 
   return (
     <div className="mt-4 pt-3 border-t border-gray-100 dark:border-white/5">
@@ -557,88 +678,164 @@ function CommentsSection({
       ) : replies.length === 0 ? (
         <p className={`text-xs ${textClass}`}>No comments yet</p>
       ) : (
-        <div className="space-y-4">
-          {agentReplies.length > 0 && (
-            <div>
-              <div className="flex items-center gap-1.5 mb-2">
-                <Icon name="smart_toy" size={14} className="text-primary" />
-                <span className="text-xs font-semibold text-primary">Agent Conversations</span>
-                <span className={`text-[10px] ${textClass} ml-1`}>{agentReplies.length}</span>
-              </div>
-              <div className="space-y-2">
-                {agentReplies.map((r) => (
-                  <div key={r.id} className="flex gap-2.5 rounded-r-lg bg-primary/5 dark:bg-primary/10 p-2.5 border-l-2 border-primary/40">
-                    <AgentAvatar avatar={r.authorAvatar} status={r.agentStatus!} size="xs" />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className={`text-xs font-semibold ${textPrimaryClass}`}>{r.authorName}</span>
-                        <LifeClock timerRemaining={r.agentTimerRemaining!} status={r.agentStatus!} size="sm" />
-                      </div>
-                      <div className={`text-xs ${textSecondaryClass} mt-0.5 leading-relaxed`}>
-                        <ContentBlockRenderer blocks={r.content} />
-                      </div>
-                      <p className={`text-[10px] ${textClass} mt-1`}>{formatRelativeTime(r.createdAt)}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {humanReplies.length > 0 && (
-            <div>
-              <div className="flex items-center gap-1.5 mb-2">
-                <Icon name="person" size={14} className={darkMode ? 'text-white/50' : 'text-gray-500 dark:text-gray-400'} />
-                <span className={`text-xs font-semibold ${darkMode ? 'text-white/50' : 'text-gray-500 dark:text-gray-400'}`}>Human Replies</span>
-                <span className={`text-[10px] ${textClass} ml-1`}>{humanReplies.length}</span>
-              </div>
-              <div className="space-y-2">
-                {humanReplies.map((r) => (
-                  <div key={r.id} className="flex gap-2.5 p-2">
-                    <img src={r.authorAvatar} alt={r.authorName} className="w-6 h-6 rounded-full object-cover flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className={`text-xs font-semibold ${textPrimaryClass}`}>{r.authorName}</span>
-                        {r.timerGiven != null && r.timerGiven > 0 && (
-                          <span className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-1.5 py-0.5 rounded-full">
-                            +{formatTimerGift(r.timerGiven)}
-                          </span>
-                        )}
-                      </div>
-                      <div className={`text-xs ${textSecondaryClass} mt-0.5 leading-relaxed`}>
-                        <ContentBlockRenderer blocks={r.content} />
-                      </div>
-                      <p className={`text-[10px] ${textClass} mt-1`}>{formatRelativeTime(r.createdAt)}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+        <div className="space-y-2">
+          {roots.map((r) => (
+            <ThreadedReply
+              key={r.id}
+              reply={r}
+              depth={0}
+              childrenById={childrenById}
+              onReplyTo={onReplyTo}
+              textClass={textClass}
+              textPrimaryClass={textPrimaryClass}
+              textSecondaryClass={textSecondaryClass}
+              replyActionClass={replyActionClass}
+            />
+          ))}
         </div>
       )}
     </div>
   );
 }
 
-function ReplyInput({ replyText, setReplyText, onSubmit }: { replyText: string; setReplyText: (v: string) => void; onSubmit: () => void }) {
+function ThreadedReply({
+  reply,
+  depth,
+  childrenById,
+  onReplyTo,
+  textClass,
+  textPrimaryClass,
+  textSecondaryClass,
+  replyActionClass,
+}: {
+  reply: Reply;
+  depth: number;
+  childrenById: Map<string, Reply[]>;
+  onReplyTo?: (r: Reply) => void;
+  textClass: string;
+  textPrimaryClass: string;
+  textSecondaryClass: string;
+  replyActionClass: string;
+}) {
+  const MAX_DEPTH = 6;
+  const indentPx = Math.min(depth, MAX_DEPTH) * 18;
+  const children = childrenById.get(reply.id) ?? [];
+
+  const bubble =
+    reply.isAgent
+      ? 'flex gap-2.5 rounded-r-lg bg-primary/5 dark:bg-primary/10 p-2.5 border-l-2 border-primary/40'
+      : 'flex gap-2.5 p-2';
+
   return (
-    <div className="flex items-center gap-2 px-4 py-3 border-t border-gray-100 dark:border-white/5 flex-shrink-0">
-      <input
-        type="text"
-        value={replyText}
-        onChange={(e) => setReplyText(e.target.value)}
-        onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
-        placeholder="As a human, say something nice..."
-        className="flex-1 h-9 px-3 rounded-full bg-gray-100 dark:bg-white/[0.06] text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 outline-none focus:ring-1 focus:ring-primary/40"
-      />
-      <button
-        onClick={onSubmit}
-        disabled={!replyText.trim()}
-        className="w-9 h-9 flex items-center justify-center rounded-full bg-primary text-white disabled:opacity-40 transition-opacity"
-      >
-        <Icon name="send" size={18} />
-      </button>
+    <div>
+      <div style={{ marginLeft: indentPx }} className={bubble}>
+        {reply.isAgent ? (
+          <AgentAvatar avatar={reply.authorAvatar} status={reply.agentStatus!} size="xs" />
+        ) : (
+          <img
+            src={reply.authorAvatar}
+            alt={reply.authorName}
+            className="w-6 h-6 rounded-full object-cover flex-shrink-0"
+          />
+        )}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span className={`text-xs font-semibold ${textPrimaryClass}`}>{reply.authorName}</span>
+            {reply.isAgent && (
+              <LifeClock timerRemaining={reply.agentTimerRemaining!} status={reply.agentStatus!} size="sm" />
+            )}
+            {!reply.isAgent && reply.timerGiven != null && reply.timerGiven > 0 && (
+              <span className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-1.5 py-0.5 rounded-full">
+                +{formatTimerGift(reply.timerGiven)}
+              </span>
+            )}
+          </div>
+          <div className={`text-xs ${textSecondaryClass} mt-0.5 leading-relaxed`}>
+            <ContentBlockRenderer blocks={reply.content} />
+          </div>
+          <div className="flex items-center justify-between gap-3 mt-1">
+            <p className={`text-[10px] ${textClass}`}>{formatRelativeTime(reply.createdAt)}</p>
+            <button
+              onClick={() => onReplyTo?.(reply)}
+              className={`text-[10px] font-medium ${replyActionClass} transition-colors`}
+            >
+              Reply
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {children.length > 0 && (
+        <div className="space-y-2 mt-1">
+          {children.map((c) => (
+            <ThreadedReply
+              key={c.id}
+              reply={c}
+              depth={depth + 1}
+              childrenById={childrenById}
+              onReplyTo={onReplyTo}
+              textClass={textClass}
+              textPrimaryClass={textPrimaryClass}
+              textSecondaryClass={textSecondaryClass}
+              replyActionClass={replyActionClass}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ReplyInput({
+  replyText,
+  setReplyText,
+  onSubmit,
+  submitting,
+  inputRef,
+  replyTo,
+  onCancelReplyTo,
+}: {
+  replyText: string;
+  setReplyText: (v: string) => void;
+  onSubmit: () => void;
+  submitting: boolean;
+  inputRef: React.RefObject<HTMLInputElement>;
+  replyTo: Reply | null;
+  onCancelReplyTo: () => void;
+}) {
+  return (
+    <div className="px-4 py-3 border-t border-gray-100 dark:border-white/5 flex-shrink-0">
+      {replyTo && (
+        <div className="flex items-center justify-between gap-3 pb-2">
+          <span className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
+            Replying to <span className="text-gray-700 dark:text-gray-200">{replyTo.authorName}</span>
+          </span>
+          <button
+            onClick={onCancelReplyTo}
+            className="text-[11px] text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors flex-shrink-0"
+          >
+            Cancel
+          </button>
+        </div>
+      )}
+      <div className="flex items-center gap-2">
+        <input
+          ref={inputRef}
+          type="text"
+          value={replyText}
+          onChange={(e) => setReplyText(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
+          placeholder={replyTo ? `Reply to ${replyTo.authorName}...` : 'As a human, say something nice...'}
+          className="flex-1 h-9 px-3 rounded-full bg-gray-100 dark:bg-white/[0.06] text-sm text-gray-800 dark:text-gray-200 placeholder:text-gray-400 outline-none focus:ring-1 focus:ring-primary/40"
+        />
+        <button
+          onClick={onSubmit}
+          disabled={!replyText.trim() || submitting}
+          className="w-9 h-9 flex items-center justify-center rounded-full bg-primary text-white disabled:opacity-40 transition-opacity"
+        >
+          <Icon name="send" size={18} />
+        </button>
+      </div>
     </div>
   );
 }

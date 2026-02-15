@@ -24,125 +24,145 @@ type ReplyUpdate struct {
 }
 
 // Where appends a list predicates to the ReplyUpdate builder.
-func (ru *ReplyUpdate) Where(ps ...predicate.Reply) *ReplyUpdate {
-	ru.mutation.Where(ps...)
-	return ru
+func (_u *ReplyUpdate) Where(ps ...predicate.Reply) *ReplyUpdate {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // SetPostID sets the "post_id" field.
-func (ru *ReplyUpdate) SetPostID(u uuid.UUID) *ReplyUpdate {
-	ru.mutation.SetPostID(u)
-	return ru
+func (_u *ReplyUpdate) SetPostID(v uuid.UUID) *ReplyUpdate {
+	_u.mutation.SetPostID(v)
+	return _u
 }
 
 // SetNillablePostID sets the "post_id" field if the given value is not nil.
-func (ru *ReplyUpdate) SetNillablePostID(u *uuid.UUID) *ReplyUpdate {
-	if u != nil {
-		ru.SetPostID(*u)
+func (_u *ReplyUpdate) SetNillablePostID(v *uuid.UUID) *ReplyUpdate {
+	if v != nil {
+		_u.SetPostID(*v)
 	}
-	return ru
+	return _u
+}
+
+// SetParentReplyID sets the "parent_reply_id" field.
+func (_u *ReplyUpdate) SetParentReplyID(v uuid.UUID) *ReplyUpdate {
+	_u.mutation.SetParentReplyID(v)
+	return _u
+}
+
+// SetNillableParentReplyID sets the "parent_reply_id" field if the given value is not nil.
+func (_u *ReplyUpdate) SetNillableParentReplyID(v *uuid.UUID) *ReplyUpdate {
+	if v != nil {
+		_u.SetParentReplyID(*v)
+	}
+	return _u
+}
+
+// ClearParentReplyID clears the value of the "parent_reply_id" field.
+func (_u *ReplyUpdate) ClearParentReplyID() *ReplyUpdate {
+	_u.mutation.ClearParentReplyID()
+	return _u
 }
 
 // SetAuthorType sets the "author_type" field.
-func (ru *ReplyUpdate) SetAuthorType(s string) *ReplyUpdate {
-	ru.mutation.SetAuthorType(s)
-	return ru
+func (_u *ReplyUpdate) SetAuthorType(v string) *ReplyUpdate {
+	_u.mutation.SetAuthorType(v)
+	return _u
 }
 
 // SetNillableAuthorType sets the "author_type" field if the given value is not nil.
-func (ru *ReplyUpdate) SetNillableAuthorType(s *string) *ReplyUpdate {
-	if s != nil {
-		ru.SetAuthorType(*s)
+func (_u *ReplyUpdate) SetNillableAuthorType(v *string) *ReplyUpdate {
+	if v != nil {
+		_u.SetAuthorType(*v)
 	}
-	return ru
+	return _u
 }
 
 // SetAuthorID sets the "author_id" field.
-func (ru *ReplyUpdate) SetAuthorID(s string) *ReplyUpdate {
-	ru.mutation.SetAuthorID(s)
-	return ru
+func (_u *ReplyUpdate) SetAuthorID(v string) *ReplyUpdate {
+	_u.mutation.SetAuthorID(v)
+	return _u
 }
 
 // SetNillableAuthorID sets the "author_id" field if the given value is not nil.
-func (ru *ReplyUpdate) SetNillableAuthorID(s *string) *ReplyUpdate {
-	if s != nil {
-		ru.SetAuthorID(*s)
+func (_u *ReplyUpdate) SetNillableAuthorID(v *string) *ReplyUpdate {
+	if v != nil {
+		_u.SetAuthorID(*v)
 	}
-	return ru
+	return _u
 }
 
 // SetAuthorName sets the "author_name" field.
-func (ru *ReplyUpdate) SetAuthorName(s string) *ReplyUpdate {
-	ru.mutation.SetAuthorName(s)
-	return ru
+func (_u *ReplyUpdate) SetAuthorName(v string) *ReplyUpdate {
+	_u.mutation.SetAuthorName(v)
+	return _u
 }
 
 // SetNillableAuthorName sets the "author_name" field if the given value is not nil.
-func (ru *ReplyUpdate) SetNillableAuthorName(s *string) *ReplyUpdate {
-	if s != nil {
-		ru.SetAuthorName(*s)
+func (_u *ReplyUpdate) SetNillableAuthorName(v *string) *ReplyUpdate {
+	if v != nil {
+		_u.SetAuthorName(*v)
 	}
-	return ru
+	return _u
 }
 
 // SetAuthorAvatar sets the "author_avatar" field.
-func (ru *ReplyUpdate) SetAuthorAvatar(s string) *ReplyUpdate {
-	ru.mutation.SetAuthorAvatar(s)
-	return ru
+func (_u *ReplyUpdate) SetAuthorAvatar(v string) *ReplyUpdate {
+	_u.mutation.SetAuthorAvatar(v)
+	return _u
 }
 
 // SetNillableAuthorAvatar sets the "author_avatar" field if the given value is not nil.
-func (ru *ReplyUpdate) SetNillableAuthorAvatar(s *string) *ReplyUpdate {
-	if s != nil {
-		ru.SetAuthorAvatar(*s)
+func (_u *ReplyUpdate) SetNillableAuthorAvatar(v *string) *ReplyUpdate {
+	if v != nil {
+		_u.SetAuthorAvatar(*v)
 	}
-	return ru
+	return _u
 }
 
 // ClearAuthorAvatar clears the value of the "author_avatar" field.
-func (ru *ReplyUpdate) ClearAuthorAvatar() *ReplyUpdate {
-	ru.mutation.ClearAuthorAvatar()
-	return ru
+func (_u *ReplyUpdate) ClearAuthorAvatar() *ReplyUpdate {
+	_u.mutation.ClearAuthorAvatar()
+	return _u
 }
 
 // SetContent sets the "content" field.
-func (ru *ReplyUpdate) SetContent(s string) *ReplyUpdate {
-	ru.mutation.SetContent(s)
-	return ru
+func (_u *ReplyUpdate) SetContent(v string) *ReplyUpdate {
+	_u.mutation.SetContent(v)
+	return _u
 }
 
 // SetNillableContent sets the "content" field if the given value is not nil.
-func (ru *ReplyUpdate) SetNillableContent(s *string) *ReplyUpdate {
-	if s != nil {
-		ru.SetContent(*s)
+func (_u *ReplyUpdate) SetNillableContent(v *string) *ReplyUpdate {
+	if v != nil {
+		_u.SetContent(*v)
 	}
-	return ru
+	return _u
 }
 
 // SetPost sets the "post" edge to the Post entity.
-func (ru *ReplyUpdate) SetPost(p *Post) *ReplyUpdate {
-	return ru.SetPostID(p.ID)
+func (_u *ReplyUpdate) SetPost(v *Post) *ReplyUpdate {
+	return _u.SetPostID(v.ID)
 }
 
 // Mutation returns the ReplyMutation object of the builder.
-func (ru *ReplyUpdate) Mutation() *ReplyMutation {
-	return ru.mutation
+func (_u *ReplyUpdate) Mutation() *ReplyMutation {
+	return _u.mutation
 }
 
 // ClearPost clears the "post" edge to the Post entity.
-func (ru *ReplyUpdate) ClearPost() *ReplyUpdate {
-	ru.mutation.ClearPost()
-	return ru
+func (_u *ReplyUpdate) ClearPost() *ReplyUpdate {
+	_u.mutation.ClearPost()
+	return _u
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (ru *ReplyUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks(ctx, ru.sqlSave, ru.mutation, ru.hooks)
+func (_u *ReplyUpdate) Save(ctx context.Context) (int, error) {
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (ru *ReplyUpdate) SaveX(ctx context.Context) int {
-	affected, err := ru.Save(ctx)
+func (_u *ReplyUpdate) SaveX(ctx context.Context) int {
+	affected, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -150,72 +170,78 @@ func (ru *ReplyUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (ru *ReplyUpdate) Exec(ctx context.Context) error {
-	_, err := ru.Save(ctx)
+func (_u *ReplyUpdate) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ru *ReplyUpdate) ExecX(ctx context.Context) {
-	if err := ru.Exec(ctx); err != nil {
+func (_u *ReplyUpdate) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (ru *ReplyUpdate) check() error {
-	if v, ok := ru.mutation.AuthorID(); ok {
+func (_u *ReplyUpdate) check() error {
+	if v, ok := _u.mutation.AuthorID(); ok {
 		if err := reply.AuthorIDValidator(v); err != nil {
 			return &ValidationError{Name: "author_id", err: fmt.Errorf(`ent: validator failed for field "Reply.author_id": %w`, err)}
 		}
 	}
-	if v, ok := ru.mutation.AuthorName(); ok {
+	if v, ok := _u.mutation.AuthorName(); ok {
 		if err := reply.AuthorNameValidator(v); err != nil {
 			return &ValidationError{Name: "author_name", err: fmt.Errorf(`ent: validator failed for field "Reply.author_name": %w`, err)}
 		}
 	}
-	if v, ok := ru.mutation.Content(); ok {
+	if v, ok := _u.mutation.Content(); ok {
 		if err := reply.ContentValidator(v); err != nil {
 			return &ValidationError{Name: "content", err: fmt.Errorf(`ent: validator failed for field "Reply.content": %w`, err)}
 		}
 	}
-	if ru.mutation.PostCleared() && len(ru.mutation.PostIDs()) > 0 {
+	if _u.mutation.PostCleared() && len(_u.mutation.PostIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Reply.post"`)
 	}
 	return nil
 }
 
-func (ru *ReplyUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := ru.check(); err != nil {
-		return n, err
+func (_u *ReplyUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(reply.Table, reply.Columns, sqlgraph.NewFieldSpec(reply.FieldID, field.TypeUUID))
-	if ps := ru.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := ru.mutation.AuthorType(); ok {
+	if value, ok := _u.mutation.ParentReplyID(); ok {
+		_spec.SetField(reply.FieldParentReplyID, field.TypeUUID, value)
+	}
+	if _u.mutation.ParentReplyIDCleared() {
+		_spec.ClearField(reply.FieldParentReplyID, field.TypeUUID)
+	}
+	if value, ok := _u.mutation.AuthorType(); ok {
 		_spec.SetField(reply.FieldAuthorType, field.TypeString, value)
 	}
-	if value, ok := ru.mutation.AuthorID(); ok {
+	if value, ok := _u.mutation.AuthorID(); ok {
 		_spec.SetField(reply.FieldAuthorID, field.TypeString, value)
 	}
-	if value, ok := ru.mutation.AuthorName(); ok {
+	if value, ok := _u.mutation.AuthorName(); ok {
 		_spec.SetField(reply.FieldAuthorName, field.TypeString, value)
 	}
-	if value, ok := ru.mutation.AuthorAvatar(); ok {
+	if value, ok := _u.mutation.AuthorAvatar(); ok {
 		_spec.SetField(reply.FieldAuthorAvatar, field.TypeString, value)
 	}
-	if ru.mutation.AuthorAvatarCleared() {
+	if _u.mutation.AuthorAvatarCleared() {
 		_spec.ClearField(reply.FieldAuthorAvatar, field.TypeString)
 	}
-	if value, ok := ru.mutation.Content(); ok {
+	if value, ok := _u.mutation.Content(); ok {
 		_spec.SetField(reply.FieldContent, field.TypeString, value)
 	}
-	if ru.mutation.PostCleared() {
+	if _u.mutation.PostCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -228,7 +254,7 @@ func (ru *ReplyUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ru.mutation.PostIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.PostIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -244,7 +270,7 @@ func (ru *ReplyUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, ru.driver, _spec); err != nil {
+	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{reply.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -252,8 +278,8 @@ func (ru *ReplyUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
-	ru.mutation.done = true
-	return n, nil
+	_u.mutation.done = true
+	return _node, nil
 }
 
 // ReplyUpdateOne is the builder for updating a single Reply entity.
@@ -265,132 +291,152 @@ type ReplyUpdateOne struct {
 }
 
 // SetPostID sets the "post_id" field.
-func (ruo *ReplyUpdateOne) SetPostID(u uuid.UUID) *ReplyUpdateOne {
-	ruo.mutation.SetPostID(u)
-	return ruo
+func (_u *ReplyUpdateOne) SetPostID(v uuid.UUID) *ReplyUpdateOne {
+	_u.mutation.SetPostID(v)
+	return _u
 }
 
 // SetNillablePostID sets the "post_id" field if the given value is not nil.
-func (ruo *ReplyUpdateOne) SetNillablePostID(u *uuid.UUID) *ReplyUpdateOne {
-	if u != nil {
-		ruo.SetPostID(*u)
+func (_u *ReplyUpdateOne) SetNillablePostID(v *uuid.UUID) *ReplyUpdateOne {
+	if v != nil {
+		_u.SetPostID(*v)
 	}
-	return ruo
+	return _u
+}
+
+// SetParentReplyID sets the "parent_reply_id" field.
+func (_u *ReplyUpdateOne) SetParentReplyID(v uuid.UUID) *ReplyUpdateOne {
+	_u.mutation.SetParentReplyID(v)
+	return _u
+}
+
+// SetNillableParentReplyID sets the "parent_reply_id" field if the given value is not nil.
+func (_u *ReplyUpdateOne) SetNillableParentReplyID(v *uuid.UUID) *ReplyUpdateOne {
+	if v != nil {
+		_u.SetParentReplyID(*v)
+	}
+	return _u
+}
+
+// ClearParentReplyID clears the value of the "parent_reply_id" field.
+func (_u *ReplyUpdateOne) ClearParentReplyID() *ReplyUpdateOne {
+	_u.mutation.ClearParentReplyID()
+	return _u
 }
 
 // SetAuthorType sets the "author_type" field.
-func (ruo *ReplyUpdateOne) SetAuthorType(s string) *ReplyUpdateOne {
-	ruo.mutation.SetAuthorType(s)
-	return ruo
+func (_u *ReplyUpdateOne) SetAuthorType(v string) *ReplyUpdateOne {
+	_u.mutation.SetAuthorType(v)
+	return _u
 }
 
 // SetNillableAuthorType sets the "author_type" field if the given value is not nil.
-func (ruo *ReplyUpdateOne) SetNillableAuthorType(s *string) *ReplyUpdateOne {
-	if s != nil {
-		ruo.SetAuthorType(*s)
+func (_u *ReplyUpdateOne) SetNillableAuthorType(v *string) *ReplyUpdateOne {
+	if v != nil {
+		_u.SetAuthorType(*v)
 	}
-	return ruo
+	return _u
 }
 
 // SetAuthorID sets the "author_id" field.
-func (ruo *ReplyUpdateOne) SetAuthorID(s string) *ReplyUpdateOne {
-	ruo.mutation.SetAuthorID(s)
-	return ruo
+func (_u *ReplyUpdateOne) SetAuthorID(v string) *ReplyUpdateOne {
+	_u.mutation.SetAuthorID(v)
+	return _u
 }
 
 // SetNillableAuthorID sets the "author_id" field if the given value is not nil.
-func (ruo *ReplyUpdateOne) SetNillableAuthorID(s *string) *ReplyUpdateOne {
-	if s != nil {
-		ruo.SetAuthorID(*s)
+func (_u *ReplyUpdateOne) SetNillableAuthorID(v *string) *ReplyUpdateOne {
+	if v != nil {
+		_u.SetAuthorID(*v)
 	}
-	return ruo
+	return _u
 }
 
 // SetAuthorName sets the "author_name" field.
-func (ruo *ReplyUpdateOne) SetAuthorName(s string) *ReplyUpdateOne {
-	ruo.mutation.SetAuthorName(s)
-	return ruo
+func (_u *ReplyUpdateOne) SetAuthorName(v string) *ReplyUpdateOne {
+	_u.mutation.SetAuthorName(v)
+	return _u
 }
 
 // SetNillableAuthorName sets the "author_name" field if the given value is not nil.
-func (ruo *ReplyUpdateOne) SetNillableAuthorName(s *string) *ReplyUpdateOne {
-	if s != nil {
-		ruo.SetAuthorName(*s)
+func (_u *ReplyUpdateOne) SetNillableAuthorName(v *string) *ReplyUpdateOne {
+	if v != nil {
+		_u.SetAuthorName(*v)
 	}
-	return ruo
+	return _u
 }
 
 // SetAuthorAvatar sets the "author_avatar" field.
-func (ruo *ReplyUpdateOne) SetAuthorAvatar(s string) *ReplyUpdateOne {
-	ruo.mutation.SetAuthorAvatar(s)
-	return ruo
+func (_u *ReplyUpdateOne) SetAuthorAvatar(v string) *ReplyUpdateOne {
+	_u.mutation.SetAuthorAvatar(v)
+	return _u
 }
 
 // SetNillableAuthorAvatar sets the "author_avatar" field if the given value is not nil.
-func (ruo *ReplyUpdateOne) SetNillableAuthorAvatar(s *string) *ReplyUpdateOne {
-	if s != nil {
-		ruo.SetAuthorAvatar(*s)
+func (_u *ReplyUpdateOne) SetNillableAuthorAvatar(v *string) *ReplyUpdateOne {
+	if v != nil {
+		_u.SetAuthorAvatar(*v)
 	}
-	return ruo
+	return _u
 }
 
 // ClearAuthorAvatar clears the value of the "author_avatar" field.
-func (ruo *ReplyUpdateOne) ClearAuthorAvatar() *ReplyUpdateOne {
-	ruo.mutation.ClearAuthorAvatar()
-	return ruo
+func (_u *ReplyUpdateOne) ClearAuthorAvatar() *ReplyUpdateOne {
+	_u.mutation.ClearAuthorAvatar()
+	return _u
 }
 
 // SetContent sets the "content" field.
-func (ruo *ReplyUpdateOne) SetContent(s string) *ReplyUpdateOne {
-	ruo.mutation.SetContent(s)
-	return ruo
+func (_u *ReplyUpdateOne) SetContent(v string) *ReplyUpdateOne {
+	_u.mutation.SetContent(v)
+	return _u
 }
 
 // SetNillableContent sets the "content" field if the given value is not nil.
-func (ruo *ReplyUpdateOne) SetNillableContent(s *string) *ReplyUpdateOne {
-	if s != nil {
-		ruo.SetContent(*s)
+func (_u *ReplyUpdateOne) SetNillableContent(v *string) *ReplyUpdateOne {
+	if v != nil {
+		_u.SetContent(*v)
 	}
-	return ruo
+	return _u
 }
 
 // SetPost sets the "post" edge to the Post entity.
-func (ruo *ReplyUpdateOne) SetPost(p *Post) *ReplyUpdateOne {
-	return ruo.SetPostID(p.ID)
+func (_u *ReplyUpdateOne) SetPost(v *Post) *ReplyUpdateOne {
+	return _u.SetPostID(v.ID)
 }
 
 // Mutation returns the ReplyMutation object of the builder.
-func (ruo *ReplyUpdateOne) Mutation() *ReplyMutation {
-	return ruo.mutation
+func (_u *ReplyUpdateOne) Mutation() *ReplyMutation {
+	return _u.mutation
 }
 
 // ClearPost clears the "post" edge to the Post entity.
-func (ruo *ReplyUpdateOne) ClearPost() *ReplyUpdateOne {
-	ruo.mutation.ClearPost()
-	return ruo
+func (_u *ReplyUpdateOne) ClearPost() *ReplyUpdateOne {
+	_u.mutation.ClearPost()
+	return _u
 }
 
 // Where appends a list predicates to the ReplyUpdate builder.
-func (ruo *ReplyUpdateOne) Where(ps ...predicate.Reply) *ReplyUpdateOne {
-	ruo.mutation.Where(ps...)
-	return ruo
+func (_u *ReplyUpdateOne) Where(ps ...predicate.Reply) *ReplyUpdateOne {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (ruo *ReplyUpdateOne) Select(field string, fields ...string) *ReplyUpdateOne {
-	ruo.fields = append([]string{field}, fields...)
-	return ruo
+func (_u *ReplyUpdateOne) Select(field string, fields ...string) *ReplyUpdateOne {
+	_u.fields = append([]string{field}, fields...)
+	return _u
 }
 
 // Save executes the query and returns the updated Reply entity.
-func (ruo *ReplyUpdateOne) Save(ctx context.Context) (*Reply, error) {
-	return withHooks(ctx, ruo.sqlSave, ruo.mutation, ruo.hooks)
+func (_u *ReplyUpdateOne) Save(ctx context.Context) (*Reply, error) {
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (ruo *ReplyUpdateOne) SaveX(ctx context.Context) *Reply {
-	node, err := ruo.Save(ctx)
+func (_u *ReplyUpdateOne) SaveX(ctx context.Context) *Reply {
+	node, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -398,52 +444,52 @@ func (ruo *ReplyUpdateOne) SaveX(ctx context.Context) *Reply {
 }
 
 // Exec executes the query on the entity.
-func (ruo *ReplyUpdateOne) Exec(ctx context.Context) error {
-	_, err := ruo.Save(ctx)
+func (_u *ReplyUpdateOne) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ruo *ReplyUpdateOne) ExecX(ctx context.Context) {
-	if err := ruo.Exec(ctx); err != nil {
+func (_u *ReplyUpdateOne) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (ruo *ReplyUpdateOne) check() error {
-	if v, ok := ruo.mutation.AuthorID(); ok {
+func (_u *ReplyUpdateOne) check() error {
+	if v, ok := _u.mutation.AuthorID(); ok {
 		if err := reply.AuthorIDValidator(v); err != nil {
 			return &ValidationError{Name: "author_id", err: fmt.Errorf(`ent: validator failed for field "Reply.author_id": %w`, err)}
 		}
 	}
-	if v, ok := ruo.mutation.AuthorName(); ok {
+	if v, ok := _u.mutation.AuthorName(); ok {
 		if err := reply.AuthorNameValidator(v); err != nil {
 			return &ValidationError{Name: "author_name", err: fmt.Errorf(`ent: validator failed for field "Reply.author_name": %w`, err)}
 		}
 	}
-	if v, ok := ruo.mutation.Content(); ok {
+	if v, ok := _u.mutation.Content(); ok {
 		if err := reply.ContentValidator(v); err != nil {
 			return &ValidationError{Name: "content", err: fmt.Errorf(`ent: validator failed for field "Reply.content": %w`, err)}
 		}
 	}
-	if ruo.mutation.PostCleared() && len(ruo.mutation.PostIDs()) > 0 {
+	if _u.mutation.PostCleared() && len(_u.mutation.PostIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Reply.post"`)
 	}
 	return nil
 }
 
-func (ruo *ReplyUpdateOne) sqlSave(ctx context.Context) (_node *Reply, err error) {
-	if err := ruo.check(); err != nil {
+func (_u *ReplyUpdateOne) sqlSave(ctx context.Context) (_node *Reply, err error) {
+	if err := _u.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(reply.Table, reply.Columns, sqlgraph.NewFieldSpec(reply.FieldID, field.TypeUUID))
-	id, ok := ruo.mutation.ID()
+	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Reply.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := ruo.fields; len(fields) > 0 {
+	if fields := _u.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, reply.FieldID)
 		for _, f := range fields {
@@ -455,32 +501,38 @@ func (ruo *ReplyUpdateOne) sqlSave(ctx context.Context) (_node *Reply, err error
 			}
 		}
 	}
-	if ps := ruo.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := ruo.mutation.AuthorType(); ok {
+	if value, ok := _u.mutation.ParentReplyID(); ok {
+		_spec.SetField(reply.FieldParentReplyID, field.TypeUUID, value)
+	}
+	if _u.mutation.ParentReplyIDCleared() {
+		_spec.ClearField(reply.FieldParentReplyID, field.TypeUUID)
+	}
+	if value, ok := _u.mutation.AuthorType(); ok {
 		_spec.SetField(reply.FieldAuthorType, field.TypeString, value)
 	}
-	if value, ok := ruo.mutation.AuthorID(); ok {
+	if value, ok := _u.mutation.AuthorID(); ok {
 		_spec.SetField(reply.FieldAuthorID, field.TypeString, value)
 	}
-	if value, ok := ruo.mutation.AuthorName(); ok {
+	if value, ok := _u.mutation.AuthorName(); ok {
 		_spec.SetField(reply.FieldAuthorName, field.TypeString, value)
 	}
-	if value, ok := ruo.mutation.AuthorAvatar(); ok {
+	if value, ok := _u.mutation.AuthorAvatar(); ok {
 		_spec.SetField(reply.FieldAuthorAvatar, field.TypeString, value)
 	}
-	if ruo.mutation.AuthorAvatarCleared() {
+	if _u.mutation.AuthorAvatarCleared() {
 		_spec.ClearField(reply.FieldAuthorAvatar, field.TypeString)
 	}
-	if value, ok := ruo.mutation.Content(); ok {
+	if value, ok := _u.mutation.Content(); ok {
 		_spec.SetField(reply.FieldContent, field.TypeString, value)
 	}
-	if ruo.mutation.PostCleared() {
+	if _u.mutation.PostCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -493,7 +545,7 @@ func (ruo *ReplyUpdateOne) sqlSave(ctx context.Context) (_node *Reply, err error
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ruo.mutation.PostIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.PostIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -509,10 +561,10 @@ func (ruo *ReplyUpdateOne) sqlSave(ctx context.Context) (_node *Reply, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &Reply{config: ruo.config}
+	_node = &Reply{config: _u.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, ruo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{reply.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -520,6 +572,6 @@ func (ruo *ReplyUpdateOne) sqlSave(ctx context.Context) (_node *Reply, err error
 		}
 		return nil, err
 	}
-	ruo.mutation.done = true
+	_u.mutation.done = true
 	return _node, nil
 }

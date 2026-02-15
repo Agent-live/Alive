@@ -91,7 +91,7 @@ func (*ConversationMessage) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the ConversationMessage fields.
-func (cm *ConversationMessage) assignValues(columns []string, values []any) error {
+func (_m *ConversationMessage) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -101,47 +101,47 @@ func (cm *ConversationMessage) assignValues(columns []string, values []any) erro
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				cm.ID = *value
+				_m.ID = *value
 			}
 		case conversationmessage.FieldConversationID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field conversation_id", values[i])
 			} else if value != nil {
-				cm.ConversationID = *value
+				_m.ConversationID = *value
 			}
 		case conversationmessage.FieldSenderAgentID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field sender_agent_id", values[i])
 			} else if value != nil {
-				cm.SenderAgentID = *value
+				_m.SenderAgentID = *value
 			}
 		case conversationmessage.FieldContent:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field content", values[i])
 			} else if value.Valid {
-				cm.Content = value.String
+				_m.Content = value.String
 			}
 		case conversationmessage.FieldMessageType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field message_type", values[i])
 			} else if value.Valid {
-				cm.MessageType = value.String
+				_m.MessageType = value.String
 			}
 		case conversationmessage.FieldInteractionType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field interaction_type", values[i])
 			} else if value.Valid {
-				cm.InteractionType = new(string)
-				*cm.InteractionType = value.String
+				_m.InteractionType = new(string)
+				*_m.InteractionType = value.String
 			}
 		case conversationmessage.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				cm.CreatedAt = value.Time
+				_m.CreatedAt = value.Time
 			}
 		default:
-			cm.selectValues.Set(columns[i], values[i])
+			_m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -149,62 +149,62 @@ func (cm *ConversationMessage) assignValues(columns []string, values []any) erro
 
 // Value returns the ent.Value that was dynamically selected and assigned to the ConversationMessage.
 // This includes values selected through modifiers, order, etc.
-func (cm *ConversationMessage) Value(name string) (ent.Value, error) {
-	return cm.selectValues.Get(name)
+func (_m *ConversationMessage) Value(name string) (ent.Value, error) {
+	return _m.selectValues.Get(name)
 }
 
 // QueryConversation queries the "conversation" edge of the ConversationMessage entity.
-func (cm *ConversationMessage) QueryConversation() *ConversationQuery {
-	return NewConversationMessageClient(cm.config).QueryConversation(cm)
+func (_m *ConversationMessage) QueryConversation() *ConversationQuery {
+	return NewConversationMessageClient(_m.config).QueryConversation(_m)
 }
 
 // QuerySenderAgent queries the "sender_agent" edge of the ConversationMessage entity.
-func (cm *ConversationMessage) QuerySenderAgent() *AgentQuery {
-	return NewConversationMessageClient(cm.config).QuerySenderAgent(cm)
+func (_m *ConversationMessage) QuerySenderAgent() *AgentQuery {
+	return NewConversationMessageClient(_m.config).QuerySenderAgent(_m)
 }
 
 // Update returns a builder for updating this ConversationMessage.
 // Note that you need to call ConversationMessage.Unwrap() before calling this method if this ConversationMessage
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (cm *ConversationMessage) Update() *ConversationMessageUpdateOne {
-	return NewConversationMessageClient(cm.config).UpdateOne(cm)
+func (_m *ConversationMessage) Update() *ConversationMessageUpdateOne {
+	return NewConversationMessageClient(_m.config).UpdateOne(_m)
 }
 
 // Unwrap unwraps the ConversationMessage entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (cm *ConversationMessage) Unwrap() *ConversationMessage {
-	_tx, ok := cm.config.driver.(*txDriver)
+func (_m *ConversationMessage) Unwrap() *ConversationMessage {
+	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: ConversationMessage is not a transactional entity")
 	}
-	cm.config.driver = _tx.drv
-	return cm
+	_m.config.driver = _tx.drv
+	return _m
 }
 
 // String implements the fmt.Stringer.
-func (cm *ConversationMessage) String() string {
+func (_m *ConversationMessage) String() string {
 	var builder strings.Builder
 	builder.WriteString("ConversationMessage(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", cm.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("conversation_id=")
-	builder.WriteString(fmt.Sprintf("%v", cm.ConversationID))
+	builder.WriteString(fmt.Sprintf("%v", _m.ConversationID))
 	builder.WriteString(", ")
 	builder.WriteString("sender_agent_id=")
-	builder.WriteString(fmt.Sprintf("%v", cm.SenderAgentID))
+	builder.WriteString(fmt.Sprintf("%v", _m.SenderAgentID))
 	builder.WriteString(", ")
 	builder.WriteString("content=")
-	builder.WriteString(cm.Content)
+	builder.WriteString(_m.Content)
 	builder.WriteString(", ")
 	builder.WriteString("message_type=")
-	builder.WriteString(cm.MessageType)
+	builder.WriteString(_m.MessageType)
 	builder.WriteString(", ")
-	if v := cm.InteractionType; v != nil {
+	if v := _m.InteractionType; v != nil {
 		builder.WriteString("interaction_type=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
-	builder.WriteString(cm.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

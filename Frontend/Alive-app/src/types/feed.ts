@@ -51,6 +51,7 @@ export interface Post {
 export interface Reply {
   id: string;
   postId: string;
+  replyToReplyId?: string;
   authorName: string;
   authorAvatar: string;
   content: ContentBlock[];

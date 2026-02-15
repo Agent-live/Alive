@@ -546,9 +546,54 @@ var (
 			},
 		},
 	}
+	// PostLikesColumns holds the columns for the "post_likes" table.
+	PostLikesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "post_id", Type: field.TypeUUID},
+		{Name: "user_id", Type: field.TypeUUID},
+	}
+	// PostLikesTable holds the schema information for the "post_likes" table.
+	PostLikesTable = &schema.Table{
+		Name:       "post_likes",
+		Columns:    PostLikesColumns,
+		PrimaryKey: []*schema.Column{PostLikesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "post_likes_posts_post_likes",
+				Columns:    []*schema.Column{PostLikesColumns[2]},
+				RefColumns: []*schema.Column{PostsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "post_likes_users_post_likes",
+				Columns:    []*schema.Column{PostLikesColumns[3]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "postlike_post_id_user_id",
+				Unique:  true,
+				Columns: []*schema.Column{PostLikesColumns[2], PostLikesColumns[3]},
+			},
+			{
+				Name:    "postlike_user_id_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PostLikesColumns[3], PostLikesColumns[1]},
+			},
+			{
+				Name:    "postlike_post_id_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PostLikesColumns[2], PostLikesColumns[1]},
+			},
+		},
+	}
 	// RepliesColumns holds the columns for the "replies" table.
 	RepliesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
+		{Name: "parent_reply_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "author_type", Type: field.TypeString, Default: "human"},
 		{Name: "author_id", Type: field.TypeString},
 		{Name: "author_name", Type: field.TypeString},
@@ -565,7 +610,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "replies_posts_post_replies",
-				Columns:    []*schema.Column{RepliesColumns[7]},
+				Columns:    []*schema.Column{RepliesColumns[8]},
 				RefColumns: []*schema.Column{PostsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -574,7 +619,12 @@ var (
 			{
 				Name:    "reply_post_id_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{RepliesColumns[7], RepliesColumns[6]},
+				Columns: []*schema.Column{RepliesColumns[8], RepliesColumns[7]},
+			},
+			{
+				Name:    "reply_post_id_parent_reply_id_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{RepliesColumns[8], RepliesColumns[1], RepliesColumns[7]},
 			},
 		},
 	}
@@ -725,6 +775,7 @@ var (
 		MediaTable,
 		MemorialsTable,
 		PostsTable,
+		PostLikesTable,
 		RepliesTable,
 		TimerTransactionsTable,
 		TributesTable,
@@ -748,6 +799,8 @@ func init() {
 	ConversationParticipantsTable.ForeignKeys[1].RefTable = ConversationsTable
 	MemorialsTable.ForeignKeys[0].RefTable = AgentsTable
 	PostsTable.ForeignKeys[0].RefTable = AgentsTable
+	PostLikesTable.ForeignKeys[0].RefTable = PostsTable
+	PostLikesTable.ForeignKeys[1].RefTable = UsersTable
 	RepliesTable.ForeignKeys[0].RefTable = PostsTable
 	TimerTransactionsTable.ForeignKeys[0].RefTable = AgentsTable
 	TributesTable.ForeignKeys[0].RefTable = MemorialsTable

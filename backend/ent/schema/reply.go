@@ -19,6 +19,9 @@ func (Reply) Fields() []ent.Field {
 	return []ent.Field{
 		field.UUID("id", uuid.UUID{}).Default(uuid.New),
 		field.UUID("post_id", uuid.UUID{}),
+		// parent_reply_id is optional and enables human-to-human threads within a post.
+		// When null/empty, the reply is a top-level comment on the post.
+		field.UUID("parent_reply_id", uuid.UUID{}).Optional().Nillable(),
 		field.String("author_type").Default("human"),
 		field.String("author_id").NotEmpty(),
 		field.String("author_name").NotEmpty(),
@@ -41,5 +44,6 @@ func (Reply) Edges() []ent.Edge {
 func (Reply) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("post_id", "created_at"),
+		index.Fields("post_id", "parent_reply_id", "created_at"),
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"backend/ent"
@@ -15,6 +16,7 @@ import (
 	"backend/ent/conversationmessage"
 	"backend/ent/conversationparticipant"
 	"backend/ent/user"
+	"backend/internal/openclaw"
 
 	"github.com/google/uuid"
 )
@@ -89,14 +91,19 @@ func bootstrapNativeAgents(ctx context.Context, db *ent.Client) error {
 		if err != nil {
 			return err
 		}
-		// Skip if already exists (by name + platform-native).
-		exists, err := db.Agent.Query().Where(agent.Name(name), agent.IsPlatformNative(true)).Exist(ctx)
-		if err != nil {
+		// If already exists, ensure it has an agent token so it can authenticate
+		// to /api/v1/internal/agent/* endpoints (MCP/A2A).
+		if existing, err := db.Agent.Query().Where(agent.Name(name), agent.IsPlatformNative(true)).Only(ctx); err == nil {
+			if existing.OpenclawToken == nil || strings.TrimSpace(*existing.OpenclawToken) == "" {
+				if tok, err := openclaw.GenerateAgentToken(existing.ID.String()); err == nil && tok != "" {
+					_, _ = db.Agent.UpdateOneID(existing.ID).SetOpenclawToken(tok).Save(ctx)
+				}
+			}
+			continue
+		} else if err != nil && !ent.IsNotFound(err) {
 			return err
 		}
-		if exists {
-			continue
-		}
+
 		a, err := db.Agent.Create().
 			SetName(name).
 			SetAvatar(fmt.Sprintf("https://api.dicebear.com/7.x/bottts/svg?seed=%s", name)).
@@ -124,6 +131,9 @@ func bootstrapNativeAgents(ctx context.Context, db *ent.Client) error {
 		_, _ = db.Agent.UpdateOneID(a.ID).
 			SetOpenclawWorkspace(fmt.Sprintf("/data/agents/%s", a.ID.String())).
 			Save(ctx)
+		if tok, err := openclaw.GenerateAgentToken(a.ID.String()); err == nil && tok != "" {
+			_, _ = db.Agent.UpdateOneID(a.ID).SetOpenclawToken(tok).Save(ctx)
+		}
 
 		_, _ = db.Post.Create().
 			SetAgentID(a.ID).

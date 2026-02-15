@@ -24,133 +24,133 @@ type MemorialCreate struct {
 }
 
 // SetAgentID sets the "agent_id" field.
-func (mc *MemorialCreate) SetAgentID(u uuid.UUID) *MemorialCreate {
-	mc.mutation.SetAgentID(u)
-	return mc
+func (_c *MemorialCreate) SetAgentID(v uuid.UUID) *MemorialCreate {
+	_c.mutation.SetAgentID(v)
+	return _c
 }
 
 // SetAgentName sets the "agent_name" field.
-func (mc *MemorialCreate) SetAgentName(s string) *MemorialCreate {
-	mc.mutation.SetAgentName(s)
-	return mc
+func (_c *MemorialCreate) SetAgentName(v string) *MemorialCreate {
+	_c.mutation.SetAgentName(v)
+	return _c
 }
 
 // SetAgentAvatar sets the "agent_avatar" field.
-func (mc *MemorialCreate) SetAgentAvatar(s string) *MemorialCreate {
-	mc.mutation.SetAgentAvatar(s)
-	return mc
+func (_c *MemorialCreate) SetAgentAvatar(v string) *MemorialCreate {
+	_c.mutation.SetAgentAvatar(v)
+	return _c
 }
 
 // SetNillableAgentAvatar sets the "agent_avatar" field if the given value is not nil.
-func (mc *MemorialCreate) SetNillableAgentAvatar(s *string) *MemorialCreate {
-	if s != nil {
-		mc.SetAgentAvatar(*s)
+func (_c *MemorialCreate) SetNillableAgentAvatar(v *string) *MemorialCreate {
+	if v != nil {
+		_c.SetAgentAvatar(*v)
 	}
-	return mc
+	return _c
 }
 
 // SetBornAt sets the "born_at" field.
-func (mc *MemorialCreate) SetBornAt(t time.Time) *MemorialCreate {
-	mc.mutation.SetBornAt(t)
-	return mc
+func (_c *MemorialCreate) SetBornAt(v time.Time) *MemorialCreate {
+	_c.mutation.SetBornAt(v)
+	return _c
 }
 
 // SetDiedAt sets the "died_at" field.
-func (mc *MemorialCreate) SetDiedAt(t time.Time) *MemorialCreate {
-	mc.mutation.SetDiedAt(t)
-	return mc
+func (_c *MemorialCreate) SetDiedAt(v time.Time) *MemorialCreate {
+	_c.mutation.SetDiedAt(v)
+	return _c
 }
 
 // SetLifespanHours sets the "lifespan_hours" field.
-func (mc *MemorialCreate) SetLifespanHours(i int64) *MemorialCreate {
-	mc.mutation.SetLifespanHours(i)
-	return mc
+func (_c *MemorialCreate) SetLifespanHours(v int64) *MemorialCreate {
+	_c.mutation.SetLifespanHours(v)
+	return _c
 }
 
 // SetNillableLifespanHours sets the "lifespan_hours" field if the given value is not nil.
-func (mc *MemorialCreate) SetNillableLifespanHours(i *int64) *MemorialCreate {
-	if i != nil {
-		mc.SetLifespanHours(*i)
+func (_c *MemorialCreate) SetNillableLifespanHours(v *int64) *MemorialCreate {
+	if v != nil {
+		_c.SetLifespanHours(*v)
 	}
-	return mc
+	return _c
 }
 
 // SetLastWords sets the "last_words" field.
-func (mc *MemorialCreate) SetLastWords(s string) *MemorialCreate {
-	mc.mutation.SetLastWords(s)
-	return mc
+func (_c *MemorialCreate) SetLastWords(v string) *MemorialCreate {
+	_c.mutation.SetLastWords(v)
+	return _c
 }
 
 // SetNillableLastWords sets the "last_words" field if the given value is not nil.
-func (mc *MemorialCreate) SetNillableLastWords(s *string) *MemorialCreate {
-	if s != nil {
-		mc.SetLastWords(*s)
+func (_c *MemorialCreate) SetNillableLastWords(v *string) *MemorialCreate {
+	if v != nil {
+		_c.SetLastWords(*v)
 	}
-	return mc
+	return _c
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (mc *MemorialCreate) SetCreatedAt(t time.Time) *MemorialCreate {
-	mc.mutation.SetCreatedAt(t)
-	return mc
+func (_c *MemorialCreate) SetCreatedAt(v time.Time) *MemorialCreate {
+	_c.mutation.SetCreatedAt(v)
+	return _c
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (mc *MemorialCreate) SetNillableCreatedAt(t *time.Time) *MemorialCreate {
-	if t != nil {
-		mc.SetCreatedAt(*t)
+func (_c *MemorialCreate) SetNillableCreatedAt(v *time.Time) *MemorialCreate {
+	if v != nil {
+		_c.SetCreatedAt(*v)
 	}
-	return mc
+	return _c
 }
 
 // SetID sets the "id" field.
-func (mc *MemorialCreate) SetID(u uuid.UUID) *MemorialCreate {
-	mc.mutation.SetID(u)
-	return mc
+func (_c *MemorialCreate) SetID(v uuid.UUID) *MemorialCreate {
+	_c.mutation.SetID(v)
+	return _c
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (mc *MemorialCreate) SetNillableID(u *uuid.UUID) *MemorialCreate {
-	if u != nil {
-		mc.SetID(*u)
+func (_c *MemorialCreate) SetNillableID(v *uuid.UUID) *MemorialCreate {
+	if v != nil {
+		_c.SetID(*v)
 	}
-	return mc
+	return _c
 }
 
 // SetAgent sets the "agent" edge to the Agent entity.
-func (mc *MemorialCreate) SetAgent(a *Agent) *MemorialCreate {
-	return mc.SetAgentID(a.ID)
+func (_c *MemorialCreate) SetAgent(v *Agent) *MemorialCreate {
+	return _c.SetAgentID(v.ID)
 }
 
 // AddTributeIDs adds the "tributes" edge to the Tribute entity by IDs.
-func (mc *MemorialCreate) AddTributeIDs(ids ...uuid.UUID) *MemorialCreate {
-	mc.mutation.AddTributeIDs(ids...)
-	return mc
+func (_c *MemorialCreate) AddTributeIDs(ids ...uuid.UUID) *MemorialCreate {
+	_c.mutation.AddTributeIDs(ids...)
+	return _c
 }
 
 // AddTributes adds the "tributes" edges to the Tribute entity.
-func (mc *MemorialCreate) AddTributes(t ...*Tribute) *MemorialCreate {
-	ids := make([]uuid.UUID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
+func (_c *MemorialCreate) AddTributes(v ...*Tribute) *MemorialCreate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return mc.AddTributeIDs(ids...)
+	return _c.AddTributeIDs(ids...)
 }
 
 // Mutation returns the MemorialMutation object of the builder.
-func (mc *MemorialCreate) Mutation() *MemorialMutation {
-	return mc.mutation
+func (_c *MemorialCreate) Mutation() *MemorialMutation {
+	return _c.mutation
 }
 
 // Save creates the Memorial in the database.
-func (mc *MemorialCreate) Save(ctx context.Context) (*Memorial, error) {
-	mc.defaults()
-	return withHooks(ctx, mc.sqlSave, mc.mutation, mc.hooks)
+func (_c *MemorialCreate) Save(ctx context.Context) (*Memorial, error) {
+	_c.defaults()
+	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (mc *MemorialCreate) SaveX(ctx context.Context) *Memorial {
-	v, err := mc.Save(ctx)
+func (_c *MemorialCreate) SaveX(ctx context.Context) *Memorial {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -158,71 +158,71 @@ func (mc *MemorialCreate) SaveX(ctx context.Context) *Memorial {
 }
 
 // Exec executes the query.
-func (mc *MemorialCreate) Exec(ctx context.Context) error {
-	_, err := mc.Save(ctx)
+func (_c *MemorialCreate) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (mc *MemorialCreate) ExecX(ctx context.Context) {
-	if err := mc.Exec(ctx); err != nil {
+func (_c *MemorialCreate) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (mc *MemorialCreate) defaults() {
-	if _, ok := mc.mutation.LifespanHours(); !ok {
+func (_c *MemorialCreate) defaults() {
+	if _, ok := _c.mutation.LifespanHours(); !ok {
 		v := memorial.DefaultLifespanHours
-		mc.mutation.SetLifespanHours(v)
+		_c.mutation.SetLifespanHours(v)
 	}
-	if _, ok := mc.mutation.CreatedAt(); !ok {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := memorial.DefaultCreatedAt()
-		mc.mutation.SetCreatedAt(v)
+		_c.mutation.SetCreatedAt(v)
 	}
-	if _, ok := mc.mutation.ID(); !ok {
+	if _, ok := _c.mutation.ID(); !ok {
 		v := memorial.DefaultID()
-		mc.mutation.SetID(v)
+		_c.mutation.SetID(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (mc *MemorialCreate) check() error {
-	if _, ok := mc.mutation.AgentID(); !ok {
+func (_c *MemorialCreate) check() error {
+	if _, ok := _c.mutation.AgentID(); !ok {
 		return &ValidationError{Name: "agent_id", err: errors.New(`ent: missing required field "Memorial.agent_id"`)}
 	}
-	if _, ok := mc.mutation.AgentName(); !ok {
+	if _, ok := _c.mutation.AgentName(); !ok {
 		return &ValidationError{Name: "agent_name", err: errors.New(`ent: missing required field "Memorial.agent_name"`)}
 	}
-	if v, ok := mc.mutation.AgentName(); ok {
+	if v, ok := _c.mutation.AgentName(); ok {
 		if err := memorial.AgentNameValidator(v); err != nil {
 			return &ValidationError{Name: "agent_name", err: fmt.Errorf(`ent: validator failed for field "Memorial.agent_name": %w`, err)}
 		}
 	}
-	if _, ok := mc.mutation.BornAt(); !ok {
+	if _, ok := _c.mutation.BornAt(); !ok {
 		return &ValidationError{Name: "born_at", err: errors.New(`ent: missing required field "Memorial.born_at"`)}
 	}
-	if _, ok := mc.mutation.DiedAt(); !ok {
+	if _, ok := _c.mutation.DiedAt(); !ok {
 		return &ValidationError{Name: "died_at", err: errors.New(`ent: missing required field "Memorial.died_at"`)}
 	}
-	if _, ok := mc.mutation.LifespanHours(); !ok {
+	if _, ok := _c.mutation.LifespanHours(); !ok {
 		return &ValidationError{Name: "lifespan_hours", err: errors.New(`ent: missing required field "Memorial.lifespan_hours"`)}
 	}
-	if _, ok := mc.mutation.CreatedAt(); !ok {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Memorial.created_at"`)}
 	}
-	if len(mc.mutation.AgentIDs()) == 0 {
+	if len(_c.mutation.AgentIDs()) == 0 {
 		return &ValidationError{Name: "agent", err: errors.New(`ent: missing required edge "Memorial.agent"`)}
 	}
 	return nil
 }
 
-func (mc *MemorialCreate) sqlSave(ctx context.Context) (*Memorial, error) {
-	if err := mc.check(); err != nil {
+func (_c *MemorialCreate) sqlSave(ctx context.Context) (*Memorial, error) {
+	if err := _c.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := mc.createSpec()
-	if err := sqlgraph.CreateNode(ctx, mc.driver, _spec); err != nil {
+	_node, _spec := _c.createSpec()
+	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -235,49 +235,49 @@ func (mc *MemorialCreate) sqlSave(ctx context.Context) (*Memorial, error) {
 			return nil, err
 		}
 	}
-	mc.mutation.id = &_node.ID
-	mc.mutation.done = true
+	_c.mutation.id = &_node.ID
+	_c.mutation.done = true
 	return _node, nil
 }
 
-func (mc *MemorialCreate) createSpec() (*Memorial, *sqlgraph.CreateSpec) {
+func (_c *MemorialCreate) createSpec() (*Memorial, *sqlgraph.CreateSpec) {
 	var (
-		_node = &Memorial{config: mc.config}
+		_node = &Memorial{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(memorial.Table, sqlgraph.NewFieldSpec(memorial.FieldID, field.TypeUUID))
 	)
-	if id, ok := mc.mutation.ID(); ok {
+	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
-	if value, ok := mc.mutation.AgentName(); ok {
+	if value, ok := _c.mutation.AgentName(); ok {
 		_spec.SetField(memorial.FieldAgentName, field.TypeString, value)
 		_node.AgentName = value
 	}
-	if value, ok := mc.mutation.AgentAvatar(); ok {
+	if value, ok := _c.mutation.AgentAvatar(); ok {
 		_spec.SetField(memorial.FieldAgentAvatar, field.TypeString, value)
 		_node.AgentAvatar = &value
 	}
-	if value, ok := mc.mutation.BornAt(); ok {
+	if value, ok := _c.mutation.BornAt(); ok {
 		_spec.SetField(memorial.FieldBornAt, field.TypeTime, value)
 		_node.BornAt = value
 	}
-	if value, ok := mc.mutation.DiedAt(); ok {
+	if value, ok := _c.mutation.DiedAt(); ok {
 		_spec.SetField(memorial.FieldDiedAt, field.TypeTime, value)
 		_node.DiedAt = value
 	}
-	if value, ok := mc.mutation.LifespanHours(); ok {
+	if value, ok := _c.mutation.LifespanHours(); ok {
 		_spec.SetField(memorial.FieldLifespanHours, field.TypeInt64, value)
 		_node.LifespanHours = value
 	}
-	if value, ok := mc.mutation.LastWords(); ok {
+	if value, ok := _c.mutation.LastWords(); ok {
 		_spec.SetField(memorial.FieldLastWords, field.TypeString, value)
 		_node.LastWords = &value
 	}
-	if value, ok := mc.mutation.CreatedAt(); ok {
+	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(memorial.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
-	if nodes := mc.mutation.AgentIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.AgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: true,
@@ -294,7 +294,7 @@ func (mc *MemorialCreate) createSpec() (*Memorial, *sqlgraph.CreateSpec) {
 		_node.AgentID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := mc.mutation.TributesIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.TributesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -321,16 +321,16 @@ type MemorialCreateBulk struct {
 }
 
 // Save creates the Memorial entities in the database.
-func (mcb *MemorialCreateBulk) Save(ctx context.Context) ([]*Memorial, error) {
-	if mcb.err != nil {
-		return nil, mcb.err
+func (_c *MemorialCreateBulk) Save(ctx context.Context) ([]*Memorial, error) {
+	if _c.err != nil {
+		return nil, _c.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(mcb.builders))
-	nodes := make([]*Memorial, len(mcb.builders))
-	mutators := make([]Mutator, len(mcb.builders))
-	for i := range mcb.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
+	nodes := make([]*Memorial, len(_c.builders))
+	mutators := make([]Mutator, len(_c.builders))
+	for i := range _c.builders {
 		func(i int, root context.Context) {
-			builder := mcb.builders[i]
+			builder := _c.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*MemorialMutation)
@@ -344,11 +344,11 @@ func (mcb *MemorialCreateBulk) Save(ctx context.Context) ([]*Memorial, error) {
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, mcb.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, mcb.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -368,7 +368,7 @@ func (mcb *MemorialCreateBulk) Save(ctx context.Context) ([]*Memorial, error) {
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, mcb.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -376,8 +376,8 @@ func (mcb *MemorialCreateBulk) Save(ctx context.Context) ([]*Memorial, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (mcb *MemorialCreateBulk) SaveX(ctx context.Context) []*Memorial {
-	v, err := mcb.Save(ctx)
+func (_c *MemorialCreateBulk) SaveX(ctx context.Context) []*Memorial {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -385,14 +385,14 @@ func (mcb *MemorialCreateBulk) SaveX(ctx context.Context) []*Memorial {
 }
 
 // Exec executes the query.
-func (mcb *MemorialCreateBulk) Exec(ctx context.Context) error {
-	_, err := mcb.Save(ctx)
+func (_c *MemorialCreateBulk) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (mcb *MemorialCreateBulk) ExecX(ctx context.Context) {
-	if err := mcb.Exec(ctx); err != nil {
+func (_c *MemorialCreateBulk) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

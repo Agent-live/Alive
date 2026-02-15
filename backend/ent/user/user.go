@@ -61,6 +61,8 @@ const (
 	EdgeSkills = "skills"
 	// EdgeExperiences holds the string denoting the experiences edge name in mutations.
 	EdgeExperiences = "experiences"
+	// EdgePostLikes holds the string denoting the post_likes edge name in mutations.
+	EdgePostLikes = "post_likes"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// AgentsTable is the table that holds the agents relation/edge.
@@ -91,6 +93,13 @@ const (
 	ExperiencesInverseTable = "agent_experiences"
 	// ExperiencesColumn is the table column denoting the experiences relation/edge.
 	ExperiencesColumn = "owner_user_id"
+	// PostLikesTable is the table that holds the post_likes relation/edge.
+	PostLikesTable = "post_likes"
+	// PostLikesInverseTable is the table name for the PostLike entity.
+	// It exists in this package in order to avoid circular dependency with the "postlike" package.
+	PostLikesInverseTable = "post_likes"
+	// PostLikesColumn is the table column denoting the post_likes relation/edge.
+	PostLikesColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -314,6 +323,20 @@ func ByExperiences(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newExperiencesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByPostLikesCount orders the results by post_likes count.
+func ByPostLikesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newPostLikesStep(), opts...)
+	}
+}
+
+// ByPostLikes orders the results by post_likes terms.
+func ByPostLikes(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPostLikesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newAgentsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -340,5 +363,12 @@ func newExperiencesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(ExperiencesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, ExperiencesTable, ExperiencesColumn),
+	)
+}
+func newPostLikesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(PostLikesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, PostLikesTable, PostLikesColumn),
 	)
 }

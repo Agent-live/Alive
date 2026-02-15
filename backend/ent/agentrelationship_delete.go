@@ -20,56 +20,56 @@ type AgentRelationshipDelete struct {
 }
 
 // Where appends a list predicates to the AgentRelationshipDelete builder.
-func (ard *AgentRelationshipDelete) Where(ps ...predicate.AgentRelationship) *AgentRelationshipDelete {
-	ard.mutation.Where(ps...)
-	return ard
+func (_d *AgentRelationshipDelete) Where(ps ...predicate.AgentRelationship) *AgentRelationshipDelete {
+	_d.mutation.Where(ps...)
+	return _d
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (ard *AgentRelationshipDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks(ctx, ard.sqlExec, ard.mutation, ard.hooks)
+func (_d *AgentRelationshipDelete) Exec(ctx context.Context) (int, error) {
+	return withHooks(ctx, _d.sqlExec, _d.mutation, _d.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ard *AgentRelationshipDelete) ExecX(ctx context.Context) int {
-	n, err := ard.Exec(ctx)
+func (_d *AgentRelationshipDelete) ExecX(ctx context.Context) int {
+	n, err := _d.Exec(ctx)
 	if err != nil {
 		panic(err)
 	}
 	return n
 }
 
-func (ard *AgentRelationshipDelete) sqlExec(ctx context.Context) (int, error) {
+func (_d *AgentRelationshipDelete) sqlExec(ctx context.Context) (int, error) {
 	_spec := sqlgraph.NewDeleteSpec(agentrelationship.Table, sqlgraph.NewFieldSpec(agentrelationship.FieldID, field.TypeUUID))
-	if ps := ard.mutation.predicates; len(ps) > 0 {
+	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	affected, err := sqlgraph.DeleteNodes(ctx, ard.driver, _spec)
+	affected, err := sqlgraph.DeleteNodes(ctx, _d.driver, _spec)
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
-	ard.mutation.done = true
+	_d.mutation.done = true
 	return affected, err
 }
 
 // AgentRelationshipDeleteOne is the builder for deleting a single AgentRelationship entity.
 type AgentRelationshipDeleteOne struct {
-	ard *AgentRelationshipDelete
+	_d *AgentRelationshipDelete
 }
 
 // Where appends a list predicates to the AgentRelationshipDelete builder.
-func (ardo *AgentRelationshipDeleteOne) Where(ps ...predicate.AgentRelationship) *AgentRelationshipDeleteOne {
-	ardo.ard.mutation.Where(ps...)
-	return ardo
+func (_d *AgentRelationshipDeleteOne) Where(ps ...predicate.AgentRelationship) *AgentRelationshipDeleteOne {
+	_d._d.mutation.Where(ps...)
+	return _d
 }
 
 // Exec executes the deletion query.
-func (ardo *AgentRelationshipDeleteOne) Exec(ctx context.Context) error {
-	n, err := ardo.ard.Exec(ctx)
+func (_d *AgentRelationshipDeleteOne) Exec(ctx context.Context) error {
+	n, err := _d._d.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
@@ -81,8 +81,8 @@ func (ardo *AgentRelationshipDeleteOne) Exec(ctx context.Context) error {
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ardo *AgentRelationshipDeleteOne) ExecX(ctx context.Context) {
-	if err := ardo.Exec(ctx); err != nil {
+func (_d *AgentRelationshipDeleteOne) ExecX(ctx context.Context) {
+	if err := _d.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

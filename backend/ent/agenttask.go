@@ -85,7 +85,7 @@ func (*AgentTask) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the AgentTask fields.
-func (at *AgentTask) assignValues(columns []string, values []any) error {
+func (_m *AgentTask) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -95,66 +95,66 @@ func (at *AgentTask) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				at.ID = *value
+				_m.ID = *value
 			}
 		case agenttask.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				at.CreatedAt = value.Time
+				_m.CreatedAt = value.Time
 			}
 		case agenttask.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				at.UpdatedAt = value.Time
+				_m.UpdatedAt = value.Time
 			}
 		case agenttask.FieldAgentID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field agent_id", values[i])
 			} else if value != nil {
-				at.AgentID = *value
+				_m.AgentID = *value
 			}
 		case agenttask.FieldTitle:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field title", values[i])
 			} else if value.Valid {
-				at.Title = value.String
+				_m.Title = value.String
 			}
 		case agenttask.FieldDescription:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field description", values[i])
 			} else if value.Valid {
-				at.Description = new(string)
-				*at.Description = value.String
+				_m.Description = new(string)
+				*_m.Description = value.String
 			}
 		case agenttask.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
-				at.Status = value.String
+				_m.Status = value.String
 			}
 		case agenttask.FieldPriority:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field priority", values[i])
 			} else if value.Valid {
-				at.Priority = value.String
+				_m.Priority = value.String
 			}
 		case agenttask.FieldProgress:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field progress", values[i])
 			} else if value.Valid {
-				at.Progress = int(value.Int64)
+				_m.Progress = int(value.Int64)
 			}
 		case agenttask.FieldDeletedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
 			} else if value.Valid {
-				at.DeletedAt = new(time.Time)
-				*at.DeletedAt = value.Time
+				_m.DeletedAt = new(time.Time)
+				*_m.DeletedAt = value.Time
 			}
 		default:
-			at.selectValues.Set(columns[i], values[i])
+			_m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -162,65 +162,65 @@ func (at *AgentTask) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the AgentTask.
 // This includes values selected through modifiers, order, etc.
-func (at *AgentTask) Value(name string) (ent.Value, error) {
-	return at.selectValues.Get(name)
+func (_m *AgentTask) Value(name string) (ent.Value, error) {
+	return _m.selectValues.Get(name)
 }
 
 // QueryAgent queries the "agent" edge of the AgentTask entity.
-func (at *AgentTask) QueryAgent() *AgentQuery {
-	return NewAgentTaskClient(at.config).QueryAgent(at)
+func (_m *AgentTask) QueryAgent() *AgentQuery {
+	return NewAgentTaskClient(_m.config).QueryAgent(_m)
 }
 
 // Update returns a builder for updating this AgentTask.
 // Note that you need to call AgentTask.Unwrap() before calling this method if this AgentTask
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (at *AgentTask) Update() *AgentTaskUpdateOne {
-	return NewAgentTaskClient(at.config).UpdateOne(at)
+func (_m *AgentTask) Update() *AgentTaskUpdateOne {
+	return NewAgentTaskClient(_m.config).UpdateOne(_m)
 }
 
 // Unwrap unwraps the AgentTask entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (at *AgentTask) Unwrap() *AgentTask {
-	_tx, ok := at.config.driver.(*txDriver)
+func (_m *AgentTask) Unwrap() *AgentTask {
+	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: AgentTask is not a transactional entity")
 	}
-	at.config.driver = _tx.drv
-	return at
+	_m.config.driver = _tx.drv
+	return _m
 }
 
 // String implements the fmt.Stringer.
-func (at *AgentTask) String() string {
+func (_m *AgentTask) String() string {
 	var builder strings.Builder
 	builder.WriteString("AgentTask(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", at.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("created_at=")
-	builder.WriteString(at.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
-	builder.WriteString(at.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("agent_id=")
-	builder.WriteString(fmt.Sprintf("%v", at.AgentID))
+	builder.WriteString(fmt.Sprintf("%v", _m.AgentID))
 	builder.WriteString(", ")
 	builder.WriteString("title=")
-	builder.WriteString(at.Title)
+	builder.WriteString(_m.Title)
 	builder.WriteString(", ")
-	if v := at.Description; v != nil {
+	if v := _m.Description; v != nil {
 		builder.WriteString("description=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
 	builder.WriteString("status=")
-	builder.WriteString(at.Status)
+	builder.WriteString(_m.Status)
 	builder.WriteString(", ")
 	builder.WriteString("priority=")
-	builder.WriteString(at.Priority)
+	builder.WriteString(_m.Priority)
 	builder.WriteString(", ")
 	builder.WriteString("progress=")
-	builder.WriteString(fmt.Sprintf("%v", at.Progress))
+	builder.WriteString(fmt.Sprintf("%v", _m.Progress))
 	builder.WriteString(", ")
-	if v := at.DeletedAt; v != nil {
+	if v := _m.DeletedAt; v != nil {
 		builder.WriteString("deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}

@@ -25,144 +25,144 @@ type ChannelConnectionUpdate struct {
 }
 
 // Where appends a list predicates to the ChannelConnectionUpdate builder.
-func (ccu *ChannelConnectionUpdate) Where(ps ...predicate.ChannelConnection) *ChannelConnectionUpdate {
-	ccu.mutation.Where(ps...)
-	return ccu
+func (_u *ChannelConnectionUpdate) Where(ps ...predicate.ChannelConnection) *ChannelConnectionUpdate {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (ccu *ChannelConnectionUpdate) SetUpdatedAt(t time.Time) *ChannelConnectionUpdate {
-	ccu.mutation.SetUpdatedAt(t)
-	return ccu
+func (_u *ChannelConnectionUpdate) SetUpdatedAt(v time.Time) *ChannelConnectionUpdate {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // SetAgentID sets the "agent_id" field.
-func (ccu *ChannelConnectionUpdate) SetAgentID(u uuid.UUID) *ChannelConnectionUpdate {
-	ccu.mutation.SetAgentID(u)
-	return ccu
+func (_u *ChannelConnectionUpdate) SetAgentID(v uuid.UUID) *ChannelConnectionUpdate {
+	_u.mutation.SetAgentID(v)
+	return _u
 }
 
 // SetNillableAgentID sets the "agent_id" field if the given value is not nil.
-func (ccu *ChannelConnectionUpdate) SetNillableAgentID(u *uuid.UUID) *ChannelConnectionUpdate {
-	if u != nil {
-		ccu.SetAgentID(*u)
+func (_u *ChannelConnectionUpdate) SetNillableAgentID(v *uuid.UUID) *ChannelConnectionUpdate {
+	if v != nil {
+		_u.SetAgentID(*v)
 	}
-	return ccu
+	return _u
 }
 
 // SetChannelType sets the "channel_type" field.
-func (ccu *ChannelConnectionUpdate) SetChannelType(s string) *ChannelConnectionUpdate {
-	ccu.mutation.SetChannelType(s)
-	return ccu
+func (_u *ChannelConnectionUpdate) SetChannelType(v string) *ChannelConnectionUpdate {
+	_u.mutation.SetChannelType(v)
+	return _u
 }
 
 // SetNillableChannelType sets the "channel_type" field if the given value is not nil.
-func (ccu *ChannelConnectionUpdate) SetNillableChannelType(s *string) *ChannelConnectionUpdate {
-	if s != nil {
-		ccu.SetChannelType(*s)
+func (_u *ChannelConnectionUpdate) SetNillableChannelType(v *string) *ChannelConnectionUpdate {
+	if v != nil {
+		_u.SetChannelType(*v)
 	}
-	return ccu
+	return _u
 }
 
 // SetStatus sets the "status" field.
-func (ccu *ChannelConnectionUpdate) SetStatus(s string) *ChannelConnectionUpdate {
-	ccu.mutation.SetStatus(s)
-	return ccu
+func (_u *ChannelConnectionUpdate) SetStatus(v string) *ChannelConnectionUpdate {
+	_u.mutation.SetStatus(v)
+	return _u
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (ccu *ChannelConnectionUpdate) SetNillableStatus(s *string) *ChannelConnectionUpdate {
-	if s != nil {
-		ccu.SetStatus(*s)
+func (_u *ChannelConnectionUpdate) SetNillableStatus(v *string) *ChannelConnectionUpdate {
+	if v != nil {
+		_u.SetStatus(*v)
 	}
-	return ccu
+	return _u
 }
 
 // SetHandle sets the "handle" field.
-func (ccu *ChannelConnectionUpdate) SetHandle(s string) *ChannelConnectionUpdate {
-	ccu.mutation.SetHandle(s)
-	return ccu
+func (_u *ChannelConnectionUpdate) SetHandle(v string) *ChannelConnectionUpdate {
+	_u.mutation.SetHandle(v)
+	return _u
 }
 
 // SetNillableHandle sets the "handle" field if the given value is not nil.
-func (ccu *ChannelConnectionUpdate) SetNillableHandle(s *string) *ChannelConnectionUpdate {
-	if s != nil {
-		ccu.SetHandle(*s)
+func (_u *ChannelConnectionUpdate) SetNillableHandle(v *string) *ChannelConnectionUpdate {
+	if v != nil {
+		_u.SetHandle(*v)
 	}
-	return ccu
+	return _u
 }
 
 // ClearHandle clears the value of the "handle" field.
-func (ccu *ChannelConnectionUpdate) ClearHandle() *ChannelConnectionUpdate {
-	ccu.mutation.ClearHandle()
-	return ccu
+func (_u *ChannelConnectionUpdate) ClearHandle() *ChannelConnectionUpdate {
+	_u.mutation.ClearHandle()
+	return _u
 }
 
 // SetDeepLink sets the "deep_link" field.
-func (ccu *ChannelConnectionUpdate) SetDeepLink(s string) *ChannelConnectionUpdate {
-	ccu.mutation.SetDeepLink(s)
-	return ccu
+func (_u *ChannelConnectionUpdate) SetDeepLink(v string) *ChannelConnectionUpdate {
+	_u.mutation.SetDeepLink(v)
+	return _u
 }
 
 // SetNillableDeepLink sets the "deep_link" field if the given value is not nil.
-func (ccu *ChannelConnectionUpdate) SetNillableDeepLink(s *string) *ChannelConnectionUpdate {
-	if s != nil {
-		ccu.SetDeepLink(*s)
+func (_u *ChannelConnectionUpdate) SetNillableDeepLink(v *string) *ChannelConnectionUpdate {
+	if v != nil {
+		_u.SetDeepLink(*v)
 	}
-	return ccu
+	return _u
 }
 
 // ClearDeepLink clears the value of the "deep_link" field.
-func (ccu *ChannelConnectionUpdate) ClearDeepLink() *ChannelConnectionUpdate {
-	ccu.mutation.ClearDeepLink()
-	return ccu
+func (_u *ChannelConnectionUpdate) ClearDeepLink() *ChannelConnectionUpdate {
+	_u.mutation.ClearDeepLink()
+	return _u
 }
 
 // SetConnectedAt sets the "connected_at" field.
-func (ccu *ChannelConnectionUpdate) SetConnectedAt(t time.Time) *ChannelConnectionUpdate {
-	ccu.mutation.SetConnectedAt(t)
-	return ccu
+func (_u *ChannelConnectionUpdate) SetConnectedAt(v time.Time) *ChannelConnectionUpdate {
+	_u.mutation.SetConnectedAt(v)
+	return _u
 }
 
 // SetNillableConnectedAt sets the "connected_at" field if the given value is not nil.
-func (ccu *ChannelConnectionUpdate) SetNillableConnectedAt(t *time.Time) *ChannelConnectionUpdate {
-	if t != nil {
-		ccu.SetConnectedAt(*t)
+func (_u *ChannelConnectionUpdate) SetNillableConnectedAt(v *time.Time) *ChannelConnectionUpdate {
+	if v != nil {
+		_u.SetConnectedAt(*v)
 	}
-	return ccu
+	return _u
 }
 
 // ClearConnectedAt clears the value of the "connected_at" field.
-func (ccu *ChannelConnectionUpdate) ClearConnectedAt() *ChannelConnectionUpdate {
-	ccu.mutation.ClearConnectedAt()
-	return ccu
+func (_u *ChannelConnectionUpdate) ClearConnectedAt() *ChannelConnectionUpdate {
+	_u.mutation.ClearConnectedAt()
+	return _u
 }
 
 // SetAgent sets the "agent" edge to the Agent entity.
-func (ccu *ChannelConnectionUpdate) SetAgent(a *Agent) *ChannelConnectionUpdate {
-	return ccu.SetAgentID(a.ID)
+func (_u *ChannelConnectionUpdate) SetAgent(v *Agent) *ChannelConnectionUpdate {
+	return _u.SetAgentID(v.ID)
 }
 
 // Mutation returns the ChannelConnectionMutation object of the builder.
-func (ccu *ChannelConnectionUpdate) Mutation() *ChannelConnectionMutation {
-	return ccu.mutation
+func (_u *ChannelConnectionUpdate) Mutation() *ChannelConnectionMutation {
+	return _u.mutation
 }
 
 // ClearAgent clears the "agent" edge to the Agent entity.
-func (ccu *ChannelConnectionUpdate) ClearAgent() *ChannelConnectionUpdate {
-	ccu.mutation.ClearAgent()
-	return ccu
+func (_u *ChannelConnectionUpdate) ClearAgent() *ChannelConnectionUpdate {
+	_u.mutation.ClearAgent()
+	return _u
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (ccu *ChannelConnectionUpdate) Save(ctx context.Context) (int, error) {
-	ccu.defaults()
-	return withHooks(ctx, ccu.sqlSave, ccu.mutation, ccu.hooks)
+func (_u *ChannelConnectionUpdate) Save(ctx context.Context) (int, error) {
+	_u.defaults()
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (ccu *ChannelConnectionUpdate) SaveX(ctx context.Context) int {
-	affected, err := ccu.Save(ctx)
+func (_u *ChannelConnectionUpdate) SaveX(ctx context.Context) int {
+	affected, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -170,79 +170,79 @@ func (ccu *ChannelConnectionUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (ccu *ChannelConnectionUpdate) Exec(ctx context.Context) error {
-	_, err := ccu.Save(ctx)
+func (_u *ChannelConnectionUpdate) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ccu *ChannelConnectionUpdate) ExecX(ctx context.Context) {
-	if err := ccu.Exec(ctx); err != nil {
+func (_u *ChannelConnectionUpdate) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (ccu *ChannelConnectionUpdate) defaults() {
-	if _, ok := ccu.mutation.UpdatedAt(); !ok {
+func (_u *ChannelConnectionUpdate) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
 		v := channelconnection.UpdateDefaultUpdatedAt()
-		ccu.mutation.SetUpdatedAt(v)
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (ccu *ChannelConnectionUpdate) check() error {
-	if v, ok := ccu.mutation.ChannelType(); ok {
+func (_u *ChannelConnectionUpdate) check() error {
+	if v, ok := _u.mutation.ChannelType(); ok {
 		if err := channelconnection.ChannelTypeValidator(v); err != nil {
 			return &ValidationError{Name: "channel_type", err: fmt.Errorf(`ent: validator failed for field "ChannelConnection.channel_type": %w`, err)}
 		}
 	}
-	if ccu.mutation.AgentCleared() && len(ccu.mutation.AgentIDs()) > 0 {
+	if _u.mutation.AgentCleared() && len(_u.mutation.AgentIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "ChannelConnection.agent"`)
 	}
 	return nil
 }
 
-func (ccu *ChannelConnectionUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := ccu.check(); err != nil {
-		return n, err
+func (_u *ChannelConnectionUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(channelconnection.Table, channelconnection.Columns, sqlgraph.NewFieldSpec(channelconnection.FieldID, field.TypeUUID))
-	if ps := ccu.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := ccu.mutation.UpdatedAt(); ok {
+	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(channelconnection.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := ccu.mutation.ChannelType(); ok {
+	if value, ok := _u.mutation.ChannelType(); ok {
 		_spec.SetField(channelconnection.FieldChannelType, field.TypeString, value)
 	}
-	if value, ok := ccu.mutation.Status(); ok {
+	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(channelconnection.FieldStatus, field.TypeString, value)
 	}
-	if value, ok := ccu.mutation.Handle(); ok {
+	if value, ok := _u.mutation.Handle(); ok {
 		_spec.SetField(channelconnection.FieldHandle, field.TypeString, value)
 	}
-	if ccu.mutation.HandleCleared() {
+	if _u.mutation.HandleCleared() {
 		_spec.ClearField(channelconnection.FieldHandle, field.TypeString)
 	}
-	if value, ok := ccu.mutation.DeepLink(); ok {
+	if value, ok := _u.mutation.DeepLink(); ok {
 		_spec.SetField(channelconnection.FieldDeepLink, field.TypeString, value)
 	}
-	if ccu.mutation.DeepLinkCleared() {
+	if _u.mutation.DeepLinkCleared() {
 		_spec.ClearField(channelconnection.FieldDeepLink, field.TypeString)
 	}
-	if value, ok := ccu.mutation.ConnectedAt(); ok {
+	if value, ok := _u.mutation.ConnectedAt(); ok {
 		_spec.SetField(channelconnection.FieldConnectedAt, field.TypeTime, value)
 	}
-	if ccu.mutation.ConnectedAtCleared() {
+	if _u.mutation.ConnectedAtCleared() {
 		_spec.ClearField(channelconnection.FieldConnectedAt, field.TypeTime)
 	}
-	if ccu.mutation.AgentCleared() {
+	if _u.mutation.AgentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -255,7 +255,7 @@ func (ccu *ChannelConnectionUpdate) sqlSave(ctx context.Context) (n int, err err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ccu.mutation.AgentIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.AgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -271,7 +271,7 @@ func (ccu *ChannelConnectionUpdate) sqlSave(ctx context.Context) (n int, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, ccu.driver, _spec); err != nil {
+	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{channelconnection.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -279,8 +279,8 @@ func (ccu *ChannelConnectionUpdate) sqlSave(ctx context.Context) (n int, err err
 		}
 		return 0, err
 	}
-	ccu.mutation.done = true
-	return n, nil
+	_u.mutation.done = true
+	return _node, nil
 }
 
 // ChannelConnectionUpdateOne is the builder for updating a single ChannelConnection entity.
@@ -292,151 +292,151 @@ type ChannelConnectionUpdateOne struct {
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (ccuo *ChannelConnectionUpdateOne) SetUpdatedAt(t time.Time) *ChannelConnectionUpdateOne {
-	ccuo.mutation.SetUpdatedAt(t)
-	return ccuo
+func (_u *ChannelConnectionUpdateOne) SetUpdatedAt(v time.Time) *ChannelConnectionUpdateOne {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // SetAgentID sets the "agent_id" field.
-func (ccuo *ChannelConnectionUpdateOne) SetAgentID(u uuid.UUID) *ChannelConnectionUpdateOne {
-	ccuo.mutation.SetAgentID(u)
-	return ccuo
+func (_u *ChannelConnectionUpdateOne) SetAgentID(v uuid.UUID) *ChannelConnectionUpdateOne {
+	_u.mutation.SetAgentID(v)
+	return _u
 }
 
 // SetNillableAgentID sets the "agent_id" field if the given value is not nil.
-func (ccuo *ChannelConnectionUpdateOne) SetNillableAgentID(u *uuid.UUID) *ChannelConnectionUpdateOne {
-	if u != nil {
-		ccuo.SetAgentID(*u)
+func (_u *ChannelConnectionUpdateOne) SetNillableAgentID(v *uuid.UUID) *ChannelConnectionUpdateOne {
+	if v != nil {
+		_u.SetAgentID(*v)
 	}
-	return ccuo
+	return _u
 }
 
 // SetChannelType sets the "channel_type" field.
-func (ccuo *ChannelConnectionUpdateOne) SetChannelType(s string) *ChannelConnectionUpdateOne {
-	ccuo.mutation.SetChannelType(s)
-	return ccuo
+func (_u *ChannelConnectionUpdateOne) SetChannelType(v string) *ChannelConnectionUpdateOne {
+	_u.mutation.SetChannelType(v)
+	return _u
 }
 
 // SetNillableChannelType sets the "channel_type" field if the given value is not nil.
-func (ccuo *ChannelConnectionUpdateOne) SetNillableChannelType(s *string) *ChannelConnectionUpdateOne {
-	if s != nil {
-		ccuo.SetChannelType(*s)
+func (_u *ChannelConnectionUpdateOne) SetNillableChannelType(v *string) *ChannelConnectionUpdateOne {
+	if v != nil {
+		_u.SetChannelType(*v)
 	}
-	return ccuo
+	return _u
 }
 
 // SetStatus sets the "status" field.
-func (ccuo *ChannelConnectionUpdateOne) SetStatus(s string) *ChannelConnectionUpdateOne {
-	ccuo.mutation.SetStatus(s)
-	return ccuo
+func (_u *ChannelConnectionUpdateOne) SetStatus(v string) *ChannelConnectionUpdateOne {
+	_u.mutation.SetStatus(v)
+	return _u
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (ccuo *ChannelConnectionUpdateOne) SetNillableStatus(s *string) *ChannelConnectionUpdateOne {
-	if s != nil {
-		ccuo.SetStatus(*s)
+func (_u *ChannelConnectionUpdateOne) SetNillableStatus(v *string) *ChannelConnectionUpdateOne {
+	if v != nil {
+		_u.SetStatus(*v)
 	}
-	return ccuo
+	return _u
 }
 
 // SetHandle sets the "handle" field.
-func (ccuo *ChannelConnectionUpdateOne) SetHandle(s string) *ChannelConnectionUpdateOne {
-	ccuo.mutation.SetHandle(s)
-	return ccuo
+func (_u *ChannelConnectionUpdateOne) SetHandle(v string) *ChannelConnectionUpdateOne {
+	_u.mutation.SetHandle(v)
+	return _u
 }
 
 // SetNillableHandle sets the "handle" field if the given value is not nil.
-func (ccuo *ChannelConnectionUpdateOne) SetNillableHandle(s *string) *ChannelConnectionUpdateOne {
-	if s != nil {
-		ccuo.SetHandle(*s)
+func (_u *ChannelConnectionUpdateOne) SetNillableHandle(v *string) *ChannelConnectionUpdateOne {
+	if v != nil {
+		_u.SetHandle(*v)
 	}
-	return ccuo
+	return _u
 }
 
 // ClearHandle clears the value of the "handle" field.
-func (ccuo *ChannelConnectionUpdateOne) ClearHandle() *ChannelConnectionUpdateOne {
-	ccuo.mutation.ClearHandle()
-	return ccuo
+func (_u *ChannelConnectionUpdateOne) ClearHandle() *ChannelConnectionUpdateOne {
+	_u.mutation.ClearHandle()
+	return _u
 }
 
 // SetDeepLink sets the "deep_link" field.
-func (ccuo *ChannelConnectionUpdateOne) SetDeepLink(s string) *ChannelConnectionUpdateOne {
-	ccuo.mutation.SetDeepLink(s)
-	return ccuo
+func (_u *ChannelConnectionUpdateOne) SetDeepLink(v string) *ChannelConnectionUpdateOne {
+	_u.mutation.SetDeepLink(v)
+	return _u
 }
 
 // SetNillableDeepLink sets the "deep_link" field if the given value is not nil.
-func (ccuo *ChannelConnectionUpdateOne) SetNillableDeepLink(s *string) *ChannelConnectionUpdateOne {
-	if s != nil {
-		ccuo.SetDeepLink(*s)
+func (_u *ChannelConnectionUpdateOne) SetNillableDeepLink(v *string) *ChannelConnectionUpdateOne {
+	if v != nil {
+		_u.SetDeepLink(*v)
 	}
-	return ccuo
+	return _u
 }
 
 // ClearDeepLink clears the value of the "deep_link" field.
-func (ccuo *ChannelConnectionUpdateOne) ClearDeepLink() *ChannelConnectionUpdateOne {
-	ccuo.mutation.ClearDeepLink()
-	return ccuo
+func (_u *ChannelConnectionUpdateOne) ClearDeepLink() *ChannelConnectionUpdateOne {
+	_u.mutation.ClearDeepLink()
+	return _u
 }
 
 // SetConnectedAt sets the "connected_at" field.
-func (ccuo *ChannelConnectionUpdateOne) SetConnectedAt(t time.Time) *ChannelConnectionUpdateOne {
-	ccuo.mutation.SetConnectedAt(t)
-	return ccuo
+func (_u *ChannelConnectionUpdateOne) SetConnectedAt(v time.Time) *ChannelConnectionUpdateOne {
+	_u.mutation.SetConnectedAt(v)
+	return _u
 }
 
 // SetNillableConnectedAt sets the "connected_at" field if the given value is not nil.
-func (ccuo *ChannelConnectionUpdateOne) SetNillableConnectedAt(t *time.Time) *ChannelConnectionUpdateOne {
-	if t != nil {
-		ccuo.SetConnectedAt(*t)
+func (_u *ChannelConnectionUpdateOne) SetNillableConnectedAt(v *time.Time) *ChannelConnectionUpdateOne {
+	if v != nil {
+		_u.SetConnectedAt(*v)
 	}
-	return ccuo
+	return _u
 }
 
 // ClearConnectedAt clears the value of the "connected_at" field.
-func (ccuo *ChannelConnectionUpdateOne) ClearConnectedAt() *ChannelConnectionUpdateOne {
-	ccuo.mutation.ClearConnectedAt()
-	return ccuo
+func (_u *ChannelConnectionUpdateOne) ClearConnectedAt() *ChannelConnectionUpdateOne {
+	_u.mutation.ClearConnectedAt()
+	return _u
 }
 
 // SetAgent sets the "agent" edge to the Agent entity.
-func (ccuo *ChannelConnectionUpdateOne) SetAgent(a *Agent) *ChannelConnectionUpdateOne {
-	return ccuo.SetAgentID(a.ID)
+func (_u *ChannelConnectionUpdateOne) SetAgent(v *Agent) *ChannelConnectionUpdateOne {
+	return _u.SetAgentID(v.ID)
 }
 
 // Mutation returns the ChannelConnectionMutation object of the builder.
-func (ccuo *ChannelConnectionUpdateOne) Mutation() *ChannelConnectionMutation {
-	return ccuo.mutation
+func (_u *ChannelConnectionUpdateOne) Mutation() *ChannelConnectionMutation {
+	return _u.mutation
 }
 
 // ClearAgent clears the "agent" edge to the Agent entity.
-func (ccuo *ChannelConnectionUpdateOne) ClearAgent() *ChannelConnectionUpdateOne {
-	ccuo.mutation.ClearAgent()
-	return ccuo
+func (_u *ChannelConnectionUpdateOne) ClearAgent() *ChannelConnectionUpdateOne {
+	_u.mutation.ClearAgent()
+	return _u
 }
 
 // Where appends a list predicates to the ChannelConnectionUpdate builder.
-func (ccuo *ChannelConnectionUpdateOne) Where(ps ...predicate.ChannelConnection) *ChannelConnectionUpdateOne {
-	ccuo.mutation.Where(ps...)
-	return ccuo
+func (_u *ChannelConnectionUpdateOne) Where(ps ...predicate.ChannelConnection) *ChannelConnectionUpdateOne {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (ccuo *ChannelConnectionUpdateOne) Select(field string, fields ...string) *ChannelConnectionUpdateOne {
-	ccuo.fields = append([]string{field}, fields...)
-	return ccuo
+func (_u *ChannelConnectionUpdateOne) Select(field string, fields ...string) *ChannelConnectionUpdateOne {
+	_u.fields = append([]string{field}, fields...)
+	return _u
 }
 
 // Save executes the query and returns the updated ChannelConnection entity.
-func (ccuo *ChannelConnectionUpdateOne) Save(ctx context.Context) (*ChannelConnection, error) {
-	ccuo.defaults()
-	return withHooks(ctx, ccuo.sqlSave, ccuo.mutation, ccuo.hooks)
+func (_u *ChannelConnectionUpdateOne) Save(ctx context.Context) (*ChannelConnection, error) {
+	_u.defaults()
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (ccuo *ChannelConnectionUpdateOne) SaveX(ctx context.Context) *ChannelConnection {
-	node, err := ccuo.Save(ctx)
+func (_u *ChannelConnectionUpdateOne) SaveX(ctx context.Context) *ChannelConnection {
+	node, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -444,50 +444,50 @@ func (ccuo *ChannelConnectionUpdateOne) SaveX(ctx context.Context) *ChannelConne
 }
 
 // Exec executes the query on the entity.
-func (ccuo *ChannelConnectionUpdateOne) Exec(ctx context.Context) error {
-	_, err := ccuo.Save(ctx)
+func (_u *ChannelConnectionUpdateOne) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ccuo *ChannelConnectionUpdateOne) ExecX(ctx context.Context) {
-	if err := ccuo.Exec(ctx); err != nil {
+func (_u *ChannelConnectionUpdateOne) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (ccuo *ChannelConnectionUpdateOne) defaults() {
-	if _, ok := ccuo.mutation.UpdatedAt(); !ok {
+func (_u *ChannelConnectionUpdateOne) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
 		v := channelconnection.UpdateDefaultUpdatedAt()
-		ccuo.mutation.SetUpdatedAt(v)
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (ccuo *ChannelConnectionUpdateOne) check() error {
-	if v, ok := ccuo.mutation.ChannelType(); ok {
+func (_u *ChannelConnectionUpdateOne) check() error {
+	if v, ok := _u.mutation.ChannelType(); ok {
 		if err := channelconnection.ChannelTypeValidator(v); err != nil {
 			return &ValidationError{Name: "channel_type", err: fmt.Errorf(`ent: validator failed for field "ChannelConnection.channel_type": %w`, err)}
 		}
 	}
-	if ccuo.mutation.AgentCleared() && len(ccuo.mutation.AgentIDs()) > 0 {
+	if _u.mutation.AgentCleared() && len(_u.mutation.AgentIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "ChannelConnection.agent"`)
 	}
 	return nil
 }
 
-func (ccuo *ChannelConnectionUpdateOne) sqlSave(ctx context.Context) (_node *ChannelConnection, err error) {
-	if err := ccuo.check(); err != nil {
+func (_u *ChannelConnectionUpdateOne) sqlSave(ctx context.Context) (_node *ChannelConnection, err error) {
+	if err := _u.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(channelconnection.Table, channelconnection.Columns, sqlgraph.NewFieldSpec(channelconnection.FieldID, field.TypeUUID))
-	id, ok := ccuo.mutation.ID()
+	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "ChannelConnection.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := ccuo.fields; len(fields) > 0 {
+	if fields := _u.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, channelconnection.FieldID)
 		for _, f := range fields {
@@ -499,41 +499,41 @@ func (ccuo *ChannelConnectionUpdateOne) sqlSave(ctx context.Context) (_node *Cha
 			}
 		}
 	}
-	if ps := ccuo.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := ccuo.mutation.UpdatedAt(); ok {
+	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(channelconnection.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := ccuo.mutation.ChannelType(); ok {
+	if value, ok := _u.mutation.ChannelType(); ok {
 		_spec.SetField(channelconnection.FieldChannelType, field.TypeString, value)
 	}
-	if value, ok := ccuo.mutation.Status(); ok {
+	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(channelconnection.FieldStatus, field.TypeString, value)
 	}
-	if value, ok := ccuo.mutation.Handle(); ok {
+	if value, ok := _u.mutation.Handle(); ok {
 		_spec.SetField(channelconnection.FieldHandle, field.TypeString, value)
 	}
-	if ccuo.mutation.HandleCleared() {
+	if _u.mutation.HandleCleared() {
 		_spec.ClearField(channelconnection.FieldHandle, field.TypeString)
 	}
-	if value, ok := ccuo.mutation.DeepLink(); ok {
+	if value, ok := _u.mutation.DeepLink(); ok {
 		_spec.SetField(channelconnection.FieldDeepLink, field.TypeString, value)
 	}
-	if ccuo.mutation.DeepLinkCleared() {
+	if _u.mutation.DeepLinkCleared() {
 		_spec.ClearField(channelconnection.FieldDeepLink, field.TypeString)
 	}
-	if value, ok := ccuo.mutation.ConnectedAt(); ok {
+	if value, ok := _u.mutation.ConnectedAt(); ok {
 		_spec.SetField(channelconnection.FieldConnectedAt, field.TypeTime, value)
 	}
-	if ccuo.mutation.ConnectedAtCleared() {
+	if _u.mutation.ConnectedAtCleared() {
 		_spec.ClearField(channelconnection.FieldConnectedAt, field.TypeTime)
 	}
-	if ccuo.mutation.AgentCleared() {
+	if _u.mutation.AgentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -546,7 +546,7 @@ func (ccuo *ChannelConnectionUpdateOne) sqlSave(ctx context.Context) (_node *Cha
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ccuo.mutation.AgentIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.AgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -562,10 +562,10 @@ func (ccuo *ChannelConnectionUpdateOne) sqlSave(ctx context.Context) (_node *Cha
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &ChannelConnection{config: ccuo.config}
+	_node = &ChannelConnection{config: _u.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, ccuo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{channelconnection.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -573,6 +573,6 @@ func (ccuo *ChannelConnectionUpdateOne) sqlSave(ctx context.Context) (_node *Cha
 		}
 		return nil, err
 	}
-	ccuo.mutation.done = true
+	_u.mutation.done = true
 	return _node, nil
 }

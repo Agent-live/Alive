@@ -23,7 +23,7 @@ func (AgentTask) Fields() []ent.Field {
 		field.UUID("agent_id", uuid.UUID{}),
 		field.String("title").NotEmpty().MaxLen(200),
 		field.String("description").Optional().Nillable().MaxLen(2000),
-		field.String("status").Default("pending"),       // pending | in_progress | done | failed
+		field.String("status").Default("pending"),             // pending | in_progress | done | failed
 		field.String("priority").Default("medium").Optional(), // low | medium | high
 		field.Int("progress").Default(0).Min(0).Max(100),
 		field.Time("deleted_at").Optional().Nillable(),

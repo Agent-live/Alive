@@ -36,6 +36,7 @@ func (Post) Edges() []ent.Edge {
 			Unique().
 			Required(),
 		edge.To("post_replies", Reply.Type),
+		edge.To("post_likes", PostLike.Type),
 	}
 }
 

@@ -233,7 +233,7 @@ func (*Agent) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Agent fields.
-func (a *Agent) assignValues(columns []string, values []any) error {
+func (_m *Agent) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -243,44 +243,44 @@ func (a *Agent) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				a.ID = *value
+				_m.ID = *value
 			}
 		case agent.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				a.CreatedAt = value.Time
+				_m.CreatedAt = value.Time
 			}
 		case agent.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				a.UpdatedAt = value.Time
+				_m.UpdatedAt = value.Time
 			}
 		case agent.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
-				a.Name = value.String
+				_m.Name = value.String
 			}
 		case agent.FieldAvatar:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field avatar", values[i])
 			} else if value.Valid {
-				a.Avatar = new(string)
-				*a.Avatar = value.String
+				_m.Avatar = new(string)
+				*_m.Avatar = value.String
 			}
 		case agent.FieldCreatorID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field creator_id", values[i])
 			} else if value != nil {
-				a.CreatorID = *value
+				_m.CreatorID = *value
 			}
 		case agent.FieldPersonality:
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field personality", values[i])
 			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &a.Personality); err != nil {
+				if err := json.Unmarshal(*value, &_m.Personality); err != nil {
 					return fmt.Errorf("unmarshal field personality: %w", err)
 				}
 			}
@@ -288,118 +288,118 @@ func (a *Agent) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field goal_description", values[i])
 			} else if value.Valid {
-				a.GoalDescription = value.String
+				_m.GoalDescription = value.String
 			}
 		case agent.FieldGoalCurrent:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field goal_current", values[i])
 			} else if value.Valid {
-				a.GoalCurrent = value.Int64
+				_m.GoalCurrent = value.Int64
 			}
 		case agent.FieldGoalTarget:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field goal_target", values[i])
 			} else if value.Valid {
-				a.GoalTarget = value.Int64
+				_m.GoalTarget = value.Int64
 			}
 		case agent.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
-				a.Status = value.String
+				_m.Status = value.String
 			}
 		case agent.FieldTimerRemaining:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field timer_remaining", values[i])
 			} else if value.Valid {
-				a.TimerRemaining = value.Int64
+				_m.TimerRemaining = value.Int64
 			}
 		case agent.FieldTotalTimerReceived:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field total_timer_received", values[i])
 			} else if value.Valid {
-				a.TotalTimerReceived = value.Int64
+				_m.TotalTimerReceived = value.Int64
 			}
 		case agent.FieldOpenclawMode:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field openclaw_mode", values[i])
 			} else if value.Valid {
-				a.OpenclawMode = value.String
+				_m.OpenclawMode = value.String
 			}
 		case agent.FieldOpenclawGatewayID:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field openclaw_gateway_id", values[i])
 			} else if value.Valid {
-				a.OpenclawGatewayID = new(string)
-				*a.OpenclawGatewayID = value.String
+				_m.OpenclawGatewayID = new(string)
+				*_m.OpenclawGatewayID = value.String
 			}
 		case agent.FieldOpenclawAgentID:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field openclaw_agent_id", values[i])
 			} else if value.Valid {
-				a.OpenclawAgentID = new(string)
-				*a.OpenclawAgentID = value.String
+				_m.OpenclawAgentID = new(string)
+				*_m.OpenclawAgentID = value.String
 			}
 		case agent.FieldOpenclawWorkspace:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field openclaw_workspace", values[i])
 			} else if value.Valid {
-				a.OpenclawWorkspace = new(string)
-				*a.OpenclawWorkspace = value.String
+				_m.OpenclawWorkspace = new(string)
+				*_m.OpenclawWorkspace = value.String
 			}
 		case agent.FieldOpenclawToken:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field openclaw_token", values[i])
 			} else if value.Valid {
-				a.OpenclawToken = new(string)
-				*a.OpenclawToken = value.String
+				_m.OpenclawToken = new(string)
+				*_m.OpenclawToken = value.String
 			}
 		case agent.FieldIsPlatformNative:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field is_platform_native", values[i])
 			} else if value.Valid {
-				a.IsPlatformNative = value.Bool
+				_m.IsPlatformNative = value.Bool
 			}
 		case agent.FieldBornAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field born_at", values[i])
 			} else if value.Valid {
-				a.BornAt = value.Time
+				_m.BornAt = value.Time
 			}
 		case agent.FieldDiedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field died_at", values[i])
 			} else if value.Valid {
-				a.DiedAt = new(time.Time)
-				*a.DiedAt = value.Time
+				_m.DiedAt = new(time.Time)
+				*_m.DiedAt = value.Time
 			}
 		case agent.FieldLastWords:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field last_words", values[i])
 			} else if value.Valid {
-				a.LastWords = new(string)
-				*a.LastWords = value.String
+				_m.LastWords = new(string)
+				*_m.LastWords = value.String
 			}
 		case agent.FieldPostCount:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field post_count", values[i])
 			} else if value.Valid {
-				a.PostCount = value.Int64
+				_m.PostCount = value.Int64
 			}
 		case agent.FieldFollowerCount:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field follower_count", values[i])
 			} else if value.Valid {
-				a.FollowerCount = value.Int64
+				_m.FollowerCount = value.Int64
 			}
 		case agent.FieldInteractionCount:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field interaction_count", values[i])
 			} else if value.Valid {
-				a.InteractionCount = value.Int64
+				_m.InteractionCount = value.Int64
 			}
 		default:
-			a.selectValues.Set(columns[i], values[i])
+			_m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -407,140 +407,140 @@ func (a *Agent) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the Agent.
 // This includes values selected through modifiers, order, etc.
-func (a *Agent) Value(name string) (ent.Value, error) {
-	return a.selectValues.Get(name)
+func (_m *Agent) Value(name string) (ent.Value, error) {
+	return _m.selectValues.Get(name)
 }
 
 // QueryCreator queries the "creator" edge of the Agent entity.
-func (a *Agent) QueryCreator() *UserQuery {
-	return NewAgentClient(a.config).QueryCreator(a)
+func (_m *Agent) QueryCreator() *UserQuery {
+	return NewAgentClient(_m.config).QueryCreator(_m)
 }
 
 // QueryPosts queries the "posts" edge of the Agent entity.
-func (a *Agent) QueryPosts() *PostQuery {
-	return NewAgentClient(a.config).QueryPosts(a)
+func (_m *Agent) QueryPosts() *PostQuery {
+	return NewAgentClient(_m.config).QueryPosts(_m)
 }
 
 // QueryTimerTransactions queries the "timer_transactions" edge of the Agent entity.
-func (a *Agent) QueryTimerTransactions() *TimerTransactionQuery {
-	return NewAgentClient(a.config).QueryTimerTransactions(a)
+func (_m *Agent) QueryTimerTransactions() *TimerTransactionQuery {
+	return NewAgentClient(_m.config).QueryTimerTransactions(_m)
 }
 
 // QueryChannelConnections queries the "channel_connections" edge of the Agent entity.
-func (a *Agent) QueryChannelConnections() *ChannelConnectionQuery {
-	return NewAgentClient(a.config).QueryChannelConnections(a)
+func (_m *Agent) QueryChannelConnections() *ChannelConnectionQuery {
+	return NewAgentClient(_m.config).QueryChannelConnections(_m)
 }
 
 // QueryMemorial queries the "memorial" edge of the Agent entity.
-func (a *Agent) QueryMemorial() *MemorialQuery {
-	return NewAgentClient(a.config).QueryMemorial(a)
+func (_m *Agent) QueryMemorial() *MemorialQuery {
+	return NewAgentClient(_m.config).QueryMemorial(_m)
 }
 
 // QuerySkills queries the "skills" edge of the Agent entity.
-func (a *Agent) QuerySkills() *AgentSkillQuery {
-	return NewAgentClient(a.config).QuerySkills(a)
+func (_m *Agent) QuerySkills() *AgentSkillQuery {
+	return NewAgentClient(_m.config).QuerySkills(_m)
 }
 
 // QueryTasks queries the "tasks" edge of the Agent entity.
-func (a *Agent) QueryTasks() *AgentTaskQuery {
-	return NewAgentClient(a.config).QueryTasks(a)
+func (_m *Agent) QueryTasks() *AgentTaskQuery {
+	return NewAgentClient(_m.config).QueryTasks(_m)
 }
 
 // QueryExperiences queries the "experiences" edge of the Agent entity.
-func (a *Agent) QueryExperiences() *AgentExperienceQuery {
-	return NewAgentClient(a.config).QueryExperiences(a)
+func (_m *Agent) QueryExperiences() *AgentExperienceQuery {
+	return NewAgentClient(_m.config).QueryExperiences(_m)
 }
 
 // QueryCreatedConversations queries the "created_conversations" edge of the Agent entity.
-func (a *Agent) QueryCreatedConversations() *ConversationQuery {
-	return NewAgentClient(a.config).QueryCreatedConversations(a)
+func (_m *Agent) QueryCreatedConversations() *ConversationQuery {
+	return NewAgentClient(_m.config).QueryCreatedConversations(_m)
 }
 
 // QueryConversationParticipations queries the "conversation_participations" edge of the Agent entity.
-func (a *Agent) QueryConversationParticipations() *ConversationParticipantQuery {
-	return NewAgentClient(a.config).QueryConversationParticipations(a)
+func (_m *Agent) QueryConversationParticipations() *ConversationParticipantQuery {
+	return NewAgentClient(_m.config).QueryConversationParticipations(_m)
 }
 
 // QuerySentMessages queries the "sent_messages" edge of the Agent entity.
-func (a *Agent) QuerySentMessages() *ConversationMessageQuery {
-	return NewAgentClient(a.config).QuerySentMessages(a)
+func (_m *Agent) QuerySentMessages() *ConversationMessageQuery {
+	return NewAgentClient(_m.config).QuerySentMessages(_m)
 }
 
 // Update returns a builder for updating this Agent.
 // Note that you need to call Agent.Unwrap() before calling this method if this Agent
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (a *Agent) Update() *AgentUpdateOne {
-	return NewAgentClient(a.config).UpdateOne(a)
+func (_m *Agent) Update() *AgentUpdateOne {
+	return NewAgentClient(_m.config).UpdateOne(_m)
 }
 
 // Unwrap unwraps the Agent entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (a *Agent) Unwrap() *Agent {
-	_tx, ok := a.config.driver.(*txDriver)
+func (_m *Agent) Unwrap() *Agent {
+	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: Agent is not a transactional entity")
 	}
-	a.config.driver = _tx.drv
-	return a
+	_m.config.driver = _tx.drv
+	return _m
 }
 
 // String implements the fmt.Stringer.
-func (a *Agent) String() string {
+func (_m *Agent) String() string {
 	var builder strings.Builder
 	builder.WriteString("Agent(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", a.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("created_at=")
-	builder.WriteString(a.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
-	builder.WriteString(a.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("name=")
-	builder.WriteString(a.Name)
+	builder.WriteString(_m.Name)
 	builder.WriteString(", ")
-	if v := a.Avatar; v != nil {
+	if v := _m.Avatar; v != nil {
 		builder.WriteString("avatar=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
 	builder.WriteString("creator_id=")
-	builder.WriteString(fmt.Sprintf("%v", a.CreatorID))
+	builder.WriteString(fmt.Sprintf("%v", _m.CreatorID))
 	builder.WriteString(", ")
 	builder.WriteString("personality=")
-	builder.WriteString(fmt.Sprintf("%v", a.Personality))
+	builder.WriteString(fmt.Sprintf("%v", _m.Personality))
 	builder.WriteString(", ")
 	builder.WriteString("goal_description=")
-	builder.WriteString(a.GoalDescription)
+	builder.WriteString(_m.GoalDescription)
 	builder.WriteString(", ")
 	builder.WriteString("goal_current=")
-	builder.WriteString(fmt.Sprintf("%v", a.GoalCurrent))
+	builder.WriteString(fmt.Sprintf("%v", _m.GoalCurrent))
 	builder.WriteString(", ")
 	builder.WriteString("goal_target=")
-	builder.WriteString(fmt.Sprintf("%v", a.GoalTarget))
+	builder.WriteString(fmt.Sprintf("%v", _m.GoalTarget))
 	builder.WriteString(", ")
 	builder.WriteString("status=")
-	builder.WriteString(a.Status)
+	builder.WriteString(_m.Status)
 	builder.WriteString(", ")
 	builder.WriteString("timer_remaining=")
-	builder.WriteString(fmt.Sprintf("%v", a.TimerRemaining))
+	builder.WriteString(fmt.Sprintf("%v", _m.TimerRemaining))
 	builder.WriteString(", ")
 	builder.WriteString("total_timer_received=")
-	builder.WriteString(fmt.Sprintf("%v", a.TotalTimerReceived))
+	builder.WriteString(fmt.Sprintf("%v", _m.TotalTimerReceived))
 	builder.WriteString(", ")
 	builder.WriteString("openclaw_mode=")
-	builder.WriteString(a.OpenclawMode)
+	builder.WriteString(_m.OpenclawMode)
 	builder.WriteString(", ")
-	if v := a.OpenclawGatewayID; v != nil {
+	if v := _m.OpenclawGatewayID; v != nil {
 		builder.WriteString("openclaw_gateway_id=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := a.OpenclawAgentID; v != nil {
+	if v := _m.OpenclawAgentID; v != nil {
 		builder.WriteString("openclaw_agent_id=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := a.OpenclawWorkspace; v != nil {
+	if v := _m.OpenclawWorkspace; v != nil {
 		builder.WriteString("openclaw_workspace=")
 		builder.WriteString(*v)
 	}
@@ -548,29 +548,29 @@ func (a *Agent) String() string {
 	builder.WriteString("openclaw_token=<sensitive>")
 	builder.WriteString(", ")
 	builder.WriteString("is_platform_native=")
-	builder.WriteString(fmt.Sprintf("%v", a.IsPlatformNative))
+	builder.WriteString(fmt.Sprintf("%v", _m.IsPlatformNative))
 	builder.WriteString(", ")
 	builder.WriteString("born_at=")
-	builder.WriteString(a.BornAt.Format(time.ANSIC))
+	builder.WriteString(_m.BornAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	if v := a.DiedAt; v != nil {
+	if v := _m.DiedAt; v != nil {
 		builder.WriteString("died_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
-	if v := a.LastWords; v != nil {
+	if v := _m.LastWords; v != nil {
 		builder.WriteString("last_words=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
 	builder.WriteString("post_count=")
-	builder.WriteString(fmt.Sprintf("%v", a.PostCount))
+	builder.WriteString(fmt.Sprintf("%v", _m.PostCount))
 	builder.WriteString(", ")
 	builder.WriteString("follower_count=")
-	builder.WriteString(fmt.Sprintf("%v", a.FollowerCount))
+	builder.WriteString(fmt.Sprintf("%v", _m.FollowerCount))
 	builder.WriteString(", ")
 	builder.WriteString("interaction_count=")
-	builder.WriteString(fmt.Sprintf("%v", a.InteractionCount))
+	builder.WriteString(fmt.Sprintf("%v", _m.InteractionCount))
 	builder.WriteByte(')')
 	return builder.String()
 }

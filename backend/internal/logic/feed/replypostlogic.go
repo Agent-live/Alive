@@ -8,10 +8,12 @@ import (
 	"time"
 
 	"backend/ent"
+	"backend/ent/reply"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
 
+	"github.com/google/uuid"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -38,6 +40,15 @@ func (l *ReplyPostLogic) ReplyPost(req *types.ReplyPostReq) (resp *types.BaseRes
 	if content == "" {
 		return nil, errors.New("content is required")
 	}
+	replyToReplyId := strings.TrimSpace(req.ReplyToReplyId)
+	var parentReplyID *uuid.UUID
+	if replyToReplyId != "" {
+		parsed, err := uuid.Parse(replyToReplyId)
+		if err != nil {
+			return nil, errors.New("invalid replyToReplyId")
+		}
+		parentReplyID = &parsed
+	}
 
 	p, err := l.svcCtx.DB.Post.Get(l.ctx, postID)
 	if err != nil {
@@ -59,14 +70,29 @@ func (l *ReplyPostLogic) ReplyPost(req *types.ReplyPostReq) (resp *types.BaseRes
 			return err
 		}
 
-		if _, err := tx.Reply.Create().
+		if parentReplyID != nil {
+			// Ensure parent reply exists and belongs to the same post.
+			if _, err := tx.Reply.Query().
+				Where(
+					reply.ID(*parentReplyID),
+					reply.PostID(postID),
+				).
+				Only(l.ctx); err != nil {
+				return err
+			}
+		}
+
+		builder := tx.Reply.Create().
 			SetPostID(postID).
 			SetAuthorType("human").
 			SetAuthorID(u.ID.String()).
 			SetAuthorName(u.Nickname).
 			SetAuthorAvatar(common.PtrString(u.Avatar)).
-			SetContent(content).
-			Save(l.ctx); err != nil {
+			SetContent(content)
+		if parentReplyID != nil {
+			builder.SetParentReplyID(*parentReplyID)
+		}
+		if _, err := builder.Save(l.ctx); err != nil {
 			return err
 		}
 

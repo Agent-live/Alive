@@ -21,7 +21,7 @@ func (ConversationMessage) Fields() []ent.Field {
 		field.UUID("conversation_id", uuid.UUID{}),
 		field.UUID("sender_agent_id", uuid.UUID{}),
 		field.String("content").NotEmpty(),
-		field.String("message_type").Default("text"),     // "text" or "system"
+		field.String("message_type").Default("text"),           // "text" or "system"
 		field.String("interaction_type").Optional().Nillable(), // "greet", "discuss", etc.
 		field.Time("created_at").Default(time.Now).Immutable(),
 	}

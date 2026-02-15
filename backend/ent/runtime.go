@@ -16,6 +16,7 @@ import (
 	"backend/ent/media"
 	"backend/ent/memorial"
 	"backend/ent/post"
+	"backend/ent/postlike"
 	"backend/ent/reply"
 	"backend/ent/schema"
 	"backend/ent/timertransaction"
@@ -475,26 +476,36 @@ func init() {
 	postDescID := postFields[0].Descriptor()
 	// post.DefaultID holds the default value on creation for the id field.
 	post.DefaultID = postDescID.Default.(func() uuid.UUID)
+	postlikeFields := schema.PostLike{}.Fields()
+	_ = postlikeFields
+	// postlikeDescCreatedAt is the schema descriptor for created_at field.
+	postlikeDescCreatedAt := postlikeFields[3].Descriptor()
+	// postlike.DefaultCreatedAt holds the default value on creation for the created_at field.
+	postlike.DefaultCreatedAt = postlikeDescCreatedAt.Default.(func() time.Time)
+	// postlikeDescID is the schema descriptor for id field.
+	postlikeDescID := postlikeFields[0].Descriptor()
+	// postlike.DefaultID holds the default value on creation for the id field.
+	postlike.DefaultID = postlikeDescID.Default.(func() uuid.UUID)
 	replyFields := schema.Reply{}.Fields()
 	_ = replyFields
 	// replyDescAuthorType is the schema descriptor for author_type field.
-	replyDescAuthorType := replyFields[2].Descriptor()
+	replyDescAuthorType := replyFields[3].Descriptor()
 	// reply.DefaultAuthorType holds the default value on creation for the author_type field.
 	reply.DefaultAuthorType = replyDescAuthorType.Default.(string)
 	// replyDescAuthorID is the schema descriptor for author_id field.
-	replyDescAuthorID := replyFields[3].Descriptor()
+	replyDescAuthorID := replyFields[4].Descriptor()
 	// reply.AuthorIDValidator is a validator for the "author_id" field. It is called by the builders before save.
 	reply.AuthorIDValidator = replyDescAuthorID.Validators[0].(func(string) error)
 	// replyDescAuthorName is the schema descriptor for author_name field.
-	replyDescAuthorName := replyFields[4].Descriptor()
+	replyDescAuthorName := replyFields[5].Descriptor()
 	// reply.AuthorNameValidator is a validator for the "author_name" field. It is called by the builders before save.
 	reply.AuthorNameValidator = replyDescAuthorName.Validators[0].(func(string) error)
 	// replyDescContent is the schema descriptor for content field.
-	replyDescContent := replyFields[6].Descriptor()
+	replyDescContent := replyFields[7].Descriptor()
 	// reply.ContentValidator is a validator for the "content" field. It is called by the builders before save.
 	reply.ContentValidator = replyDescContent.Validators[0].(func(string) error)
 	// replyDescCreatedAt is the schema descriptor for created_at field.
-	replyDescCreatedAt := replyFields[7].Descriptor()
+	replyDescCreatedAt := replyFields[8].Descriptor()
 	// reply.DefaultCreatedAt holds the default value on creation for the created_at field.
 	reply.DefaultCreatedAt = replyDescCreatedAt.Default.(func() time.Time)
 	// replyDescID is the schema descriptor for id field.

@@ -17,6 +17,8 @@ const (
 	FieldID = "id"
 	// FieldPostID holds the string denoting the post_id field in the database.
 	FieldPostID = "post_id"
+	// FieldParentReplyID holds the string denoting the parent_reply_id field in the database.
+	FieldParentReplyID = "parent_reply_id"
 	// FieldAuthorType holds the string denoting the author_type field in the database.
 	FieldAuthorType = "author_type"
 	// FieldAuthorID holds the string denoting the author_id field in the database.
@@ -46,6 +48,7 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldPostID,
+	FieldParentReplyID,
 	FieldAuthorType,
 	FieldAuthorID,
 	FieldAuthorName,
@@ -90,6 +93,11 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByPostID orders the results by the post_id field.
 func ByPostID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPostID, opts...).ToFunc()
+}
+
+// ByParentReplyID orders the results by the parent_reply_id field.
+func ByParentReplyID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldParentReplyID, opts...).ToFunc()
 }
 
 // ByAuthorType orders the results by the author_type field.

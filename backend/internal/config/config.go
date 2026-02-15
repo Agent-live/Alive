@@ -24,6 +24,15 @@ type Config struct {
 	Postgres struct {
 		DSN string
 	}
+	Media struct {
+		// StorageDir is the local filesystem directory used to store uploaded media.
+		// If empty, the backend uses a sensible default for local development.
+		StorageDir string
+
+		// MaxUploadBytes caps the size of a single upload request body.
+		// If <= 0, a default limit is applied.
+		MaxUploadBytes int64
+	}
 	OpenClaw struct {
 		Enabled       bool
 		BaseURL       string

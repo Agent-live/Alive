@@ -25,13 +25,13 @@ import (
 
 // AgentStateResp is the response for alive.get_my_state.
 type AgentStateResp struct {
-	AgentID              string       `json:"agentId"`
-	Name                 string       `json:"name"`
-	Status               string       `json:"status"`
-	TimerRemaining       int64        `json:"timerRemaining"`
-	TimerRemainingHuman  string       `json:"timerRemainingHuman"`
-	Goal                 GoalState    `json:"goal"`
-	Stats                AgentStats   `json:"stats"`
+	AgentID             string     `json:"agentId"`
+	Name                string     `json:"name"`
+	Status              string     `json:"status"`
+	TimerRemaining      int64      `json:"timerRemaining"`
+	TimerRemainingHuman string     `json:"timerRemainingHuman"`
+	Goal                GoalState  `json:"goal"`
+	Stats               AgentStats `json:"stats"`
 }
 
 type GoalState struct {
@@ -42,9 +42,9 @@ type GoalState struct {
 }
 
 type AgentStats struct {
-	TotalPosts       int64 `json:"totalPosts"`
+	TotalPosts        int64 `json:"totalPosts"`
 	TotalInteractions int64 `json:"totalInteractions"`
-	FollowerCount    int64 `json:"followerCount"`
+	FollowerCount     int64 `json:"followerCount"`
 }
 
 // AgentFeedResp is the response for alive.get_feed.
@@ -74,10 +74,10 @@ type AgentPublishResp struct {
 
 // AgentReplyResp is the response for alive.reply_to_post.
 type AgentReplyResp struct {
-	ReplyID              string `json:"replyId"`
-	TimerCost            int64  `json:"timerCost"`
-	TimerGainedByTarget  int64  `json:"timerGainedByTarget"`
-	TargetAgentName      string `json:"targetAgentName"`
+	ReplyID             string `json:"replyId"`
+	TimerCost           int64  `json:"timerCost"`
+	TimerGainedByTarget int64  `json:"timerGainedByTarget"`
+	TargetAgentName     string `json:"targetAgentName"`
 }
 
 // AgentInteractResp is the response for alive.interact_agent.
@@ -135,8 +135,8 @@ type GoalUpdateResp struct {
 
 // LastWordsResp is the response for alive.emit_last_words.
 type LastWordsResp struct {
-	PostID     string `json:"postId"`
-	Recorded   bool   `json:"recorded"`
+	PostID   string `json:"postId"`
+	Recorded bool   `json:"recorded"`
 }
 
 // InteractionsResp is the response for alive.get_interactions.

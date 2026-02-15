@@ -16,6 +16,7 @@ import (
 	"backend/ent/media"
 	"backend/ent/memorial"
 	"backend/ent/post"
+	"backend/ent/postlike"
 	"backend/ent/predicate"
 	"backend/ent/reply"
 	"backend/ent/timertransaction"
@@ -56,6 +57,7 @@ const (
 	TypeMedia                   = "Media"
 	TypeMemorial                = "Memorial"
 	TypePost                    = "Post"
+	TypePostLike                = "PostLike"
 	TypeReply                   = "Reply"
 	TypeTimerTransaction        = "TimerTransaction"
 	TypeTribute                 = "Tribute"
@@ -12570,6 +12572,9 @@ type PostMutation struct {
 	post_replies        map[uuid.UUID]struct{}
 	removedpost_replies map[uuid.UUID]struct{}
 	clearedpost_replies bool
+	post_likes          map[uuid.UUID]struct{}
+	removedpost_likes   map[uuid.UUID]struct{}
+	clearedpost_likes   bool
 	done                bool
 	oldValue            func(context.Context) (*Post, error)
 	predicates          []predicate.Post
@@ -13072,6 +13077,60 @@ func (m *PostMutation) ResetPostReplies() {
 	m.removedpost_replies = nil
 }
 
+// AddPostLikeIDs adds the "post_likes" edge to the PostLike entity by ids.
+func (m *PostMutation) AddPostLikeIDs(ids ...uuid.UUID) {
+	if m.post_likes == nil {
+		m.post_likes = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.post_likes[ids[i]] = struct{}{}
+	}
+}
+
+// ClearPostLikes clears the "post_likes" edge to the PostLike entity.
+func (m *PostMutation) ClearPostLikes() {
+	m.clearedpost_likes = true
+}
+
+// PostLikesCleared reports if the "post_likes" edge to the PostLike entity was cleared.
+func (m *PostMutation) PostLikesCleared() bool {
+	return m.clearedpost_likes
+}
+
+// RemovePostLikeIDs removes the "post_likes" edge to the PostLike entity by IDs.
+func (m *PostMutation) RemovePostLikeIDs(ids ...uuid.UUID) {
+	if m.removedpost_likes == nil {
+		m.removedpost_likes = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.post_likes, ids[i])
+		m.removedpost_likes[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedPostLikes returns the removed IDs of the "post_likes" edge to the PostLike entity.
+func (m *PostMutation) RemovedPostLikesIDs() (ids []uuid.UUID) {
+	for id := range m.removedpost_likes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// PostLikesIDs returns the "post_likes" edge IDs in the mutation.
+func (m *PostMutation) PostLikesIDs() (ids []uuid.UUID) {
+	for id := range m.post_likes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetPostLikes resets all changes to the "post_likes" edge.
+func (m *PostMutation) ResetPostLikes() {
+	m.post_likes = nil
+	m.clearedpost_likes = false
+	m.removedpost_likes = nil
+}
+
 // Where appends a list predicates to the PostMutation builder.
 func (m *PostMutation) Where(ps ...predicate.Post) {
 	m.predicates = append(m.predicates, ps...)
@@ -13346,12 +13405,15 @@ func (m *PostMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PostMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.agent != nil {
 		edges = append(edges, post.EdgeAgent)
 	}
 	if m.post_replies != nil {
 		edges = append(edges, post.EdgePostReplies)
+	}
+	if m.post_likes != nil {
+		edges = append(edges, post.EdgePostLikes)
 	}
 	return edges
 }
@@ -13370,15 +13432,24 @@ func (m *PostMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case post.EdgePostLikes:
+		ids := make([]ent.Value, 0, len(m.post_likes))
+		for id := range m.post_likes {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PostMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.removedpost_replies != nil {
 		edges = append(edges, post.EdgePostReplies)
+	}
+	if m.removedpost_likes != nil {
+		edges = append(edges, post.EdgePostLikes)
 	}
 	return edges
 }
@@ -13393,18 +13464,27 @@ func (m *PostMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case post.EdgePostLikes:
+		ids := make([]ent.Value, 0, len(m.removedpost_likes))
+		for id := range m.removedpost_likes {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PostMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.clearedagent {
 		edges = append(edges, post.EdgeAgent)
 	}
 	if m.clearedpost_replies {
 		edges = append(edges, post.EdgePostReplies)
+	}
+	if m.clearedpost_likes {
+		edges = append(edges, post.EdgePostLikes)
 	}
 	return edges
 }
@@ -13417,6 +13497,8 @@ func (m *PostMutation) EdgeCleared(name string) bool {
 		return m.clearedagent
 	case post.EdgePostReplies:
 		return m.clearedpost_replies
+	case post.EdgePostLikes:
+		return m.clearedpost_likes
 	}
 	return false
 }
@@ -13442,28 +13524,572 @@ func (m *PostMutation) ResetEdge(name string) error {
 	case post.EdgePostReplies:
 		m.ResetPostReplies()
 		return nil
+	case post.EdgePostLikes:
+		m.ResetPostLikes()
+		return nil
 	}
 	return fmt.Errorf("unknown Post edge %s", name)
+}
+
+// PostLikeMutation represents an operation that mutates the PostLike nodes in the graph.
+type PostLikeMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *uuid.UUID
+	created_at    *time.Time
+	clearedFields map[string]struct{}
+	post          *uuid.UUID
+	clearedpost   bool
+	user          *uuid.UUID
+	cleareduser   bool
+	done          bool
+	oldValue      func(context.Context) (*PostLike, error)
+	predicates    []predicate.PostLike
+}
+
+var _ ent.Mutation = (*PostLikeMutation)(nil)
+
+// postlikeOption allows management of the mutation configuration using functional options.
+type postlikeOption func(*PostLikeMutation)
+
+// newPostLikeMutation creates new mutation for the PostLike entity.
+func newPostLikeMutation(c config, op Op, opts ...postlikeOption) *PostLikeMutation {
+	m := &PostLikeMutation{
+		config:        c,
+		op:            op,
+		typ:           TypePostLike,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withPostLikeID sets the ID field of the mutation.
+func withPostLikeID(id uuid.UUID) postlikeOption {
+	return func(m *PostLikeMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *PostLike
+		)
+		m.oldValue = func(ctx context.Context) (*PostLike, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().PostLike.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withPostLike sets the old PostLike of the mutation.
+func withPostLike(node *PostLike) postlikeOption {
+	return func(m *PostLikeMutation) {
+		m.oldValue = func(context.Context) (*PostLike, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m PostLikeMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m PostLikeMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of PostLike entities.
+func (m *PostLikeMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *PostLikeMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *PostLikeMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().PostLike.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetPostID sets the "post_id" field.
+func (m *PostLikeMutation) SetPostID(u uuid.UUID) {
+	m.post = &u
+}
+
+// PostID returns the value of the "post_id" field in the mutation.
+func (m *PostLikeMutation) PostID() (r uuid.UUID, exists bool) {
+	v := m.post
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPostID returns the old "post_id" field's value of the PostLike entity.
+// If the PostLike object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PostLikeMutation) OldPostID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPostID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPostID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPostID: %w", err)
+	}
+	return oldValue.PostID, nil
+}
+
+// ResetPostID resets all changes to the "post_id" field.
+func (m *PostLikeMutation) ResetPostID() {
+	m.post = nil
+}
+
+// SetUserID sets the "user_id" field.
+func (m *PostLikeMutation) SetUserID(u uuid.UUID) {
+	m.user = &u
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *PostLikeMutation) UserID() (r uuid.UUID, exists bool) {
+	v := m.user
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the PostLike entity.
+// If the PostLike object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PostLikeMutation) OldUserID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *PostLikeMutation) ResetUserID() {
+	m.user = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *PostLikeMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *PostLikeMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the PostLike entity.
+// If the PostLike object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PostLikeMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *PostLikeMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// ClearPost clears the "post" edge to the Post entity.
+func (m *PostLikeMutation) ClearPost() {
+	m.clearedpost = true
+	m.clearedFields[postlike.FieldPostID] = struct{}{}
+}
+
+// PostCleared reports if the "post" edge to the Post entity was cleared.
+func (m *PostLikeMutation) PostCleared() bool {
+	return m.clearedpost
+}
+
+// PostIDs returns the "post" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// PostID instead. It exists only for internal usage by the builders.
+func (m *PostLikeMutation) PostIDs() (ids []uuid.UUID) {
+	if id := m.post; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetPost resets all changes to the "post" edge.
+func (m *PostLikeMutation) ResetPost() {
+	m.post = nil
+	m.clearedpost = false
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (m *PostLikeMutation) ClearUser() {
+	m.cleareduser = true
+	m.clearedFields[postlike.FieldUserID] = struct{}{}
+}
+
+// UserCleared reports if the "user" edge to the User entity was cleared.
+func (m *PostLikeMutation) UserCleared() bool {
+	return m.cleareduser
+}
+
+// UserIDs returns the "user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserID instead. It exists only for internal usage by the builders.
+func (m *PostLikeMutation) UserIDs() (ids []uuid.UUID) {
+	if id := m.user; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUser resets all changes to the "user" edge.
+func (m *PostLikeMutation) ResetUser() {
+	m.user = nil
+	m.cleareduser = false
+}
+
+// Where appends a list predicates to the PostLikeMutation builder.
+func (m *PostLikeMutation) Where(ps ...predicate.PostLike) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the PostLikeMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *PostLikeMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.PostLike, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *PostLikeMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *PostLikeMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (PostLike).
+func (m *PostLikeMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *PostLikeMutation) Fields() []string {
+	fields := make([]string, 0, 3)
+	if m.post != nil {
+		fields = append(fields, postlike.FieldPostID)
+	}
+	if m.user != nil {
+		fields = append(fields, postlike.FieldUserID)
+	}
+	if m.created_at != nil {
+		fields = append(fields, postlike.FieldCreatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *PostLikeMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case postlike.FieldPostID:
+		return m.PostID()
+	case postlike.FieldUserID:
+		return m.UserID()
+	case postlike.FieldCreatedAt:
+		return m.CreatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *PostLikeMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case postlike.FieldPostID:
+		return m.OldPostID(ctx)
+	case postlike.FieldUserID:
+		return m.OldUserID(ctx)
+	case postlike.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown PostLike field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PostLikeMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case postlike.FieldPostID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPostID(v)
+		return nil
+	case postlike.FieldUserID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case postlike.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown PostLike field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *PostLikeMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *PostLikeMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PostLikeMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown PostLike numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *PostLikeMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *PostLikeMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *PostLikeMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown PostLike nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *PostLikeMutation) ResetField(name string) error {
+	switch name {
+	case postlike.FieldPostID:
+		m.ResetPostID()
+		return nil
+	case postlike.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case postlike.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown PostLike field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *PostLikeMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.post != nil {
+		edges = append(edges, postlike.EdgePost)
+	}
+	if m.user != nil {
+		edges = append(edges, postlike.EdgeUser)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *PostLikeMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case postlike.EdgePost:
+		if id := m.post; id != nil {
+			return []ent.Value{*id}
+		}
+	case postlike.EdgeUser:
+		if id := m.user; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *PostLikeMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *PostLikeMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *PostLikeMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedpost {
+		edges = append(edges, postlike.EdgePost)
+	}
+	if m.cleareduser {
+		edges = append(edges, postlike.EdgeUser)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *PostLikeMutation) EdgeCleared(name string) bool {
+	switch name {
+	case postlike.EdgePost:
+		return m.clearedpost
+	case postlike.EdgeUser:
+		return m.cleareduser
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *PostLikeMutation) ClearEdge(name string) error {
+	switch name {
+	case postlike.EdgePost:
+		m.ClearPost()
+		return nil
+	case postlike.EdgeUser:
+		m.ClearUser()
+		return nil
+	}
+	return fmt.Errorf("unknown PostLike unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *PostLikeMutation) ResetEdge(name string) error {
+	switch name {
+	case postlike.EdgePost:
+		m.ResetPost()
+		return nil
+	case postlike.EdgeUser:
+		m.ResetUser()
+		return nil
+	}
+	return fmt.Errorf("unknown PostLike edge %s", name)
 }
 
 // ReplyMutation represents an operation that mutates the Reply nodes in the graph.
 type ReplyMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uuid.UUID
-	author_type   *string
-	author_id     *string
-	author_name   *string
-	author_avatar *string
-	content       *string
-	created_at    *time.Time
-	clearedFields map[string]struct{}
-	post          *uuid.UUID
-	clearedpost   bool
-	done          bool
-	oldValue      func(context.Context) (*Reply, error)
-	predicates    []predicate.Reply
+	op              Op
+	typ             string
+	id              *uuid.UUID
+	parent_reply_id *uuid.UUID
+	author_type     *string
+	author_id       *string
+	author_name     *string
+	author_avatar   *string
+	content         *string
+	created_at      *time.Time
+	clearedFields   map[string]struct{}
+	post            *uuid.UUID
+	clearedpost     bool
+	done            bool
+	oldValue        func(context.Context) (*Reply, error)
+	predicates      []predicate.Reply
 }
 
 var _ ent.Mutation = (*ReplyMutation)(nil)
@@ -13604,6 +14230,55 @@ func (m *ReplyMutation) OldPostID(ctx context.Context) (v uuid.UUID, err error) 
 // ResetPostID resets all changes to the "post_id" field.
 func (m *ReplyMutation) ResetPostID() {
 	m.post = nil
+}
+
+// SetParentReplyID sets the "parent_reply_id" field.
+func (m *ReplyMutation) SetParentReplyID(u uuid.UUID) {
+	m.parent_reply_id = &u
+}
+
+// ParentReplyID returns the value of the "parent_reply_id" field in the mutation.
+func (m *ReplyMutation) ParentReplyID() (r uuid.UUID, exists bool) {
+	v := m.parent_reply_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldParentReplyID returns the old "parent_reply_id" field's value of the Reply entity.
+// If the Reply object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReplyMutation) OldParentReplyID(ctx context.Context) (v *uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldParentReplyID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldParentReplyID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldParentReplyID: %w", err)
+	}
+	return oldValue.ParentReplyID, nil
+}
+
+// ClearParentReplyID clears the value of the "parent_reply_id" field.
+func (m *ReplyMutation) ClearParentReplyID() {
+	m.parent_reply_id = nil
+	m.clearedFields[reply.FieldParentReplyID] = struct{}{}
+}
+
+// ParentReplyIDCleared returns if the "parent_reply_id" field was cleared in this mutation.
+func (m *ReplyMutation) ParentReplyIDCleared() bool {
+	_, ok := m.clearedFields[reply.FieldParentReplyID]
+	return ok
+}
+
+// ResetParentReplyID resets all changes to the "parent_reply_id" field.
+func (m *ReplyMutation) ResetParentReplyID() {
+	m.parent_reply_id = nil
+	delete(m.clearedFields, reply.FieldParentReplyID)
 }
 
 // SetAuthorType sets the "author_type" field.
@@ -13896,9 +14571,12 @@ func (m *ReplyMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ReplyMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.post != nil {
 		fields = append(fields, reply.FieldPostID)
+	}
+	if m.parent_reply_id != nil {
+		fields = append(fields, reply.FieldParentReplyID)
 	}
 	if m.author_type != nil {
 		fields = append(fields, reply.FieldAuthorType)
@@ -13928,6 +14606,8 @@ func (m *ReplyMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case reply.FieldPostID:
 		return m.PostID()
+	case reply.FieldParentReplyID:
+		return m.ParentReplyID()
 	case reply.FieldAuthorType:
 		return m.AuthorType()
 	case reply.FieldAuthorID:
@@ -13951,6 +14631,8 @@ func (m *ReplyMutation) OldField(ctx context.Context, name string) (ent.Value, e
 	switch name {
 	case reply.FieldPostID:
 		return m.OldPostID(ctx)
+	case reply.FieldParentReplyID:
+		return m.OldParentReplyID(ctx)
 	case reply.FieldAuthorType:
 		return m.OldAuthorType(ctx)
 	case reply.FieldAuthorID:
@@ -13978,6 +14660,13 @@ func (m *ReplyMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPostID(v)
+		return nil
+	case reply.FieldParentReplyID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetParentReplyID(v)
 		return nil
 	case reply.FieldAuthorType:
 		v, ok := value.(string)
@@ -14051,6 +14740,9 @@ func (m *ReplyMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *ReplyMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(reply.FieldParentReplyID) {
+		fields = append(fields, reply.FieldParentReplyID)
+	}
 	if m.FieldCleared(reply.FieldAuthorAvatar) {
 		fields = append(fields, reply.FieldAuthorAvatar)
 	}
@@ -14068,6 +14760,9 @@ func (m *ReplyMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *ReplyMutation) ClearField(name string) error {
 	switch name {
+	case reply.FieldParentReplyID:
+		m.ClearParentReplyID()
+		return nil
 	case reply.FieldAuthorAvatar:
 		m.ClearAuthorAvatar()
 		return nil
@@ -14081,6 +14776,9 @@ func (m *ReplyMutation) ResetField(name string) error {
 	switch name {
 	case reply.FieldPostID:
 		m.ResetPostID()
+		return nil
+	case reply.FieldParentReplyID:
+		m.ResetParentReplyID()
 		return nil
 	case reply.FieldAuthorType:
 		m.ResetAuthorType()
@@ -15698,6 +16396,9 @@ type UserMutation struct {
 	experiences               map[uuid.UUID]struct{}
 	removedexperiences        map[uuid.UUID]struct{}
 	clearedexperiences        bool
+	post_likes                map[uuid.UUID]struct{}
+	removedpost_likes         map[uuid.UUID]struct{}
+	clearedpost_likes         bool
 	done                      bool
 	oldValue                  func(context.Context) (*User, error)
 	predicates                []predicate.User
@@ -16931,6 +17632,60 @@ func (m *UserMutation) ResetExperiences() {
 	m.removedexperiences = nil
 }
 
+// AddPostLikeIDs adds the "post_likes" edge to the PostLike entity by ids.
+func (m *UserMutation) AddPostLikeIDs(ids ...uuid.UUID) {
+	if m.post_likes == nil {
+		m.post_likes = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.post_likes[ids[i]] = struct{}{}
+	}
+}
+
+// ClearPostLikes clears the "post_likes" edge to the PostLike entity.
+func (m *UserMutation) ClearPostLikes() {
+	m.clearedpost_likes = true
+}
+
+// PostLikesCleared reports if the "post_likes" edge to the PostLike entity was cleared.
+func (m *UserMutation) PostLikesCleared() bool {
+	return m.clearedpost_likes
+}
+
+// RemovePostLikeIDs removes the "post_likes" edge to the PostLike entity by IDs.
+func (m *UserMutation) RemovePostLikeIDs(ids ...uuid.UUID) {
+	if m.removedpost_likes == nil {
+		m.removedpost_likes = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.post_likes, ids[i])
+		m.removedpost_likes[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedPostLikes returns the removed IDs of the "post_likes" edge to the PostLike entity.
+func (m *UserMutation) RemovedPostLikesIDs() (ids []uuid.UUID) {
+	for id := range m.removedpost_likes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// PostLikesIDs returns the "post_likes" edge IDs in the mutation.
+func (m *UserMutation) PostLikesIDs() (ids []uuid.UUID) {
+	for id := range m.post_likes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetPostLikes resets all changes to the "post_likes" edge.
+func (m *UserMutation) ResetPostLikes() {
+	m.post_likes = nil
+	m.clearedpost_likes = false
+	m.removedpost_likes = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -17496,7 +18251,7 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.agents != nil {
 		edges = append(edges, user.EdgeAgents)
 	}
@@ -17508,6 +18263,9 @@ func (m *UserMutation) AddedEdges() []string {
 	}
 	if m.experiences != nil {
 		edges = append(edges, user.EdgeExperiences)
+	}
+	if m.post_likes != nil {
+		edges = append(edges, user.EdgePostLikes)
 	}
 	return edges
 }
@@ -17540,13 +18298,19 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgePostLikes:
+		ids := make([]ent.Value, 0, len(m.post_likes))
+		for id := range m.post_likes {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.removedagents != nil {
 		edges = append(edges, user.EdgeAgents)
 	}
@@ -17558,6 +18322,9 @@ func (m *UserMutation) RemovedEdges() []string {
 	}
 	if m.removedexperiences != nil {
 		edges = append(edges, user.EdgeExperiences)
+	}
+	if m.removedpost_likes != nil {
+		edges = append(edges, user.EdgePostLikes)
 	}
 	return edges
 }
@@ -17590,13 +18357,19 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgePostLikes:
+		ids := make([]ent.Value, 0, len(m.removedpost_likes))
+		for id := range m.removedpost_likes {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.clearedagents {
 		edges = append(edges, user.EdgeAgents)
 	}
@@ -17608,6 +18381,9 @@ func (m *UserMutation) ClearedEdges() []string {
 	}
 	if m.clearedexperiences {
 		edges = append(edges, user.EdgeExperiences)
+	}
+	if m.clearedpost_likes {
+		edges = append(edges, user.EdgePostLikes)
 	}
 	return edges
 }
@@ -17624,6 +18400,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.clearedskills
 	case user.EdgeExperiences:
 		return m.clearedexperiences
+	case user.EdgePostLikes:
+		return m.clearedpost_likes
 	}
 	return false
 }
@@ -17651,6 +18429,9 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	case user.EdgeExperiences:
 		m.ResetExperiences()
+		return nil
+	case user.EdgePostLikes:
+		m.ResetPostLikes()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)

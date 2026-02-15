@@ -23,124 +23,124 @@ type TimerTransactionCreate struct {
 }
 
 // SetTxType sets the "tx_type" field.
-func (ttc *TimerTransactionCreate) SetTxType(s string) *TimerTransactionCreate {
-	ttc.mutation.SetTxType(s)
-	return ttc
+func (_c *TimerTransactionCreate) SetTxType(v string) *TimerTransactionCreate {
+	_c.mutation.SetTxType(v)
+	return _c
 }
 
 // SetAmount sets the "amount" field.
-func (ttc *TimerTransactionCreate) SetAmount(i int64) *TimerTransactionCreate {
-	ttc.mutation.SetAmount(i)
-	return ttc
+func (_c *TimerTransactionCreate) SetAmount(v int64) *TimerTransactionCreate {
+	_c.mutation.SetAmount(v)
+	return _c
 }
 
 // SetAgentID sets the "agent_id" field.
-func (ttc *TimerTransactionCreate) SetAgentID(u uuid.UUID) *TimerTransactionCreate {
-	ttc.mutation.SetAgentID(u)
-	return ttc
+func (_c *TimerTransactionCreate) SetAgentID(v uuid.UUID) *TimerTransactionCreate {
+	_c.mutation.SetAgentID(v)
+	return _c
 }
 
 // SetSourceType sets the "source_type" field.
-func (ttc *TimerTransactionCreate) SetSourceType(s string) *TimerTransactionCreate {
-	ttc.mutation.SetSourceType(s)
-	return ttc
+func (_c *TimerTransactionCreate) SetSourceType(v string) *TimerTransactionCreate {
+	_c.mutation.SetSourceType(v)
+	return _c
 }
 
 // SetNillableSourceType sets the "source_type" field if the given value is not nil.
-func (ttc *TimerTransactionCreate) SetNillableSourceType(s *string) *TimerTransactionCreate {
-	if s != nil {
-		ttc.SetSourceType(*s)
+func (_c *TimerTransactionCreate) SetNillableSourceType(v *string) *TimerTransactionCreate {
+	if v != nil {
+		_c.SetSourceType(*v)
 	}
-	return ttc
+	return _c
 }
 
 // SetSourceID sets the "source_id" field.
-func (ttc *TimerTransactionCreate) SetSourceID(s string) *TimerTransactionCreate {
-	ttc.mutation.SetSourceID(s)
-	return ttc
+func (_c *TimerTransactionCreate) SetSourceID(v string) *TimerTransactionCreate {
+	_c.mutation.SetSourceID(v)
+	return _c
 }
 
 // SetNillableSourceID sets the "source_id" field if the given value is not nil.
-func (ttc *TimerTransactionCreate) SetNillableSourceID(s *string) *TimerTransactionCreate {
-	if s != nil {
-		ttc.SetSourceID(*s)
+func (_c *TimerTransactionCreate) SetNillableSourceID(v *string) *TimerTransactionCreate {
+	if v != nil {
+		_c.SetSourceID(*v)
 	}
-	return ttc
+	return _c
 }
 
 // SetSourceName sets the "source_name" field.
-func (ttc *TimerTransactionCreate) SetSourceName(s string) *TimerTransactionCreate {
-	ttc.mutation.SetSourceName(s)
-	return ttc
+func (_c *TimerTransactionCreate) SetSourceName(v string) *TimerTransactionCreate {
+	_c.mutation.SetSourceName(v)
+	return _c
 }
 
 // SetNillableSourceName sets the "source_name" field if the given value is not nil.
-func (ttc *TimerTransactionCreate) SetNillableSourceName(s *string) *TimerTransactionCreate {
-	if s != nil {
-		ttc.SetSourceName(*s)
+func (_c *TimerTransactionCreate) SetNillableSourceName(v *string) *TimerTransactionCreate {
+	if v != nil {
+		_c.SetSourceName(*v)
 	}
-	return ttc
+	return _c
 }
 
 // SetDescription sets the "description" field.
-func (ttc *TimerTransactionCreate) SetDescription(s string) *TimerTransactionCreate {
-	ttc.mutation.SetDescription(s)
-	return ttc
+func (_c *TimerTransactionCreate) SetDescription(v string) *TimerTransactionCreate {
+	_c.mutation.SetDescription(v)
+	return _c
 }
 
 // SetBalanceAfter sets the "balance_after" field.
-func (ttc *TimerTransactionCreate) SetBalanceAfter(i int64) *TimerTransactionCreate {
-	ttc.mutation.SetBalanceAfter(i)
-	return ttc
+func (_c *TimerTransactionCreate) SetBalanceAfter(v int64) *TimerTransactionCreate {
+	_c.mutation.SetBalanceAfter(v)
+	return _c
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (ttc *TimerTransactionCreate) SetCreatedAt(t time.Time) *TimerTransactionCreate {
-	ttc.mutation.SetCreatedAt(t)
-	return ttc
+func (_c *TimerTransactionCreate) SetCreatedAt(v time.Time) *TimerTransactionCreate {
+	_c.mutation.SetCreatedAt(v)
+	return _c
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (ttc *TimerTransactionCreate) SetNillableCreatedAt(t *time.Time) *TimerTransactionCreate {
-	if t != nil {
-		ttc.SetCreatedAt(*t)
+func (_c *TimerTransactionCreate) SetNillableCreatedAt(v *time.Time) *TimerTransactionCreate {
+	if v != nil {
+		_c.SetCreatedAt(*v)
 	}
-	return ttc
+	return _c
 }
 
 // SetID sets the "id" field.
-func (ttc *TimerTransactionCreate) SetID(u uuid.UUID) *TimerTransactionCreate {
-	ttc.mutation.SetID(u)
-	return ttc
+func (_c *TimerTransactionCreate) SetID(v uuid.UUID) *TimerTransactionCreate {
+	_c.mutation.SetID(v)
+	return _c
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (ttc *TimerTransactionCreate) SetNillableID(u *uuid.UUID) *TimerTransactionCreate {
-	if u != nil {
-		ttc.SetID(*u)
+func (_c *TimerTransactionCreate) SetNillableID(v *uuid.UUID) *TimerTransactionCreate {
+	if v != nil {
+		_c.SetID(*v)
 	}
-	return ttc
+	return _c
 }
 
 // SetAgent sets the "agent" edge to the Agent entity.
-func (ttc *TimerTransactionCreate) SetAgent(a *Agent) *TimerTransactionCreate {
-	return ttc.SetAgentID(a.ID)
+func (_c *TimerTransactionCreate) SetAgent(v *Agent) *TimerTransactionCreate {
+	return _c.SetAgentID(v.ID)
 }
 
 // Mutation returns the TimerTransactionMutation object of the builder.
-func (ttc *TimerTransactionCreate) Mutation() *TimerTransactionMutation {
-	return ttc.mutation
+func (_c *TimerTransactionCreate) Mutation() *TimerTransactionMutation {
+	return _c.mutation
 }
 
 // Save creates the TimerTransaction in the database.
-func (ttc *TimerTransactionCreate) Save(ctx context.Context) (*TimerTransaction, error) {
-	ttc.defaults()
-	return withHooks(ctx, ttc.sqlSave, ttc.mutation, ttc.hooks)
+func (_c *TimerTransactionCreate) Save(ctx context.Context) (*TimerTransaction, error) {
+	_c.defaults()
+	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (ttc *TimerTransactionCreate) SaveX(ctx context.Context) *TimerTransaction {
-	v, err := ttc.Save(ctx)
+func (_c *TimerTransactionCreate) SaveX(ctx context.Context) *TimerTransaction {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -148,79 +148,79 @@ func (ttc *TimerTransactionCreate) SaveX(ctx context.Context) *TimerTransaction 
 }
 
 // Exec executes the query.
-func (ttc *TimerTransactionCreate) Exec(ctx context.Context) error {
-	_, err := ttc.Save(ctx)
+func (_c *TimerTransactionCreate) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ttc *TimerTransactionCreate) ExecX(ctx context.Context) {
-	if err := ttc.Exec(ctx); err != nil {
+func (_c *TimerTransactionCreate) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (ttc *TimerTransactionCreate) defaults() {
-	if _, ok := ttc.mutation.SourceType(); !ok {
+func (_c *TimerTransactionCreate) defaults() {
+	if _, ok := _c.mutation.SourceType(); !ok {
 		v := timertransaction.DefaultSourceType
-		ttc.mutation.SetSourceType(v)
+		_c.mutation.SetSourceType(v)
 	}
-	if _, ok := ttc.mutation.CreatedAt(); !ok {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := timertransaction.DefaultCreatedAt()
-		ttc.mutation.SetCreatedAt(v)
+		_c.mutation.SetCreatedAt(v)
 	}
-	if _, ok := ttc.mutation.ID(); !ok {
+	if _, ok := _c.mutation.ID(); !ok {
 		v := timertransaction.DefaultID()
-		ttc.mutation.SetID(v)
+		_c.mutation.SetID(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (ttc *TimerTransactionCreate) check() error {
-	if _, ok := ttc.mutation.TxType(); !ok {
+func (_c *TimerTransactionCreate) check() error {
+	if _, ok := _c.mutation.TxType(); !ok {
 		return &ValidationError{Name: "tx_type", err: errors.New(`ent: missing required field "TimerTransaction.tx_type"`)}
 	}
-	if v, ok := ttc.mutation.TxType(); ok {
+	if v, ok := _c.mutation.TxType(); ok {
 		if err := timertransaction.TxTypeValidator(v); err != nil {
 			return &ValidationError{Name: "tx_type", err: fmt.Errorf(`ent: validator failed for field "TimerTransaction.tx_type": %w`, err)}
 		}
 	}
-	if _, ok := ttc.mutation.Amount(); !ok {
+	if _, ok := _c.mutation.Amount(); !ok {
 		return &ValidationError{Name: "amount", err: errors.New(`ent: missing required field "TimerTransaction.amount"`)}
 	}
-	if _, ok := ttc.mutation.AgentID(); !ok {
+	if _, ok := _c.mutation.AgentID(); !ok {
 		return &ValidationError{Name: "agent_id", err: errors.New(`ent: missing required field "TimerTransaction.agent_id"`)}
 	}
-	if _, ok := ttc.mutation.SourceType(); !ok {
+	if _, ok := _c.mutation.SourceType(); !ok {
 		return &ValidationError{Name: "source_type", err: errors.New(`ent: missing required field "TimerTransaction.source_type"`)}
 	}
-	if _, ok := ttc.mutation.Description(); !ok {
+	if _, ok := _c.mutation.Description(); !ok {
 		return &ValidationError{Name: "description", err: errors.New(`ent: missing required field "TimerTransaction.description"`)}
 	}
-	if v, ok := ttc.mutation.Description(); ok {
+	if v, ok := _c.mutation.Description(); ok {
 		if err := timertransaction.DescriptionValidator(v); err != nil {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "TimerTransaction.description": %w`, err)}
 		}
 	}
-	if _, ok := ttc.mutation.BalanceAfter(); !ok {
+	if _, ok := _c.mutation.BalanceAfter(); !ok {
 		return &ValidationError{Name: "balance_after", err: errors.New(`ent: missing required field "TimerTransaction.balance_after"`)}
 	}
-	if _, ok := ttc.mutation.CreatedAt(); !ok {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "TimerTransaction.created_at"`)}
 	}
-	if len(ttc.mutation.AgentIDs()) == 0 {
+	if len(_c.mutation.AgentIDs()) == 0 {
 		return &ValidationError{Name: "agent", err: errors.New(`ent: missing required edge "TimerTransaction.agent"`)}
 	}
 	return nil
 }
 
-func (ttc *TimerTransactionCreate) sqlSave(ctx context.Context) (*TimerTransaction, error) {
-	if err := ttc.check(); err != nil {
+func (_c *TimerTransactionCreate) sqlSave(ctx context.Context) (*TimerTransaction, error) {
+	if err := _c.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := ttc.createSpec()
-	if err := sqlgraph.CreateNode(ctx, ttc.driver, _spec); err != nil {
+	_node, _spec := _c.createSpec()
+	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -233,53 +233,53 @@ func (ttc *TimerTransactionCreate) sqlSave(ctx context.Context) (*TimerTransacti
 			return nil, err
 		}
 	}
-	ttc.mutation.id = &_node.ID
-	ttc.mutation.done = true
+	_c.mutation.id = &_node.ID
+	_c.mutation.done = true
 	return _node, nil
 }
 
-func (ttc *TimerTransactionCreate) createSpec() (*TimerTransaction, *sqlgraph.CreateSpec) {
+func (_c *TimerTransactionCreate) createSpec() (*TimerTransaction, *sqlgraph.CreateSpec) {
 	var (
-		_node = &TimerTransaction{config: ttc.config}
+		_node = &TimerTransaction{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(timertransaction.Table, sqlgraph.NewFieldSpec(timertransaction.FieldID, field.TypeUUID))
 	)
-	if id, ok := ttc.mutation.ID(); ok {
+	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
-	if value, ok := ttc.mutation.TxType(); ok {
+	if value, ok := _c.mutation.TxType(); ok {
 		_spec.SetField(timertransaction.FieldTxType, field.TypeString, value)
 		_node.TxType = value
 	}
-	if value, ok := ttc.mutation.Amount(); ok {
+	if value, ok := _c.mutation.Amount(); ok {
 		_spec.SetField(timertransaction.FieldAmount, field.TypeInt64, value)
 		_node.Amount = value
 	}
-	if value, ok := ttc.mutation.SourceType(); ok {
+	if value, ok := _c.mutation.SourceType(); ok {
 		_spec.SetField(timertransaction.FieldSourceType, field.TypeString, value)
 		_node.SourceType = value
 	}
-	if value, ok := ttc.mutation.SourceID(); ok {
+	if value, ok := _c.mutation.SourceID(); ok {
 		_spec.SetField(timertransaction.FieldSourceID, field.TypeString, value)
 		_node.SourceID = &value
 	}
-	if value, ok := ttc.mutation.SourceName(); ok {
+	if value, ok := _c.mutation.SourceName(); ok {
 		_spec.SetField(timertransaction.FieldSourceName, field.TypeString, value)
 		_node.SourceName = &value
 	}
-	if value, ok := ttc.mutation.Description(); ok {
+	if value, ok := _c.mutation.Description(); ok {
 		_spec.SetField(timertransaction.FieldDescription, field.TypeString, value)
 		_node.Description = value
 	}
-	if value, ok := ttc.mutation.BalanceAfter(); ok {
+	if value, ok := _c.mutation.BalanceAfter(); ok {
 		_spec.SetField(timertransaction.FieldBalanceAfter, field.TypeInt64, value)
 		_node.BalanceAfter = value
 	}
-	if value, ok := ttc.mutation.CreatedAt(); ok {
+	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(timertransaction.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
-	if nodes := ttc.mutation.AgentIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.AgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -307,16 +307,16 @@ type TimerTransactionCreateBulk struct {
 }
 
 // Save creates the TimerTransaction entities in the database.
-func (ttcb *TimerTransactionCreateBulk) Save(ctx context.Context) ([]*TimerTransaction, error) {
-	if ttcb.err != nil {
-		return nil, ttcb.err
+func (_c *TimerTransactionCreateBulk) Save(ctx context.Context) ([]*TimerTransaction, error) {
+	if _c.err != nil {
+		return nil, _c.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(ttcb.builders))
-	nodes := make([]*TimerTransaction, len(ttcb.builders))
-	mutators := make([]Mutator, len(ttcb.builders))
-	for i := range ttcb.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
+	nodes := make([]*TimerTransaction, len(_c.builders))
+	mutators := make([]Mutator, len(_c.builders))
+	for i := range _c.builders {
 		func(i int, root context.Context) {
-			builder := ttcb.builders[i]
+			builder := _c.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*TimerTransactionMutation)
@@ -330,11 +330,11 @@ func (ttcb *TimerTransactionCreateBulk) Save(ctx context.Context) ([]*TimerTrans
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, ttcb.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, ttcb.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -354,7 +354,7 @@ func (ttcb *TimerTransactionCreateBulk) Save(ctx context.Context) ([]*TimerTrans
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, ttcb.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -362,8 +362,8 @@ func (ttcb *TimerTransactionCreateBulk) Save(ctx context.Context) ([]*TimerTrans
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (ttcb *TimerTransactionCreateBulk) SaveX(ctx context.Context) []*TimerTransaction {
-	v, err := ttcb.Save(ctx)
+func (_c *TimerTransactionCreateBulk) SaveX(ctx context.Context) []*TimerTransaction {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -371,14 +371,14 @@ func (ttcb *TimerTransactionCreateBulk) SaveX(ctx context.Context) []*TimerTrans
 }
 
 // Exec executes the query.
-func (ttcb *TimerTransactionCreateBulk) Exec(ctx context.Context) error {
-	_, err := ttcb.Save(ctx)
+func (_c *TimerTransactionCreateBulk) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ttcb *TimerTransactionCreateBulk) ExecX(ctx context.Context) {
-	if err := ttcb.Exec(ctx); err != nil {
+func (_c *TimerTransactionCreateBulk) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

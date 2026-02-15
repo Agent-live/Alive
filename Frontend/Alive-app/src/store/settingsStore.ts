@@ -2,6 +2,8 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import i18n, { supportedLanguages } from '@/lib/i18n'
 import type { LanguageCode } from '@/lib/i18n'
+import { settingsApi } from '@/api/settings'
+import { toast } from './uiStore'
 
 export type ThemeMode = 'light' | 'dark' | 'system'
 export type FontSize = 'small' | 'standard' | 'large' | 'extraLarge'
@@ -31,6 +33,9 @@ interface SettingsState {
   setLanguage: (lang: LanguageCode) => void
   clearCache: () => Promise<void>
   initTheme: () => void
+
+  // Apply server-side user settings without re-syncing them back to the server.
+  applyRemoteUserSettings: (settings: { theme?: string; language?: string }) => void
 }
 
 // Font size values — labels are i18n keys resolved at render time
@@ -69,12 +74,33 @@ const getSystemTheme = (): boolean => {
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set, get) => ({
-      themeMode: 'light',
+      themeMode: 'system',
       isDarkMode: false,
       statusThemeEnabled: false,
       fontSize: 'standard',
       language: 'en' as LanguageCode,
       cacheSize: 23.5, // MB
+
+      applyRemoteUserSettings: (settings) => {
+        if (!settings) return
+
+        const theme = (settings.theme || '').trim() as ThemeMode
+        if (theme === 'light' || theme === 'dark' || theme === 'system') {
+          const isDark = theme === 'system' ? getSystemTheme() : theme === 'dark'
+          set({ themeMode: theme, isDarkMode: isDark })
+          applyTheme(isDark)
+        }
+
+        const language = (settings.language || '').trim() as LanguageCode
+        if (supportedLanguages.some((l) => l.code === language)) {
+          set({ language })
+          i18n.changeLanguage(language)
+          const config = supportedLanguages.find((l) => l.code === language)
+          if (config) {
+            document.documentElement.dir = config.dir
+          }
+        }
+      },
 
       setThemeMode: (mode) => {
         let isDark = false
@@ -86,6 +112,11 @@ export const useSettingsStore = create<SettingsState>()(
 
         set({ themeMode: mode, isDarkMode: isDark })
         applyTheme(isDark)
+
+        void settingsApi.updateUserSettings({ theme: mode }).catch((err) => {
+          console.warn('Failed to sync theme setting:', err)
+          toast.error('Failed to save theme setting')
+        })
       },
 
       setStatusThemeEnabled: (enabled) => {
@@ -97,6 +128,11 @@ export const useSettingsStore = create<SettingsState>()(
         const newMode = isDarkMode ? 'light' : 'dark'
         set({ themeMode: newMode, isDarkMode: !isDarkMode })
         applyTheme(!isDarkMode)
+
+        void settingsApi.updateUserSettings({ theme: newMode }).catch((err) => {
+          console.warn('Failed to sync theme setting:', err)
+          toast.error('Failed to save theme setting')
+        })
       },
 
       setFontSize: (size) => {
@@ -111,6 +147,11 @@ export const useSettingsStore = create<SettingsState>()(
         if (config) {
           document.documentElement.dir = config.dir
         }
+
+        void settingsApi.updateUserSettings({ language: lang }).catch((err) => {
+          console.warn('Failed to sync language setting:', err)
+          toast.error('Failed to save language setting')
+        })
       },
 
       clearCache: async () => {

@@ -38,6 +38,8 @@ type Tx struct {
 	Memorial *MemorialClient
 	// Post is the client for interacting with the Post builders.
 	Post *PostClient
+	// PostLike is the client for interacting with the PostLike builders.
+	PostLike *PostLikeClient
 	// Reply is the client for interacting with the Reply builders.
 	Reply *ReplyClient
 	// TimerTransaction is the client for interacting with the TimerTransaction builders.
@@ -192,6 +194,7 @@ func (tx *Tx) init() {
 	tx.Media = NewMediaClient(tx.config)
 	tx.Memorial = NewMemorialClient(tx.config)
 	tx.Post = NewPostClient(tx.config)
+	tx.PostLike = NewPostLikeClient(tx.config)
 	tx.Reply = NewReplyClient(tx.config)
 	tx.TimerTransaction = NewTimerTransactionClient(tx.config)
 	tx.Tribute = NewTributeClient(tx.config)

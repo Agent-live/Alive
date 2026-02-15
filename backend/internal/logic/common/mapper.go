@@ -204,6 +204,7 @@ func ToReplyResp(r *ent.Reply) types.ReplyResp {
 	return types.ReplyResp{
 		Id:                 r.ID.String(),
 		PostId:             r.PostID.String(),
+		ReplyToReplyId:     UUIDStringPtr(r.ParentReplyID),
 		AuthorType:         r.AuthorType,
 		AuthorId:           r.AuthorID,
 		AuthorName:         r.AuthorName,

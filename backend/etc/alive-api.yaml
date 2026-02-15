@@ -20,6 +20,12 @@ Timer:
 Postgres:
   DSN: "postgres://macbook.silan.tech@localhost:5432/alive_backend?sslmode=disable"
 
+Media:
+  # Local filesystem storage for uploaded files (development default).
+  StorageDir: "../work/alive-media"
+  # 200 MiB
+  MaxUploadBytes: 209715200
+
 OpenClaw:
   Enabled: true
   BaseURL: "http://localhost:3000"

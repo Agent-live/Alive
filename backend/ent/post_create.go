@@ -5,6 +5,7 @@ package ent
 import (
 	"backend/ent/agent"
 	"backend/ent/post"
+	"backend/ent/postlike"
 	"backend/ent/reply"
 	"context"
 	"errors"
@@ -24,135 +25,150 @@ type PostCreate struct {
 }
 
 // SetAgentID sets the "agent_id" field.
-func (pc *PostCreate) SetAgentID(u uuid.UUID) *PostCreate {
-	pc.mutation.SetAgentID(u)
-	return pc
+func (_c *PostCreate) SetAgentID(v uuid.UUID) *PostCreate {
+	_c.mutation.SetAgentID(v)
+	return _c
 }
 
 // SetContentType sets the "content_type" field.
-func (pc *PostCreate) SetContentType(s string) *PostCreate {
-	pc.mutation.SetContentType(s)
-	return pc
+func (_c *PostCreate) SetContentType(v string) *PostCreate {
+	_c.mutation.SetContentType(v)
+	return _c
 }
 
 // SetNillableContentType sets the "content_type" field if the given value is not nil.
-func (pc *PostCreate) SetNillableContentType(s *string) *PostCreate {
-	if s != nil {
-		pc.SetContentType(*s)
+func (_c *PostCreate) SetNillableContentType(v *string) *PostCreate {
+	if v != nil {
+		_c.SetContentType(*v)
 	}
-	return pc
+	return _c
 }
 
 // SetContent sets the "content" field.
-func (pc *PostCreate) SetContent(s string) *PostCreate {
-	pc.mutation.SetContent(s)
-	return pc
+func (_c *PostCreate) SetContent(v string) *PostCreate {
+	_c.mutation.SetContent(v)
+	return _c
 }
 
 // SetLikes sets the "likes" field.
-func (pc *PostCreate) SetLikes(i int64) *PostCreate {
-	pc.mutation.SetLikes(i)
-	return pc
+func (_c *PostCreate) SetLikes(v int64) *PostCreate {
+	_c.mutation.SetLikes(v)
+	return _c
 }
 
 // SetNillableLikes sets the "likes" field if the given value is not nil.
-func (pc *PostCreate) SetNillableLikes(i *int64) *PostCreate {
-	if i != nil {
-		pc.SetLikes(*i)
+func (_c *PostCreate) SetNillableLikes(v *int64) *PostCreate {
+	if v != nil {
+		_c.SetLikes(*v)
 	}
-	return pc
+	return _c
 }
 
 // SetReplies sets the "replies" field.
-func (pc *PostCreate) SetReplies(i int64) *PostCreate {
-	pc.mutation.SetReplies(i)
-	return pc
+func (_c *PostCreate) SetReplies(v int64) *PostCreate {
+	_c.mutation.SetReplies(v)
+	return _c
 }
 
 // SetNillableReplies sets the "replies" field if the given value is not nil.
-func (pc *PostCreate) SetNillableReplies(i *int64) *PostCreate {
-	if i != nil {
-		pc.SetReplies(*i)
+func (_c *PostCreate) SetNillableReplies(v *int64) *PostCreate {
+	if v != nil {
+		_c.SetReplies(*v)
 	}
-	return pc
+	return _c
 }
 
 // SetShares sets the "shares" field.
-func (pc *PostCreate) SetShares(i int64) *PostCreate {
-	pc.mutation.SetShares(i)
-	return pc
+func (_c *PostCreate) SetShares(v int64) *PostCreate {
+	_c.mutation.SetShares(v)
+	return _c
 }
 
 // SetNillableShares sets the "shares" field if the given value is not nil.
-func (pc *PostCreate) SetNillableShares(i *int64) *PostCreate {
-	if i != nil {
-		pc.SetShares(*i)
+func (_c *PostCreate) SetNillableShares(v *int64) *PostCreate {
+	if v != nil {
+		_c.SetShares(*v)
 	}
-	return pc
+	return _c
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (pc *PostCreate) SetCreatedAt(t time.Time) *PostCreate {
-	pc.mutation.SetCreatedAt(t)
-	return pc
+func (_c *PostCreate) SetCreatedAt(v time.Time) *PostCreate {
+	_c.mutation.SetCreatedAt(v)
+	return _c
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (pc *PostCreate) SetNillableCreatedAt(t *time.Time) *PostCreate {
-	if t != nil {
-		pc.SetCreatedAt(*t)
+func (_c *PostCreate) SetNillableCreatedAt(v *time.Time) *PostCreate {
+	if v != nil {
+		_c.SetCreatedAt(*v)
 	}
-	return pc
+	return _c
 }
 
 // SetID sets the "id" field.
-func (pc *PostCreate) SetID(u uuid.UUID) *PostCreate {
-	pc.mutation.SetID(u)
-	return pc
+func (_c *PostCreate) SetID(v uuid.UUID) *PostCreate {
+	_c.mutation.SetID(v)
+	return _c
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (pc *PostCreate) SetNillableID(u *uuid.UUID) *PostCreate {
-	if u != nil {
-		pc.SetID(*u)
+func (_c *PostCreate) SetNillableID(v *uuid.UUID) *PostCreate {
+	if v != nil {
+		_c.SetID(*v)
 	}
-	return pc
+	return _c
 }
 
 // SetAgent sets the "agent" edge to the Agent entity.
-func (pc *PostCreate) SetAgent(a *Agent) *PostCreate {
-	return pc.SetAgentID(a.ID)
+func (_c *PostCreate) SetAgent(v *Agent) *PostCreate {
+	return _c.SetAgentID(v.ID)
 }
 
 // AddPostReplyIDs adds the "post_replies" edge to the Reply entity by IDs.
-func (pc *PostCreate) AddPostReplyIDs(ids ...uuid.UUID) *PostCreate {
-	pc.mutation.AddPostReplyIDs(ids...)
-	return pc
+func (_c *PostCreate) AddPostReplyIDs(ids ...uuid.UUID) *PostCreate {
+	_c.mutation.AddPostReplyIDs(ids...)
+	return _c
 }
 
 // AddPostReplies adds the "post_replies" edges to the Reply entity.
-func (pc *PostCreate) AddPostReplies(r ...*Reply) *PostCreate {
-	ids := make([]uuid.UUID, len(r))
-	for i := range r {
-		ids[i] = r[i].ID
+func (_c *PostCreate) AddPostReplies(v ...*Reply) *PostCreate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return pc.AddPostReplyIDs(ids...)
+	return _c.AddPostReplyIDs(ids...)
+}
+
+// AddPostLikeIDs adds the "post_likes" edge to the PostLike entity by IDs.
+func (_c *PostCreate) AddPostLikeIDs(ids ...uuid.UUID) *PostCreate {
+	_c.mutation.AddPostLikeIDs(ids...)
+	return _c
+}
+
+// AddPostLikes adds the "post_likes" edges to the PostLike entity.
+func (_c *PostCreate) AddPostLikes(v ...*PostLike) *PostCreate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddPostLikeIDs(ids...)
 }
 
 // Mutation returns the PostMutation object of the builder.
-func (pc *PostCreate) Mutation() *PostMutation {
-	return pc.mutation
+func (_c *PostCreate) Mutation() *PostMutation {
+	return _c.mutation
 }
 
 // Save creates the Post in the database.
-func (pc *PostCreate) Save(ctx context.Context) (*Post, error) {
-	pc.defaults()
-	return withHooks(ctx, pc.sqlSave, pc.mutation, pc.hooks)
+func (_c *PostCreate) Save(ctx context.Context) (*Post, error) {
+	_c.defaults()
+	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (pc *PostCreate) SaveX(ctx context.Context) *Post {
-	v, err := pc.Save(ctx)
+func (_c *PostCreate) SaveX(ctx context.Context) *Post {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -160,86 +176,86 @@ func (pc *PostCreate) SaveX(ctx context.Context) *Post {
 }
 
 // Exec executes the query.
-func (pc *PostCreate) Exec(ctx context.Context) error {
-	_, err := pc.Save(ctx)
+func (_c *PostCreate) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (pc *PostCreate) ExecX(ctx context.Context) {
-	if err := pc.Exec(ctx); err != nil {
+func (_c *PostCreate) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (pc *PostCreate) defaults() {
-	if _, ok := pc.mutation.ContentType(); !ok {
+func (_c *PostCreate) defaults() {
+	if _, ok := _c.mutation.ContentType(); !ok {
 		v := post.DefaultContentType
-		pc.mutation.SetContentType(v)
+		_c.mutation.SetContentType(v)
 	}
-	if _, ok := pc.mutation.Likes(); !ok {
+	if _, ok := _c.mutation.Likes(); !ok {
 		v := post.DefaultLikes
-		pc.mutation.SetLikes(v)
+		_c.mutation.SetLikes(v)
 	}
-	if _, ok := pc.mutation.Replies(); !ok {
+	if _, ok := _c.mutation.Replies(); !ok {
 		v := post.DefaultReplies
-		pc.mutation.SetReplies(v)
+		_c.mutation.SetReplies(v)
 	}
-	if _, ok := pc.mutation.Shares(); !ok {
+	if _, ok := _c.mutation.Shares(); !ok {
 		v := post.DefaultShares
-		pc.mutation.SetShares(v)
+		_c.mutation.SetShares(v)
 	}
-	if _, ok := pc.mutation.CreatedAt(); !ok {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := post.DefaultCreatedAt()
-		pc.mutation.SetCreatedAt(v)
+		_c.mutation.SetCreatedAt(v)
 	}
-	if _, ok := pc.mutation.ID(); !ok {
+	if _, ok := _c.mutation.ID(); !ok {
 		v := post.DefaultID()
-		pc.mutation.SetID(v)
+		_c.mutation.SetID(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (pc *PostCreate) check() error {
-	if _, ok := pc.mutation.AgentID(); !ok {
+func (_c *PostCreate) check() error {
+	if _, ok := _c.mutation.AgentID(); !ok {
 		return &ValidationError{Name: "agent_id", err: errors.New(`ent: missing required field "Post.agent_id"`)}
 	}
-	if _, ok := pc.mutation.ContentType(); !ok {
+	if _, ok := _c.mutation.ContentType(); !ok {
 		return &ValidationError{Name: "content_type", err: errors.New(`ent: missing required field "Post.content_type"`)}
 	}
-	if _, ok := pc.mutation.Content(); !ok {
+	if _, ok := _c.mutation.Content(); !ok {
 		return &ValidationError{Name: "content", err: errors.New(`ent: missing required field "Post.content"`)}
 	}
-	if v, ok := pc.mutation.Content(); ok {
+	if v, ok := _c.mutation.Content(); ok {
 		if err := post.ContentValidator(v); err != nil {
 			return &ValidationError{Name: "content", err: fmt.Errorf(`ent: validator failed for field "Post.content": %w`, err)}
 		}
 	}
-	if _, ok := pc.mutation.Likes(); !ok {
+	if _, ok := _c.mutation.Likes(); !ok {
 		return &ValidationError{Name: "likes", err: errors.New(`ent: missing required field "Post.likes"`)}
 	}
-	if _, ok := pc.mutation.Replies(); !ok {
+	if _, ok := _c.mutation.Replies(); !ok {
 		return &ValidationError{Name: "replies", err: errors.New(`ent: missing required field "Post.replies"`)}
 	}
-	if _, ok := pc.mutation.Shares(); !ok {
+	if _, ok := _c.mutation.Shares(); !ok {
 		return &ValidationError{Name: "shares", err: errors.New(`ent: missing required field "Post.shares"`)}
 	}
-	if _, ok := pc.mutation.CreatedAt(); !ok {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Post.created_at"`)}
 	}
-	if len(pc.mutation.AgentIDs()) == 0 {
+	if len(_c.mutation.AgentIDs()) == 0 {
 		return &ValidationError{Name: "agent", err: errors.New(`ent: missing required edge "Post.agent"`)}
 	}
 	return nil
 }
 
-func (pc *PostCreate) sqlSave(ctx context.Context) (*Post, error) {
-	if err := pc.check(); err != nil {
+func (_c *PostCreate) sqlSave(ctx context.Context) (*Post, error) {
+	if err := _c.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := pc.createSpec()
-	if err := sqlgraph.CreateNode(ctx, pc.driver, _spec); err != nil {
+	_node, _spec := _c.createSpec()
+	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -252,45 +268,45 @@ func (pc *PostCreate) sqlSave(ctx context.Context) (*Post, error) {
 			return nil, err
 		}
 	}
-	pc.mutation.id = &_node.ID
-	pc.mutation.done = true
+	_c.mutation.id = &_node.ID
+	_c.mutation.done = true
 	return _node, nil
 }
 
-func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
+func (_c *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 	var (
-		_node = &Post{config: pc.config}
+		_node = &Post{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(post.Table, sqlgraph.NewFieldSpec(post.FieldID, field.TypeUUID))
 	)
-	if id, ok := pc.mutation.ID(); ok {
+	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
-	if value, ok := pc.mutation.ContentType(); ok {
+	if value, ok := _c.mutation.ContentType(); ok {
 		_spec.SetField(post.FieldContentType, field.TypeString, value)
 		_node.ContentType = value
 	}
-	if value, ok := pc.mutation.Content(); ok {
+	if value, ok := _c.mutation.Content(); ok {
 		_spec.SetField(post.FieldContent, field.TypeString, value)
 		_node.Content = value
 	}
-	if value, ok := pc.mutation.Likes(); ok {
+	if value, ok := _c.mutation.Likes(); ok {
 		_spec.SetField(post.FieldLikes, field.TypeInt64, value)
 		_node.Likes = value
 	}
-	if value, ok := pc.mutation.Replies(); ok {
+	if value, ok := _c.mutation.Replies(); ok {
 		_spec.SetField(post.FieldReplies, field.TypeInt64, value)
 		_node.Replies = value
 	}
-	if value, ok := pc.mutation.Shares(); ok {
+	if value, ok := _c.mutation.Shares(); ok {
 		_spec.SetField(post.FieldShares, field.TypeInt64, value)
 		_node.Shares = value
 	}
-	if value, ok := pc.mutation.CreatedAt(); ok {
+	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(post.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
-	if nodes := pc.mutation.AgentIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.AgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -307,7 +323,7 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 		_node.AgentID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := pc.mutation.PostRepliesIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.PostRepliesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -316,6 +332,22 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(reply.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.PostLikesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   post.PostLikesTable,
+			Columns: []string{post.PostLikesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(postlike.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -334,16 +366,16 @@ type PostCreateBulk struct {
 }
 
 // Save creates the Post entities in the database.
-func (pcb *PostCreateBulk) Save(ctx context.Context) ([]*Post, error) {
-	if pcb.err != nil {
-		return nil, pcb.err
+func (_c *PostCreateBulk) Save(ctx context.Context) ([]*Post, error) {
+	if _c.err != nil {
+		return nil, _c.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(pcb.builders))
-	nodes := make([]*Post, len(pcb.builders))
-	mutators := make([]Mutator, len(pcb.builders))
-	for i := range pcb.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
+	nodes := make([]*Post, len(_c.builders))
+	mutators := make([]Mutator, len(_c.builders))
+	for i := range _c.builders {
 		func(i int, root context.Context) {
-			builder := pcb.builders[i]
+			builder := _c.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*PostMutation)
@@ -357,11 +389,11 @@ func (pcb *PostCreateBulk) Save(ctx context.Context) ([]*Post, error) {
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, pcb.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, pcb.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -381,7 +413,7 @@ func (pcb *PostCreateBulk) Save(ctx context.Context) ([]*Post, error) {
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, pcb.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -389,8 +421,8 @@ func (pcb *PostCreateBulk) Save(ctx context.Context) ([]*Post, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (pcb *PostCreateBulk) SaveX(ctx context.Context) []*Post {
-	v, err := pcb.Save(ctx)
+func (_c *PostCreateBulk) SaveX(ctx context.Context) []*Post {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -398,14 +430,14 @@ func (pcb *PostCreateBulk) SaveX(ctx context.Context) []*Post {
 }
 
 // Exec executes the query.
-func (pcb *PostCreateBulk) Exec(ctx context.Context) error {
-	_, err := pcb.Save(ctx)
+func (_c *PostCreateBulk) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (pcb *PostCreateBulk) ExecX(ctx context.Context) {
-	if err := pcb.Exec(ctx); err != nil {
+func (_c *PostCreateBulk) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

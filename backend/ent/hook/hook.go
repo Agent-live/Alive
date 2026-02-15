@@ -164,6 +164,18 @@ func (f PostFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PostMutation", m)
 }
 
+// The PostLikeFunc type is an adapter to allow the use of ordinary
+// function as PostLike mutator.
+type PostLikeFunc func(context.Context, *ent.PostLikeMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PostLikeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PostLikeMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PostLikeMutation", m)
+}
+
 // The ReplyFunc type is an adapter to allow the use of ordinary
 // function as Reply mutator.
 type ReplyFunc func(context.Context, *ent.ReplyMutation) (ent.Value, error)

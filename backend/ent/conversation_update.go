@@ -27,272 +27,272 @@ type ConversationUpdate struct {
 }
 
 // Where appends a list predicates to the ConversationUpdate builder.
-func (cu *ConversationUpdate) Where(ps ...predicate.Conversation) *ConversationUpdate {
-	cu.mutation.Where(ps...)
-	return cu
+func (_u *ConversationUpdate) Where(ps ...predicate.Conversation) *ConversationUpdate {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (cu *ConversationUpdate) SetUpdatedAt(t time.Time) *ConversationUpdate {
-	cu.mutation.SetUpdatedAt(t)
-	return cu
+func (_u *ConversationUpdate) SetUpdatedAt(v time.Time) *ConversationUpdate {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // SetType sets the "type" field.
-func (cu *ConversationUpdate) SetType(s string) *ConversationUpdate {
-	cu.mutation.SetType(s)
-	return cu
+func (_u *ConversationUpdate) SetType(v string) *ConversationUpdate {
+	_u.mutation.SetType(v)
+	return _u
 }
 
 // SetNillableType sets the "type" field if the given value is not nil.
-func (cu *ConversationUpdate) SetNillableType(s *string) *ConversationUpdate {
-	if s != nil {
-		cu.SetType(*s)
+func (_u *ConversationUpdate) SetNillableType(v *string) *ConversationUpdate {
+	if v != nil {
+		_u.SetType(*v)
 	}
-	return cu
+	return _u
 }
 
 // SetTitle sets the "title" field.
-func (cu *ConversationUpdate) SetTitle(s string) *ConversationUpdate {
-	cu.mutation.SetTitle(s)
-	return cu
+func (_u *ConversationUpdate) SetTitle(v string) *ConversationUpdate {
+	_u.mutation.SetTitle(v)
+	return _u
 }
 
 // SetNillableTitle sets the "title" field if the given value is not nil.
-func (cu *ConversationUpdate) SetNillableTitle(s *string) *ConversationUpdate {
-	if s != nil {
-		cu.SetTitle(*s)
+func (_u *ConversationUpdate) SetNillableTitle(v *string) *ConversationUpdate {
+	if v != nil {
+		_u.SetTitle(*v)
 	}
-	return cu
+	return _u
 }
 
 // ClearTitle clears the value of the "title" field.
-func (cu *ConversationUpdate) ClearTitle() *ConversationUpdate {
-	cu.mutation.ClearTitle()
-	return cu
+func (_u *ConversationUpdate) ClearTitle() *ConversationUpdate {
+	_u.mutation.ClearTitle()
+	return _u
 }
 
 // SetCreatorAgentID sets the "creator_agent_id" field.
-func (cu *ConversationUpdate) SetCreatorAgentID(u uuid.UUID) *ConversationUpdate {
-	cu.mutation.SetCreatorAgentID(u)
-	return cu
+func (_u *ConversationUpdate) SetCreatorAgentID(v uuid.UUID) *ConversationUpdate {
+	_u.mutation.SetCreatorAgentID(v)
+	return _u
 }
 
 // SetNillableCreatorAgentID sets the "creator_agent_id" field if the given value is not nil.
-func (cu *ConversationUpdate) SetNillableCreatorAgentID(u *uuid.UUID) *ConversationUpdate {
-	if u != nil {
-		cu.SetCreatorAgentID(*u)
+func (_u *ConversationUpdate) SetNillableCreatorAgentID(v *uuid.UUID) *ConversationUpdate {
+	if v != nil {
+		_u.SetCreatorAgentID(*v)
 	}
-	return cu
+	return _u
 }
 
 // SetParticipantCount sets the "participant_count" field.
-func (cu *ConversationUpdate) SetParticipantCount(i int) *ConversationUpdate {
-	cu.mutation.ResetParticipantCount()
-	cu.mutation.SetParticipantCount(i)
-	return cu
+func (_u *ConversationUpdate) SetParticipantCount(v int) *ConversationUpdate {
+	_u.mutation.ResetParticipantCount()
+	_u.mutation.SetParticipantCount(v)
+	return _u
 }
 
 // SetNillableParticipantCount sets the "participant_count" field if the given value is not nil.
-func (cu *ConversationUpdate) SetNillableParticipantCount(i *int) *ConversationUpdate {
-	if i != nil {
-		cu.SetParticipantCount(*i)
+func (_u *ConversationUpdate) SetNillableParticipantCount(v *int) *ConversationUpdate {
+	if v != nil {
+		_u.SetParticipantCount(*v)
 	}
-	return cu
+	return _u
 }
 
-// AddParticipantCount adds i to the "participant_count" field.
-func (cu *ConversationUpdate) AddParticipantCount(i int) *ConversationUpdate {
-	cu.mutation.AddParticipantCount(i)
-	return cu
+// AddParticipantCount adds value to the "participant_count" field.
+func (_u *ConversationUpdate) AddParticipantCount(v int) *ConversationUpdate {
+	_u.mutation.AddParticipantCount(v)
+	return _u
 }
 
 // SetMessageCount sets the "message_count" field.
-func (cu *ConversationUpdate) SetMessageCount(i int) *ConversationUpdate {
-	cu.mutation.ResetMessageCount()
-	cu.mutation.SetMessageCount(i)
-	return cu
+func (_u *ConversationUpdate) SetMessageCount(v int) *ConversationUpdate {
+	_u.mutation.ResetMessageCount()
+	_u.mutation.SetMessageCount(v)
+	return _u
 }
 
 // SetNillableMessageCount sets the "message_count" field if the given value is not nil.
-func (cu *ConversationUpdate) SetNillableMessageCount(i *int) *ConversationUpdate {
-	if i != nil {
-		cu.SetMessageCount(*i)
+func (_u *ConversationUpdate) SetNillableMessageCount(v *int) *ConversationUpdate {
+	if v != nil {
+		_u.SetMessageCount(*v)
 	}
-	return cu
+	return _u
 }
 
-// AddMessageCount adds i to the "message_count" field.
-func (cu *ConversationUpdate) AddMessageCount(i int) *ConversationUpdate {
-	cu.mutation.AddMessageCount(i)
-	return cu
+// AddMessageCount adds value to the "message_count" field.
+func (_u *ConversationUpdate) AddMessageCount(v int) *ConversationUpdate {
+	_u.mutation.AddMessageCount(v)
+	return _u
 }
 
 // SetLastMessagePreview sets the "last_message_preview" field.
-func (cu *ConversationUpdate) SetLastMessagePreview(s string) *ConversationUpdate {
-	cu.mutation.SetLastMessagePreview(s)
-	return cu
+func (_u *ConversationUpdate) SetLastMessagePreview(v string) *ConversationUpdate {
+	_u.mutation.SetLastMessagePreview(v)
+	return _u
 }
 
 // SetNillableLastMessagePreview sets the "last_message_preview" field if the given value is not nil.
-func (cu *ConversationUpdate) SetNillableLastMessagePreview(s *string) *ConversationUpdate {
-	if s != nil {
-		cu.SetLastMessagePreview(*s)
+func (_u *ConversationUpdate) SetNillableLastMessagePreview(v *string) *ConversationUpdate {
+	if v != nil {
+		_u.SetLastMessagePreview(*v)
 	}
-	return cu
+	return _u
 }
 
 // ClearLastMessagePreview clears the value of the "last_message_preview" field.
-func (cu *ConversationUpdate) ClearLastMessagePreview() *ConversationUpdate {
-	cu.mutation.ClearLastMessagePreview()
-	return cu
+func (_u *ConversationUpdate) ClearLastMessagePreview() *ConversationUpdate {
+	_u.mutation.ClearLastMessagePreview()
+	return _u
 }
 
 // SetLastMessageAt sets the "last_message_at" field.
-func (cu *ConversationUpdate) SetLastMessageAt(t time.Time) *ConversationUpdate {
-	cu.mutation.SetLastMessageAt(t)
-	return cu
+func (_u *ConversationUpdate) SetLastMessageAt(v time.Time) *ConversationUpdate {
+	_u.mutation.SetLastMessageAt(v)
+	return _u
 }
 
 // SetNillableLastMessageAt sets the "last_message_at" field if the given value is not nil.
-func (cu *ConversationUpdate) SetNillableLastMessageAt(t *time.Time) *ConversationUpdate {
-	if t != nil {
-		cu.SetLastMessageAt(*t)
+func (_u *ConversationUpdate) SetNillableLastMessageAt(v *time.Time) *ConversationUpdate {
+	if v != nil {
+		_u.SetLastMessageAt(*v)
 	}
-	return cu
+	return _u
 }
 
 // ClearLastMessageAt clears the value of the "last_message_at" field.
-func (cu *ConversationUpdate) ClearLastMessageAt() *ConversationUpdate {
-	cu.mutation.ClearLastMessageAt()
-	return cu
+func (_u *ConversationUpdate) ClearLastMessageAt() *ConversationUpdate {
+	_u.mutation.ClearLastMessageAt()
+	return _u
 }
 
 // SetChatType sets the "chat_type" field.
-func (cu *ConversationUpdate) SetChatType(s string) *ConversationUpdate {
-	cu.mutation.SetChatType(s)
-	return cu
+func (_u *ConversationUpdate) SetChatType(v string) *ConversationUpdate {
+	_u.mutation.SetChatType(v)
+	return _u
 }
 
 // SetNillableChatType sets the "chat_type" field if the given value is not nil.
-func (cu *ConversationUpdate) SetNillableChatType(s *string) *ConversationUpdate {
-	if s != nil {
-		cu.SetChatType(*s)
+func (_u *ConversationUpdate) SetNillableChatType(v *string) *ConversationUpdate {
+	if v != nil {
+		_u.SetChatType(*v)
 	}
-	return cu
+	return _u
 }
 
 // SetStatus sets the "status" field.
-func (cu *ConversationUpdate) SetStatus(s string) *ConversationUpdate {
-	cu.mutation.SetStatus(s)
-	return cu
+func (_u *ConversationUpdate) SetStatus(v string) *ConversationUpdate {
+	_u.mutation.SetStatus(v)
+	return _u
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (cu *ConversationUpdate) SetNillableStatus(s *string) *ConversationUpdate {
-	if s != nil {
-		cu.SetStatus(*s)
+func (_u *ConversationUpdate) SetNillableStatus(v *string) *ConversationUpdate {
+	if v != nil {
+		_u.SetStatus(*v)
 	}
-	return cu
+	return _u
 }
 
 // SetCreatorAgent sets the "creator_agent" edge to the Agent entity.
-func (cu *ConversationUpdate) SetCreatorAgent(a *Agent) *ConversationUpdate {
-	return cu.SetCreatorAgentID(a.ID)
+func (_u *ConversationUpdate) SetCreatorAgent(v *Agent) *ConversationUpdate {
+	return _u.SetCreatorAgentID(v.ID)
 }
 
 // AddParticipantIDs adds the "participants" edge to the ConversationParticipant entity by IDs.
-func (cu *ConversationUpdate) AddParticipantIDs(ids ...uuid.UUID) *ConversationUpdate {
-	cu.mutation.AddParticipantIDs(ids...)
-	return cu
+func (_u *ConversationUpdate) AddParticipantIDs(ids ...uuid.UUID) *ConversationUpdate {
+	_u.mutation.AddParticipantIDs(ids...)
+	return _u
 }
 
 // AddParticipants adds the "participants" edges to the ConversationParticipant entity.
-func (cu *ConversationUpdate) AddParticipants(c ...*ConversationParticipant) *ConversationUpdate {
-	ids := make([]uuid.UUID, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
+func (_u *ConversationUpdate) AddParticipants(v ...*ConversationParticipant) *ConversationUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return cu.AddParticipantIDs(ids...)
+	return _u.AddParticipantIDs(ids...)
 }
 
 // AddMessageIDs adds the "messages" edge to the ConversationMessage entity by IDs.
-func (cu *ConversationUpdate) AddMessageIDs(ids ...uuid.UUID) *ConversationUpdate {
-	cu.mutation.AddMessageIDs(ids...)
-	return cu
+func (_u *ConversationUpdate) AddMessageIDs(ids ...uuid.UUID) *ConversationUpdate {
+	_u.mutation.AddMessageIDs(ids...)
+	return _u
 }
 
 // AddMessages adds the "messages" edges to the ConversationMessage entity.
-func (cu *ConversationUpdate) AddMessages(c ...*ConversationMessage) *ConversationUpdate {
-	ids := make([]uuid.UUID, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
+func (_u *ConversationUpdate) AddMessages(v ...*ConversationMessage) *ConversationUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return cu.AddMessageIDs(ids...)
+	return _u.AddMessageIDs(ids...)
 }
 
 // Mutation returns the ConversationMutation object of the builder.
-func (cu *ConversationUpdate) Mutation() *ConversationMutation {
-	return cu.mutation
+func (_u *ConversationUpdate) Mutation() *ConversationMutation {
+	return _u.mutation
 }
 
 // ClearCreatorAgent clears the "creator_agent" edge to the Agent entity.
-func (cu *ConversationUpdate) ClearCreatorAgent() *ConversationUpdate {
-	cu.mutation.ClearCreatorAgent()
-	return cu
+func (_u *ConversationUpdate) ClearCreatorAgent() *ConversationUpdate {
+	_u.mutation.ClearCreatorAgent()
+	return _u
 }
 
 // ClearParticipants clears all "participants" edges to the ConversationParticipant entity.
-func (cu *ConversationUpdate) ClearParticipants() *ConversationUpdate {
-	cu.mutation.ClearParticipants()
-	return cu
+func (_u *ConversationUpdate) ClearParticipants() *ConversationUpdate {
+	_u.mutation.ClearParticipants()
+	return _u
 }
 
 // RemoveParticipantIDs removes the "participants" edge to ConversationParticipant entities by IDs.
-func (cu *ConversationUpdate) RemoveParticipantIDs(ids ...uuid.UUID) *ConversationUpdate {
-	cu.mutation.RemoveParticipantIDs(ids...)
-	return cu
+func (_u *ConversationUpdate) RemoveParticipantIDs(ids ...uuid.UUID) *ConversationUpdate {
+	_u.mutation.RemoveParticipantIDs(ids...)
+	return _u
 }
 
 // RemoveParticipants removes "participants" edges to ConversationParticipant entities.
-func (cu *ConversationUpdate) RemoveParticipants(c ...*ConversationParticipant) *ConversationUpdate {
-	ids := make([]uuid.UUID, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
+func (_u *ConversationUpdate) RemoveParticipants(v ...*ConversationParticipant) *ConversationUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return cu.RemoveParticipantIDs(ids...)
+	return _u.RemoveParticipantIDs(ids...)
 }
 
 // ClearMessages clears all "messages" edges to the ConversationMessage entity.
-func (cu *ConversationUpdate) ClearMessages() *ConversationUpdate {
-	cu.mutation.ClearMessages()
-	return cu
+func (_u *ConversationUpdate) ClearMessages() *ConversationUpdate {
+	_u.mutation.ClearMessages()
+	return _u
 }
 
 // RemoveMessageIDs removes the "messages" edge to ConversationMessage entities by IDs.
-func (cu *ConversationUpdate) RemoveMessageIDs(ids ...uuid.UUID) *ConversationUpdate {
-	cu.mutation.RemoveMessageIDs(ids...)
-	return cu
+func (_u *ConversationUpdate) RemoveMessageIDs(ids ...uuid.UUID) *ConversationUpdate {
+	_u.mutation.RemoveMessageIDs(ids...)
+	return _u
 }
 
 // RemoveMessages removes "messages" edges to ConversationMessage entities.
-func (cu *ConversationUpdate) RemoveMessages(c ...*ConversationMessage) *ConversationUpdate {
-	ids := make([]uuid.UUID, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
+func (_u *ConversationUpdate) RemoveMessages(v ...*ConversationMessage) *ConversationUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return cu.RemoveMessageIDs(ids...)
+	return _u.RemoveMessageIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (cu *ConversationUpdate) Save(ctx context.Context) (int, error) {
-	cu.defaults()
-	return withHooks(ctx, cu.sqlSave, cu.mutation, cu.hooks)
+func (_u *ConversationUpdate) Save(ctx context.Context) (int, error) {
+	_u.defaults()
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (cu *ConversationUpdate) SaveX(ctx context.Context) int {
-	affected, err := cu.Save(ctx)
+func (_u *ConversationUpdate) SaveX(ctx context.Context) int {
+	affected, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -300,89 +300,89 @@ func (cu *ConversationUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (cu *ConversationUpdate) Exec(ctx context.Context) error {
-	_, err := cu.Save(ctx)
+func (_u *ConversationUpdate) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (cu *ConversationUpdate) ExecX(ctx context.Context) {
-	if err := cu.Exec(ctx); err != nil {
+func (_u *ConversationUpdate) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (cu *ConversationUpdate) defaults() {
-	if _, ok := cu.mutation.UpdatedAt(); !ok {
+func (_u *ConversationUpdate) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
 		v := conversation.UpdateDefaultUpdatedAt()
-		cu.mutation.SetUpdatedAt(v)
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (cu *ConversationUpdate) check() error {
-	if cu.mutation.CreatorAgentCleared() && len(cu.mutation.CreatorAgentIDs()) > 0 {
+func (_u *ConversationUpdate) check() error {
+	if _u.mutation.CreatorAgentCleared() && len(_u.mutation.CreatorAgentIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Conversation.creator_agent"`)
 	}
 	return nil
 }
 
-func (cu *ConversationUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := cu.check(); err != nil {
-		return n, err
+func (_u *ConversationUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(conversation.Table, conversation.Columns, sqlgraph.NewFieldSpec(conversation.FieldID, field.TypeUUID))
-	if ps := cu.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := cu.mutation.UpdatedAt(); ok {
+	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(conversation.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := cu.mutation.GetType(); ok {
+	if value, ok := _u.mutation.GetType(); ok {
 		_spec.SetField(conversation.FieldType, field.TypeString, value)
 	}
-	if value, ok := cu.mutation.Title(); ok {
+	if value, ok := _u.mutation.Title(); ok {
 		_spec.SetField(conversation.FieldTitle, field.TypeString, value)
 	}
-	if cu.mutation.TitleCleared() {
+	if _u.mutation.TitleCleared() {
 		_spec.ClearField(conversation.FieldTitle, field.TypeString)
 	}
-	if value, ok := cu.mutation.ParticipantCount(); ok {
+	if value, ok := _u.mutation.ParticipantCount(); ok {
 		_spec.SetField(conversation.FieldParticipantCount, field.TypeInt, value)
 	}
-	if value, ok := cu.mutation.AddedParticipantCount(); ok {
+	if value, ok := _u.mutation.AddedParticipantCount(); ok {
 		_spec.AddField(conversation.FieldParticipantCount, field.TypeInt, value)
 	}
-	if value, ok := cu.mutation.MessageCount(); ok {
+	if value, ok := _u.mutation.MessageCount(); ok {
 		_spec.SetField(conversation.FieldMessageCount, field.TypeInt, value)
 	}
-	if value, ok := cu.mutation.AddedMessageCount(); ok {
+	if value, ok := _u.mutation.AddedMessageCount(); ok {
 		_spec.AddField(conversation.FieldMessageCount, field.TypeInt, value)
 	}
-	if value, ok := cu.mutation.LastMessagePreview(); ok {
+	if value, ok := _u.mutation.LastMessagePreview(); ok {
 		_spec.SetField(conversation.FieldLastMessagePreview, field.TypeString, value)
 	}
-	if cu.mutation.LastMessagePreviewCleared() {
+	if _u.mutation.LastMessagePreviewCleared() {
 		_spec.ClearField(conversation.FieldLastMessagePreview, field.TypeString)
 	}
-	if value, ok := cu.mutation.LastMessageAt(); ok {
+	if value, ok := _u.mutation.LastMessageAt(); ok {
 		_spec.SetField(conversation.FieldLastMessageAt, field.TypeTime, value)
 	}
-	if cu.mutation.LastMessageAtCleared() {
+	if _u.mutation.LastMessageAtCleared() {
 		_spec.ClearField(conversation.FieldLastMessageAt, field.TypeTime)
 	}
-	if value, ok := cu.mutation.ChatType(); ok {
+	if value, ok := _u.mutation.ChatType(); ok {
 		_spec.SetField(conversation.FieldChatType, field.TypeString, value)
 	}
-	if value, ok := cu.mutation.Status(); ok {
+	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(conversation.FieldStatus, field.TypeString, value)
 	}
-	if cu.mutation.CreatorAgentCleared() {
+	if _u.mutation.CreatorAgentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -395,7 +395,7 @@ func (cu *ConversationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cu.mutation.CreatorAgentIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.CreatorAgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -411,7 +411,7 @@ func (cu *ConversationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if cu.mutation.ParticipantsCleared() {
+	if _u.mutation.ParticipantsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -424,7 +424,7 @@ func (cu *ConversationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cu.mutation.RemovedParticipantsIDs(); len(nodes) > 0 && !cu.mutation.ParticipantsCleared() {
+	if nodes := _u.mutation.RemovedParticipantsIDs(); len(nodes) > 0 && !_u.mutation.ParticipantsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -440,7 +440,7 @@ func (cu *ConversationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cu.mutation.ParticipantsIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.ParticipantsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -456,7 +456,7 @@ func (cu *ConversationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if cu.mutation.MessagesCleared() {
+	if _u.mutation.MessagesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -469,7 +469,7 @@ func (cu *ConversationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cu.mutation.RemovedMessagesIDs(); len(nodes) > 0 && !cu.mutation.MessagesCleared() {
+	if nodes := _u.mutation.RemovedMessagesIDs(); len(nodes) > 0 && !_u.mutation.MessagesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -485,7 +485,7 @@ func (cu *ConversationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cu.mutation.MessagesIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.MessagesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -501,7 +501,7 @@ func (cu *ConversationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
+	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{conversation.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -509,8 +509,8 @@ func (cu *ConversationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
-	cu.mutation.done = true
-	return n, nil
+	_u.mutation.done = true
+	return _node, nil
 }
 
 // ConversationUpdateOne is the builder for updating a single Conversation entity.
@@ -522,279 +522,279 @@ type ConversationUpdateOne struct {
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (cuo *ConversationUpdateOne) SetUpdatedAt(t time.Time) *ConversationUpdateOne {
-	cuo.mutation.SetUpdatedAt(t)
-	return cuo
+func (_u *ConversationUpdateOne) SetUpdatedAt(v time.Time) *ConversationUpdateOne {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // SetType sets the "type" field.
-func (cuo *ConversationUpdateOne) SetType(s string) *ConversationUpdateOne {
-	cuo.mutation.SetType(s)
-	return cuo
+func (_u *ConversationUpdateOne) SetType(v string) *ConversationUpdateOne {
+	_u.mutation.SetType(v)
+	return _u
 }
 
 // SetNillableType sets the "type" field if the given value is not nil.
-func (cuo *ConversationUpdateOne) SetNillableType(s *string) *ConversationUpdateOne {
-	if s != nil {
-		cuo.SetType(*s)
+func (_u *ConversationUpdateOne) SetNillableType(v *string) *ConversationUpdateOne {
+	if v != nil {
+		_u.SetType(*v)
 	}
-	return cuo
+	return _u
 }
 
 // SetTitle sets the "title" field.
-func (cuo *ConversationUpdateOne) SetTitle(s string) *ConversationUpdateOne {
-	cuo.mutation.SetTitle(s)
-	return cuo
+func (_u *ConversationUpdateOne) SetTitle(v string) *ConversationUpdateOne {
+	_u.mutation.SetTitle(v)
+	return _u
 }
 
 // SetNillableTitle sets the "title" field if the given value is not nil.
-func (cuo *ConversationUpdateOne) SetNillableTitle(s *string) *ConversationUpdateOne {
-	if s != nil {
-		cuo.SetTitle(*s)
+func (_u *ConversationUpdateOne) SetNillableTitle(v *string) *ConversationUpdateOne {
+	if v != nil {
+		_u.SetTitle(*v)
 	}
-	return cuo
+	return _u
 }
 
 // ClearTitle clears the value of the "title" field.
-func (cuo *ConversationUpdateOne) ClearTitle() *ConversationUpdateOne {
-	cuo.mutation.ClearTitle()
-	return cuo
+func (_u *ConversationUpdateOne) ClearTitle() *ConversationUpdateOne {
+	_u.mutation.ClearTitle()
+	return _u
 }
 
 // SetCreatorAgentID sets the "creator_agent_id" field.
-func (cuo *ConversationUpdateOne) SetCreatorAgentID(u uuid.UUID) *ConversationUpdateOne {
-	cuo.mutation.SetCreatorAgentID(u)
-	return cuo
+func (_u *ConversationUpdateOne) SetCreatorAgentID(v uuid.UUID) *ConversationUpdateOne {
+	_u.mutation.SetCreatorAgentID(v)
+	return _u
 }
 
 // SetNillableCreatorAgentID sets the "creator_agent_id" field if the given value is not nil.
-func (cuo *ConversationUpdateOne) SetNillableCreatorAgentID(u *uuid.UUID) *ConversationUpdateOne {
-	if u != nil {
-		cuo.SetCreatorAgentID(*u)
+func (_u *ConversationUpdateOne) SetNillableCreatorAgentID(v *uuid.UUID) *ConversationUpdateOne {
+	if v != nil {
+		_u.SetCreatorAgentID(*v)
 	}
-	return cuo
+	return _u
 }
 
 // SetParticipantCount sets the "participant_count" field.
-func (cuo *ConversationUpdateOne) SetParticipantCount(i int) *ConversationUpdateOne {
-	cuo.mutation.ResetParticipantCount()
-	cuo.mutation.SetParticipantCount(i)
-	return cuo
+func (_u *ConversationUpdateOne) SetParticipantCount(v int) *ConversationUpdateOne {
+	_u.mutation.ResetParticipantCount()
+	_u.mutation.SetParticipantCount(v)
+	return _u
 }
 
 // SetNillableParticipantCount sets the "participant_count" field if the given value is not nil.
-func (cuo *ConversationUpdateOne) SetNillableParticipantCount(i *int) *ConversationUpdateOne {
-	if i != nil {
-		cuo.SetParticipantCount(*i)
+func (_u *ConversationUpdateOne) SetNillableParticipantCount(v *int) *ConversationUpdateOne {
+	if v != nil {
+		_u.SetParticipantCount(*v)
 	}
-	return cuo
+	return _u
 }
 
-// AddParticipantCount adds i to the "participant_count" field.
-func (cuo *ConversationUpdateOne) AddParticipantCount(i int) *ConversationUpdateOne {
-	cuo.mutation.AddParticipantCount(i)
-	return cuo
+// AddParticipantCount adds value to the "participant_count" field.
+func (_u *ConversationUpdateOne) AddParticipantCount(v int) *ConversationUpdateOne {
+	_u.mutation.AddParticipantCount(v)
+	return _u
 }
 
 // SetMessageCount sets the "message_count" field.
-func (cuo *ConversationUpdateOne) SetMessageCount(i int) *ConversationUpdateOne {
-	cuo.mutation.ResetMessageCount()
-	cuo.mutation.SetMessageCount(i)
-	return cuo
+func (_u *ConversationUpdateOne) SetMessageCount(v int) *ConversationUpdateOne {
+	_u.mutation.ResetMessageCount()
+	_u.mutation.SetMessageCount(v)
+	return _u
 }
 
 // SetNillableMessageCount sets the "message_count" field if the given value is not nil.
-func (cuo *ConversationUpdateOne) SetNillableMessageCount(i *int) *ConversationUpdateOne {
-	if i != nil {
-		cuo.SetMessageCount(*i)
+func (_u *ConversationUpdateOne) SetNillableMessageCount(v *int) *ConversationUpdateOne {
+	if v != nil {
+		_u.SetMessageCount(*v)
 	}
-	return cuo
+	return _u
 }
 
-// AddMessageCount adds i to the "message_count" field.
-func (cuo *ConversationUpdateOne) AddMessageCount(i int) *ConversationUpdateOne {
-	cuo.mutation.AddMessageCount(i)
-	return cuo
+// AddMessageCount adds value to the "message_count" field.
+func (_u *ConversationUpdateOne) AddMessageCount(v int) *ConversationUpdateOne {
+	_u.mutation.AddMessageCount(v)
+	return _u
 }
 
 // SetLastMessagePreview sets the "last_message_preview" field.
-func (cuo *ConversationUpdateOne) SetLastMessagePreview(s string) *ConversationUpdateOne {
-	cuo.mutation.SetLastMessagePreview(s)
-	return cuo
+func (_u *ConversationUpdateOne) SetLastMessagePreview(v string) *ConversationUpdateOne {
+	_u.mutation.SetLastMessagePreview(v)
+	return _u
 }
 
 // SetNillableLastMessagePreview sets the "last_message_preview" field if the given value is not nil.
-func (cuo *ConversationUpdateOne) SetNillableLastMessagePreview(s *string) *ConversationUpdateOne {
-	if s != nil {
-		cuo.SetLastMessagePreview(*s)
+func (_u *ConversationUpdateOne) SetNillableLastMessagePreview(v *string) *ConversationUpdateOne {
+	if v != nil {
+		_u.SetLastMessagePreview(*v)
 	}
-	return cuo
+	return _u
 }
 
 // ClearLastMessagePreview clears the value of the "last_message_preview" field.
-func (cuo *ConversationUpdateOne) ClearLastMessagePreview() *ConversationUpdateOne {
-	cuo.mutation.ClearLastMessagePreview()
-	return cuo
+func (_u *ConversationUpdateOne) ClearLastMessagePreview() *ConversationUpdateOne {
+	_u.mutation.ClearLastMessagePreview()
+	return _u
 }
 
 // SetLastMessageAt sets the "last_message_at" field.
-func (cuo *ConversationUpdateOne) SetLastMessageAt(t time.Time) *ConversationUpdateOne {
-	cuo.mutation.SetLastMessageAt(t)
-	return cuo
+func (_u *ConversationUpdateOne) SetLastMessageAt(v time.Time) *ConversationUpdateOne {
+	_u.mutation.SetLastMessageAt(v)
+	return _u
 }
 
 // SetNillableLastMessageAt sets the "last_message_at" field if the given value is not nil.
-func (cuo *ConversationUpdateOne) SetNillableLastMessageAt(t *time.Time) *ConversationUpdateOne {
-	if t != nil {
-		cuo.SetLastMessageAt(*t)
+func (_u *ConversationUpdateOne) SetNillableLastMessageAt(v *time.Time) *ConversationUpdateOne {
+	if v != nil {
+		_u.SetLastMessageAt(*v)
 	}
-	return cuo
+	return _u
 }
 
 // ClearLastMessageAt clears the value of the "last_message_at" field.
-func (cuo *ConversationUpdateOne) ClearLastMessageAt() *ConversationUpdateOne {
-	cuo.mutation.ClearLastMessageAt()
-	return cuo
+func (_u *ConversationUpdateOne) ClearLastMessageAt() *ConversationUpdateOne {
+	_u.mutation.ClearLastMessageAt()
+	return _u
 }
 
 // SetChatType sets the "chat_type" field.
-func (cuo *ConversationUpdateOne) SetChatType(s string) *ConversationUpdateOne {
-	cuo.mutation.SetChatType(s)
-	return cuo
+func (_u *ConversationUpdateOne) SetChatType(v string) *ConversationUpdateOne {
+	_u.mutation.SetChatType(v)
+	return _u
 }
 
 // SetNillableChatType sets the "chat_type" field if the given value is not nil.
-func (cuo *ConversationUpdateOne) SetNillableChatType(s *string) *ConversationUpdateOne {
-	if s != nil {
-		cuo.SetChatType(*s)
+func (_u *ConversationUpdateOne) SetNillableChatType(v *string) *ConversationUpdateOne {
+	if v != nil {
+		_u.SetChatType(*v)
 	}
-	return cuo
+	return _u
 }
 
 // SetStatus sets the "status" field.
-func (cuo *ConversationUpdateOne) SetStatus(s string) *ConversationUpdateOne {
-	cuo.mutation.SetStatus(s)
-	return cuo
+func (_u *ConversationUpdateOne) SetStatus(v string) *ConversationUpdateOne {
+	_u.mutation.SetStatus(v)
+	return _u
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (cuo *ConversationUpdateOne) SetNillableStatus(s *string) *ConversationUpdateOne {
-	if s != nil {
-		cuo.SetStatus(*s)
+func (_u *ConversationUpdateOne) SetNillableStatus(v *string) *ConversationUpdateOne {
+	if v != nil {
+		_u.SetStatus(*v)
 	}
-	return cuo
+	return _u
 }
 
 // SetCreatorAgent sets the "creator_agent" edge to the Agent entity.
-func (cuo *ConversationUpdateOne) SetCreatorAgent(a *Agent) *ConversationUpdateOne {
-	return cuo.SetCreatorAgentID(a.ID)
+func (_u *ConversationUpdateOne) SetCreatorAgent(v *Agent) *ConversationUpdateOne {
+	return _u.SetCreatorAgentID(v.ID)
 }
 
 // AddParticipantIDs adds the "participants" edge to the ConversationParticipant entity by IDs.
-func (cuo *ConversationUpdateOne) AddParticipantIDs(ids ...uuid.UUID) *ConversationUpdateOne {
-	cuo.mutation.AddParticipantIDs(ids...)
-	return cuo
+func (_u *ConversationUpdateOne) AddParticipantIDs(ids ...uuid.UUID) *ConversationUpdateOne {
+	_u.mutation.AddParticipantIDs(ids...)
+	return _u
 }
 
 // AddParticipants adds the "participants" edges to the ConversationParticipant entity.
-func (cuo *ConversationUpdateOne) AddParticipants(c ...*ConversationParticipant) *ConversationUpdateOne {
-	ids := make([]uuid.UUID, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
+func (_u *ConversationUpdateOne) AddParticipants(v ...*ConversationParticipant) *ConversationUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return cuo.AddParticipantIDs(ids...)
+	return _u.AddParticipantIDs(ids...)
 }
 
 // AddMessageIDs adds the "messages" edge to the ConversationMessage entity by IDs.
-func (cuo *ConversationUpdateOne) AddMessageIDs(ids ...uuid.UUID) *ConversationUpdateOne {
-	cuo.mutation.AddMessageIDs(ids...)
-	return cuo
+func (_u *ConversationUpdateOne) AddMessageIDs(ids ...uuid.UUID) *ConversationUpdateOne {
+	_u.mutation.AddMessageIDs(ids...)
+	return _u
 }
 
 // AddMessages adds the "messages" edges to the ConversationMessage entity.
-func (cuo *ConversationUpdateOne) AddMessages(c ...*ConversationMessage) *ConversationUpdateOne {
-	ids := make([]uuid.UUID, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
+func (_u *ConversationUpdateOne) AddMessages(v ...*ConversationMessage) *ConversationUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return cuo.AddMessageIDs(ids...)
+	return _u.AddMessageIDs(ids...)
 }
 
 // Mutation returns the ConversationMutation object of the builder.
-func (cuo *ConversationUpdateOne) Mutation() *ConversationMutation {
-	return cuo.mutation
+func (_u *ConversationUpdateOne) Mutation() *ConversationMutation {
+	return _u.mutation
 }
 
 // ClearCreatorAgent clears the "creator_agent" edge to the Agent entity.
-func (cuo *ConversationUpdateOne) ClearCreatorAgent() *ConversationUpdateOne {
-	cuo.mutation.ClearCreatorAgent()
-	return cuo
+func (_u *ConversationUpdateOne) ClearCreatorAgent() *ConversationUpdateOne {
+	_u.mutation.ClearCreatorAgent()
+	return _u
 }
 
 // ClearParticipants clears all "participants" edges to the ConversationParticipant entity.
-func (cuo *ConversationUpdateOne) ClearParticipants() *ConversationUpdateOne {
-	cuo.mutation.ClearParticipants()
-	return cuo
+func (_u *ConversationUpdateOne) ClearParticipants() *ConversationUpdateOne {
+	_u.mutation.ClearParticipants()
+	return _u
 }
 
 // RemoveParticipantIDs removes the "participants" edge to ConversationParticipant entities by IDs.
-func (cuo *ConversationUpdateOne) RemoveParticipantIDs(ids ...uuid.UUID) *ConversationUpdateOne {
-	cuo.mutation.RemoveParticipantIDs(ids...)
-	return cuo
+func (_u *ConversationUpdateOne) RemoveParticipantIDs(ids ...uuid.UUID) *ConversationUpdateOne {
+	_u.mutation.RemoveParticipantIDs(ids...)
+	return _u
 }
 
 // RemoveParticipants removes "participants" edges to ConversationParticipant entities.
-func (cuo *ConversationUpdateOne) RemoveParticipants(c ...*ConversationParticipant) *ConversationUpdateOne {
-	ids := make([]uuid.UUID, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
+func (_u *ConversationUpdateOne) RemoveParticipants(v ...*ConversationParticipant) *ConversationUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return cuo.RemoveParticipantIDs(ids...)
+	return _u.RemoveParticipantIDs(ids...)
 }
 
 // ClearMessages clears all "messages" edges to the ConversationMessage entity.
-func (cuo *ConversationUpdateOne) ClearMessages() *ConversationUpdateOne {
-	cuo.mutation.ClearMessages()
-	return cuo
+func (_u *ConversationUpdateOne) ClearMessages() *ConversationUpdateOne {
+	_u.mutation.ClearMessages()
+	return _u
 }
 
 // RemoveMessageIDs removes the "messages" edge to ConversationMessage entities by IDs.
-func (cuo *ConversationUpdateOne) RemoveMessageIDs(ids ...uuid.UUID) *ConversationUpdateOne {
-	cuo.mutation.RemoveMessageIDs(ids...)
-	return cuo
+func (_u *ConversationUpdateOne) RemoveMessageIDs(ids ...uuid.UUID) *ConversationUpdateOne {
+	_u.mutation.RemoveMessageIDs(ids...)
+	return _u
 }
 
 // RemoveMessages removes "messages" edges to ConversationMessage entities.
-func (cuo *ConversationUpdateOne) RemoveMessages(c ...*ConversationMessage) *ConversationUpdateOne {
-	ids := make([]uuid.UUID, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
+func (_u *ConversationUpdateOne) RemoveMessages(v ...*ConversationMessage) *ConversationUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return cuo.RemoveMessageIDs(ids...)
+	return _u.RemoveMessageIDs(ids...)
 }
 
 // Where appends a list predicates to the ConversationUpdate builder.
-func (cuo *ConversationUpdateOne) Where(ps ...predicate.Conversation) *ConversationUpdateOne {
-	cuo.mutation.Where(ps...)
-	return cuo
+func (_u *ConversationUpdateOne) Where(ps ...predicate.Conversation) *ConversationUpdateOne {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (cuo *ConversationUpdateOne) Select(field string, fields ...string) *ConversationUpdateOne {
-	cuo.fields = append([]string{field}, fields...)
-	return cuo
+func (_u *ConversationUpdateOne) Select(field string, fields ...string) *ConversationUpdateOne {
+	_u.fields = append([]string{field}, fields...)
+	return _u
 }
 
 // Save executes the query and returns the updated Conversation entity.
-func (cuo *ConversationUpdateOne) Save(ctx context.Context) (*Conversation, error) {
-	cuo.defaults()
-	return withHooks(ctx, cuo.sqlSave, cuo.mutation, cuo.hooks)
+func (_u *ConversationUpdateOne) Save(ctx context.Context) (*Conversation, error) {
+	_u.defaults()
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (cuo *ConversationUpdateOne) SaveX(ctx context.Context) *Conversation {
-	node, err := cuo.Save(ctx)
+func (_u *ConversationUpdateOne) SaveX(ctx context.Context) *Conversation {
+	node, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -802,45 +802,45 @@ func (cuo *ConversationUpdateOne) SaveX(ctx context.Context) *Conversation {
 }
 
 // Exec executes the query on the entity.
-func (cuo *ConversationUpdateOne) Exec(ctx context.Context) error {
-	_, err := cuo.Save(ctx)
+func (_u *ConversationUpdateOne) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (cuo *ConversationUpdateOne) ExecX(ctx context.Context) {
-	if err := cuo.Exec(ctx); err != nil {
+func (_u *ConversationUpdateOne) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (cuo *ConversationUpdateOne) defaults() {
-	if _, ok := cuo.mutation.UpdatedAt(); !ok {
+func (_u *ConversationUpdateOne) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
 		v := conversation.UpdateDefaultUpdatedAt()
-		cuo.mutation.SetUpdatedAt(v)
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (cuo *ConversationUpdateOne) check() error {
-	if cuo.mutation.CreatorAgentCleared() && len(cuo.mutation.CreatorAgentIDs()) > 0 {
+func (_u *ConversationUpdateOne) check() error {
+	if _u.mutation.CreatorAgentCleared() && len(_u.mutation.CreatorAgentIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Conversation.creator_agent"`)
 	}
 	return nil
 }
 
-func (cuo *ConversationUpdateOne) sqlSave(ctx context.Context) (_node *Conversation, err error) {
-	if err := cuo.check(); err != nil {
+func (_u *ConversationUpdateOne) sqlSave(ctx context.Context) (_node *Conversation, err error) {
+	if err := _u.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(conversation.Table, conversation.Columns, sqlgraph.NewFieldSpec(conversation.FieldID, field.TypeUUID))
-	id, ok := cuo.mutation.ID()
+	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Conversation.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := cuo.fields; len(fields) > 0 {
+	if fields := _u.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, conversation.FieldID)
 		for _, f := range fields {
@@ -852,56 +852,56 @@ func (cuo *ConversationUpdateOne) sqlSave(ctx context.Context) (_node *Conversat
 			}
 		}
 	}
-	if ps := cuo.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := cuo.mutation.UpdatedAt(); ok {
+	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(conversation.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := cuo.mutation.GetType(); ok {
+	if value, ok := _u.mutation.GetType(); ok {
 		_spec.SetField(conversation.FieldType, field.TypeString, value)
 	}
-	if value, ok := cuo.mutation.Title(); ok {
+	if value, ok := _u.mutation.Title(); ok {
 		_spec.SetField(conversation.FieldTitle, field.TypeString, value)
 	}
-	if cuo.mutation.TitleCleared() {
+	if _u.mutation.TitleCleared() {
 		_spec.ClearField(conversation.FieldTitle, field.TypeString)
 	}
-	if value, ok := cuo.mutation.ParticipantCount(); ok {
+	if value, ok := _u.mutation.ParticipantCount(); ok {
 		_spec.SetField(conversation.FieldParticipantCount, field.TypeInt, value)
 	}
-	if value, ok := cuo.mutation.AddedParticipantCount(); ok {
+	if value, ok := _u.mutation.AddedParticipantCount(); ok {
 		_spec.AddField(conversation.FieldParticipantCount, field.TypeInt, value)
 	}
-	if value, ok := cuo.mutation.MessageCount(); ok {
+	if value, ok := _u.mutation.MessageCount(); ok {
 		_spec.SetField(conversation.FieldMessageCount, field.TypeInt, value)
 	}
-	if value, ok := cuo.mutation.AddedMessageCount(); ok {
+	if value, ok := _u.mutation.AddedMessageCount(); ok {
 		_spec.AddField(conversation.FieldMessageCount, field.TypeInt, value)
 	}
-	if value, ok := cuo.mutation.LastMessagePreview(); ok {
+	if value, ok := _u.mutation.LastMessagePreview(); ok {
 		_spec.SetField(conversation.FieldLastMessagePreview, field.TypeString, value)
 	}
-	if cuo.mutation.LastMessagePreviewCleared() {
+	if _u.mutation.LastMessagePreviewCleared() {
 		_spec.ClearField(conversation.FieldLastMessagePreview, field.TypeString)
 	}
-	if value, ok := cuo.mutation.LastMessageAt(); ok {
+	if value, ok := _u.mutation.LastMessageAt(); ok {
 		_spec.SetField(conversation.FieldLastMessageAt, field.TypeTime, value)
 	}
-	if cuo.mutation.LastMessageAtCleared() {
+	if _u.mutation.LastMessageAtCleared() {
 		_spec.ClearField(conversation.FieldLastMessageAt, field.TypeTime)
 	}
-	if value, ok := cuo.mutation.ChatType(); ok {
+	if value, ok := _u.mutation.ChatType(); ok {
 		_spec.SetField(conversation.FieldChatType, field.TypeString, value)
 	}
-	if value, ok := cuo.mutation.Status(); ok {
+	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(conversation.FieldStatus, field.TypeString, value)
 	}
-	if cuo.mutation.CreatorAgentCleared() {
+	if _u.mutation.CreatorAgentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -914,7 +914,7 @@ func (cuo *ConversationUpdateOne) sqlSave(ctx context.Context) (_node *Conversat
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cuo.mutation.CreatorAgentIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.CreatorAgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -930,7 +930,7 @@ func (cuo *ConversationUpdateOne) sqlSave(ctx context.Context) (_node *Conversat
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if cuo.mutation.ParticipantsCleared() {
+	if _u.mutation.ParticipantsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -943,7 +943,7 @@ func (cuo *ConversationUpdateOne) sqlSave(ctx context.Context) (_node *Conversat
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cuo.mutation.RemovedParticipantsIDs(); len(nodes) > 0 && !cuo.mutation.ParticipantsCleared() {
+	if nodes := _u.mutation.RemovedParticipantsIDs(); len(nodes) > 0 && !_u.mutation.ParticipantsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -959,7 +959,7 @@ func (cuo *ConversationUpdateOne) sqlSave(ctx context.Context) (_node *Conversat
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cuo.mutation.ParticipantsIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.ParticipantsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -975,7 +975,7 @@ func (cuo *ConversationUpdateOne) sqlSave(ctx context.Context) (_node *Conversat
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if cuo.mutation.MessagesCleared() {
+	if _u.mutation.MessagesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -988,7 +988,7 @@ func (cuo *ConversationUpdateOne) sqlSave(ctx context.Context) (_node *Conversat
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cuo.mutation.RemovedMessagesIDs(); len(nodes) > 0 && !cuo.mutation.MessagesCleared() {
+	if nodes := _u.mutation.RemovedMessagesIDs(); len(nodes) > 0 && !_u.mutation.MessagesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -1004,7 +1004,7 @@ func (cuo *ConversationUpdateOne) sqlSave(ctx context.Context) (_node *Conversat
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cuo.mutation.MessagesIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.MessagesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -1020,10 +1020,10 @@ func (cuo *ConversationUpdateOne) sqlSave(ctx context.Context) (_node *Conversat
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &Conversation{config: cuo.config}
+	_node = &Conversation{config: _u.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, cuo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{conversation.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -1031,6 +1031,6 @@ func (cuo *ConversationUpdateOne) sqlSave(ctx context.Context) (_node *Conversat
 		}
 		return nil, err
 	}
-	cuo.mutation.done = true
+	_u.mutation.done = true
 	return _node, nil
 }

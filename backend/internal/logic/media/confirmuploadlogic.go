@@ -2,7 +2,10 @@ package media
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"os"
+	"strings"
 
 	"backend/internal/logic/common"
 	"backend/internal/svc"
@@ -31,11 +34,33 @@ func (l *ConfirmUploadLogic) ConfirmUpload(req *types.MediaIdReq) (resp *types.M
 	if err != nil {
 		return nil, err
 	}
-	m, err := l.svcCtx.DB.Media.UpdateOneID(id).
+
+	// Ensure the upload actually exists on disk.
+	root, err := storageRoot(l.svcCtx)
+	if err != nil {
+		return nil, err
+	}
+	if _, err := os.Stat(originalPath(root, id.String())); err != nil {
+		if os.IsNotExist(err) {
+			return nil, errors.New("upload not found")
+		}
+		return nil, err
+	}
+
+	m, err := l.svcCtx.DB.Media.Get(l.ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	publicURL := fmt.Sprintf("/api/v1/media/%s/original", id.String())
+	upd := l.svcCtx.DB.Media.UpdateOneID(id).
 		SetStatus("ready").
-		SetURL(fmt.Sprintf("https://media.alive.bot/%s/original", id.String())).
-		SetThumbnailURL(fmt.Sprintf("https://media.alive.bot/%s/thumb", id.String())).
-		Save(l.ctx)
+		SetURL(publicURL)
+	// Only images get a thumbnail URL for now; video thumbnails can be added later.
+	if strings.HasPrefix(strings.ToLower(strings.TrimSpace(m.MimeType)), "image/") {
+		upd.SetThumbnailURL(publicURL)
+	}
+	m, err = upd.Save(l.ctx)
 	if err != nil {
 		return nil, err
 	}

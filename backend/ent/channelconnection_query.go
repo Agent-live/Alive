@@ -31,44 +31,44 @@ type ChannelConnectionQuery struct {
 }
 
 // Where adds a new predicate for the ChannelConnectionQuery builder.
-func (ccq *ChannelConnectionQuery) Where(ps ...predicate.ChannelConnection) *ChannelConnectionQuery {
-	ccq.predicates = append(ccq.predicates, ps...)
-	return ccq
+func (_q *ChannelConnectionQuery) Where(ps ...predicate.ChannelConnection) *ChannelConnectionQuery {
+	_q.predicates = append(_q.predicates, ps...)
+	return _q
 }
 
 // Limit the number of records to be returned by this query.
-func (ccq *ChannelConnectionQuery) Limit(limit int) *ChannelConnectionQuery {
-	ccq.ctx.Limit = &limit
-	return ccq
+func (_q *ChannelConnectionQuery) Limit(limit int) *ChannelConnectionQuery {
+	_q.ctx.Limit = &limit
+	return _q
 }
 
 // Offset to start from.
-func (ccq *ChannelConnectionQuery) Offset(offset int) *ChannelConnectionQuery {
-	ccq.ctx.Offset = &offset
-	return ccq
+func (_q *ChannelConnectionQuery) Offset(offset int) *ChannelConnectionQuery {
+	_q.ctx.Offset = &offset
+	return _q
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (ccq *ChannelConnectionQuery) Unique(unique bool) *ChannelConnectionQuery {
-	ccq.ctx.Unique = &unique
-	return ccq
+func (_q *ChannelConnectionQuery) Unique(unique bool) *ChannelConnectionQuery {
+	_q.ctx.Unique = &unique
+	return _q
 }
 
 // Order specifies how the records should be ordered.
-func (ccq *ChannelConnectionQuery) Order(o ...channelconnection.OrderOption) *ChannelConnectionQuery {
-	ccq.order = append(ccq.order, o...)
-	return ccq
+func (_q *ChannelConnectionQuery) Order(o ...channelconnection.OrderOption) *ChannelConnectionQuery {
+	_q.order = append(_q.order, o...)
+	return _q
 }
 
 // QueryAgent chains the current query on the "agent" edge.
-func (ccq *ChannelConnectionQuery) QueryAgent() *AgentQuery {
-	query := (&AgentClient{config: ccq.config}).Query()
+func (_q *ChannelConnectionQuery) QueryAgent() *AgentQuery {
+	query := (&AgentClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := ccq.prepareQuery(ctx); err != nil {
+		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
-		selector := ccq.sqlQuery(ctx)
+		selector := _q.sqlQuery(ctx)
 		if err := selector.Err(); err != nil {
 			return nil, err
 		}
@@ -77,7 +77,7 @@ func (ccq *ChannelConnectionQuery) QueryAgent() *AgentQuery {
 			sqlgraph.To(agent.Table, agent.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, channelconnection.AgentTable, channelconnection.AgentColumn),
 		)
-		fromU = sqlgraph.SetNeighbors(ccq.driver.Dialect(), step)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
 	}
 	return query
@@ -85,8 +85,8 @@ func (ccq *ChannelConnectionQuery) QueryAgent() *AgentQuery {
 
 // First returns the first ChannelConnection entity from the query.
 // Returns a *NotFoundError when no ChannelConnection was found.
-func (ccq *ChannelConnectionQuery) First(ctx context.Context) (*ChannelConnection, error) {
-	nodes, err := ccq.Limit(1).All(setContextOp(ctx, ccq.ctx, ent.OpQueryFirst))
+func (_q *ChannelConnectionQuery) First(ctx context.Context) (*ChannelConnection, error) {
+	nodes, err := _q.Limit(1).All(setContextOp(ctx, _q.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -97,8 +97,8 @@ func (ccq *ChannelConnectionQuery) First(ctx context.Context) (*ChannelConnectio
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (ccq *ChannelConnectionQuery) FirstX(ctx context.Context) *ChannelConnection {
-	node, err := ccq.First(ctx)
+func (_q *ChannelConnectionQuery) FirstX(ctx context.Context) *ChannelConnection {
+	node, err := _q.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
 	}
@@ -107,9 +107,9 @@ func (ccq *ChannelConnectionQuery) FirstX(ctx context.Context) *ChannelConnectio
 
 // FirstID returns the first ChannelConnection ID from the query.
 // Returns a *NotFoundError when no ChannelConnection ID was found.
-func (ccq *ChannelConnectionQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+func (_q *ChannelConnectionQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = ccq.Limit(1).IDs(setContextOp(ctx, ccq.ctx, ent.OpQueryFirstID)); err != nil {
+	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -120,8 +120,8 @@ func (ccq *ChannelConnectionQuery) FirstID(ctx context.Context) (id uuid.UUID, e
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (ccq *ChannelConnectionQuery) FirstIDX(ctx context.Context) uuid.UUID {
-	id, err := ccq.FirstID(ctx)
+func (_q *ChannelConnectionQuery) FirstIDX(ctx context.Context) uuid.UUID {
+	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
 	}
@@ -131,8 +131,8 @@ func (ccq *ChannelConnectionQuery) FirstIDX(ctx context.Context) uuid.UUID {
 // Only returns a single ChannelConnection entity found by the query, ensuring it only returns one.
 // Returns a *NotSingularError when more than one ChannelConnection entity is found.
 // Returns a *NotFoundError when no ChannelConnection entities are found.
-func (ccq *ChannelConnectionQuery) Only(ctx context.Context) (*ChannelConnection, error) {
-	nodes, err := ccq.Limit(2).All(setContextOp(ctx, ccq.ctx, ent.OpQueryOnly))
+func (_q *ChannelConnectionQuery) Only(ctx context.Context) (*ChannelConnection, error) {
+	nodes, err := _q.Limit(2).All(setContextOp(ctx, _q.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -147,8 +147,8 @@ func (ccq *ChannelConnectionQuery) Only(ctx context.Context) (*ChannelConnection
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (ccq *ChannelConnectionQuery) OnlyX(ctx context.Context) *ChannelConnection {
-	node, err := ccq.Only(ctx)
+func (_q *ChannelConnectionQuery) OnlyX(ctx context.Context) *ChannelConnection {
+	node, err := _q.Only(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -158,9 +158,9 @@ func (ccq *ChannelConnectionQuery) OnlyX(ctx context.Context) *ChannelConnection
 // OnlyID is like Only, but returns the only ChannelConnection ID in the query.
 // Returns a *NotSingularError when more than one ChannelConnection ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (ccq *ChannelConnectionQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+func (_q *ChannelConnectionQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = ccq.Limit(2).IDs(setContextOp(ctx, ccq.ctx, ent.OpQueryOnlyID)); err != nil {
+	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -175,8 +175,8 @@ func (ccq *ChannelConnectionQuery) OnlyID(ctx context.Context) (id uuid.UUID, er
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (ccq *ChannelConnectionQuery) OnlyIDX(ctx context.Context) uuid.UUID {
-	id, err := ccq.OnlyID(ctx)
+func (_q *ChannelConnectionQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -184,18 +184,18 @@ func (ccq *ChannelConnectionQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 }
 
 // All executes the query and returns a list of ChannelConnections.
-func (ccq *ChannelConnectionQuery) All(ctx context.Context) ([]*ChannelConnection, error) {
-	ctx = setContextOp(ctx, ccq.ctx, ent.OpQueryAll)
-	if err := ccq.prepareQuery(ctx); err != nil {
+func (_q *ChannelConnectionQuery) All(ctx context.Context) ([]*ChannelConnection, error) {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryAll)
+	if err := _q.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
 	qr := querierAll[[]*ChannelConnection, *ChannelConnectionQuery]()
-	return withInterceptors[[]*ChannelConnection](ctx, ccq, qr, ccq.inters)
+	return withInterceptors[[]*ChannelConnection](ctx, _q, qr, _q.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
-func (ccq *ChannelConnectionQuery) AllX(ctx context.Context) []*ChannelConnection {
-	nodes, err := ccq.All(ctx)
+func (_q *ChannelConnectionQuery) AllX(ctx context.Context) []*ChannelConnection {
+	nodes, err := _q.All(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -203,20 +203,20 @@ func (ccq *ChannelConnectionQuery) AllX(ctx context.Context) []*ChannelConnectio
 }
 
 // IDs executes the query and returns a list of ChannelConnection IDs.
-func (ccq *ChannelConnectionQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
-	if ccq.ctx.Unique == nil && ccq.path != nil {
-		ccq.Unique(true)
+func (_q *ChannelConnectionQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
+	if _q.ctx.Unique == nil && _q.path != nil {
+		_q.Unique(true)
 	}
-	ctx = setContextOp(ctx, ccq.ctx, ent.OpQueryIDs)
-	if err = ccq.Select(channelconnection.FieldID).Scan(ctx, &ids); err != nil {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryIDs)
+	if err = _q.Select(channelconnection.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (ccq *ChannelConnectionQuery) IDsX(ctx context.Context) []uuid.UUID {
-	ids, err := ccq.IDs(ctx)
+func (_q *ChannelConnectionQuery) IDsX(ctx context.Context) []uuid.UUID {
+	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -224,17 +224,17 @@ func (ccq *ChannelConnectionQuery) IDsX(ctx context.Context) []uuid.UUID {
 }
 
 // Count returns the count of the given query.
-func (ccq *ChannelConnectionQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, ccq.ctx, ent.OpQueryCount)
-	if err := ccq.prepareQuery(ctx); err != nil {
+func (_q *ChannelConnectionQuery) Count(ctx context.Context) (int, error) {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryCount)
+	if err := _q.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return withInterceptors[int](ctx, ccq, querierCount[*ChannelConnectionQuery](), ccq.inters)
+	return withInterceptors[int](ctx, _q, querierCount[*ChannelConnectionQuery](), _q.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (ccq *ChannelConnectionQuery) CountX(ctx context.Context) int {
-	count, err := ccq.Count(ctx)
+func (_q *ChannelConnectionQuery) CountX(ctx context.Context) int {
+	count, err := _q.Count(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -242,9 +242,9 @@ func (ccq *ChannelConnectionQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (ccq *ChannelConnectionQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, ccq.ctx, ent.OpQueryExist)
-	switch _, err := ccq.FirstID(ctx); {
+func (_q *ChannelConnectionQuery) Exist(ctx context.Context) (bool, error) {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryExist)
+	switch _, err := _q.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
@@ -255,8 +255,8 @@ func (ccq *ChannelConnectionQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (ccq *ChannelConnectionQuery) ExistX(ctx context.Context) bool {
-	exist, err := ccq.Exist(ctx)
+func (_q *ChannelConnectionQuery) ExistX(ctx context.Context) bool {
+	exist, err := _q.Exist(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -265,32 +265,32 @@ func (ccq *ChannelConnectionQuery) ExistX(ctx context.Context) bool {
 
 // Clone returns a duplicate of the ChannelConnectionQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (ccq *ChannelConnectionQuery) Clone() *ChannelConnectionQuery {
-	if ccq == nil {
+func (_q *ChannelConnectionQuery) Clone() *ChannelConnectionQuery {
+	if _q == nil {
 		return nil
 	}
 	return &ChannelConnectionQuery{
-		config:     ccq.config,
-		ctx:        ccq.ctx.Clone(),
-		order:      append([]channelconnection.OrderOption{}, ccq.order...),
-		inters:     append([]Interceptor{}, ccq.inters...),
-		predicates: append([]predicate.ChannelConnection{}, ccq.predicates...),
-		withAgent:  ccq.withAgent.Clone(),
+		config:     _q.config,
+		ctx:        _q.ctx.Clone(),
+		order:      append([]channelconnection.OrderOption{}, _q.order...),
+		inters:     append([]Interceptor{}, _q.inters...),
+		predicates: append([]predicate.ChannelConnection{}, _q.predicates...),
+		withAgent:  _q.withAgent.Clone(),
 		// clone intermediate query.
-		sql:  ccq.sql.Clone(),
-		path: ccq.path,
+		sql:  _q.sql.Clone(),
+		path: _q.path,
 	}
 }
 
 // WithAgent tells the query-builder to eager-load the nodes that are connected to
 // the "agent" edge. The optional arguments are used to configure the query builder of the edge.
-func (ccq *ChannelConnectionQuery) WithAgent(opts ...func(*AgentQuery)) *ChannelConnectionQuery {
-	query := (&AgentClient{config: ccq.config}).Query()
+func (_q *ChannelConnectionQuery) WithAgent(opts ...func(*AgentQuery)) *ChannelConnectionQuery {
+	query := (&AgentClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	ccq.withAgent = query
-	return ccq
+	_q.withAgent = query
+	return _q
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -307,10 +307,10 @@ func (ccq *ChannelConnectionQuery) WithAgent(opts ...func(*AgentQuery)) *Channel
 //		GroupBy(channelconnection.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-func (ccq *ChannelConnectionQuery) GroupBy(field string, fields ...string) *ChannelConnectionGroupBy {
-	ccq.ctx.Fields = append([]string{field}, fields...)
-	grbuild := &ChannelConnectionGroupBy{build: ccq}
-	grbuild.flds = &ccq.ctx.Fields
+func (_q *ChannelConnectionQuery) GroupBy(field string, fields ...string) *ChannelConnectionGroupBy {
+	_q.ctx.Fields = append([]string{field}, fields...)
+	grbuild := &ChannelConnectionGroupBy{build: _q}
+	grbuild.flds = &_q.ctx.Fields
 	grbuild.label = channelconnection.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -328,58 +328,58 @@ func (ccq *ChannelConnectionQuery) GroupBy(field string, fields ...string) *Chan
 //	client.ChannelConnection.Query().
 //		Select(channelconnection.FieldCreatedAt).
 //		Scan(ctx, &v)
-func (ccq *ChannelConnectionQuery) Select(fields ...string) *ChannelConnectionSelect {
-	ccq.ctx.Fields = append(ccq.ctx.Fields, fields...)
-	sbuild := &ChannelConnectionSelect{ChannelConnectionQuery: ccq}
+func (_q *ChannelConnectionQuery) Select(fields ...string) *ChannelConnectionSelect {
+	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
+	sbuild := &ChannelConnectionSelect{ChannelConnectionQuery: _q}
 	sbuild.label = channelconnection.Label
-	sbuild.flds, sbuild.scan = &ccq.ctx.Fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &_q.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
 // Aggregate returns a ChannelConnectionSelect configured with the given aggregations.
-func (ccq *ChannelConnectionQuery) Aggregate(fns ...AggregateFunc) *ChannelConnectionSelect {
-	return ccq.Select().Aggregate(fns...)
+func (_q *ChannelConnectionQuery) Aggregate(fns ...AggregateFunc) *ChannelConnectionSelect {
+	return _q.Select().Aggregate(fns...)
 }
 
-func (ccq *ChannelConnectionQuery) prepareQuery(ctx context.Context) error {
-	for _, inter := range ccq.inters {
+func (_q *ChannelConnectionQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range _q.inters {
 		if inter == nil {
 			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
-			if err := trv.Traverse(ctx, ccq); err != nil {
+			if err := trv.Traverse(ctx, _q); err != nil {
 				return err
 			}
 		}
 	}
-	for _, f := range ccq.ctx.Fields {
+	for _, f := range _q.ctx.Fields {
 		if !channelconnection.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
-	if ccq.path != nil {
-		prev, err := ccq.path(ctx)
+	if _q.path != nil {
+		prev, err := _q.path(ctx)
 		if err != nil {
 			return err
 		}
-		ccq.sql = prev
+		_q.sql = prev
 	}
 	return nil
 }
 
-func (ccq *ChannelConnectionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*ChannelConnection, error) {
+func (_q *ChannelConnectionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*ChannelConnection, error) {
 	var (
 		nodes       = []*ChannelConnection{}
-		_spec       = ccq.querySpec()
+		_spec       = _q.querySpec()
 		loadedTypes = [1]bool{
-			ccq.withAgent != nil,
+			_q.withAgent != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*ChannelConnection).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
-		node := &ChannelConnection{config: ccq.config}
+		node := &ChannelConnection{config: _q.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
@@ -387,14 +387,14 @@ func (ccq *ChannelConnectionQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
-	if err := sqlgraph.QueryNodes(ctx, ccq.driver, _spec); err != nil {
+	if err := sqlgraph.QueryNodes(ctx, _q.driver, _spec); err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := ccq.withAgent; query != nil {
-		if err := ccq.loadAgent(ctx, query, nodes, nil,
+	if query := _q.withAgent; query != nil {
+		if err := _q.loadAgent(ctx, query, nodes, nil,
 			func(n *ChannelConnection, e *Agent) { n.Edges.Agent = e }); err != nil {
 			return nil, err
 		}
@@ -402,7 +402,7 @@ func (ccq *ChannelConnectionQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 	return nodes, nil
 }
 
-func (ccq *ChannelConnectionQuery) loadAgent(ctx context.Context, query *AgentQuery, nodes []*ChannelConnection, init func(*ChannelConnection), assign func(*ChannelConnection, *Agent)) error {
+func (_q *ChannelConnectionQuery) loadAgent(ctx context.Context, query *AgentQuery, nodes []*ChannelConnection, init func(*ChannelConnection), assign func(*ChannelConnection, *Agent)) error {
 	ids := make([]uuid.UUID, 0, len(nodes))
 	nodeids := make(map[uuid.UUID][]*ChannelConnection)
 	for i := range nodes {
@@ -432,24 +432,24 @@ func (ccq *ChannelConnectionQuery) loadAgent(ctx context.Context, query *AgentQu
 	return nil
 }
 
-func (ccq *ChannelConnectionQuery) sqlCount(ctx context.Context) (int, error) {
-	_spec := ccq.querySpec()
-	_spec.Node.Columns = ccq.ctx.Fields
-	if len(ccq.ctx.Fields) > 0 {
-		_spec.Unique = ccq.ctx.Unique != nil && *ccq.ctx.Unique
+func (_q *ChannelConnectionQuery) sqlCount(ctx context.Context) (int, error) {
+	_spec := _q.querySpec()
+	_spec.Node.Columns = _q.ctx.Fields
+	if len(_q.ctx.Fields) > 0 {
+		_spec.Unique = _q.ctx.Unique != nil && *_q.ctx.Unique
 	}
-	return sqlgraph.CountNodes(ctx, ccq.driver, _spec)
+	return sqlgraph.CountNodes(ctx, _q.driver, _spec)
 }
 
-func (ccq *ChannelConnectionQuery) querySpec() *sqlgraph.QuerySpec {
+func (_q *ChannelConnectionQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := sqlgraph.NewQuerySpec(channelconnection.Table, channelconnection.Columns, sqlgraph.NewFieldSpec(channelconnection.FieldID, field.TypeUUID))
-	_spec.From = ccq.sql
-	if unique := ccq.ctx.Unique; unique != nil {
+	_spec.From = _q.sql
+	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
-	} else if ccq.path != nil {
+	} else if _q.path != nil {
 		_spec.Unique = true
 	}
-	if fields := ccq.ctx.Fields; len(fields) > 0 {
+	if fields := _q.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, channelconnection.FieldID)
 		for i := range fields {
@@ -457,24 +457,24 @@ func (ccq *ChannelConnectionQuery) querySpec() *sqlgraph.QuerySpec {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
-		if ccq.withAgent != nil {
+		if _q.withAgent != nil {
 			_spec.Node.AddColumnOnce(channelconnection.FieldAgentID)
 		}
 	}
-	if ps := ccq.predicates; len(ps) > 0 {
+	if ps := _q.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if limit := ccq.ctx.Limit; limit != nil {
+	if limit := _q.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := ccq.ctx.Offset; offset != nil {
+	if offset := _q.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
-	if ps := ccq.order; len(ps) > 0 {
+	if ps := _q.order; len(ps) > 0 {
 		_spec.Order = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
@@ -484,33 +484,33 @@ func (ccq *ChannelConnectionQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (ccq *ChannelConnectionQuery) sqlQuery(ctx context.Context) *sql.Selector {
-	builder := sql.Dialect(ccq.driver.Dialect())
+func (_q *ChannelConnectionQuery) sqlQuery(ctx context.Context) *sql.Selector {
+	builder := sql.Dialect(_q.driver.Dialect())
 	t1 := builder.Table(channelconnection.Table)
-	columns := ccq.ctx.Fields
+	columns := _q.ctx.Fields
 	if len(columns) == 0 {
 		columns = channelconnection.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
-	if ccq.sql != nil {
-		selector = ccq.sql
+	if _q.sql != nil {
+		selector = _q.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if ccq.ctx.Unique != nil && *ccq.ctx.Unique {
+	if _q.ctx.Unique != nil && *_q.ctx.Unique {
 		selector.Distinct()
 	}
-	for _, p := range ccq.predicates {
+	for _, p := range _q.predicates {
 		p(selector)
 	}
-	for _, p := range ccq.order {
+	for _, p := range _q.order {
 		p(selector)
 	}
-	if offset := ccq.ctx.Offset; offset != nil {
+	if offset := _q.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := ccq.ctx.Limit; limit != nil {
+	if limit := _q.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -523,41 +523,41 @@ type ChannelConnectionGroupBy struct {
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (ccgb *ChannelConnectionGroupBy) Aggregate(fns ...AggregateFunc) *ChannelConnectionGroupBy {
-	ccgb.fns = append(ccgb.fns, fns...)
-	return ccgb
+func (_g *ChannelConnectionGroupBy) Aggregate(fns ...AggregateFunc) *ChannelConnectionGroupBy {
+	_g.fns = append(_g.fns, fns...)
+	return _g
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (ccgb *ChannelConnectionGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ccgb.build.ctx, ent.OpQueryGroupBy)
-	if err := ccgb.build.prepareQuery(ctx); err != nil {
+func (_g *ChannelConnectionGroupBy) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, _g.build.ctx, ent.OpQueryGroupBy)
+	if err := _g.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*ChannelConnectionQuery, *ChannelConnectionGroupBy](ctx, ccgb.build, ccgb, ccgb.build.inters, v)
+	return scanWithInterceptors[*ChannelConnectionQuery, *ChannelConnectionGroupBy](ctx, _g.build, _g, _g.build.inters, v)
 }
 
-func (ccgb *ChannelConnectionGroupBy) sqlScan(ctx context.Context, root *ChannelConnectionQuery, v any) error {
+func (_g *ChannelConnectionGroupBy) sqlScan(ctx context.Context, root *ChannelConnectionQuery, v any) error {
 	selector := root.sqlQuery(ctx).Select()
-	aggregation := make([]string, 0, len(ccgb.fns))
-	for _, fn := range ccgb.fns {
+	aggregation := make([]string, 0, len(_g.fns))
+	for _, fn := range _g.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
 	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(*ccgb.flds)+len(ccgb.fns))
-		for _, f := range *ccgb.flds {
+		columns := make([]string, 0, len(*_g.flds)+len(_g.fns))
+		for _, f := range *_g.flds {
 			columns = append(columns, selector.C(f))
 		}
 		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
-	selector.GroupBy(selector.Columns(*ccgb.flds...)...)
+	selector.GroupBy(selector.Columns(*_g.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := ccgb.build.driver.Query(ctx, query, args, rows); err != nil {
+	if err := _g.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
@@ -571,27 +571,27 @@ type ChannelConnectionSelect struct {
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
-func (ccs *ChannelConnectionSelect) Aggregate(fns ...AggregateFunc) *ChannelConnectionSelect {
-	ccs.fns = append(ccs.fns, fns...)
-	return ccs
+func (_s *ChannelConnectionSelect) Aggregate(fns ...AggregateFunc) *ChannelConnectionSelect {
+	_s.fns = append(_s.fns, fns...)
+	return _s
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (ccs *ChannelConnectionSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ccs.ctx, ent.OpQuerySelect)
-	if err := ccs.prepareQuery(ctx); err != nil {
+func (_s *ChannelConnectionSelect) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, _s.ctx, ent.OpQuerySelect)
+	if err := _s.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*ChannelConnectionQuery, *ChannelConnectionSelect](ctx, ccs.ChannelConnectionQuery, ccs, ccs.inters, v)
+	return scanWithInterceptors[*ChannelConnectionQuery, *ChannelConnectionSelect](ctx, _s.ChannelConnectionQuery, _s, _s.inters, v)
 }
 
-func (ccs *ChannelConnectionSelect) sqlScan(ctx context.Context, root *ChannelConnectionQuery, v any) error {
+func (_s *ChannelConnectionSelect) sqlScan(ctx context.Context, root *ChannelConnectionQuery, v any) error {
 	selector := root.sqlQuery(ctx)
-	aggregation := make([]string, 0, len(ccs.fns))
-	for _, fn := range ccs.fns {
+	aggregation := make([]string, 0, len(_s.fns))
+	for _, fn := range _s.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	switch n := len(*ccs.selector.flds); {
+	switch n := len(*_s.selector.flds); {
 	case n == 0 && len(aggregation) > 0:
 		selector.Select(aggregation...)
 	case n != 0 && len(aggregation) > 0:
@@ -599,7 +599,7 @@ func (ccs *ChannelConnectionSelect) sqlScan(ctx context.Context, root *ChannelCo
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := ccs.driver.Query(ctx, query, args, rows); err != nil {
+	if err := _s.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()

@@ -120,6 +120,13 @@ export function ProfilePage() {
     [selectedPost, activeList],
   );
 
+  // Keep the modal post in sync with store updates (likes/replies/etc).
+  useEffect(() => {
+    if (!selectedPost) return;
+    const updated = feedPosts.find((p) => p.id === selectedPost.id);
+    if (updated && updated !== selectedPost) setSelectedPost(updated);
+  }, [feedPosts, selectedPost]);
+
   const goToPrev = useCallback(() => {
     if (selectedIndex > 0) setSelectedPost(activeList[selectedIndex - 1]);
   }, [selectedIndex, activeList]);
@@ -311,7 +318,10 @@ export function ProfilePage() {
                       key={post.id}
                       post={post}
                       onLike={likePost}
-                      onReply={(postId) => replyToPost(postId, 'Great thought!')}
+                      onReply={(postId) => {
+                        const p = activeList.find((x) => x.id === postId);
+                        if (p) setSelectedPost(p);
+                      }}
                       onShare={sharePost}
                       onCardClick={setSelectedPost}
                       onAgentClick={(agentId) => navigate(`/agent/${agentId}`)}

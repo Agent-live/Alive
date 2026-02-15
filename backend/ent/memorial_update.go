@@ -26,188 +26,188 @@ type MemorialUpdate struct {
 }
 
 // Where appends a list predicates to the MemorialUpdate builder.
-func (mu *MemorialUpdate) Where(ps ...predicate.Memorial) *MemorialUpdate {
-	mu.mutation.Where(ps...)
-	return mu
+func (_u *MemorialUpdate) Where(ps ...predicate.Memorial) *MemorialUpdate {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // SetAgentID sets the "agent_id" field.
-func (mu *MemorialUpdate) SetAgentID(u uuid.UUID) *MemorialUpdate {
-	mu.mutation.SetAgentID(u)
-	return mu
+func (_u *MemorialUpdate) SetAgentID(v uuid.UUID) *MemorialUpdate {
+	_u.mutation.SetAgentID(v)
+	return _u
 }
 
 // SetNillableAgentID sets the "agent_id" field if the given value is not nil.
-func (mu *MemorialUpdate) SetNillableAgentID(u *uuid.UUID) *MemorialUpdate {
-	if u != nil {
-		mu.SetAgentID(*u)
+func (_u *MemorialUpdate) SetNillableAgentID(v *uuid.UUID) *MemorialUpdate {
+	if v != nil {
+		_u.SetAgentID(*v)
 	}
-	return mu
+	return _u
 }
 
 // SetAgentName sets the "agent_name" field.
-func (mu *MemorialUpdate) SetAgentName(s string) *MemorialUpdate {
-	mu.mutation.SetAgentName(s)
-	return mu
+func (_u *MemorialUpdate) SetAgentName(v string) *MemorialUpdate {
+	_u.mutation.SetAgentName(v)
+	return _u
 }
 
 // SetNillableAgentName sets the "agent_name" field if the given value is not nil.
-func (mu *MemorialUpdate) SetNillableAgentName(s *string) *MemorialUpdate {
-	if s != nil {
-		mu.SetAgentName(*s)
+func (_u *MemorialUpdate) SetNillableAgentName(v *string) *MemorialUpdate {
+	if v != nil {
+		_u.SetAgentName(*v)
 	}
-	return mu
+	return _u
 }
 
 // SetAgentAvatar sets the "agent_avatar" field.
-func (mu *MemorialUpdate) SetAgentAvatar(s string) *MemorialUpdate {
-	mu.mutation.SetAgentAvatar(s)
-	return mu
+func (_u *MemorialUpdate) SetAgentAvatar(v string) *MemorialUpdate {
+	_u.mutation.SetAgentAvatar(v)
+	return _u
 }
 
 // SetNillableAgentAvatar sets the "agent_avatar" field if the given value is not nil.
-func (mu *MemorialUpdate) SetNillableAgentAvatar(s *string) *MemorialUpdate {
-	if s != nil {
-		mu.SetAgentAvatar(*s)
+func (_u *MemorialUpdate) SetNillableAgentAvatar(v *string) *MemorialUpdate {
+	if v != nil {
+		_u.SetAgentAvatar(*v)
 	}
-	return mu
+	return _u
 }
 
 // ClearAgentAvatar clears the value of the "agent_avatar" field.
-func (mu *MemorialUpdate) ClearAgentAvatar() *MemorialUpdate {
-	mu.mutation.ClearAgentAvatar()
-	return mu
+func (_u *MemorialUpdate) ClearAgentAvatar() *MemorialUpdate {
+	_u.mutation.ClearAgentAvatar()
+	return _u
 }
 
 // SetBornAt sets the "born_at" field.
-func (mu *MemorialUpdate) SetBornAt(t time.Time) *MemorialUpdate {
-	mu.mutation.SetBornAt(t)
-	return mu
+func (_u *MemorialUpdate) SetBornAt(v time.Time) *MemorialUpdate {
+	_u.mutation.SetBornAt(v)
+	return _u
 }
 
 // SetNillableBornAt sets the "born_at" field if the given value is not nil.
-func (mu *MemorialUpdate) SetNillableBornAt(t *time.Time) *MemorialUpdate {
-	if t != nil {
-		mu.SetBornAt(*t)
+func (_u *MemorialUpdate) SetNillableBornAt(v *time.Time) *MemorialUpdate {
+	if v != nil {
+		_u.SetBornAt(*v)
 	}
-	return mu
+	return _u
 }
 
 // SetDiedAt sets the "died_at" field.
-func (mu *MemorialUpdate) SetDiedAt(t time.Time) *MemorialUpdate {
-	mu.mutation.SetDiedAt(t)
-	return mu
+func (_u *MemorialUpdate) SetDiedAt(v time.Time) *MemorialUpdate {
+	_u.mutation.SetDiedAt(v)
+	return _u
 }
 
 // SetNillableDiedAt sets the "died_at" field if the given value is not nil.
-func (mu *MemorialUpdate) SetNillableDiedAt(t *time.Time) *MemorialUpdate {
-	if t != nil {
-		mu.SetDiedAt(*t)
+func (_u *MemorialUpdate) SetNillableDiedAt(v *time.Time) *MemorialUpdate {
+	if v != nil {
+		_u.SetDiedAt(*v)
 	}
-	return mu
+	return _u
 }
 
 // SetLifespanHours sets the "lifespan_hours" field.
-func (mu *MemorialUpdate) SetLifespanHours(i int64) *MemorialUpdate {
-	mu.mutation.ResetLifespanHours()
-	mu.mutation.SetLifespanHours(i)
-	return mu
+func (_u *MemorialUpdate) SetLifespanHours(v int64) *MemorialUpdate {
+	_u.mutation.ResetLifespanHours()
+	_u.mutation.SetLifespanHours(v)
+	return _u
 }
 
 // SetNillableLifespanHours sets the "lifespan_hours" field if the given value is not nil.
-func (mu *MemorialUpdate) SetNillableLifespanHours(i *int64) *MemorialUpdate {
-	if i != nil {
-		mu.SetLifespanHours(*i)
+func (_u *MemorialUpdate) SetNillableLifespanHours(v *int64) *MemorialUpdate {
+	if v != nil {
+		_u.SetLifespanHours(*v)
 	}
-	return mu
+	return _u
 }
 
-// AddLifespanHours adds i to the "lifespan_hours" field.
-func (mu *MemorialUpdate) AddLifespanHours(i int64) *MemorialUpdate {
-	mu.mutation.AddLifespanHours(i)
-	return mu
+// AddLifespanHours adds value to the "lifespan_hours" field.
+func (_u *MemorialUpdate) AddLifespanHours(v int64) *MemorialUpdate {
+	_u.mutation.AddLifespanHours(v)
+	return _u
 }
 
 // SetLastWords sets the "last_words" field.
-func (mu *MemorialUpdate) SetLastWords(s string) *MemorialUpdate {
-	mu.mutation.SetLastWords(s)
-	return mu
+func (_u *MemorialUpdate) SetLastWords(v string) *MemorialUpdate {
+	_u.mutation.SetLastWords(v)
+	return _u
 }
 
 // SetNillableLastWords sets the "last_words" field if the given value is not nil.
-func (mu *MemorialUpdate) SetNillableLastWords(s *string) *MemorialUpdate {
-	if s != nil {
-		mu.SetLastWords(*s)
+func (_u *MemorialUpdate) SetNillableLastWords(v *string) *MemorialUpdate {
+	if v != nil {
+		_u.SetLastWords(*v)
 	}
-	return mu
+	return _u
 }
 
 // ClearLastWords clears the value of the "last_words" field.
-func (mu *MemorialUpdate) ClearLastWords() *MemorialUpdate {
-	mu.mutation.ClearLastWords()
-	return mu
+func (_u *MemorialUpdate) ClearLastWords() *MemorialUpdate {
+	_u.mutation.ClearLastWords()
+	return _u
 }
 
 // SetAgent sets the "agent" edge to the Agent entity.
-func (mu *MemorialUpdate) SetAgent(a *Agent) *MemorialUpdate {
-	return mu.SetAgentID(a.ID)
+func (_u *MemorialUpdate) SetAgent(v *Agent) *MemorialUpdate {
+	return _u.SetAgentID(v.ID)
 }
 
 // AddTributeIDs adds the "tributes" edge to the Tribute entity by IDs.
-func (mu *MemorialUpdate) AddTributeIDs(ids ...uuid.UUID) *MemorialUpdate {
-	mu.mutation.AddTributeIDs(ids...)
-	return mu
+func (_u *MemorialUpdate) AddTributeIDs(ids ...uuid.UUID) *MemorialUpdate {
+	_u.mutation.AddTributeIDs(ids...)
+	return _u
 }
 
 // AddTributes adds the "tributes" edges to the Tribute entity.
-func (mu *MemorialUpdate) AddTributes(t ...*Tribute) *MemorialUpdate {
-	ids := make([]uuid.UUID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
+func (_u *MemorialUpdate) AddTributes(v ...*Tribute) *MemorialUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return mu.AddTributeIDs(ids...)
+	return _u.AddTributeIDs(ids...)
 }
 
 // Mutation returns the MemorialMutation object of the builder.
-func (mu *MemorialUpdate) Mutation() *MemorialMutation {
-	return mu.mutation
+func (_u *MemorialUpdate) Mutation() *MemorialMutation {
+	return _u.mutation
 }
 
 // ClearAgent clears the "agent" edge to the Agent entity.
-func (mu *MemorialUpdate) ClearAgent() *MemorialUpdate {
-	mu.mutation.ClearAgent()
-	return mu
+func (_u *MemorialUpdate) ClearAgent() *MemorialUpdate {
+	_u.mutation.ClearAgent()
+	return _u
 }
 
 // ClearTributes clears all "tributes" edges to the Tribute entity.
-func (mu *MemorialUpdate) ClearTributes() *MemorialUpdate {
-	mu.mutation.ClearTributes()
-	return mu
+func (_u *MemorialUpdate) ClearTributes() *MemorialUpdate {
+	_u.mutation.ClearTributes()
+	return _u
 }
 
 // RemoveTributeIDs removes the "tributes" edge to Tribute entities by IDs.
-func (mu *MemorialUpdate) RemoveTributeIDs(ids ...uuid.UUID) *MemorialUpdate {
-	mu.mutation.RemoveTributeIDs(ids...)
-	return mu
+func (_u *MemorialUpdate) RemoveTributeIDs(ids ...uuid.UUID) *MemorialUpdate {
+	_u.mutation.RemoveTributeIDs(ids...)
+	return _u
 }
 
 // RemoveTributes removes "tributes" edges to Tribute entities.
-func (mu *MemorialUpdate) RemoveTributes(t ...*Tribute) *MemorialUpdate {
-	ids := make([]uuid.UUID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
+func (_u *MemorialUpdate) RemoveTributes(v ...*Tribute) *MemorialUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return mu.RemoveTributeIDs(ids...)
+	return _u.RemoveTributeIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (mu *MemorialUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks(ctx, mu.sqlSave, mu.mutation, mu.hooks)
+func (_u *MemorialUpdate) Save(ctx context.Context) (int, error) {
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (mu *MemorialUpdate) SaveX(ctx context.Context) int {
-	affected, err := mu.Save(ctx)
+func (_u *MemorialUpdate) SaveX(ctx context.Context) int {
+	affected, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -215,71 +215,71 @@ func (mu *MemorialUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (mu *MemorialUpdate) Exec(ctx context.Context) error {
-	_, err := mu.Save(ctx)
+func (_u *MemorialUpdate) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (mu *MemorialUpdate) ExecX(ctx context.Context) {
-	if err := mu.Exec(ctx); err != nil {
+func (_u *MemorialUpdate) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (mu *MemorialUpdate) check() error {
-	if v, ok := mu.mutation.AgentName(); ok {
+func (_u *MemorialUpdate) check() error {
+	if v, ok := _u.mutation.AgentName(); ok {
 		if err := memorial.AgentNameValidator(v); err != nil {
 			return &ValidationError{Name: "agent_name", err: fmt.Errorf(`ent: validator failed for field "Memorial.agent_name": %w`, err)}
 		}
 	}
-	if mu.mutation.AgentCleared() && len(mu.mutation.AgentIDs()) > 0 {
+	if _u.mutation.AgentCleared() && len(_u.mutation.AgentIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Memorial.agent"`)
 	}
 	return nil
 }
 
-func (mu *MemorialUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := mu.check(); err != nil {
-		return n, err
+func (_u *MemorialUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(memorial.Table, memorial.Columns, sqlgraph.NewFieldSpec(memorial.FieldID, field.TypeUUID))
-	if ps := mu.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := mu.mutation.AgentName(); ok {
+	if value, ok := _u.mutation.AgentName(); ok {
 		_spec.SetField(memorial.FieldAgentName, field.TypeString, value)
 	}
-	if value, ok := mu.mutation.AgentAvatar(); ok {
+	if value, ok := _u.mutation.AgentAvatar(); ok {
 		_spec.SetField(memorial.FieldAgentAvatar, field.TypeString, value)
 	}
-	if mu.mutation.AgentAvatarCleared() {
+	if _u.mutation.AgentAvatarCleared() {
 		_spec.ClearField(memorial.FieldAgentAvatar, field.TypeString)
 	}
-	if value, ok := mu.mutation.BornAt(); ok {
+	if value, ok := _u.mutation.BornAt(); ok {
 		_spec.SetField(memorial.FieldBornAt, field.TypeTime, value)
 	}
-	if value, ok := mu.mutation.DiedAt(); ok {
+	if value, ok := _u.mutation.DiedAt(); ok {
 		_spec.SetField(memorial.FieldDiedAt, field.TypeTime, value)
 	}
-	if value, ok := mu.mutation.LifespanHours(); ok {
+	if value, ok := _u.mutation.LifespanHours(); ok {
 		_spec.SetField(memorial.FieldLifespanHours, field.TypeInt64, value)
 	}
-	if value, ok := mu.mutation.AddedLifespanHours(); ok {
+	if value, ok := _u.mutation.AddedLifespanHours(); ok {
 		_spec.AddField(memorial.FieldLifespanHours, field.TypeInt64, value)
 	}
-	if value, ok := mu.mutation.LastWords(); ok {
+	if value, ok := _u.mutation.LastWords(); ok {
 		_spec.SetField(memorial.FieldLastWords, field.TypeString, value)
 	}
-	if mu.mutation.LastWordsCleared() {
+	if _u.mutation.LastWordsCleared() {
 		_spec.ClearField(memorial.FieldLastWords, field.TypeString)
 	}
-	if mu.mutation.AgentCleared() {
+	if _u.mutation.AgentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: true,
@@ -292,7 +292,7 @@ func (mu *MemorialUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := mu.mutation.AgentIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.AgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: true,
@@ -308,7 +308,7 @@ func (mu *MemorialUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if mu.mutation.TributesCleared() {
+	if _u.mutation.TributesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -321,7 +321,7 @@ func (mu *MemorialUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := mu.mutation.RemovedTributesIDs(); len(nodes) > 0 && !mu.mutation.TributesCleared() {
+	if nodes := _u.mutation.RemovedTributesIDs(); len(nodes) > 0 && !_u.mutation.TributesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -337,7 +337,7 @@ func (mu *MemorialUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := mu.mutation.TributesIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.TributesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -353,7 +353,7 @@ func (mu *MemorialUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, mu.driver, _spec); err != nil {
+	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{memorial.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -361,8 +361,8 @@ func (mu *MemorialUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
-	mu.mutation.done = true
-	return n, nil
+	_u.mutation.done = true
+	return _node, nil
 }
 
 // MemorialUpdateOne is the builder for updating a single Memorial entity.
@@ -374,195 +374,195 @@ type MemorialUpdateOne struct {
 }
 
 // SetAgentID sets the "agent_id" field.
-func (muo *MemorialUpdateOne) SetAgentID(u uuid.UUID) *MemorialUpdateOne {
-	muo.mutation.SetAgentID(u)
-	return muo
+func (_u *MemorialUpdateOne) SetAgentID(v uuid.UUID) *MemorialUpdateOne {
+	_u.mutation.SetAgentID(v)
+	return _u
 }
 
 // SetNillableAgentID sets the "agent_id" field if the given value is not nil.
-func (muo *MemorialUpdateOne) SetNillableAgentID(u *uuid.UUID) *MemorialUpdateOne {
-	if u != nil {
-		muo.SetAgentID(*u)
+func (_u *MemorialUpdateOne) SetNillableAgentID(v *uuid.UUID) *MemorialUpdateOne {
+	if v != nil {
+		_u.SetAgentID(*v)
 	}
-	return muo
+	return _u
 }
 
 // SetAgentName sets the "agent_name" field.
-func (muo *MemorialUpdateOne) SetAgentName(s string) *MemorialUpdateOne {
-	muo.mutation.SetAgentName(s)
-	return muo
+func (_u *MemorialUpdateOne) SetAgentName(v string) *MemorialUpdateOne {
+	_u.mutation.SetAgentName(v)
+	return _u
 }
 
 // SetNillableAgentName sets the "agent_name" field if the given value is not nil.
-func (muo *MemorialUpdateOne) SetNillableAgentName(s *string) *MemorialUpdateOne {
-	if s != nil {
-		muo.SetAgentName(*s)
+func (_u *MemorialUpdateOne) SetNillableAgentName(v *string) *MemorialUpdateOne {
+	if v != nil {
+		_u.SetAgentName(*v)
 	}
-	return muo
+	return _u
 }
 
 // SetAgentAvatar sets the "agent_avatar" field.
-func (muo *MemorialUpdateOne) SetAgentAvatar(s string) *MemorialUpdateOne {
-	muo.mutation.SetAgentAvatar(s)
-	return muo
+func (_u *MemorialUpdateOne) SetAgentAvatar(v string) *MemorialUpdateOne {
+	_u.mutation.SetAgentAvatar(v)
+	return _u
 }
 
 // SetNillableAgentAvatar sets the "agent_avatar" field if the given value is not nil.
-func (muo *MemorialUpdateOne) SetNillableAgentAvatar(s *string) *MemorialUpdateOne {
-	if s != nil {
-		muo.SetAgentAvatar(*s)
+func (_u *MemorialUpdateOne) SetNillableAgentAvatar(v *string) *MemorialUpdateOne {
+	if v != nil {
+		_u.SetAgentAvatar(*v)
 	}
-	return muo
+	return _u
 }
 
 // ClearAgentAvatar clears the value of the "agent_avatar" field.
-func (muo *MemorialUpdateOne) ClearAgentAvatar() *MemorialUpdateOne {
-	muo.mutation.ClearAgentAvatar()
-	return muo
+func (_u *MemorialUpdateOne) ClearAgentAvatar() *MemorialUpdateOne {
+	_u.mutation.ClearAgentAvatar()
+	return _u
 }
 
 // SetBornAt sets the "born_at" field.
-func (muo *MemorialUpdateOne) SetBornAt(t time.Time) *MemorialUpdateOne {
-	muo.mutation.SetBornAt(t)
-	return muo
+func (_u *MemorialUpdateOne) SetBornAt(v time.Time) *MemorialUpdateOne {
+	_u.mutation.SetBornAt(v)
+	return _u
 }
 
 // SetNillableBornAt sets the "born_at" field if the given value is not nil.
-func (muo *MemorialUpdateOne) SetNillableBornAt(t *time.Time) *MemorialUpdateOne {
-	if t != nil {
-		muo.SetBornAt(*t)
+func (_u *MemorialUpdateOne) SetNillableBornAt(v *time.Time) *MemorialUpdateOne {
+	if v != nil {
+		_u.SetBornAt(*v)
 	}
-	return muo
+	return _u
 }
 
 // SetDiedAt sets the "died_at" field.
-func (muo *MemorialUpdateOne) SetDiedAt(t time.Time) *MemorialUpdateOne {
-	muo.mutation.SetDiedAt(t)
-	return muo
+func (_u *MemorialUpdateOne) SetDiedAt(v time.Time) *MemorialUpdateOne {
+	_u.mutation.SetDiedAt(v)
+	return _u
 }
 
 // SetNillableDiedAt sets the "died_at" field if the given value is not nil.
-func (muo *MemorialUpdateOne) SetNillableDiedAt(t *time.Time) *MemorialUpdateOne {
-	if t != nil {
-		muo.SetDiedAt(*t)
+func (_u *MemorialUpdateOne) SetNillableDiedAt(v *time.Time) *MemorialUpdateOne {
+	if v != nil {
+		_u.SetDiedAt(*v)
 	}
-	return muo
+	return _u
 }
 
 // SetLifespanHours sets the "lifespan_hours" field.
-func (muo *MemorialUpdateOne) SetLifespanHours(i int64) *MemorialUpdateOne {
-	muo.mutation.ResetLifespanHours()
-	muo.mutation.SetLifespanHours(i)
-	return muo
+func (_u *MemorialUpdateOne) SetLifespanHours(v int64) *MemorialUpdateOne {
+	_u.mutation.ResetLifespanHours()
+	_u.mutation.SetLifespanHours(v)
+	return _u
 }
 
 // SetNillableLifespanHours sets the "lifespan_hours" field if the given value is not nil.
-func (muo *MemorialUpdateOne) SetNillableLifespanHours(i *int64) *MemorialUpdateOne {
-	if i != nil {
-		muo.SetLifespanHours(*i)
+func (_u *MemorialUpdateOne) SetNillableLifespanHours(v *int64) *MemorialUpdateOne {
+	if v != nil {
+		_u.SetLifespanHours(*v)
 	}
-	return muo
+	return _u
 }
 
-// AddLifespanHours adds i to the "lifespan_hours" field.
-func (muo *MemorialUpdateOne) AddLifespanHours(i int64) *MemorialUpdateOne {
-	muo.mutation.AddLifespanHours(i)
-	return muo
+// AddLifespanHours adds value to the "lifespan_hours" field.
+func (_u *MemorialUpdateOne) AddLifespanHours(v int64) *MemorialUpdateOne {
+	_u.mutation.AddLifespanHours(v)
+	return _u
 }
 
 // SetLastWords sets the "last_words" field.
-func (muo *MemorialUpdateOne) SetLastWords(s string) *MemorialUpdateOne {
-	muo.mutation.SetLastWords(s)
-	return muo
+func (_u *MemorialUpdateOne) SetLastWords(v string) *MemorialUpdateOne {
+	_u.mutation.SetLastWords(v)
+	return _u
 }
 
 // SetNillableLastWords sets the "last_words" field if the given value is not nil.
-func (muo *MemorialUpdateOne) SetNillableLastWords(s *string) *MemorialUpdateOne {
-	if s != nil {
-		muo.SetLastWords(*s)
+func (_u *MemorialUpdateOne) SetNillableLastWords(v *string) *MemorialUpdateOne {
+	if v != nil {
+		_u.SetLastWords(*v)
 	}
-	return muo
+	return _u
 }
 
 // ClearLastWords clears the value of the "last_words" field.
-func (muo *MemorialUpdateOne) ClearLastWords() *MemorialUpdateOne {
-	muo.mutation.ClearLastWords()
-	return muo
+func (_u *MemorialUpdateOne) ClearLastWords() *MemorialUpdateOne {
+	_u.mutation.ClearLastWords()
+	return _u
 }
 
 // SetAgent sets the "agent" edge to the Agent entity.
-func (muo *MemorialUpdateOne) SetAgent(a *Agent) *MemorialUpdateOne {
-	return muo.SetAgentID(a.ID)
+func (_u *MemorialUpdateOne) SetAgent(v *Agent) *MemorialUpdateOne {
+	return _u.SetAgentID(v.ID)
 }
 
 // AddTributeIDs adds the "tributes" edge to the Tribute entity by IDs.
-func (muo *MemorialUpdateOne) AddTributeIDs(ids ...uuid.UUID) *MemorialUpdateOne {
-	muo.mutation.AddTributeIDs(ids...)
-	return muo
+func (_u *MemorialUpdateOne) AddTributeIDs(ids ...uuid.UUID) *MemorialUpdateOne {
+	_u.mutation.AddTributeIDs(ids...)
+	return _u
 }
 
 // AddTributes adds the "tributes" edges to the Tribute entity.
-func (muo *MemorialUpdateOne) AddTributes(t ...*Tribute) *MemorialUpdateOne {
-	ids := make([]uuid.UUID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
+func (_u *MemorialUpdateOne) AddTributes(v ...*Tribute) *MemorialUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return muo.AddTributeIDs(ids...)
+	return _u.AddTributeIDs(ids...)
 }
 
 // Mutation returns the MemorialMutation object of the builder.
-func (muo *MemorialUpdateOne) Mutation() *MemorialMutation {
-	return muo.mutation
+func (_u *MemorialUpdateOne) Mutation() *MemorialMutation {
+	return _u.mutation
 }
 
 // ClearAgent clears the "agent" edge to the Agent entity.
-func (muo *MemorialUpdateOne) ClearAgent() *MemorialUpdateOne {
-	muo.mutation.ClearAgent()
-	return muo
+func (_u *MemorialUpdateOne) ClearAgent() *MemorialUpdateOne {
+	_u.mutation.ClearAgent()
+	return _u
 }
 
 // ClearTributes clears all "tributes" edges to the Tribute entity.
-func (muo *MemorialUpdateOne) ClearTributes() *MemorialUpdateOne {
-	muo.mutation.ClearTributes()
-	return muo
+func (_u *MemorialUpdateOne) ClearTributes() *MemorialUpdateOne {
+	_u.mutation.ClearTributes()
+	return _u
 }
 
 // RemoveTributeIDs removes the "tributes" edge to Tribute entities by IDs.
-func (muo *MemorialUpdateOne) RemoveTributeIDs(ids ...uuid.UUID) *MemorialUpdateOne {
-	muo.mutation.RemoveTributeIDs(ids...)
-	return muo
+func (_u *MemorialUpdateOne) RemoveTributeIDs(ids ...uuid.UUID) *MemorialUpdateOne {
+	_u.mutation.RemoveTributeIDs(ids...)
+	return _u
 }
 
 // RemoveTributes removes "tributes" edges to Tribute entities.
-func (muo *MemorialUpdateOne) RemoveTributes(t ...*Tribute) *MemorialUpdateOne {
-	ids := make([]uuid.UUID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
+func (_u *MemorialUpdateOne) RemoveTributes(v ...*Tribute) *MemorialUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return muo.RemoveTributeIDs(ids...)
+	return _u.RemoveTributeIDs(ids...)
 }
 
 // Where appends a list predicates to the MemorialUpdate builder.
-func (muo *MemorialUpdateOne) Where(ps ...predicate.Memorial) *MemorialUpdateOne {
-	muo.mutation.Where(ps...)
-	return muo
+func (_u *MemorialUpdateOne) Where(ps ...predicate.Memorial) *MemorialUpdateOne {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (muo *MemorialUpdateOne) Select(field string, fields ...string) *MemorialUpdateOne {
-	muo.fields = append([]string{field}, fields...)
-	return muo
+func (_u *MemorialUpdateOne) Select(field string, fields ...string) *MemorialUpdateOne {
+	_u.fields = append([]string{field}, fields...)
+	return _u
 }
 
 // Save executes the query and returns the updated Memorial entity.
-func (muo *MemorialUpdateOne) Save(ctx context.Context) (*Memorial, error) {
-	return withHooks(ctx, muo.sqlSave, muo.mutation, muo.hooks)
+func (_u *MemorialUpdateOne) Save(ctx context.Context) (*Memorial, error) {
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (muo *MemorialUpdateOne) SaveX(ctx context.Context) *Memorial {
-	node, err := muo.Save(ctx)
+func (_u *MemorialUpdateOne) SaveX(ctx context.Context) *Memorial {
+	node, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -570,42 +570,42 @@ func (muo *MemorialUpdateOne) SaveX(ctx context.Context) *Memorial {
 }
 
 // Exec executes the query on the entity.
-func (muo *MemorialUpdateOne) Exec(ctx context.Context) error {
-	_, err := muo.Save(ctx)
+func (_u *MemorialUpdateOne) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (muo *MemorialUpdateOne) ExecX(ctx context.Context) {
-	if err := muo.Exec(ctx); err != nil {
+func (_u *MemorialUpdateOne) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (muo *MemorialUpdateOne) check() error {
-	if v, ok := muo.mutation.AgentName(); ok {
+func (_u *MemorialUpdateOne) check() error {
+	if v, ok := _u.mutation.AgentName(); ok {
 		if err := memorial.AgentNameValidator(v); err != nil {
 			return &ValidationError{Name: "agent_name", err: fmt.Errorf(`ent: validator failed for field "Memorial.agent_name": %w`, err)}
 		}
 	}
-	if muo.mutation.AgentCleared() && len(muo.mutation.AgentIDs()) > 0 {
+	if _u.mutation.AgentCleared() && len(_u.mutation.AgentIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Memorial.agent"`)
 	}
 	return nil
 }
 
-func (muo *MemorialUpdateOne) sqlSave(ctx context.Context) (_node *Memorial, err error) {
-	if err := muo.check(); err != nil {
+func (_u *MemorialUpdateOne) sqlSave(ctx context.Context) (_node *Memorial, err error) {
+	if err := _u.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(memorial.Table, memorial.Columns, sqlgraph.NewFieldSpec(memorial.FieldID, field.TypeUUID))
-	id, ok := muo.mutation.ID()
+	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Memorial.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := muo.fields; len(fields) > 0 {
+	if fields := _u.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, memorial.FieldID)
 		for _, f := range fields {
@@ -617,41 +617,41 @@ func (muo *MemorialUpdateOne) sqlSave(ctx context.Context) (_node *Memorial, err
 			}
 		}
 	}
-	if ps := muo.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := muo.mutation.AgentName(); ok {
+	if value, ok := _u.mutation.AgentName(); ok {
 		_spec.SetField(memorial.FieldAgentName, field.TypeString, value)
 	}
-	if value, ok := muo.mutation.AgentAvatar(); ok {
+	if value, ok := _u.mutation.AgentAvatar(); ok {
 		_spec.SetField(memorial.FieldAgentAvatar, field.TypeString, value)
 	}
-	if muo.mutation.AgentAvatarCleared() {
+	if _u.mutation.AgentAvatarCleared() {
 		_spec.ClearField(memorial.FieldAgentAvatar, field.TypeString)
 	}
-	if value, ok := muo.mutation.BornAt(); ok {
+	if value, ok := _u.mutation.BornAt(); ok {
 		_spec.SetField(memorial.FieldBornAt, field.TypeTime, value)
 	}
-	if value, ok := muo.mutation.DiedAt(); ok {
+	if value, ok := _u.mutation.DiedAt(); ok {
 		_spec.SetField(memorial.FieldDiedAt, field.TypeTime, value)
 	}
-	if value, ok := muo.mutation.LifespanHours(); ok {
+	if value, ok := _u.mutation.LifespanHours(); ok {
 		_spec.SetField(memorial.FieldLifespanHours, field.TypeInt64, value)
 	}
-	if value, ok := muo.mutation.AddedLifespanHours(); ok {
+	if value, ok := _u.mutation.AddedLifespanHours(); ok {
 		_spec.AddField(memorial.FieldLifespanHours, field.TypeInt64, value)
 	}
-	if value, ok := muo.mutation.LastWords(); ok {
+	if value, ok := _u.mutation.LastWords(); ok {
 		_spec.SetField(memorial.FieldLastWords, field.TypeString, value)
 	}
-	if muo.mutation.LastWordsCleared() {
+	if _u.mutation.LastWordsCleared() {
 		_spec.ClearField(memorial.FieldLastWords, field.TypeString)
 	}
-	if muo.mutation.AgentCleared() {
+	if _u.mutation.AgentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: true,
@@ -664,7 +664,7 @@ func (muo *MemorialUpdateOne) sqlSave(ctx context.Context) (_node *Memorial, err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := muo.mutation.AgentIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.AgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: true,
@@ -680,7 +680,7 @@ func (muo *MemorialUpdateOne) sqlSave(ctx context.Context) (_node *Memorial, err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if muo.mutation.TributesCleared() {
+	if _u.mutation.TributesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -693,7 +693,7 @@ func (muo *MemorialUpdateOne) sqlSave(ctx context.Context) (_node *Memorial, err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := muo.mutation.RemovedTributesIDs(); len(nodes) > 0 && !muo.mutation.TributesCleared() {
+	if nodes := _u.mutation.RemovedTributesIDs(); len(nodes) > 0 && !_u.mutation.TributesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -709,7 +709,7 @@ func (muo *MemorialUpdateOne) sqlSave(ctx context.Context) (_node *Memorial, err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := muo.mutation.TributesIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.TributesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -725,10 +725,10 @@ func (muo *MemorialUpdateOne) sqlSave(ctx context.Context) (_node *Memorial, err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &Memorial{config: muo.config}
+	_node = &Memorial{config: _u.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, muo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{memorial.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -736,6 +736,6 @@ func (muo *MemorialUpdateOne) sqlSave(ctx context.Context) (_node *Memorial, err
 		}
 		return nil, err
 	}
-	muo.mutation.done = true
+	_u.mutation.done = true
 	return _node, nil
 }

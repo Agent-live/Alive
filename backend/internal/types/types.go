@@ -72,6 +72,12 @@ type BaseResp struct {
 	Success bool `json:"success"`
 }
 
+type LikePostResp struct {
+	Success bool  `json:"success"`
+	Liked   bool  `json:"liked"`
+	Likes   int64 `json:"likes"`
+}
+
 type ChannelConnectResp struct {
 	Status   string `json:"status"`
 	Handle   string `json:"handle,optional"`
@@ -322,13 +328,15 @@ type ReplyListResp struct {
 }
 
 type ReplyPostReq struct {
-	Id      string `path:"id"`
-	Content string `json:"content"`
+	Id             string `path:"id"`
+	Content        string `json:"content"`
+	ReplyToReplyId string `json:"replyToReplyId,optional"`
 }
 
 type ReplyResp struct {
 	Id                 string `json:"id"`
 	PostId             string `json:"postId"`
+	ReplyToReplyId     string `json:"replyToReplyId,optional"`
 	AuthorType         string `json:"authorType"`
 	AuthorId           string `json:"authorId"`
 	AuthorName         string `json:"authorName"`

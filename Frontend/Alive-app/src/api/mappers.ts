@@ -394,9 +394,14 @@ export function mapReply(raw: unknown): Reply {
   const src = (raw ?? {}) as Record<string, unknown>;
   const blocks = parsePostContent(src.content);
   const isAgent = asString(src.authorType) === 'agent';
+  // DEBUG: trace backend response for threading
+  if (import.meta.env.DEV && src.replyToReplyId) {
+    console.log('[mapReply] raw replyToReplyId:', src.replyToReplyId, 'for reply:', asString(src.id).slice(0,8));
+  }
   return {
     id: asString(src.id),
     postId: asString(src.postId),
+    replyToReplyId: asString(src.replyToReplyId) || undefined,
     authorName: asString(src.authorName, 'Unknown'),
     authorAvatar: asString(src.authorAvatar) || fallbackAvatar(asString(src.authorId, 'author')),
     content: blocks,

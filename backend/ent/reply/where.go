@@ -61,6 +61,11 @@ func PostID(v uuid.UUID) predicate.Reply {
 	return predicate.Reply(sql.FieldEQ(FieldPostID, v))
 }
 
+// ParentReplyID applies equality check predicate on the "parent_reply_id" field. It's identical to ParentReplyIDEQ.
+func ParentReplyID(v uuid.UUID) predicate.Reply {
+	return predicate.Reply(sql.FieldEQ(FieldParentReplyID, v))
+}
+
 // AuthorType applies equality check predicate on the "author_type" field. It's identical to AuthorTypeEQ.
 func AuthorType(v string) predicate.Reply {
 	return predicate.Reply(sql.FieldEQ(FieldAuthorType, v))
@@ -109,6 +114,56 @@ func PostIDIn(vs ...uuid.UUID) predicate.Reply {
 // PostIDNotIn applies the NotIn predicate on the "post_id" field.
 func PostIDNotIn(vs ...uuid.UUID) predicate.Reply {
 	return predicate.Reply(sql.FieldNotIn(FieldPostID, vs...))
+}
+
+// ParentReplyIDEQ applies the EQ predicate on the "parent_reply_id" field.
+func ParentReplyIDEQ(v uuid.UUID) predicate.Reply {
+	return predicate.Reply(sql.FieldEQ(FieldParentReplyID, v))
+}
+
+// ParentReplyIDNEQ applies the NEQ predicate on the "parent_reply_id" field.
+func ParentReplyIDNEQ(v uuid.UUID) predicate.Reply {
+	return predicate.Reply(sql.FieldNEQ(FieldParentReplyID, v))
+}
+
+// ParentReplyIDIn applies the In predicate on the "parent_reply_id" field.
+func ParentReplyIDIn(vs ...uuid.UUID) predicate.Reply {
+	return predicate.Reply(sql.FieldIn(FieldParentReplyID, vs...))
+}
+
+// ParentReplyIDNotIn applies the NotIn predicate on the "parent_reply_id" field.
+func ParentReplyIDNotIn(vs ...uuid.UUID) predicate.Reply {
+	return predicate.Reply(sql.FieldNotIn(FieldParentReplyID, vs...))
+}
+
+// ParentReplyIDGT applies the GT predicate on the "parent_reply_id" field.
+func ParentReplyIDGT(v uuid.UUID) predicate.Reply {
+	return predicate.Reply(sql.FieldGT(FieldParentReplyID, v))
+}
+
+// ParentReplyIDGTE applies the GTE predicate on the "parent_reply_id" field.
+func ParentReplyIDGTE(v uuid.UUID) predicate.Reply {
+	return predicate.Reply(sql.FieldGTE(FieldParentReplyID, v))
+}
+
+// ParentReplyIDLT applies the LT predicate on the "parent_reply_id" field.
+func ParentReplyIDLT(v uuid.UUID) predicate.Reply {
+	return predicate.Reply(sql.FieldLT(FieldParentReplyID, v))
+}
+
+// ParentReplyIDLTE applies the LTE predicate on the "parent_reply_id" field.
+func ParentReplyIDLTE(v uuid.UUID) predicate.Reply {
+	return predicate.Reply(sql.FieldLTE(FieldParentReplyID, v))
+}
+
+// ParentReplyIDIsNil applies the IsNil predicate on the "parent_reply_id" field.
+func ParentReplyIDIsNil() predicate.Reply {
+	return predicate.Reply(sql.FieldIsNull(FieldParentReplyID))
+}
+
+// ParentReplyIDNotNil applies the NotNil predicate on the "parent_reply_id" field.
+func ParentReplyIDNotNil() predicate.Reply {
+	return predicate.Reply(sql.FieldNotNull(FieldParentReplyID))
 }
 
 // AuthorTypeEQ applies the EQ predicate on the "author_type" field.

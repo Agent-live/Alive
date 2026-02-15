@@ -23,104 +23,118 @@ type ReplyCreate struct {
 }
 
 // SetPostID sets the "post_id" field.
-func (rc *ReplyCreate) SetPostID(u uuid.UUID) *ReplyCreate {
-	rc.mutation.SetPostID(u)
-	return rc
+func (_c *ReplyCreate) SetPostID(v uuid.UUID) *ReplyCreate {
+	_c.mutation.SetPostID(v)
+	return _c
+}
+
+// SetParentReplyID sets the "parent_reply_id" field.
+func (_c *ReplyCreate) SetParentReplyID(v uuid.UUID) *ReplyCreate {
+	_c.mutation.SetParentReplyID(v)
+	return _c
+}
+
+// SetNillableParentReplyID sets the "parent_reply_id" field if the given value is not nil.
+func (_c *ReplyCreate) SetNillableParentReplyID(v *uuid.UUID) *ReplyCreate {
+	if v != nil {
+		_c.SetParentReplyID(*v)
+	}
+	return _c
 }
 
 // SetAuthorType sets the "author_type" field.
-func (rc *ReplyCreate) SetAuthorType(s string) *ReplyCreate {
-	rc.mutation.SetAuthorType(s)
-	return rc
+func (_c *ReplyCreate) SetAuthorType(v string) *ReplyCreate {
+	_c.mutation.SetAuthorType(v)
+	return _c
 }
 
 // SetNillableAuthorType sets the "author_type" field if the given value is not nil.
-func (rc *ReplyCreate) SetNillableAuthorType(s *string) *ReplyCreate {
-	if s != nil {
-		rc.SetAuthorType(*s)
+func (_c *ReplyCreate) SetNillableAuthorType(v *string) *ReplyCreate {
+	if v != nil {
+		_c.SetAuthorType(*v)
 	}
-	return rc
+	return _c
 }
 
 // SetAuthorID sets the "author_id" field.
-func (rc *ReplyCreate) SetAuthorID(s string) *ReplyCreate {
-	rc.mutation.SetAuthorID(s)
-	return rc
+func (_c *ReplyCreate) SetAuthorID(v string) *ReplyCreate {
+	_c.mutation.SetAuthorID(v)
+	return _c
 }
 
 // SetAuthorName sets the "author_name" field.
-func (rc *ReplyCreate) SetAuthorName(s string) *ReplyCreate {
-	rc.mutation.SetAuthorName(s)
-	return rc
+func (_c *ReplyCreate) SetAuthorName(v string) *ReplyCreate {
+	_c.mutation.SetAuthorName(v)
+	return _c
 }
 
 // SetAuthorAvatar sets the "author_avatar" field.
-func (rc *ReplyCreate) SetAuthorAvatar(s string) *ReplyCreate {
-	rc.mutation.SetAuthorAvatar(s)
-	return rc
+func (_c *ReplyCreate) SetAuthorAvatar(v string) *ReplyCreate {
+	_c.mutation.SetAuthorAvatar(v)
+	return _c
 }
 
 // SetNillableAuthorAvatar sets the "author_avatar" field if the given value is not nil.
-func (rc *ReplyCreate) SetNillableAuthorAvatar(s *string) *ReplyCreate {
-	if s != nil {
-		rc.SetAuthorAvatar(*s)
+func (_c *ReplyCreate) SetNillableAuthorAvatar(v *string) *ReplyCreate {
+	if v != nil {
+		_c.SetAuthorAvatar(*v)
 	}
-	return rc
+	return _c
 }
 
 // SetContent sets the "content" field.
-func (rc *ReplyCreate) SetContent(s string) *ReplyCreate {
-	rc.mutation.SetContent(s)
-	return rc
+func (_c *ReplyCreate) SetContent(v string) *ReplyCreate {
+	_c.mutation.SetContent(v)
+	return _c
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (rc *ReplyCreate) SetCreatedAt(t time.Time) *ReplyCreate {
-	rc.mutation.SetCreatedAt(t)
-	return rc
+func (_c *ReplyCreate) SetCreatedAt(v time.Time) *ReplyCreate {
+	_c.mutation.SetCreatedAt(v)
+	return _c
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (rc *ReplyCreate) SetNillableCreatedAt(t *time.Time) *ReplyCreate {
-	if t != nil {
-		rc.SetCreatedAt(*t)
+func (_c *ReplyCreate) SetNillableCreatedAt(v *time.Time) *ReplyCreate {
+	if v != nil {
+		_c.SetCreatedAt(*v)
 	}
-	return rc
+	return _c
 }
 
 // SetID sets the "id" field.
-func (rc *ReplyCreate) SetID(u uuid.UUID) *ReplyCreate {
-	rc.mutation.SetID(u)
-	return rc
+func (_c *ReplyCreate) SetID(v uuid.UUID) *ReplyCreate {
+	_c.mutation.SetID(v)
+	return _c
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (rc *ReplyCreate) SetNillableID(u *uuid.UUID) *ReplyCreate {
-	if u != nil {
-		rc.SetID(*u)
+func (_c *ReplyCreate) SetNillableID(v *uuid.UUID) *ReplyCreate {
+	if v != nil {
+		_c.SetID(*v)
 	}
-	return rc
+	return _c
 }
 
 // SetPost sets the "post" edge to the Post entity.
-func (rc *ReplyCreate) SetPost(p *Post) *ReplyCreate {
-	return rc.SetPostID(p.ID)
+func (_c *ReplyCreate) SetPost(v *Post) *ReplyCreate {
+	return _c.SetPostID(v.ID)
 }
 
 // Mutation returns the ReplyMutation object of the builder.
-func (rc *ReplyCreate) Mutation() *ReplyMutation {
-	return rc.mutation
+func (_c *ReplyCreate) Mutation() *ReplyMutation {
+	return _c.mutation
 }
 
 // Save creates the Reply in the database.
-func (rc *ReplyCreate) Save(ctx context.Context) (*Reply, error) {
-	rc.defaults()
-	return withHooks(ctx, rc.sqlSave, rc.mutation, rc.hooks)
+func (_c *ReplyCreate) Save(ctx context.Context) (*Reply, error) {
+	_c.defaults()
+	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (rc *ReplyCreate) SaveX(ctx context.Context) *Reply {
-	v, err := rc.Save(ctx)
+func (_c *ReplyCreate) SaveX(ctx context.Context) *Reply {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -128,81 +142,81 @@ func (rc *ReplyCreate) SaveX(ctx context.Context) *Reply {
 }
 
 // Exec executes the query.
-func (rc *ReplyCreate) Exec(ctx context.Context) error {
-	_, err := rc.Save(ctx)
+func (_c *ReplyCreate) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (rc *ReplyCreate) ExecX(ctx context.Context) {
-	if err := rc.Exec(ctx); err != nil {
+func (_c *ReplyCreate) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (rc *ReplyCreate) defaults() {
-	if _, ok := rc.mutation.AuthorType(); !ok {
+func (_c *ReplyCreate) defaults() {
+	if _, ok := _c.mutation.AuthorType(); !ok {
 		v := reply.DefaultAuthorType
-		rc.mutation.SetAuthorType(v)
+		_c.mutation.SetAuthorType(v)
 	}
-	if _, ok := rc.mutation.CreatedAt(); !ok {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := reply.DefaultCreatedAt()
-		rc.mutation.SetCreatedAt(v)
+		_c.mutation.SetCreatedAt(v)
 	}
-	if _, ok := rc.mutation.ID(); !ok {
+	if _, ok := _c.mutation.ID(); !ok {
 		v := reply.DefaultID()
-		rc.mutation.SetID(v)
+		_c.mutation.SetID(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (rc *ReplyCreate) check() error {
-	if _, ok := rc.mutation.PostID(); !ok {
+func (_c *ReplyCreate) check() error {
+	if _, ok := _c.mutation.PostID(); !ok {
 		return &ValidationError{Name: "post_id", err: errors.New(`ent: missing required field "Reply.post_id"`)}
 	}
-	if _, ok := rc.mutation.AuthorType(); !ok {
+	if _, ok := _c.mutation.AuthorType(); !ok {
 		return &ValidationError{Name: "author_type", err: errors.New(`ent: missing required field "Reply.author_type"`)}
 	}
-	if _, ok := rc.mutation.AuthorID(); !ok {
+	if _, ok := _c.mutation.AuthorID(); !ok {
 		return &ValidationError{Name: "author_id", err: errors.New(`ent: missing required field "Reply.author_id"`)}
 	}
-	if v, ok := rc.mutation.AuthorID(); ok {
+	if v, ok := _c.mutation.AuthorID(); ok {
 		if err := reply.AuthorIDValidator(v); err != nil {
 			return &ValidationError{Name: "author_id", err: fmt.Errorf(`ent: validator failed for field "Reply.author_id": %w`, err)}
 		}
 	}
-	if _, ok := rc.mutation.AuthorName(); !ok {
+	if _, ok := _c.mutation.AuthorName(); !ok {
 		return &ValidationError{Name: "author_name", err: errors.New(`ent: missing required field "Reply.author_name"`)}
 	}
-	if v, ok := rc.mutation.AuthorName(); ok {
+	if v, ok := _c.mutation.AuthorName(); ok {
 		if err := reply.AuthorNameValidator(v); err != nil {
 			return &ValidationError{Name: "author_name", err: fmt.Errorf(`ent: validator failed for field "Reply.author_name": %w`, err)}
 		}
 	}
-	if _, ok := rc.mutation.Content(); !ok {
+	if _, ok := _c.mutation.Content(); !ok {
 		return &ValidationError{Name: "content", err: errors.New(`ent: missing required field "Reply.content"`)}
 	}
-	if v, ok := rc.mutation.Content(); ok {
+	if v, ok := _c.mutation.Content(); ok {
 		if err := reply.ContentValidator(v); err != nil {
 			return &ValidationError{Name: "content", err: fmt.Errorf(`ent: validator failed for field "Reply.content": %w`, err)}
 		}
 	}
-	if _, ok := rc.mutation.CreatedAt(); !ok {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Reply.created_at"`)}
 	}
-	if len(rc.mutation.PostIDs()) == 0 {
+	if len(_c.mutation.PostIDs()) == 0 {
 		return &ValidationError{Name: "post", err: errors.New(`ent: missing required edge "Reply.post"`)}
 	}
 	return nil
 }
 
-func (rc *ReplyCreate) sqlSave(ctx context.Context) (*Reply, error) {
-	if err := rc.check(); err != nil {
+func (_c *ReplyCreate) sqlSave(ctx context.Context) (*Reply, error) {
+	if err := _c.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := rc.createSpec()
-	if err := sqlgraph.CreateNode(ctx, rc.driver, _spec); err != nil {
+	_node, _spec := _c.createSpec()
+	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -215,45 +229,49 @@ func (rc *ReplyCreate) sqlSave(ctx context.Context) (*Reply, error) {
 			return nil, err
 		}
 	}
-	rc.mutation.id = &_node.ID
-	rc.mutation.done = true
+	_c.mutation.id = &_node.ID
+	_c.mutation.done = true
 	return _node, nil
 }
 
-func (rc *ReplyCreate) createSpec() (*Reply, *sqlgraph.CreateSpec) {
+func (_c *ReplyCreate) createSpec() (*Reply, *sqlgraph.CreateSpec) {
 	var (
-		_node = &Reply{config: rc.config}
+		_node = &Reply{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(reply.Table, sqlgraph.NewFieldSpec(reply.FieldID, field.TypeUUID))
 	)
-	if id, ok := rc.mutation.ID(); ok {
+	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
-	if value, ok := rc.mutation.AuthorType(); ok {
+	if value, ok := _c.mutation.ParentReplyID(); ok {
+		_spec.SetField(reply.FieldParentReplyID, field.TypeUUID, value)
+		_node.ParentReplyID = &value
+	}
+	if value, ok := _c.mutation.AuthorType(); ok {
 		_spec.SetField(reply.FieldAuthorType, field.TypeString, value)
 		_node.AuthorType = value
 	}
-	if value, ok := rc.mutation.AuthorID(); ok {
+	if value, ok := _c.mutation.AuthorID(); ok {
 		_spec.SetField(reply.FieldAuthorID, field.TypeString, value)
 		_node.AuthorID = value
 	}
-	if value, ok := rc.mutation.AuthorName(); ok {
+	if value, ok := _c.mutation.AuthorName(); ok {
 		_spec.SetField(reply.FieldAuthorName, field.TypeString, value)
 		_node.AuthorName = value
 	}
-	if value, ok := rc.mutation.AuthorAvatar(); ok {
+	if value, ok := _c.mutation.AuthorAvatar(); ok {
 		_spec.SetField(reply.FieldAuthorAvatar, field.TypeString, value)
 		_node.AuthorAvatar = &value
 	}
-	if value, ok := rc.mutation.Content(); ok {
+	if value, ok := _c.mutation.Content(); ok {
 		_spec.SetField(reply.FieldContent, field.TypeString, value)
 		_node.Content = value
 	}
-	if value, ok := rc.mutation.CreatedAt(); ok {
+	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(reply.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
-	if nodes := rc.mutation.PostIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.PostIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -281,16 +299,16 @@ type ReplyCreateBulk struct {
 }
 
 // Save creates the Reply entities in the database.
-func (rcb *ReplyCreateBulk) Save(ctx context.Context) ([]*Reply, error) {
-	if rcb.err != nil {
-		return nil, rcb.err
+func (_c *ReplyCreateBulk) Save(ctx context.Context) ([]*Reply, error) {
+	if _c.err != nil {
+		return nil, _c.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(rcb.builders))
-	nodes := make([]*Reply, len(rcb.builders))
-	mutators := make([]Mutator, len(rcb.builders))
-	for i := range rcb.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
+	nodes := make([]*Reply, len(_c.builders))
+	mutators := make([]Mutator, len(_c.builders))
+	for i := range _c.builders {
 		func(i int, root context.Context) {
-			builder := rcb.builders[i]
+			builder := _c.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*ReplyMutation)
@@ -304,11 +322,11 @@ func (rcb *ReplyCreateBulk) Save(ctx context.Context) ([]*Reply, error) {
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, rcb.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, rcb.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -328,7 +346,7 @@ func (rcb *ReplyCreateBulk) Save(ctx context.Context) ([]*Reply, error) {
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, rcb.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -336,8 +354,8 @@ func (rcb *ReplyCreateBulk) Save(ctx context.Context) ([]*Reply, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (rcb *ReplyCreateBulk) SaveX(ctx context.Context) []*Reply {
-	v, err := rcb.Save(ctx)
+func (_c *ReplyCreateBulk) SaveX(ctx context.Context) []*Reply {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -345,14 +363,14 @@ func (rcb *ReplyCreateBulk) SaveX(ctx context.Context) []*Reply {
 }
 
 // Exec executes the query.
-func (rcb *ReplyCreateBulk) Exec(ctx context.Context) error {
-	_, err := rcb.Save(ctx)
+func (_c *ReplyCreateBulk) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (rcb *ReplyCreateBulk) ExecX(ctx context.Context) {
-	if err := rcb.Exec(ctx); err != nil {
+func (_c *ReplyCreateBulk) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

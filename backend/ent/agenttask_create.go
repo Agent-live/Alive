@@ -23,148 +23,148 @@ type AgentTaskCreate struct {
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (atc *AgentTaskCreate) SetCreatedAt(t time.Time) *AgentTaskCreate {
-	atc.mutation.SetCreatedAt(t)
-	return atc
+func (_c *AgentTaskCreate) SetCreatedAt(v time.Time) *AgentTaskCreate {
+	_c.mutation.SetCreatedAt(v)
+	return _c
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (atc *AgentTaskCreate) SetNillableCreatedAt(t *time.Time) *AgentTaskCreate {
-	if t != nil {
-		atc.SetCreatedAt(*t)
+func (_c *AgentTaskCreate) SetNillableCreatedAt(v *time.Time) *AgentTaskCreate {
+	if v != nil {
+		_c.SetCreatedAt(*v)
 	}
-	return atc
+	return _c
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (atc *AgentTaskCreate) SetUpdatedAt(t time.Time) *AgentTaskCreate {
-	atc.mutation.SetUpdatedAt(t)
-	return atc
+func (_c *AgentTaskCreate) SetUpdatedAt(v time.Time) *AgentTaskCreate {
+	_c.mutation.SetUpdatedAt(v)
+	return _c
 }
 
 // SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (atc *AgentTaskCreate) SetNillableUpdatedAt(t *time.Time) *AgentTaskCreate {
-	if t != nil {
-		atc.SetUpdatedAt(*t)
+func (_c *AgentTaskCreate) SetNillableUpdatedAt(v *time.Time) *AgentTaskCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
 	}
-	return atc
+	return _c
 }
 
 // SetAgentID sets the "agent_id" field.
-func (atc *AgentTaskCreate) SetAgentID(u uuid.UUID) *AgentTaskCreate {
-	atc.mutation.SetAgentID(u)
-	return atc
+func (_c *AgentTaskCreate) SetAgentID(v uuid.UUID) *AgentTaskCreate {
+	_c.mutation.SetAgentID(v)
+	return _c
 }
 
 // SetTitle sets the "title" field.
-func (atc *AgentTaskCreate) SetTitle(s string) *AgentTaskCreate {
-	atc.mutation.SetTitle(s)
-	return atc
+func (_c *AgentTaskCreate) SetTitle(v string) *AgentTaskCreate {
+	_c.mutation.SetTitle(v)
+	return _c
 }
 
 // SetDescription sets the "description" field.
-func (atc *AgentTaskCreate) SetDescription(s string) *AgentTaskCreate {
-	atc.mutation.SetDescription(s)
-	return atc
+func (_c *AgentTaskCreate) SetDescription(v string) *AgentTaskCreate {
+	_c.mutation.SetDescription(v)
+	return _c
 }
 
 // SetNillableDescription sets the "description" field if the given value is not nil.
-func (atc *AgentTaskCreate) SetNillableDescription(s *string) *AgentTaskCreate {
-	if s != nil {
-		atc.SetDescription(*s)
+func (_c *AgentTaskCreate) SetNillableDescription(v *string) *AgentTaskCreate {
+	if v != nil {
+		_c.SetDescription(*v)
 	}
-	return atc
+	return _c
 }
 
 // SetStatus sets the "status" field.
-func (atc *AgentTaskCreate) SetStatus(s string) *AgentTaskCreate {
-	atc.mutation.SetStatus(s)
-	return atc
+func (_c *AgentTaskCreate) SetStatus(v string) *AgentTaskCreate {
+	_c.mutation.SetStatus(v)
+	return _c
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (atc *AgentTaskCreate) SetNillableStatus(s *string) *AgentTaskCreate {
-	if s != nil {
-		atc.SetStatus(*s)
+func (_c *AgentTaskCreate) SetNillableStatus(v *string) *AgentTaskCreate {
+	if v != nil {
+		_c.SetStatus(*v)
 	}
-	return atc
+	return _c
 }
 
 // SetPriority sets the "priority" field.
-func (atc *AgentTaskCreate) SetPriority(s string) *AgentTaskCreate {
-	atc.mutation.SetPriority(s)
-	return atc
+func (_c *AgentTaskCreate) SetPriority(v string) *AgentTaskCreate {
+	_c.mutation.SetPriority(v)
+	return _c
 }
 
 // SetNillablePriority sets the "priority" field if the given value is not nil.
-func (atc *AgentTaskCreate) SetNillablePriority(s *string) *AgentTaskCreate {
-	if s != nil {
-		atc.SetPriority(*s)
+func (_c *AgentTaskCreate) SetNillablePriority(v *string) *AgentTaskCreate {
+	if v != nil {
+		_c.SetPriority(*v)
 	}
-	return atc
+	return _c
 }
 
 // SetProgress sets the "progress" field.
-func (atc *AgentTaskCreate) SetProgress(i int) *AgentTaskCreate {
-	atc.mutation.SetProgress(i)
-	return atc
+func (_c *AgentTaskCreate) SetProgress(v int) *AgentTaskCreate {
+	_c.mutation.SetProgress(v)
+	return _c
 }
 
 // SetNillableProgress sets the "progress" field if the given value is not nil.
-func (atc *AgentTaskCreate) SetNillableProgress(i *int) *AgentTaskCreate {
-	if i != nil {
-		atc.SetProgress(*i)
+func (_c *AgentTaskCreate) SetNillableProgress(v *int) *AgentTaskCreate {
+	if v != nil {
+		_c.SetProgress(*v)
 	}
-	return atc
+	return _c
 }
 
 // SetDeletedAt sets the "deleted_at" field.
-func (atc *AgentTaskCreate) SetDeletedAt(t time.Time) *AgentTaskCreate {
-	atc.mutation.SetDeletedAt(t)
-	return atc
+func (_c *AgentTaskCreate) SetDeletedAt(v time.Time) *AgentTaskCreate {
+	_c.mutation.SetDeletedAt(v)
+	return _c
 }
 
 // SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (atc *AgentTaskCreate) SetNillableDeletedAt(t *time.Time) *AgentTaskCreate {
-	if t != nil {
-		atc.SetDeletedAt(*t)
+func (_c *AgentTaskCreate) SetNillableDeletedAt(v *time.Time) *AgentTaskCreate {
+	if v != nil {
+		_c.SetDeletedAt(*v)
 	}
-	return atc
+	return _c
 }
 
 // SetID sets the "id" field.
-func (atc *AgentTaskCreate) SetID(u uuid.UUID) *AgentTaskCreate {
-	atc.mutation.SetID(u)
-	return atc
+func (_c *AgentTaskCreate) SetID(v uuid.UUID) *AgentTaskCreate {
+	_c.mutation.SetID(v)
+	return _c
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (atc *AgentTaskCreate) SetNillableID(u *uuid.UUID) *AgentTaskCreate {
-	if u != nil {
-		atc.SetID(*u)
+func (_c *AgentTaskCreate) SetNillableID(v *uuid.UUID) *AgentTaskCreate {
+	if v != nil {
+		_c.SetID(*v)
 	}
-	return atc
+	return _c
 }
 
 // SetAgent sets the "agent" edge to the Agent entity.
-func (atc *AgentTaskCreate) SetAgent(a *Agent) *AgentTaskCreate {
-	return atc.SetAgentID(a.ID)
+func (_c *AgentTaskCreate) SetAgent(v *Agent) *AgentTaskCreate {
+	return _c.SetAgentID(v.ID)
 }
 
 // Mutation returns the AgentTaskMutation object of the builder.
-func (atc *AgentTaskCreate) Mutation() *AgentTaskMutation {
-	return atc.mutation
+func (_c *AgentTaskCreate) Mutation() *AgentTaskMutation {
+	return _c.mutation
 }
 
 // Save creates the AgentTask in the database.
-func (atc *AgentTaskCreate) Save(ctx context.Context) (*AgentTask, error) {
-	atc.defaults()
-	return withHooks(ctx, atc.sqlSave, atc.mutation, atc.hooks)
+func (_c *AgentTaskCreate) Save(ctx context.Context) (*AgentTask, error) {
+	_c.defaults()
+	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (atc *AgentTaskCreate) SaveX(ctx context.Context) *AgentTask {
-	v, err := atc.Save(ctx)
+func (_c *AgentTaskCreate) SaveX(ctx context.Context) *AgentTask {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -172,93 +172,93 @@ func (atc *AgentTaskCreate) SaveX(ctx context.Context) *AgentTask {
 }
 
 // Exec executes the query.
-func (atc *AgentTaskCreate) Exec(ctx context.Context) error {
-	_, err := atc.Save(ctx)
+func (_c *AgentTaskCreate) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (atc *AgentTaskCreate) ExecX(ctx context.Context) {
-	if err := atc.Exec(ctx); err != nil {
+func (_c *AgentTaskCreate) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (atc *AgentTaskCreate) defaults() {
-	if _, ok := atc.mutation.CreatedAt(); !ok {
+func (_c *AgentTaskCreate) defaults() {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := agenttask.DefaultCreatedAt()
-		atc.mutation.SetCreatedAt(v)
+		_c.mutation.SetCreatedAt(v)
 	}
-	if _, ok := atc.mutation.UpdatedAt(); !ok {
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		v := agenttask.DefaultUpdatedAt()
-		atc.mutation.SetUpdatedAt(v)
+		_c.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := atc.mutation.Status(); !ok {
+	if _, ok := _c.mutation.Status(); !ok {
 		v := agenttask.DefaultStatus
-		atc.mutation.SetStatus(v)
+		_c.mutation.SetStatus(v)
 	}
-	if _, ok := atc.mutation.Priority(); !ok {
+	if _, ok := _c.mutation.Priority(); !ok {
 		v := agenttask.DefaultPriority
-		atc.mutation.SetPriority(v)
+		_c.mutation.SetPriority(v)
 	}
-	if _, ok := atc.mutation.Progress(); !ok {
+	if _, ok := _c.mutation.Progress(); !ok {
 		v := agenttask.DefaultProgress
-		atc.mutation.SetProgress(v)
+		_c.mutation.SetProgress(v)
 	}
-	if _, ok := atc.mutation.ID(); !ok {
+	if _, ok := _c.mutation.ID(); !ok {
 		v := agenttask.DefaultID()
-		atc.mutation.SetID(v)
+		_c.mutation.SetID(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (atc *AgentTaskCreate) check() error {
-	if _, ok := atc.mutation.CreatedAt(); !ok {
+func (_c *AgentTaskCreate) check() error {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "AgentTask.created_at"`)}
 	}
-	if _, ok := atc.mutation.UpdatedAt(); !ok {
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "AgentTask.updated_at"`)}
 	}
-	if _, ok := atc.mutation.AgentID(); !ok {
+	if _, ok := _c.mutation.AgentID(); !ok {
 		return &ValidationError{Name: "agent_id", err: errors.New(`ent: missing required field "AgentTask.agent_id"`)}
 	}
-	if _, ok := atc.mutation.Title(); !ok {
+	if _, ok := _c.mutation.Title(); !ok {
 		return &ValidationError{Name: "title", err: errors.New(`ent: missing required field "AgentTask.title"`)}
 	}
-	if v, ok := atc.mutation.Title(); ok {
+	if v, ok := _c.mutation.Title(); ok {
 		if err := agenttask.TitleValidator(v); err != nil {
 			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "AgentTask.title": %w`, err)}
 		}
 	}
-	if v, ok := atc.mutation.Description(); ok {
+	if v, ok := _c.mutation.Description(); ok {
 		if err := agenttask.DescriptionValidator(v); err != nil {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "AgentTask.description": %w`, err)}
 		}
 	}
-	if _, ok := atc.mutation.Status(); !ok {
+	if _, ok := _c.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "AgentTask.status"`)}
 	}
-	if _, ok := atc.mutation.Progress(); !ok {
+	if _, ok := _c.mutation.Progress(); !ok {
 		return &ValidationError{Name: "progress", err: errors.New(`ent: missing required field "AgentTask.progress"`)}
 	}
-	if v, ok := atc.mutation.Progress(); ok {
+	if v, ok := _c.mutation.Progress(); ok {
 		if err := agenttask.ProgressValidator(v); err != nil {
 			return &ValidationError{Name: "progress", err: fmt.Errorf(`ent: validator failed for field "AgentTask.progress": %w`, err)}
 		}
 	}
-	if len(atc.mutation.AgentIDs()) == 0 {
+	if len(_c.mutation.AgentIDs()) == 0 {
 		return &ValidationError{Name: "agent", err: errors.New(`ent: missing required edge "AgentTask.agent"`)}
 	}
 	return nil
 }
 
-func (atc *AgentTaskCreate) sqlSave(ctx context.Context) (*AgentTask, error) {
-	if err := atc.check(); err != nil {
+func (_c *AgentTaskCreate) sqlSave(ctx context.Context) (*AgentTask, error) {
+	if err := _c.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := atc.createSpec()
-	if err := sqlgraph.CreateNode(ctx, atc.driver, _spec); err != nil {
+	_node, _spec := _c.createSpec()
+	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -271,53 +271,53 @@ func (atc *AgentTaskCreate) sqlSave(ctx context.Context) (*AgentTask, error) {
 			return nil, err
 		}
 	}
-	atc.mutation.id = &_node.ID
-	atc.mutation.done = true
+	_c.mutation.id = &_node.ID
+	_c.mutation.done = true
 	return _node, nil
 }
 
-func (atc *AgentTaskCreate) createSpec() (*AgentTask, *sqlgraph.CreateSpec) {
+func (_c *AgentTaskCreate) createSpec() (*AgentTask, *sqlgraph.CreateSpec) {
 	var (
-		_node = &AgentTask{config: atc.config}
+		_node = &AgentTask{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(agenttask.Table, sqlgraph.NewFieldSpec(agenttask.FieldID, field.TypeUUID))
 	)
-	if id, ok := atc.mutation.ID(); ok {
+	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
-	if value, ok := atc.mutation.CreatedAt(); ok {
+	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(agenttask.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
-	if value, ok := atc.mutation.UpdatedAt(); ok {
+	if value, ok := _c.mutation.UpdatedAt(); ok {
 		_spec.SetField(agenttask.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := atc.mutation.Title(); ok {
+	if value, ok := _c.mutation.Title(); ok {
 		_spec.SetField(agenttask.FieldTitle, field.TypeString, value)
 		_node.Title = value
 	}
-	if value, ok := atc.mutation.Description(); ok {
+	if value, ok := _c.mutation.Description(); ok {
 		_spec.SetField(agenttask.FieldDescription, field.TypeString, value)
 		_node.Description = &value
 	}
-	if value, ok := atc.mutation.Status(); ok {
+	if value, ok := _c.mutation.Status(); ok {
 		_spec.SetField(agenttask.FieldStatus, field.TypeString, value)
 		_node.Status = value
 	}
-	if value, ok := atc.mutation.Priority(); ok {
+	if value, ok := _c.mutation.Priority(); ok {
 		_spec.SetField(agenttask.FieldPriority, field.TypeString, value)
 		_node.Priority = value
 	}
-	if value, ok := atc.mutation.Progress(); ok {
+	if value, ok := _c.mutation.Progress(); ok {
 		_spec.SetField(agenttask.FieldProgress, field.TypeInt, value)
 		_node.Progress = value
 	}
-	if value, ok := atc.mutation.DeletedAt(); ok {
+	if value, ok := _c.mutation.DeletedAt(); ok {
 		_spec.SetField(agenttask.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
-	if nodes := atc.mutation.AgentIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.AgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -345,16 +345,16 @@ type AgentTaskCreateBulk struct {
 }
 
 // Save creates the AgentTask entities in the database.
-func (atcb *AgentTaskCreateBulk) Save(ctx context.Context) ([]*AgentTask, error) {
-	if atcb.err != nil {
-		return nil, atcb.err
+func (_c *AgentTaskCreateBulk) Save(ctx context.Context) ([]*AgentTask, error) {
+	if _c.err != nil {
+		return nil, _c.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(atcb.builders))
-	nodes := make([]*AgentTask, len(atcb.builders))
-	mutators := make([]Mutator, len(atcb.builders))
-	for i := range atcb.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
+	nodes := make([]*AgentTask, len(_c.builders))
+	mutators := make([]Mutator, len(_c.builders))
+	for i := range _c.builders {
 		func(i int, root context.Context) {
-			builder := atcb.builders[i]
+			builder := _c.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*AgentTaskMutation)
@@ -368,11 +368,11 @@ func (atcb *AgentTaskCreateBulk) Save(ctx context.Context) ([]*AgentTask, error)
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, atcb.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, atcb.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -392,7 +392,7 @@ func (atcb *AgentTaskCreateBulk) Save(ctx context.Context) ([]*AgentTask, error)
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, atcb.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -400,8 +400,8 @@ func (atcb *AgentTaskCreateBulk) Save(ctx context.Context) ([]*AgentTask, error)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (atcb *AgentTaskCreateBulk) SaveX(ctx context.Context) []*AgentTask {
-	v, err := atcb.Save(ctx)
+func (_c *AgentTaskCreateBulk) SaveX(ctx context.Context) []*AgentTask {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -409,14 +409,14 @@ func (atcb *AgentTaskCreateBulk) SaveX(ctx context.Context) []*AgentTask {
 }
 
 // Exec executes the query.
-func (atcb *AgentTaskCreateBulk) Exec(ctx context.Context) error {
-	_, err := atcb.Save(ctx)
+func (_c *AgentTaskCreateBulk) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (atcb *AgentTaskCreateBulk) ExecX(ctx context.Context) {
-	if err := atcb.Exec(ctx); err != nil {
+func (_c *AgentTaskCreateBulk) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

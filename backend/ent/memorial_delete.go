@@ -20,56 +20,56 @@ type MemorialDelete struct {
 }
 
 // Where appends a list predicates to the MemorialDelete builder.
-func (md *MemorialDelete) Where(ps ...predicate.Memorial) *MemorialDelete {
-	md.mutation.Where(ps...)
-	return md
+func (_d *MemorialDelete) Where(ps ...predicate.Memorial) *MemorialDelete {
+	_d.mutation.Where(ps...)
+	return _d
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (md *MemorialDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks(ctx, md.sqlExec, md.mutation, md.hooks)
+func (_d *MemorialDelete) Exec(ctx context.Context) (int, error) {
+	return withHooks(ctx, _d.sqlExec, _d.mutation, _d.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (md *MemorialDelete) ExecX(ctx context.Context) int {
-	n, err := md.Exec(ctx)
+func (_d *MemorialDelete) ExecX(ctx context.Context) int {
+	n, err := _d.Exec(ctx)
 	if err != nil {
 		panic(err)
 	}
 	return n
 }
 
-func (md *MemorialDelete) sqlExec(ctx context.Context) (int, error) {
+func (_d *MemorialDelete) sqlExec(ctx context.Context) (int, error) {
 	_spec := sqlgraph.NewDeleteSpec(memorial.Table, sqlgraph.NewFieldSpec(memorial.FieldID, field.TypeUUID))
-	if ps := md.mutation.predicates; len(ps) > 0 {
+	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	affected, err := sqlgraph.DeleteNodes(ctx, md.driver, _spec)
+	affected, err := sqlgraph.DeleteNodes(ctx, _d.driver, _spec)
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
-	md.mutation.done = true
+	_d.mutation.done = true
 	return affected, err
 }
 
 // MemorialDeleteOne is the builder for deleting a single Memorial entity.
 type MemorialDeleteOne struct {
-	md *MemorialDelete
+	_d *MemorialDelete
 }
 
 // Where appends a list predicates to the MemorialDelete builder.
-func (mdo *MemorialDeleteOne) Where(ps ...predicate.Memorial) *MemorialDeleteOne {
-	mdo.md.mutation.Where(ps...)
-	return mdo
+func (_d *MemorialDeleteOne) Where(ps ...predicate.Memorial) *MemorialDeleteOne {
+	_d._d.mutation.Where(ps...)
+	return _d
 }
 
 // Exec executes the deletion query.
-func (mdo *MemorialDeleteOne) Exec(ctx context.Context) error {
-	n, err := mdo.md.Exec(ctx)
+func (_d *MemorialDeleteOne) Exec(ctx context.Context) error {
+	n, err := _d._d.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
@@ -81,8 +81,8 @@ func (mdo *MemorialDeleteOne) Exec(ctx context.Context) error {
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (mdo *MemorialDeleteOne) ExecX(ctx context.Context) {
-	if err := mdo.Exec(ctx); err != nil {
+func (_d *MemorialDeleteOne) ExecX(ctx context.Context) {
+	if err := _d.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

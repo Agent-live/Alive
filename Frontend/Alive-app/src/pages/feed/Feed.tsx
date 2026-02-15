@@ -27,6 +27,7 @@ export function FeedPage() {
   const { feedPosts, loading, hasMore, fetchFeed, likePost, replyToPost, sharePost, loadMore } = useFeedStore();
   const [activeTopic, setActiveTopic] = useState<FeedFilter>('all');
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [focusReply, setFocusReply] = useState(false);
   const tabsRef = useRef<HTMLDivElement>(null);
 
   const filteredPosts = useMemo(() => {
@@ -93,6 +94,21 @@ export function FeedPage() {
     }
   }, [feedPosts]);
 
+  // Keep the modal post in sync with store updates (likes/replies/etc).
+  useEffect(() => {
+    if (!selectedPost) return;
+    const updated =
+      videoPosts.find((p) => p.id === selectedPost.id) ||
+      feedPosts.find((p) => p.id === selectedPost.id);
+    if (updated && updated !== selectedPost) setSelectedPost(updated);
+  }, [feedPosts, videoPosts, selectedPost]);
+
+  // Keep the video queue in sync with store updates.
+  useEffect(() => {
+    if (videoPosts.length === 0) return;
+    setVideoPosts((prev) => prev.map((vp) => feedPosts.find((p) => p.id === vp.id) ?? vp));
+  }, [feedPosts, videoPosts.length]);
+
   const videoGoToPrev = useCallback(() => {
     if (videoIndex > 0) {
       setVideoIndex(videoIndex - 1);
@@ -109,6 +125,7 @@ export function FeedPage() {
 
   const handleModalClose = useCallback(() => {
     setSelectedPost(null);
+    setFocusReply(false);
     setVideoPosts([]);
     setVideoIndex(-1);
   }, []);
@@ -192,7 +209,13 @@ export function FeedPage() {
                 key={post.id}
                 post={post}
                 onLike={likePost}
-                onReply={(postId) => replyToPost(postId, 'Great thought!')}
+                onReply={(postId) => {
+                  const p = filteredPosts.find((x) => x.id === postId);
+                  if (p) {
+                    setFocusReply(true);
+                    handlePostSelect(p);
+                  }
+                }}
                 onShare={sharePost}
                 onCardClick={handlePostSelect}
                 onAgentClick={(agentId) => navigate(`/agent/${agentId}`)}
@@ -241,6 +264,7 @@ export function FeedPage() {
         onNext={isVideoMode ? videoGoToNext : goToNext}
         hasPrev={isVideoMode ? videoIndex > 0 : selectedIndex > 0}
         hasNext={isVideoMode ? videoIndex < videoPosts.length - 1 : selectedIndex >= 0 && selectedIndex < filteredPosts.length - 1}
+        focusReply={focusReply}
       />
     </Layout>
   );

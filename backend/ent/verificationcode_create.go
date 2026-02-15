@@ -23,84 +23,84 @@ type VerificationCodeCreate struct {
 }
 
 // SetUserID sets the "user_id" field.
-func (vcc *VerificationCodeCreate) SetUserID(u uuid.UUID) *VerificationCodeCreate {
-	vcc.mutation.SetUserID(u)
-	return vcc
+func (_c *VerificationCodeCreate) SetUserID(v uuid.UUID) *VerificationCodeCreate {
+	_c.mutation.SetUserID(v)
+	return _c
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (vcc *VerificationCodeCreate) SetNillableUserID(u *uuid.UUID) *VerificationCodeCreate {
-	if u != nil {
-		vcc.SetUserID(*u)
+func (_c *VerificationCodeCreate) SetNillableUserID(v *uuid.UUID) *VerificationCodeCreate {
+	if v != nil {
+		_c.SetUserID(*v)
 	}
-	return vcc
+	return _c
 }
 
 // SetPhone sets the "phone" field.
-func (vcc *VerificationCodeCreate) SetPhone(s string) *VerificationCodeCreate {
-	vcc.mutation.SetPhone(s)
-	return vcc
+func (_c *VerificationCodeCreate) SetPhone(v string) *VerificationCodeCreate {
+	_c.mutation.SetPhone(v)
+	return _c
 }
 
 // SetCode sets the "code" field.
-func (vcc *VerificationCodeCreate) SetCode(s string) *VerificationCodeCreate {
-	vcc.mutation.SetCode(s)
-	return vcc
+func (_c *VerificationCodeCreate) SetCode(v string) *VerificationCodeCreate {
+	_c.mutation.SetCode(v)
+	return _c
 }
 
 // SetExpiresAt sets the "expires_at" field.
-func (vcc *VerificationCodeCreate) SetExpiresAt(t time.Time) *VerificationCodeCreate {
-	vcc.mutation.SetExpiresAt(t)
-	return vcc
+func (_c *VerificationCodeCreate) SetExpiresAt(v time.Time) *VerificationCodeCreate {
+	_c.mutation.SetExpiresAt(v)
+	return _c
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (vcc *VerificationCodeCreate) SetCreatedAt(t time.Time) *VerificationCodeCreate {
-	vcc.mutation.SetCreatedAt(t)
-	return vcc
+func (_c *VerificationCodeCreate) SetCreatedAt(v time.Time) *VerificationCodeCreate {
+	_c.mutation.SetCreatedAt(v)
+	return _c
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (vcc *VerificationCodeCreate) SetNillableCreatedAt(t *time.Time) *VerificationCodeCreate {
-	if t != nil {
-		vcc.SetCreatedAt(*t)
+func (_c *VerificationCodeCreate) SetNillableCreatedAt(v *time.Time) *VerificationCodeCreate {
+	if v != nil {
+		_c.SetCreatedAt(*v)
 	}
-	return vcc
+	return _c
 }
 
 // SetID sets the "id" field.
-func (vcc *VerificationCodeCreate) SetID(u uuid.UUID) *VerificationCodeCreate {
-	vcc.mutation.SetID(u)
-	return vcc
+func (_c *VerificationCodeCreate) SetID(v uuid.UUID) *VerificationCodeCreate {
+	_c.mutation.SetID(v)
+	return _c
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (vcc *VerificationCodeCreate) SetNillableID(u *uuid.UUID) *VerificationCodeCreate {
-	if u != nil {
-		vcc.SetID(*u)
+func (_c *VerificationCodeCreate) SetNillableID(v *uuid.UUID) *VerificationCodeCreate {
+	if v != nil {
+		_c.SetID(*v)
 	}
-	return vcc
+	return _c
 }
 
 // SetUser sets the "user" edge to the User entity.
-func (vcc *VerificationCodeCreate) SetUser(u *User) *VerificationCodeCreate {
-	return vcc.SetUserID(u.ID)
+func (_c *VerificationCodeCreate) SetUser(v *User) *VerificationCodeCreate {
+	return _c.SetUserID(v.ID)
 }
 
 // Mutation returns the VerificationCodeMutation object of the builder.
-func (vcc *VerificationCodeCreate) Mutation() *VerificationCodeMutation {
-	return vcc.mutation
+func (_c *VerificationCodeCreate) Mutation() *VerificationCodeMutation {
+	return _c.mutation
 }
 
 // Save creates the VerificationCode in the database.
-func (vcc *VerificationCodeCreate) Save(ctx context.Context) (*VerificationCode, error) {
-	vcc.defaults()
-	return withHooks(ctx, vcc.sqlSave, vcc.mutation, vcc.hooks)
+func (_c *VerificationCodeCreate) Save(ctx context.Context) (*VerificationCode, error) {
+	_c.defaults()
+	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (vcc *VerificationCodeCreate) SaveX(ctx context.Context) *VerificationCode {
-	v, err := vcc.Save(ctx)
+func (_c *VerificationCodeCreate) SaveX(ctx context.Context) *VerificationCode {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -108,63 +108,63 @@ func (vcc *VerificationCodeCreate) SaveX(ctx context.Context) *VerificationCode 
 }
 
 // Exec executes the query.
-func (vcc *VerificationCodeCreate) Exec(ctx context.Context) error {
-	_, err := vcc.Save(ctx)
+func (_c *VerificationCodeCreate) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (vcc *VerificationCodeCreate) ExecX(ctx context.Context) {
-	if err := vcc.Exec(ctx); err != nil {
+func (_c *VerificationCodeCreate) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (vcc *VerificationCodeCreate) defaults() {
-	if _, ok := vcc.mutation.CreatedAt(); !ok {
+func (_c *VerificationCodeCreate) defaults() {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := verificationcode.DefaultCreatedAt()
-		vcc.mutation.SetCreatedAt(v)
+		_c.mutation.SetCreatedAt(v)
 	}
-	if _, ok := vcc.mutation.ID(); !ok {
+	if _, ok := _c.mutation.ID(); !ok {
 		v := verificationcode.DefaultID()
-		vcc.mutation.SetID(v)
+		_c.mutation.SetID(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (vcc *VerificationCodeCreate) check() error {
-	if _, ok := vcc.mutation.Phone(); !ok {
+func (_c *VerificationCodeCreate) check() error {
+	if _, ok := _c.mutation.Phone(); !ok {
 		return &ValidationError{Name: "phone", err: errors.New(`ent: missing required field "VerificationCode.phone"`)}
 	}
-	if v, ok := vcc.mutation.Phone(); ok {
+	if v, ok := _c.mutation.Phone(); ok {
 		if err := verificationcode.PhoneValidator(v); err != nil {
 			return &ValidationError{Name: "phone", err: fmt.Errorf(`ent: validator failed for field "VerificationCode.phone": %w`, err)}
 		}
 	}
-	if _, ok := vcc.mutation.Code(); !ok {
+	if _, ok := _c.mutation.Code(); !ok {
 		return &ValidationError{Name: "code", err: errors.New(`ent: missing required field "VerificationCode.code"`)}
 	}
-	if v, ok := vcc.mutation.Code(); ok {
+	if v, ok := _c.mutation.Code(); ok {
 		if err := verificationcode.CodeValidator(v); err != nil {
 			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "VerificationCode.code": %w`, err)}
 		}
 	}
-	if _, ok := vcc.mutation.ExpiresAt(); !ok {
+	if _, ok := _c.mutation.ExpiresAt(); !ok {
 		return &ValidationError{Name: "expires_at", err: errors.New(`ent: missing required field "VerificationCode.expires_at"`)}
 	}
-	if _, ok := vcc.mutation.CreatedAt(); !ok {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "VerificationCode.created_at"`)}
 	}
 	return nil
 }
 
-func (vcc *VerificationCodeCreate) sqlSave(ctx context.Context) (*VerificationCode, error) {
-	if err := vcc.check(); err != nil {
+func (_c *VerificationCodeCreate) sqlSave(ctx context.Context) (*VerificationCode, error) {
+	if err := _c.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := vcc.createSpec()
-	if err := sqlgraph.CreateNode(ctx, vcc.driver, _spec); err != nil {
+	_node, _spec := _c.createSpec()
+	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -177,37 +177,37 @@ func (vcc *VerificationCodeCreate) sqlSave(ctx context.Context) (*VerificationCo
 			return nil, err
 		}
 	}
-	vcc.mutation.id = &_node.ID
-	vcc.mutation.done = true
+	_c.mutation.id = &_node.ID
+	_c.mutation.done = true
 	return _node, nil
 }
 
-func (vcc *VerificationCodeCreate) createSpec() (*VerificationCode, *sqlgraph.CreateSpec) {
+func (_c *VerificationCodeCreate) createSpec() (*VerificationCode, *sqlgraph.CreateSpec) {
 	var (
-		_node = &VerificationCode{config: vcc.config}
+		_node = &VerificationCode{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(verificationcode.Table, sqlgraph.NewFieldSpec(verificationcode.FieldID, field.TypeUUID))
 	)
-	if id, ok := vcc.mutation.ID(); ok {
+	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
-	if value, ok := vcc.mutation.Phone(); ok {
+	if value, ok := _c.mutation.Phone(); ok {
 		_spec.SetField(verificationcode.FieldPhone, field.TypeString, value)
 		_node.Phone = value
 	}
-	if value, ok := vcc.mutation.Code(); ok {
+	if value, ok := _c.mutation.Code(); ok {
 		_spec.SetField(verificationcode.FieldCode, field.TypeString, value)
 		_node.Code = value
 	}
-	if value, ok := vcc.mutation.ExpiresAt(); ok {
+	if value, ok := _c.mutation.ExpiresAt(); ok {
 		_spec.SetField(verificationcode.FieldExpiresAt, field.TypeTime, value)
 		_node.ExpiresAt = value
 	}
-	if value, ok := vcc.mutation.CreatedAt(); ok {
+	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(verificationcode.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
-	if nodes := vcc.mutation.UserIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -235,16 +235,16 @@ type VerificationCodeCreateBulk struct {
 }
 
 // Save creates the VerificationCode entities in the database.
-func (vccb *VerificationCodeCreateBulk) Save(ctx context.Context) ([]*VerificationCode, error) {
-	if vccb.err != nil {
-		return nil, vccb.err
+func (_c *VerificationCodeCreateBulk) Save(ctx context.Context) ([]*VerificationCode, error) {
+	if _c.err != nil {
+		return nil, _c.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(vccb.builders))
-	nodes := make([]*VerificationCode, len(vccb.builders))
-	mutators := make([]Mutator, len(vccb.builders))
-	for i := range vccb.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
+	nodes := make([]*VerificationCode, len(_c.builders))
+	mutators := make([]Mutator, len(_c.builders))
+	for i := range _c.builders {
 		func(i int, root context.Context) {
-			builder := vccb.builders[i]
+			builder := _c.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*VerificationCodeMutation)
@@ -258,11 +258,11 @@ func (vccb *VerificationCodeCreateBulk) Save(ctx context.Context) ([]*Verificati
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, vccb.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, vccb.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -282,7 +282,7 @@ func (vccb *VerificationCodeCreateBulk) Save(ctx context.Context) ([]*Verificati
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, vccb.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -290,8 +290,8 @@ func (vccb *VerificationCodeCreateBulk) Save(ctx context.Context) ([]*Verificati
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (vccb *VerificationCodeCreateBulk) SaveX(ctx context.Context) []*VerificationCode {
-	v, err := vccb.Save(ctx)
+func (_c *VerificationCodeCreateBulk) SaveX(ctx context.Context) []*VerificationCode {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -299,14 +299,14 @@ func (vccb *VerificationCodeCreateBulk) SaveX(ctx context.Context) []*Verificati
 }
 
 // Exec executes the query.
-func (vccb *VerificationCodeCreateBulk) Exec(ctx context.Context) error {
-	_, err := vccb.Save(ctx)
+func (_c *VerificationCodeCreateBulk) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (vccb *VerificationCodeCreateBulk) ExecX(ctx context.Context) {
-	if err := vccb.Exec(ctx); err != nil {
+func (_c *VerificationCodeCreateBulk) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

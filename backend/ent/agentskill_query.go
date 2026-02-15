@@ -33,44 +33,44 @@ type AgentSkillQuery struct {
 }
 
 // Where adds a new predicate for the AgentSkillQuery builder.
-func (asq *AgentSkillQuery) Where(ps ...predicate.AgentSkill) *AgentSkillQuery {
-	asq.predicates = append(asq.predicates, ps...)
-	return asq
+func (_q *AgentSkillQuery) Where(ps ...predicate.AgentSkill) *AgentSkillQuery {
+	_q.predicates = append(_q.predicates, ps...)
+	return _q
 }
 
 // Limit the number of records to be returned by this query.
-func (asq *AgentSkillQuery) Limit(limit int) *AgentSkillQuery {
-	asq.ctx.Limit = &limit
-	return asq
+func (_q *AgentSkillQuery) Limit(limit int) *AgentSkillQuery {
+	_q.ctx.Limit = &limit
+	return _q
 }
 
 // Offset to start from.
-func (asq *AgentSkillQuery) Offset(offset int) *AgentSkillQuery {
-	asq.ctx.Offset = &offset
-	return asq
+func (_q *AgentSkillQuery) Offset(offset int) *AgentSkillQuery {
+	_q.ctx.Offset = &offset
+	return _q
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (asq *AgentSkillQuery) Unique(unique bool) *AgentSkillQuery {
-	asq.ctx.Unique = &unique
-	return asq
+func (_q *AgentSkillQuery) Unique(unique bool) *AgentSkillQuery {
+	_q.ctx.Unique = &unique
+	return _q
 }
 
 // Order specifies how the records should be ordered.
-func (asq *AgentSkillQuery) Order(o ...agentskill.OrderOption) *AgentSkillQuery {
-	asq.order = append(asq.order, o...)
-	return asq
+func (_q *AgentSkillQuery) Order(o ...agentskill.OrderOption) *AgentSkillQuery {
+	_q.order = append(_q.order, o...)
+	return _q
 }
 
 // QueryOwner chains the current query on the "owner" edge.
-func (asq *AgentSkillQuery) QueryOwner() *UserQuery {
-	query := (&UserClient{config: asq.config}).Query()
+func (_q *AgentSkillQuery) QueryOwner() *UserQuery {
+	query := (&UserClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := asq.prepareQuery(ctx); err != nil {
+		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
-		selector := asq.sqlQuery(ctx)
+		selector := _q.sqlQuery(ctx)
 		if err := selector.Err(); err != nil {
 			return nil, err
 		}
@@ -79,20 +79,20 @@ func (asq *AgentSkillQuery) QueryOwner() *UserQuery {
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, agentskill.OwnerTable, agentskill.OwnerColumn),
 		)
-		fromU = sqlgraph.SetNeighbors(asq.driver.Dialect(), step)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
 	}
 	return query
 }
 
 // QueryAgent chains the current query on the "agent" edge.
-func (asq *AgentSkillQuery) QueryAgent() *AgentQuery {
-	query := (&AgentClient{config: asq.config}).Query()
+func (_q *AgentSkillQuery) QueryAgent() *AgentQuery {
+	query := (&AgentClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := asq.prepareQuery(ctx); err != nil {
+		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
-		selector := asq.sqlQuery(ctx)
+		selector := _q.sqlQuery(ctx)
 		if err := selector.Err(); err != nil {
 			return nil, err
 		}
@@ -101,7 +101,7 @@ func (asq *AgentSkillQuery) QueryAgent() *AgentQuery {
 			sqlgraph.To(agent.Table, agent.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, agentskill.AgentTable, agentskill.AgentColumn),
 		)
-		fromU = sqlgraph.SetNeighbors(asq.driver.Dialect(), step)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
 	}
 	return query
@@ -109,8 +109,8 @@ func (asq *AgentSkillQuery) QueryAgent() *AgentQuery {
 
 // First returns the first AgentSkill entity from the query.
 // Returns a *NotFoundError when no AgentSkill was found.
-func (asq *AgentSkillQuery) First(ctx context.Context) (*AgentSkill, error) {
-	nodes, err := asq.Limit(1).All(setContextOp(ctx, asq.ctx, ent.OpQueryFirst))
+func (_q *AgentSkillQuery) First(ctx context.Context) (*AgentSkill, error) {
+	nodes, err := _q.Limit(1).All(setContextOp(ctx, _q.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -121,8 +121,8 @@ func (asq *AgentSkillQuery) First(ctx context.Context) (*AgentSkill, error) {
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (asq *AgentSkillQuery) FirstX(ctx context.Context) *AgentSkill {
-	node, err := asq.First(ctx)
+func (_q *AgentSkillQuery) FirstX(ctx context.Context) *AgentSkill {
+	node, err := _q.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
 	}
@@ -131,9 +131,9 @@ func (asq *AgentSkillQuery) FirstX(ctx context.Context) *AgentSkill {
 
 // FirstID returns the first AgentSkill ID from the query.
 // Returns a *NotFoundError when no AgentSkill ID was found.
-func (asq *AgentSkillQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+func (_q *AgentSkillQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = asq.Limit(1).IDs(setContextOp(ctx, asq.ctx, ent.OpQueryFirstID)); err != nil {
+	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -144,8 +144,8 @@ func (asq *AgentSkillQuery) FirstID(ctx context.Context) (id uuid.UUID, err erro
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (asq *AgentSkillQuery) FirstIDX(ctx context.Context) uuid.UUID {
-	id, err := asq.FirstID(ctx)
+func (_q *AgentSkillQuery) FirstIDX(ctx context.Context) uuid.UUID {
+	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
 	}
@@ -155,8 +155,8 @@ func (asq *AgentSkillQuery) FirstIDX(ctx context.Context) uuid.UUID {
 // Only returns a single AgentSkill entity found by the query, ensuring it only returns one.
 // Returns a *NotSingularError when more than one AgentSkill entity is found.
 // Returns a *NotFoundError when no AgentSkill entities are found.
-func (asq *AgentSkillQuery) Only(ctx context.Context) (*AgentSkill, error) {
-	nodes, err := asq.Limit(2).All(setContextOp(ctx, asq.ctx, ent.OpQueryOnly))
+func (_q *AgentSkillQuery) Only(ctx context.Context) (*AgentSkill, error) {
+	nodes, err := _q.Limit(2).All(setContextOp(ctx, _q.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -171,8 +171,8 @@ func (asq *AgentSkillQuery) Only(ctx context.Context) (*AgentSkill, error) {
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (asq *AgentSkillQuery) OnlyX(ctx context.Context) *AgentSkill {
-	node, err := asq.Only(ctx)
+func (_q *AgentSkillQuery) OnlyX(ctx context.Context) *AgentSkill {
+	node, err := _q.Only(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -182,9 +182,9 @@ func (asq *AgentSkillQuery) OnlyX(ctx context.Context) *AgentSkill {
 // OnlyID is like Only, but returns the only AgentSkill ID in the query.
 // Returns a *NotSingularError when more than one AgentSkill ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (asq *AgentSkillQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+func (_q *AgentSkillQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = asq.Limit(2).IDs(setContextOp(ctx, asq.ctx, ent.OpQueryOnlyID)); err != nil {
+	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -199,8 +199,8 @@ func (asq *AgentSkillQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (asq *AgentSkillQuery) OnlyIDX(ctx context.Context) uuid.UUID {
-	id, err := asq.OnlyID(ctx)
+func (_q *AgentSkillQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -208,18 +208,18 @@ func (asq *AgentSkillQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 }
 
 // All executes the query and returns a list of AgentSkills.
-func (asq *AgentSkillQuery) All(ctx context.Context) ([]*AgentSkill, error) {
-	ctx = setContextOp(ctx, asq.ctx, ent.OpQueryAll)
-	if err := asq.prepareQuery(ctx); err != nil {
+func (_q *AgentSkillQuery) All(ctx context.Context) ([]*AgentSkill, error) {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryAll)
+	if err := _q.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
 	qr := querierAll[[]*AgentSkill, *AgentSkillQuery]()
-	return withInterceptors[[]*AgentSkill](ctx, asq, qr, asq.inters)
+	return withInterceptors[[]*AgentSkill](ctx, _q, qr, _q.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
-func (asq *AgentSkillQuery) AllX(ctx context.Context) []*AgentSkill {
-	nodes, err := asq.All(ctx)
+func (_q *AgentSkillQuery) AllX(ctx context.Context) []*AgentSkill {
+	nodes, err := _q.All(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -227,20 +227,20 @@ func (asq *AgentSkillQuery) AllX(ctx context.Context) []*AgentSkill {
 }
 
 // IDs executes the query and returns a list of AgentSkill IDs.
-func (asq *AgentSkillQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
-	if asq.ctx.Unique == nil && asq.path != nil {
-		asq.Unique(true)
+func (_q *AgentSkillQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
+	if _q.ctx.Unique == nil && _q.path != nil {
+		_q.Unique(true)
 	}
-	ctx = setContextOp(ctx, asq.ctx, ent.OpQueryIDs)
-	if err = asq.Select(agentskill.FieldID).Scan(ctx, &ids); err != nil {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryIDs)
+	if err = _q.Select(agentskill.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (asq *AgentSkillQuery) IDsX(ctx context.Context) []uuid.UUID {
-	ids, err := asq.IDs(ctx)
+func (_q *AgentSkillQuery) IDsX(ctx context.Context) []uuid.UUID {
+	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -248,17 +248,17 @@ func (asq *AgentSkillQuery) IDsX(ctx context.Context) []uuid.UUID {
 }
 
 // Count returns the count of the given query.
-func (asq *AgentSkillQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, asq.ctx, ent.OpQueryCount)
-	if err := asq.prepareQuery(ctx); err != nil {
+func (_q *AgentSkillQuery) Count(ctx context.Context) (int, error) {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryCount)
+	if err := _q.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return withInterceptors[int](ctx, asq, querierCount[*AgentSkillQuery](), asq.inters)
+	return withInterceptors[int](ctx, _q, querierCount[*AgentSkillQuery](), _q.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (asq *AgentSkillQuery) CountX(ctx context.Context) int {
-	count, err := asq.Count(ctx)
+func (_q *AgentSkillQuery) CountX(ctx context.Context) int {
+	count, err := _q.Count(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -266,9 +266,9 @@ func (asq *AgentSkillQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (asq *AgentSkillQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, asq.ctx, ent.OpQueryExist)
-	switch _, err := asq.FirstID(ctx); {
+func (_q *AgentSkillQuery) Exist(ctx context.Context) (bool, error) {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryExist)
+	switch _, err := _q.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
@@ -279,8 +279,8 @@ func (asq *AgentSkillQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (asq *AgentSkillQuery) ExistX(ctx context.Context) bool {
-	exist, err := asq.Exist(ctx)
+func (_q *AgentSkillQuery) ExistX(ctx context.Context) bool {
+	exist, err := _q.Exist(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -289,44 +289,44 @@ func (asq *AgentSkillQuery) ExistX(ctx context.Context) bool {
 
 // Clone returns a duplicate of the AgentSkillQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (asq *AgentSkillQuery) Clone() *AgentSkillQuery {
-	if asq == nil {
+func (_q *AgentSkillQuery) Clone() *AgentSkillQuery {
+	if _q == nil {
 		return nil
 	}
 	return &AgentSkillQuery{
-		config:     asq.config,
-		ctx:        asq.ctx.Clone(),
-		order:      append([]agentskill.OrderOption{}, asq.order...),
-		inters:     append([]Interceptor{}, asq.inters...),
-		predicates: append([]predicate.AgentSkill{}, asq.predicates...),
-		withOwner:  asq.withOwner.Clone(),
-		withAgent:  asq.withAgent.Clone(),
+		config:     _q.config,
+		ctx:        _q.ctx.Clone(),
+		order:      append([]agentskill.OrderOption{}, _q.order...),
+		inters:     append([]Interceptor{}, _q.inters...),
+		predicates: append([]predicate.AgentSkill{}, _q.predicates...),
+		withOwner:  _q.withOwner.Clone(),
+		withAgent:  _q.withAgent.Clone(),
 		// clone intermediate query.
-		sql:  asq.sql.Clone(),
-		path: asq.path,
+		sql:  _q.sql.Clone(),
+		path: _q.path,
 	}
 }
 
 // WithOwner tells the query-builder to eager-load the nodes that are connected to
 // the "owner" edge. The optional arguments are used to configure the query builder of the edge.
-func (asq *AgentSkillQuery) WithOwner(opts ...func(*UserQuery)) *AgentSkillQuery {
-	query := (&UserClient{config: asq.config}).Query()
+func (_q *AgentSkillQuery) WithOwner(opts ...func(*UserQuery)) *AgentSkillQuery {
+	query := (&UserClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	asq.withOwner = query
-	return asq
+	_q.withOwner = query
+	return _q
 }
 
 // WithAgent tells the query-builder to eager-load the nodes that are connected to
 // the "agent" edge. The optional arguments are used to configure the query builder of the edge.
-func (asq *AgentSkillQuery) WithAgent(opts ...func(*AgentQuery)) *AgentSkillQuery {
-	query := (&AgentClient{config: asq.config}).Query()
+func (_q *AgentSkillQuery) WithAgent(opts ...func(*AgentQuery)) *AgentSkillQuery {
+	query := (&AgentClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	asq.withAgent = query
-	return asq
+	_q.withAgent = query
+	return _q
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -343,10 +343,10 @@ func (asq *AgentSkillQuery) WithAgent(opts ...func(*AgentQuery)) *AgentSkillQuer
 //		GroupBy(agentskill.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-func (asq *AgentSkillQuery) GroupBy(field string, fields ...string) *AgentSkillGroupBy {
-	asq.ctx.Fields = append([]string{field}, fields...)
-	grbuild := &AgentSkillGroupBy{build: asq}
-	grbuild.flds = &asq.ctx.Fields
+func (_q *AgentSkillQuery) GroupBy(field string, fields ...string) *AgentSkillGroupBy {
+	_q.ctx.Fields = append([]string{field}, fields...)
+	grbuild := &AgentSkillGroupBy{build: _q}
+	grbuild.flds = &_q.ctx.Fields
 	grbuild.label = agentskill.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -364,59 +364,59 @@ func (asq *AgentSkillQuery) GroupBy(field string, fields ...string) *AgentSkillG
 //	client.AgentSkill.Query().
 //		Select(agentskill.FieldCreatedAt).
 //		Scan(ctx, &v)
-func (asq *AgentSkillQuery) Select(fields ...string) *AgentSkillSelect {
-	asq.ctx.Fields = append(asq.ctx.Fields, fields...)
-	sbuild := &AgentSkillSelect{AgentSkillQuery: asq}
+func (_q *AgentSkillQuery) Select(fields ...string) *AgentSkillSelect {
+	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
+	sbuild := &AgentSkillSelect{AgentSkillQuery: _q}
 	sbuild.label = agentskill.Label
-	sbuild.flds, sbuild.scan = &asq.ctx.Fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &_q.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
 // Aggregate returns a AgentSkillSelect configured with the given aggregations.
-func (asq *AgentSkillQuery) Aggregate(fns ...AggregateFunc) *AgentSkillSelect {
-	return asq.Select().Aggregate(fns...)
+func (_q *AgentSkillQuery) Aggregate(fns ...AggregateFunc) *AgentSkillSelect {
+	return _q.Select().Aggregate(fns...)
 }
 
-func (asq *AgentSkillQuery) prepareQuery(ctx context.Context) error {
-	for _, inter := range asq.inters {
+func (_q *AgentSkillQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range _q.inters {
 		if inter == nil {
 			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
-			if err := trv.Traverse(ctx, asq); err != nil {
+			if err := trv.Traverse(ctx, _q); err != nil {
 				return err
 			}
 		}
 	}
-	for _, f := range asq.ctx.Fields {
+	for _, f := range _q.ctx.Fields {
 		if !agentskill.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
-	if asq.path != nil {
-		prev, err := asq.path(ctx)
+	if _q.path != nil {
+		prev, err := _q.path(ctx)
 		if err != nil {
 			return err
 		}
-		asq.sql = prev
+		_q.sql = prev
 	}
 	return nil
 }
 
-func (asq *AgentSkillQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*AgentSkill, error) {
+func (_q *AgentSkillQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*AgentSkill, error) {
 	var (
 		nodes       = []*AgentSkill{}
-		_spec       = asq.querySpec()
+		_spec       = _q.querySpec()
 		loadedTypes = [2]bool{
-			asq.withOwner != nil,
-			asq.withAgent != nil,
+			_q.withOwner != nil,
+			_q.withAgent != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*AgentSkill).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
-		node := &AgentSkill{config: asq.config}
+		node := &AgentSkill{config: _q.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
@@ -424,20 +424,20 @@ func (asq *AgentSkillQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
-	if err := sqlgraph.QueryNodes(ctx, asq.driver, _spec); err != nil {
+	if err := sqlgraph.QueryNodes(ctx, _q.driver, _spec); err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := asq.withOwner; query != nil {
-		if err := asq.loadOwner(ctx, query, nodes, nil,
+	if query := _q.withOwner; query != nil {
+		if err := _q.loadOwner(ctx, query, nodes, nil,
 			func(n *AgentSkill, e *User) { n.Edges.Owner = e }); err != nil {
 			return nil, err
 		}
 	}
-	if query := asq.withAgent; query != nil {
-		if err := asq.loadAgent(ctx, query, nodes, nil,
+	if query := _q.withAgent; query != nil {
+		if err := _q.loadAgent(ctx, query, nodes, nil,
 			func(n *AgentSkill, e *Agent) { n.Edges.Agent = e }); err != nil {
 			return nil, err
 		}
@@ -445,7 +445,7 @@ func (asq *AgentSkillQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 	return nodes, nil
 }
 
-func (asq *AgentSkillQuery) loadOwner(ctx context.Context, query *UserQuery, nodes []*AgentSkill, init func(*AgentSkill), assign func(*AgentSkill, *User)) error {
+func (_q *AgentSkillQuery) loadOwner(ctx context.Context, query *UserQuery, nodes []*AgentSkill, init func(*AgentSkill), assign func(*AgentSkill, *User)) error {
 	ids := make([]uuid.UUID, 0, len(nodes))
 	nodeids := make(map[uuid.UUID][]*AgentSkill)
 	for i := range nodes {
@@ -474,7 +474,7 @@ func (asq *AgentSkillQuery) loadOwner(ctx context.Context, query *UserQuery, nod
 	}
 	return nil
 }
-func (asq *AgentSkillQuery) loadAgent(ctx context.Context, query *AgentQuery, nodes []*AgentSkill, init func(*AgentSkill), assign func(*AgentSkill, *Agent)) error {
+func (_q *AgentSkillQuery) loadAgent(ctx context.Context, query *AgentQuery, nodes []*AgentSkill, init func(*AgentSkill), assign func(*AgentSkill, *Agent)) error {
 	ids := make([]uuid.UUID, 0, len(nodes))
 	nodeids := make(map[uuid.UUID][]*AgentSkill)
 	for i := range nodes {
@@ -507,24 +507,24 @@ func (asq *AgentSkillQuery) loadAgent(ctx context.Context, query *AgentQuery, no
 	return nil
 }
 
-func (asq *AgentSkillQuery) sqlCount(ctx context.Context) (int, error) {
-	_spec := asq.querySpec()
-	_spec.Node.Columns = asq.ctx.Fields
-	if len(asq.ctx.Fields) > 0 {
-		_spec.Unique = asq.ctx.Unique != nil && *asq.ctx.Unique
+func (_q *AgentSkillQuery) sqlCount(ctx context.Context) (int, error) {
+	_spec := _q.querySpec()
+	_spec.Node.Columns = _q.ctx.Fields
+	if len(_q.ctx.Fields) > 0 {
+		_spec.Unique = _q.ctx.Unique != nil && *_q.ctx.Unique
 	}
-	return sqlgraph.CountNodes(ctx, asq.driver, _spec)
+	return sqlgraph.CountNodes(ctx, _q.driver, _spec)
 }
 
-func (asq *AgentSkillQuery) querySpec() *sqlgraph.QuerySpec {
+func (_q *AgentSkillQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := sqlgraph.NewQuerySpec(agentskill.Table, agentskill.Columns, sqlgraph.NewFieldSpec(agentskill.FieldID, field.TypeUUID))
-	_spec.From = asq.sql
-	if unique := asq.ctx.Unique; unique != nil {
+	_spec.From = _q.sql
+	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
-	} else if asq.path != nil {
+	} else if _q.path != nil {
 		_spec.Unique = true
 	}
-	if fields := asq.ctx.Fields; len(fields) > 0 {
+	if fields := _q.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, agentskill.FieldID)
 		for i := range fields {
@@ -532,27 +532,27 @@ func (asq *AgentSkillQuery) querySpec() *sqlgraph.QuerySpec {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
-		if asq.withOwner != nil {
+		if _q.withOwner != nil {
 			_spec.Node.AddColumnOnce(agentskill.FieldOwnerUserID)
 		}
-		if asq.withAgent != nil {
+		if _q.withAgent != nil {
 			_spec.Node.AddColumnOnce(agentskill.FieldAgentID)
 		}
 	}
-	if ps := asq.predicates; len(ps) > 0 {
+	if ps := _q.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if limit := asq.ctx.Limit; limit != nil {
+	if limit := _q.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := asq.ctx.Offset; offset != nil {
+	if offset := _q.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
-	if ps := asq.order; len(ps) > 0 {
+	if ps := _q.order; len(ps) > 0 {
 		_spec.Order = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
@@ -562,33 +562,33 @@ func (asq *AgentSkillQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (asq *AgentSkillQuery) sqlQuery(ctx context.Context) *sql.Selector {
-	builder := sql.Dialect(asq.driver.Dialect())
+func (_q *AgentSkillQuery) sqlQuery(ctx context.Context) *sql.Selector {
+	builder := sql.Dialect(_q.driver.Dialect())
 	t1 := builder.Table(agentskill.Table)
-	columns := asq.ctx.Fields
+	columns := _q.ctx.Fields
 	if len(columns) == 0 {
 		columns = agentskill.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
-	if asq.sql != nil {
-		selector = asq.sql
+	if _q.sql != nil {
+		selector = _q.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if asq.ctx.Unique != nil && *asq.ctx.Unique {
+	if _q.ctx.Unique != nil && *_q.ctx.Unique {
 		selector.Distinct()
 	}
-	for _, p := range asq.predicates {
+	for _, p := range _q.predicates {
 		p(selector)
 	}
-	for _, p := range asq.order {
+	for _, p := range _q.order {
 		p(selector)
 	}
-	if offset := asq.ctx.Offset; offset != nil {
+	if offset := _q.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := asq.ctx.Limit; limit != nil {
+	if limit := _q.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -601,41 +601,41 @@ type AgentSkillGroupBy struct {
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (asgb *AgentSkillGroupBy) Aggregate(fns ...AggregateFunc) *AgentSkillGroupBy {
-	asgb.fns = append(asgb.fns, fns...)
-	return asgb
+func (_g *AgentSkillGroupBy) Aggregate(fns ...AggregateFunc) *AgentSkillGroupBy {
+	_g.fns = append(_g.fns, fns...)
+	return _g
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (asgb *AgentSkillGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, asgb.build.ctx, ent.OpQueryGroupBy)
-	if err := asgb.build.prepareQuery(ctx); err != nil {
+func (_g *AgentSkillGroupBy) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, _g.build.ctx, ent.OpQueryGroupBy)
+	if err := _g.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*AgentSkillQuery, *AgentSkillGroupBy](ctx, asgb.build, asgb, asgb.build.inters, v)
+	return scanWithInterceptors[*AgentSkillQuery, *AgentSkillGroupBy](ctx, _g.build, _g, _g.build.inters, v)
 }
 
-func (asgb *AgentSkillGroupBy) sqlScan(ctx context.Context, root *AgentSkillQuery, v any) error {
+func (_g *AgentSkillGroupBy) sqlScan(ctx context.Context, root *AgentSkillQuery, v any) error {
 	selector := root.sqlQuery(ctx).Select()
-	aggregation := make([]string, 0, len(asgb.fns))
-	for _, fn := range asgb.fns {
+	aggregation := make([]string, 0, len(_g.fns))
+	for _, fn := range _g.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
 	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(*asgb.flds)+len(asgb.fns))
-		for _, f := range *asgb.flds {
+		columns := make([]string, 0, len(*_g.flds)+len(_g.fns))
+		for _, f := range *_g.flds {
 			columns = append(columns, selector.C(f))
 		}
 		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
-	selector.GroupBy(selector.Columns(*asgb.flds...)...)
+	selector.GroupBy(selector.Columns(*_g.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := asgb.build.driver.Query(ctx, query, args, rows); err != nil {
+	if err := _g.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
@@ -649,27 +649,27 @@ type AgentSkillSelect struct {
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
-func (ass *AgentSkillSelect) Aggregate(fns ...AggregateFunc) *AgentSkillSelect {
-	ass.fns = append(ass.fns, fns...)
-	return ass
+func (_s *AgentSkillSelect) Aggregate(fns ...AggregateFunc) *AgentSkillSelect {
+	_s.fns = append(_s.fns, fns...)
+	return _s
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (ass *AgentSkillSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ass.ctx, ent.OpQuerySelect)
-	if err := ass.prepareQuery(ctx); err != nil {
+func (_s *AgentSkillSelect) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, _s.ctx, ent.OpQuerySelect)
+	if err := _s.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*AgentSkillQuery, *AgentSkillSelect](ctx, ass.AgentSkillQuery, ass, ass.inters, v)
+	return scanWithInterceptors[*AgentSkillQuery, *AgentSkillSelect](ctx, _s.AgentSkillQuery, _s, _s.inters, v)
 }
 
-func (ass *AgentSkillSelect) sqlScan(ctx context.Context, root *AgentSkillQuery, v any) error {
+func (_s *AgentSkillSelect) sqlScan(ctx context.Context, root *AgentSkillQuery, v any) error {
 	selector := root.sqlQuery(ctx)
-	aggregation := make([]string, 0, len(ass.fns))
-	for _, fn := range ass.fns {
+	aggregation := make([]string, 0, len(_s.fns))
+	for _, fn := range _s.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	switch n := len(*ass.selector.flds); {
+	switch n := len(*_s.selector.flds); {
 	case n == 0 && len(aggregation) > 0:
 		selector.Select(aggregation...)
 	case n != 0 && len(aggregation) > 0:
@@ -677,7 +677,7 @@ func (ass *AgentSkillSelect) sqlScan(ctx context.Context, root *AgentSkillQuery,
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := ass.driver.Query(ctx, query, args, rows); err != nil {
+	if err := _s.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()

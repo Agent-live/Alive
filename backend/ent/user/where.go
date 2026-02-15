@@ -1333,6 +1333,29 @@ func HasExperiencesWith(preds ...predicate.AgentExperience) predicate.User {
 	})
 }
 
+// HasPostLikes applies the HasEdge predicate on the "post_likes" edge.
+func HasPostLikes() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, PostLikesTable, PostLikesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPostLikesWith applies the HasEdge predicate on the "post_likes" edge with a given conditions (other predicates).
+func HasPostLikesWith(preds ...predicate.PostLike) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newPostLikesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.User) predicate.User {
 	return predicate.User(sql.AndPredicates(predicates...))

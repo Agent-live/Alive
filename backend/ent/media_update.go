@@ -22,113 +22,113 @@ type MediaUpdate struct {
 }
 
 // Where appends a list predicates to the MediaUpdate builder.
-func (mu *MediaUpdate) Where(ps ...predicate.Media) *MediaUpdate {
-	mu.mutation.Where(ps...)
-	return mu
+func (_u *MediaUpdate) Where(ps ...predicate.Media) *MediaUpdate {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // SetMimeType sets the "mime_type" field.
-func (mu *MediaUpdate) SetMimeType(s string) *MediaUpdate {
-	mu.mutation.SetMimeType(s)
-	return mu
+func (_u *MediaUpdate) SetMimeType(v string) *MediaUpdate {
+	_u.mutation.SetMimeType(v)
+	return _u
 }
 
 // SetNillableMimeType sets the "mime_type" field if the given value is not nil.
-func (mu *MediaUpdate) SetNillableMimeType(s *string) *MediaUpdate {
-	if s != nil {
-		mu.SetMimeType(*s)
+func (_u *MediaUpdate) SetNillableMimeType(v *string) *MediaUpdate {
+	if v != nil {
+		_u.SetMimeType(*v)
 	}
-	return mu
+	return _u
 }
 
 // SetFileSize sets the "file_size" field.
-func (mu *MediaUpdate) SetFileSize(i int64) *MediaUpdate {
-	mu.mutation.ResetFileSize()
-	mu.mutation.SetFileSize(i)
-	return mu
+func (_u *MediaUpdate) SetFileSize(v int64) *MediaUpdate {
+	_u.mutation.ResetFileSize()
+	_u.mutation.SetFileSize(v)
+	return _u
 }
 
 // SetNillableFileSize sets the "file_size" field if the given value is not nil.
-func (mu *MediaUpdate) SetNillableFileSize(i *int64) *MediaUpdate {
-	if i != nil {
-		mu.SetFileSize(*i)
+func (_u *MediaUpdate) SetNillableFileSize(v *int64) *MediaUpdate {
+	if v != nil {
+		_u.SetFileSize(*v)
 	}
-	return mu
+	return _u
 }
 
-// AddFileSize adds i to the "file_size" field.
-func (mu *MediaUpdate) AddFileSize(i int64) *MediaUpdate {
-	mu.mutation.AddFileSize(i)
-	return mu
+// AddFileSize adds value to the "file_size" field.
+func (_u *MediaUpdate) AddFileSize(v int64) *MediaUpdate {
+	_u.mutation.AddFileSize(v)
+	return _u
 }
 
 // SetStatus sets the "status" field.
-func (mu *MediaUpdate) SetStatus(s string) *MediaUpdate {
-	mu.mutation.SetStatus(s)
-	return mu
+func (_u *MediaUpdate) SetStatus(v string) *MediaUpdate {
+	_u.mutation.SetStatus(v)
+	return _u
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (mu *MediaUpdate) SetNillableStatus(s *string) *MediaUpdate {
-	if s != nil {
-		mu.SetStatus(*s)
+func (_u *MediaUpdate) SetNillableStatus(v *string) *MediaUpdate {
+	if v != nil {
+		_u.SetStatus(*v)
 	}
-	return mu
+	return _u
 }
 
 // SetURL sets the "url" field.
-func (mu *MediaUpdate) SetURL(s string) *MediaUpdate {
-	mu.mutation.SetURL(s)
-	return mu
+func (_u *MediaUpdate) SetURL(v string) *MediaUpdate {
+	_u.mutation.SetURL(v)
+	return _u
 }
 
 // SetNillableURL sets the "url" field if the given value is not nil.
-func (mu *MediaUpdate) SetNillableURL(s *string) *MediaUpdate {
-	if s != nil {
-		mu.SetURL(*s)
+func (_u *MediaUpdate) SetNillableURL(v *string) *MediaUpdate {
+	if v != nil {
+		_u.SetURL(*v)
 	}
-	return mu
+	return _u
 }
 
 // ClearURL clears the value of the "url" field.
-func (mu *MediaUpdate) ClearURL() *MediaUpdate {
-	mu.mutation.ClearURL()
-	return mu
+func (_u *MediaUpdate) ClearURL() *MediaUpdate {
+	_u.mutation.ClearURL()
+	return _u
 }
 
 // SetThumbnailURL sets the "thumbnail_url" field.
-func (mu *MediaUpdate) SetThumbnailURL(s string) *MediaUpdate {
-	mu.mutation.SetThumbnailURL(s)
-	return mu
+func (_u *MediaUpdate) SetThumbnailURL(v string) *MediaUpdate {
+	_u.mutation.SetThumbnailURL(v)
+	return _u
 }
 
 // SetNillableThumbnailURL sets the "thumbnail_url" field if the given value is not nil.
-func (mu *MediaUpdate) SetNillableThumbnailURL(s *string) *MediaUpdate {
-	if s != nil {
-		mu.SetThumbnailURL(*s)
+func (_u *MediaUpdate) SetNillableThumbnailURL(v *string) *MediaUpdate {
+	if v != nil {
+		_u.SetThumbnailURL(*v)
 	}
-	return mu
+	return _u
 }
 
 // ClearThumbnailURL clears the value of the "thumbnail_url" field.
-func (mu *MediaUpdate) ClearThumbnailURL() *MediaUpdate {
-	mu.mutation.ClearThumbnailURL()
-	return mu
+func (_u *MediaUpdate) ClearThumbnailURL() *MediaUpdate {
+	_u.mutation.ClearThumbnailURL()
+	return _u
 }
 
 // Mutation returns the MediaMutation object of the builder.
-func (mu *MediaUpdate) Mutation() *MediaMutation {
-	return mu.mutation
+func (_u *MediaUpdate) Mutation() *MediaMutation {
+	return _u.mutation
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (mu *MediaUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks(ctx, mu.sqlSave, mu.mutation, mu.hooks)
+func (_u *MediaUpdate) Save(ctx context.Context) (int, error) {
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (mu *MediaUpdate) SaveX(ctx context.Context) int {
-	affected, err := mu.Save(ctx)
+func (_u *MediaUpdate) SaveX(ctx context.Context) int {
+	affected, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -136,21 +136,21 @@ func (mu *MediaUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (mu *MediaUpdate) Exec(ctx context.Context) error {
-	_, err := mu.Save(ctx)
+func (_u *MediaUpdate) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (mu *MediaUpdate) ExecX(ctx context.Context) {
-	if err := mu.Exec(ctx); err != nil {
+func (_u *MediaUpdate) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (mu *MediaUpdate) check() error {
-	if v, ok := mu.mutation.MimeType(); ok {
+func (_u *MediaUpdate) check() error {
+	if v, ok := _u.mutation.MimeType(); ok {
 		if err := media.MimeTypeValidator(v); err != nil {
 			return &ValidationError{Name: "mime_type", err: fmt.Errorf(`ent: validator failed for field "Media.mime_type": %w`, err)}
 		}
@@ -158,43 +158,43 @@ func (mu *MediaUpdate) check() error {
 	return nil
 }
 
-func (mu *MediaUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := mu.check(); err != nil {
-		return n, err
+func (_u *MediaUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(media.Table, media.Columns, sqlgraph.NewFieldSpec(media.FieldID, field.TypeUUID))
-	if ps := mu.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := mu.mutation.MimeType(); ok {
+	if value, ok := _u.mutation.MimeType(); ok {
 		_spec.SetField(media.FieldMimeType, field.TypeString, value)
 	}
-	if value, ok := mu.mutation.FileSize(); ok {
+	if value, ok := _u.mutation.FileSize(); ok {
 		_spec.SetField(media.FieldFileSize, field.TypeInt64, value)
 	}
-	if value, ok := mu.mutation.AddedFileSize(); ok {
+	if value, ok := _u.mutation.AddedFileSize(); ok {
 		_spec.AddField(media.FieldFileSize, field.TypeInt64, value)
 	}
-	if value, ok := mu.mutation.Status(); ok {
+	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(media.FieldStatus, field.TypeString, value)
 	}
-	if value, ok := mu.mutation.URL(); ok {
+	if value, ok := _u.mutation.URL(); ok {
 		_spec.SetField(media.FieldURL, field.TypeString, value)
 	}
-	if mu.mutation.URLCleared() {
+	if _u.mutation.URLCleared() {
 		_spec.ClearField(media.FieldURL, field.TypeString)
 	}
-	if value, ok := mu.mutation.ThumbnailURL(); ok {
+	if value, ok := _u.mutation.ThumbnailURL(); ok {
 		_spec.SetField(media.FieldThumbnailURL, field.TypeString, value)
 	}
-	if mu.mutation.ThumbnailURLCleared() {
+	if _u.mutation.ThumbnailURLCleared() {
 		_spec.ClearField(media.FieldThumbnailURL, field.TypeString)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, mu.driver, _spec); err != nil {
+	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{media.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -202,8 +202,8 @@ func (mu *MediaUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
-	mu.mutation.done = true
-	return n, nil
+	_u.mutation.done = true
+	return _node, nil
 }
 
 // MediaUpdateOne is the builder for updating a single Media entity.
@@ -215,120 +215,120 @@ type MediaUpdateOne struct {
 }
 
 // SetMimeType sets the "mime_type" field.
-func (muo *MediaUpdateOne) SetMimeType(s string) *MediaUpdateOne {
-	muo.mutation.SetMimeType(s)
-	return muo
+func (_u *MediaUpdateOne) SetMimeType(v string) *MediaUpdateOne {
+	_u.mutation.SetMimeType(v)
+	return _u
 }
 
 // SetNillableMimeType sets the "mime_type" field if the given value is not nil.
-func (muo *MediaUpdateOne) SetNillableMimeType(s *string) *MediaUpdateOne {
-	if s != nil {
-		muo.SetMimeType(*s)
+func (_u *MediaUpdateOne) SetNillableMimeType(v *string) *MediaUpdateOne {
+	if v != nil {
+		_u.SetMimeType(*v)
 	}
-	return muo
+	return _u
 }
 
 // SetFileSize sets the "file_size" field.
-func (muo *MediaUpdateOne) SetFileSize(i int64) *MediaUpdateOne {
-	muo.mutation.ResetFileSize()
-	muo.mutation.SetFileSize(i)
-	return muo
+func (_u *MediaUpdateOne) SetFileSize(v int64) *MediaUpdateOne {
+	_u.mutation.ResetFileSize()
+	_u.mutation.SetFileSize(v)
+	return _u
 }
 
 // SetNillableFileSize sets the "file_size" field if the given value is not nil.
-func (muo *MediaUpdateOne) SetNillableFileSize(i *int64) *MediaUpdateOne {
-	if i != nil {
-		muo.SetFileSize(*i)
+func (_u *MediaUpdateOne) SetNillableFileSize(v *int64) *MediaUpdateOne {
+	if v != nil {
+		_u.SetFileSize(*v)
 	}
-	return muo
+	return _u
 }
 
-// AddFileSize adds i to the "file_size" field.
-func (muo *MediaUpdateOne) AddFileSize(i int64) *MediaUpdateOne {
-	muo.mutation.AddFileSize(i)
-	return muo
+// AddFileSize adds value to the "file_size" field.
+func (_u *MediaUpdateOne) AddFileSize(v int64) *MediaUpdateOne {
+	_u.mutation.AddFileSize(v)
+	return _u
 }
 
 // SetStatus sets the "status" field.
-func (muo *MediaUpdateOne) SetStatus(s string) *MediaUpdateOne {
-	muo.mutation.SetStatus(s)
-	return muo
+func (_u *MediaUpdateOne) SetStatus(v string) *MediaUpdateOne {
+	_u.mutation.SetStatus(v)
+	return _u
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (muo *MediaUpdateOne) SetNillableStatus(s *string) *MediaUpdateOne {
-	if s != nil {
-		muo.SetStatus(*s)
+func (_u *MediaUpdateOne) SetNillableStatus(v *string) *MediaUpdateOne {
+	if v != nil {
+		_u.SetStatus(*v)
 	}
-	return muo
+	return _u
 }
 
 // SetURL sets the "url" field.
-func (muo *MediaUpdateOne) SetURL(s string) *MediaUpdateOne {
-	muo.mutation.SetURL(s)
-	return muo
+func (_u *MediaUpdateOne) SetURL(v string) *MediaUpdateOne {
+	_u.mutation.SetURL(v)
+	return _u
 }
 
 // SetNillableURL sets the "url" field if the given value is not nil.
-func (muo *MediaUpdateOne) SetNillableURL(s *string) *MediaUpdateOne {
-	if s != nil {
-		muo.SetURL(*s)
+func (_u *MediaUpdateOne) SetNillableURL(v *string) *MediaUpdateOne {
+	if v != nil {
+		_u.SetURL(*v)
 	}
-	return muo
+	return _u
 }
 
 // ClearURL clears the value of the "url" field.
-func (muo *MediaUpdateOne) ClearURL() *MediaUpdateOne {
-	muo.mutation.ClearURL()
-	return muo
+func (_u *MediaUpdateOne) ClearURL() *MediaUpdateOne {
+	_u.mutation.ClearURL()
+	return _u
 }
 
 // SetThumbnailURL sets the "thumbnail_url" field.
-func (muo *MediaUpdateOne) SetThumbnailURL(s string) *MediaUpdateOne {
-	muo.mutation.SetThumbnailURL(s)
-	return muo
+func (_u *MediaUpdateOne) SetThumbnailURL(v string) *MediaUpdateOne {
+	_u.mutation.SetThumbnailURL(v)
+	return _u
 }
 
 // SetNillableThumbnailURL sets the "thumbnail_url" field if the given value is not nil.
-func (muo *MediaUpdateOne) SetNillableThumbnailURL(s *string) *MediaUpdateOne {
-	if s != nil {
-		muo.SetThumbnailURL(*s)
+func (_u *MediaUpdateOne) SetNillableThumbnailURL(v *string) *MediaUpdateOne {
+	if v != nil {
+		_u.SetThumbnailURL(*v)
 	}
-	return muo
+	return _u
 }
 
 // ClearThumbnailURL clears the value of the "thumbnail_url" field.
-func (muo *MediaUpdateOne) ClearThumbnailURL() *MediaUpdateOne {
-	muo.mutation.ClearThumbnailURL()
-	return muo
+func (_u *MediaUpdateOne) ClearThumbnailURL() *MediaUpdateOne {
+	_u.mutation.ClearThumbnailURL()
+	return _u
 }
 
 // Mutation returns the MediaMutation object of the builder.
-func (muo *MediaUpdateOne) Mutation() *MediaMutation {
-	return muo.mutation
+func (_u *MediaUpdateOne) Mutation() *MediaMutation {
+	return _u.mutation
 }
 
 // Where appends a list predicates to the MediaUpdate builder.
-func (muo *MediaUpdateOne) Where(ps ...predicate.Media) *MediaUpdateOne {
-	muo.mutation.Where(ps...)
-	return muo
+func (_u *MediaUpdateOne) Where(ps ...predicate.Media) *MediaUpdateOne {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (muo *MediaUpdateOne) Select(field string, fields ...string) *MediaUpdateOne {
-	muo.fields = append([]string{field}, fields...)
-	return muo
+func (_u *MediaUpdateOne) Select(field string, fields ...string) *MediaUpdateOne {
+	_u.fields = append([]string{field}, fields...)
+	return _u
 }
 
 // Save executes the query and returns the updated Media entity.
-func (muo *MediaUpdateOne) Save(ctx context.Context) (*Media, error) {
-	return withHooks(ctx, muo.sqlSave, muo.mutation, muo.hooks)
+func (_u *MediaUpdateOne) Save(ctx context.Context) (*Media, error) {
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (muo *MediaUpdateOne) SaveX(ctx context.Context) *Media {
-	node, err := muo.Save(ctx)
+func (_u *MediaUpdateOne) SaveX(ctx context.Context) *Media {
+	node, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -336,21 +336,21 @@ func (muo *MediaUpdateOne) SaveX(ctx context.Context) *Media {
 }
 
 // Exec executes the query on the entity.
-func (muo *MediaUpdateOne) Exec(ctx context.Context) error {
-	_, err := muo.Save(ctx)
+func (_u *MediaUpdateOne) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (muo *MediaUpdateOne) ExecX(ctx context.Context) {
-	if err := muo.Exec(ctx); err != nil {
+func (_u *MediaUpdateOne) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (muo *MediaUpdateOne) check() error {
-	if v, ok := muo.mutation.MimeType(); ok {
+func (_u *MediaUpdateOne) check() error {
+	if v, ok := _u.mutation.MimeType(); ok {
 		if err := media.MimeTypeValidator(v); err != nil {
 			return &ValidationError{Name: "mime_type", err: fmt.Errorf(`ent: validator failed for field "Media.mime_type": %w`, err)}
 		}
@@ -358,17 +358,17 @@ func (muo *MediaUpdateOne) check() error {
 	return nil
 }
 
-func (muo *MediaUpdateOne) sqlSave(ctx context.Context) (_node *Media, err error) {
-	if err := muo.check(); err != nil {
+func (_u *MediaUpdateOne) sqlSave(ctx context.Context) (_node *Media, err error) {
+	if err := _u.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(media.Table, media.Columns, sqlgraph.NewFieldSpec(media.FieldID, field.TypeUUID))
-	id, ok := muo.mutation.ID()
+	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Media.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := muo.fields; len(fields) > 0 {
+	if fields := _u.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, media.FieldID)
 		for _, f := range fields {
@@ -380,41 +380,41 @@ func (muo *MediaUpdateOne) sqlSave(ctx context.Context) (_node *Media, err error
 			}
 		}
 	}
-	if ps := muo.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := muo.mutation.MimeType(); ok {
+	if value, ok := _u.mutation.MimeType(); ok {
 		_spec.SetField(media.FieldMimeType, field.TypeString, value)
 	}
-	if value, ok := muo.mutation.FileSize(); ok {
+	if value, ok := _u.mutation.FileSize(); ok {
 		_spec.SetField(media.FieldFileSize, field.TypeInt64, value)
 	}
-	if value, ok := muo.mutation.AddedFileSize(); ok {
+	if value, ok := _u.mutation.AddedFileSize(); ok {
 		_spec.AddField(media.FieldFileSize, field.TypeInt64, value)
 	}
-	if value, ok := muo.mutation.Status(); ok {
+	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(media.FieldStatus, field.TypeString, value)
 	}
-	if value, ok := muo.mutation.URL(); ok {
+	if value, ok := _u.mutation.URL(); ok {
 		_spec.SetField(media.FieldURL, field.TypeString, value)
 	}
-	if muo.mutation.URLCleared() {
+	if _u.mutation.URLCleared() {
 		_spec.ClearField(media.FieldURL, field.TypeString)
 	}
-	if value, ok := muo.mutation.ThumbnailURL(); ok {
+	if value, ok := _u.mutation.ThumbnailURL(); ok {
 		_spec.SetField(media.FieldThumbnailURL, field.TypeString, value)
 	}
-	if muo.mutation.ThumbnailURLCleared() {
+	if _u.mutation.ThumbnailURLCleared() {
 		_spec.ClearField(media.FieldThumbnailURL, field.TypeString)
 	}
-	_node = &Media{config: muo.config}
+	_node = &Media{config: _u.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, muo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{media.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -422,6 +422,6 @@ func (muo *MediaUpdateOne) sqlSave(ctx context.Context) (_node *Media, err error
 		}
 		return nil, err
 	}
-	muo.mutation.done = true
+	_u.mutation.done = true
 	return _node, nil
 }

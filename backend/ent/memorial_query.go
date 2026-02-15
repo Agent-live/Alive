@@ -34,44 +34,44 @@ type MemorialQuery struct {
 }
 
 // Where adds a new predicate for the MemorialQuery builder.
-func (mq *MemorialQuery) Where(ps ...predicate.Memorial) *MemorialQuery {
-	mq.predicates = append(mq.predicates, ps...)
-	return mq
+func (_q *MemorialQuery) Where(ps ...predicate.Memorial) *MemorialQuery {
+	_q.predicates = append(_q.predicates, ps...)
+	return _q
 }
 
 // Limit the number of records to be returned by this query.
-func (mq *MemorialQuery) Limit(limit int) *MemorialQuery {
-	mq.ctx.Limit = &limit
-	return mq
+func (_q *MemorialQuery) Limit(limit int) *MemorialQuery {
+	_q.ctx.Limit = &limit
+	return _q
 }
 
 // Offset to start from.
-func (mq *MemorialQuery) Offset(offset int) *MemorialQuery {
-	mq.ctx.Offset = &offset
-	return mq
+func (_q *MemorialQuery) Offset(offset int) *MemorialQuery {
+	_q.ctx.Offset = &offset
+	return _q
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (mq *MemorialQuery) Unique(unique bool) *MemorialQuery {
-	mq.ctx.Unique = &unique
-	return mq
+func (_q *MemorialQuery) Unique(unique bool) *MemorialQuery {
+	_q.ctx.Unique = &unique
+	return _q
 }
 
 // Order specifies how the records should be ordered.
-func (mq *MemorialQuery) Order(o ...memorial.OrderOption) *MemorialQuery {
-	mq.order = append(mq.order, o...)
-	return mq
+func (_q *MemorialQuery) Order(o ...memorial.OrderOption) *MemorialQuery {
+	_q.order = append(_q.order, o...)
+	return _q
 }
 
 // QueryAgent chains the current query on the "agent" edge.
-func (mq *MemorialQuery) QueryAgent() *AgentQuery {
-	query := (&AgentClient{config: mq.config}).Query()
+func (_q *MemorialQuery) QueryAgent() *AgentQuery {
+	query := (&AgentClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := mq.prepareQuery(ctx); err != nil {
+		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
-		selector := mq.sqlQuery(ctx)
+		selector := _q.sqlQuery(ctx)
 		if err := selector.Err(); err != nil {
 			return nil, err
 		}
@@ -80,20 +80,20 @@ func (mq *MemorialQuery) QueryAgent() *AgentQuery {
 			sqlgraph.To(agent.Table, agent.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, true, memorial.AgentTable, memorial.AgentColumn),
 		)
-		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
 	}
 	return query
 }
 
 // QueryTributes chains the current query on the "tributes" edge.
-func (mq *MemorialQuery) QueryTributes() *TributeQuery {
-	query := (&TributeClient{config: mq.config}).Query()
+func (_q *MemorialQuery) QueryTributes() *TributeQuery {
+	query := (&TributeClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := mq.prepareQuery(ctx); err != nil {
+		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
-		selector := mq.sqlQuery(ctx)
+		selector := _q.sqlQuery(ctx)
 		if err := selector.Err(); err != nil {
 			return nil, err
 		}
@@ -102,7 +102,7 @@ func (mq *MemorialQuery) QueryTributes() *TributeQuery {
 			sqlgraph.To(tribute.Table, tribute.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, memorial.TributesTable, memorial.TributesColumn),
 		)
-		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
 	}
 	return query
@@ -110,8 +110,8 @@ func (mq *MemorialQuery) QueryTributes() *TributeQuery {
 
 // First returns the first Memorial entity from the query.
 // Returns a *NotFoundError when no Memorial was found.
-func (mq *MemorialQuery) First(ctx context.Context) (*Memorial, error) {
-	nodes, err := mq.Limit(1).All(setContextOp(ctx, mq.ctx, ent.OpQueryFirst))
+func (_q *MemorialQuery) First(ctx context.Context) (*Memorial, error) {
+	nodes, err := _q.Limit(1).All(setContextOp(ctx, _q.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -122,8 +122,8 @@ func (mq *MemorialQuery) First(ctx context.Context) (*Memorial, error) {
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (mq *MemorialQuery) FirstX(ctx context.Context) *Memorial {
-	node, err := mq.First(ctx)
+func (_q *MemorialQuery) FirstX(ctx context.Context) *Memorial {
+	node, err := _q.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
 	}
@@ -132,9 +132,9 @@ func (mq *MemorialQuery) FirstX(ctx context.Context) *Memorial {
 
 // FirstID returns the first Memorial ID from the query.
 // Returns a *NotFoundError when no Memorial ID was found.
-func (mq *MemorialQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+func (_q *MemorialQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = mq.Limit(1).IDs(setContextOp(ctx, mq.ctx, ent.OpQueryFirstID)); err != nil {
+	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -145,8 +145,8 @@ func (mq *MemorialQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) 
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (mq *MemorialQuery) FirstIDX(ctx context.Context) uuid.UUID {
-	id, err := mq.FirstID(ctx)
+func (_q *MemorialQuery) FirstIDX(ctx context.Context) uuid.UUID {
+	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
 	}
@@ -156,8 +156,8 @@ func (mq *MemorialQuery) FirstIDX(ctx context.Context) uuid.UUID {
 // Only returns a single Memorial entity found by the query, ensuring it only returns one.
 // Returns a *NotSingularError when more than one Memorial entity is found.
 // Returns a *NotFoundError when no Memorial entities are found.
-func (mq *MemorialQuery) Only(ctx context.Context) (*Memorial, error) {
-	nodes, err := mq.Limit(2).All(setContextOp(ctx, mq.ctx, ent.OpQueryOnly))
+func (_q *MemorialQuery) Only(ctx context.Context) (*Memorial, error) {
+	nodes, err := _q.Limit(2).All(setContextOp(ctx, _q.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -172,8 +172,8 @@ func (mq *MemorialQuery) Only(ctx context.Context) (*Memorial, error) {
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (mq *MemorialQuery) OnlyX(ctx context.Context) *Memorial {
-	node, err := mq.Only(ctx)
+func (_q *MemorialQuery) OnlyX(ctx context.Context) *Memorial {
+	node, err := _q.Only(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -183,9 +183,9 @@ func (mq *MemorialQuery) OnlyX(ctx context.Context) *Memorial {
 // OnlyID is like Only, but returns the only Memorial ID in the query.
 // Returns a *NotSingularError when more than one Memorial ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (mq *MemorialQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+func (_q *MemorialQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = mq.Limit(2).IDs(setContextOp(ctx, mq.ctx, ent.OpQueryOnlyID)); err != nil {
+	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -200,8 +200,8 @@ func (mq *MemorialQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (mq *MemorialQuery) OnlyIDX(ctx context.Context) uuid.UUID {
-	id, err := mq.OnlyID(ctx)
+func (_q *MemorialQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -209,18 +209,18 @@ func (mq *MemorialQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 }
 
 // All executes the query and returns a list of Memorials.
-func (mq *MemorialQuery) All(ctx context.Context) ([]*Memorial, error) {
-	ctx = setContextOp(ctx, mq.ctx, ent.OpQueryAll)
-	if err := mq.prepareQuery(ctx); err != nil {
+func (_q *MemorialQuery) All(ctx context.Context) ([]*Memorial, error) {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryAll)
+	if err := _q.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
 	qr := querierAll[[]*Memorial, *MemorialQuery]()
-	return withInterceptors[[]*Memorial](ctx, mq, qr, mq.inters)
+	return withInterceptors[[]*Memorial](ctx, _q, qr, _q.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
-func (mq *MemorialQuery) AllX(ctx context.Context) []*Memorial {
-	nodes, err := mq.All(ctx)
+func (_q *MemorialQuery) AllX(ctx context.Context) []*Memorial {
+	nodes, err := _q.All(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -228,20 +228,20 @@ func (mq *MemorialQuery) AllX(ctx context.Context) []*Memorial {
 }
 
 // IDs executes the query and returns a list of Memorial IDs.
-func (mq *MemorialQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
-	if mq.ctx.Unique == nil && mq.path != nil {
-		mq.Unique(true)
+func (_q *MemorialQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
+	if _q.ctx.Unique == nil && _q.path != nil {
+		_q.Unique(true)
 	}
-	ctx = setContextOp(ctx, mq.ctx, ent.OpQueryIDs)
-	if err = mq.Select(memorial.FieldID).Scan(ctx, &ids); err != nil {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryIDs)
+	if err = _q.Select(memorial.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (mq *MemorialQuery) IDsX(ctx context.Context) []uuid.UUID {
-	ids, err := mq.IDs(ctx)
+func (_q *MemorialQuery) IDsX(ctx context.Context) []uuid.UUID {
+	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -249,17 +249,17 @@ func (mq *MemorialQuery) IDsX(ctx context.Context) []uuid.UUID {
 }
 
 // Count returns the count of the given query.
-func (mq *MemorialQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, mq.ctx, ent.OpQueryCount)
-	if err := mq.prepareQuery(ctx); err != nil {
+func (_q *MemorialQuery) Count(ctx context.Context) (int, error) {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryCount)
+	if err := _q.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return withInterceptors[int](ctx, mq, querierCount[*MemorialQuery](), mq.inters)
+	return withInterceptors[int](ctx, _q, querierCount[*MemorialQuery](), _q.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (mq *MemorialQuery) CountX(ctx context.Context) int {
-	count, err := mq.Count(ctx)
+func (_q *MemorialQuery) CountX(ctx context.Context) int {
+	count, err := _q.Count(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -267,9 +267,9 @@ func (mq *MemorialQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (mq *MemorialQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, mq.ctx, ent.OpQueryExist)
-	switch _, err := mq.FirstID(ctx); {
+func (_q *MemorialQuery) Exist(ctx context.Context) (bool, error) {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryExist)
+	switch _, err := _q.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
@@ -280,8 +280,8 @@ func (mq *MemorialQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (mq *MemorialQuery) ExistX(ctx context.Context) bool {
-	exist, err := mq.Exist(ctx)
+func (_q *MemorialQuery) ExistX(ctx context.Context) bool {
+	exist, err := _q.Exist(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -290,44 +290,44 @@ func (mq *MemorialQuery) ExistX(ctx context.Context) bool {
 
 // Clone returns a duplicate of the MemorialQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (mq *MemorialQuery) Clone() *MemorialQuery {
-	if mq == nil {
+func (_q *MemorialQuery) Clone() *MemorialQuery {
+	if _q == nil {
 		return nil
 	}
 	return &MemorialQuery{
-		config:       mq.config,
-		ctx:          mq.ctx.Clone(),
-		order:        append([]memorial.OrderOption{}, mq.order...),
-		inters:       append([]Interceptor{}, mq.inters...),
-		predicates:   append([]predicate.Memorial{}, mq.predicates...),
-		withAgent:    mq.withAgent.Clone(),
-		withTributes: mq.withTributes.Clone(),
+		config:       _q.config,
+		ctx:          _q.ctx.Clone(),
+		order:        append([]memorial.OrderOption{}, _q.order...),
+		inters:       append([]Interceptor{}, _q.inters...),
+		predicates:   append([]predicate.Memorial{}, _q.predicates...),
+		withAgent:    _q.withAgent.Clone(),
+		withTributes: _q.withTributes.Clone(),
 		// clone intermediate query.
-		sql:  mq.sql.Clone(),
-		path: mq.path,
+		sql:  _q.sql.Clone(),
+		path: _q.path,
 	}
 }
 
 // WithAgent tells the query-builder to eager-load the nodes that are connected to
 // the "agent" edge. The optional arguments are used to configure the query builder of the edge.
-func (mq *MemorialQuery) WithAgent(opts ...func(*AgentQuery)) *MemorialQuery {
-	query := (&AgentClient{config: mq.config}).Query()
+func (_q *MemorialQuery) WithAgent(opts ...func(*AgentQuery)) *MemorialQuery {
+	query := (&AgentClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	mq.withAgent = query
-	return mq
+	_q.withAgent = query
+	return _q
 }
 
 // WithTributes tells the query-builder to eager-load the nodes that are connected to
 // the "tributes" edge. The optional arguments are used to configure the query builder of the edge.
-func (mq *MemorialQuery) WithTributes(opts ...func(*TributeQuery)) *MemorialQuery {
-	query := (&TributeClient{config: mq.config}).Query()
+func (_q *MemorialQuery) WithTributes(opts ...func(*TributeQuery)) *MemorialQuery {
+	query := (&TributeClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	mq.withTributes = query
-	return mq
+	_q.withTributes = query
+	return _q
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -344,10 +344,10 @@ func (mq *MemorialQuery) WithTributes(opts ...func(*TributeQuery)) *MemorialQuer
 //		GroupBy(memorial.FieldAgentID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-func (mq *MemorialQuery) GroupBy(field string, fields ...string) *MemorialGroupBy {
-	mq.ctx.Fields = append([]string{field}, fields...)
-	grbuild := &MemorialGroupBy{build: mq}
-	grbuild.flds = &mq.ctx.Fields
+func (_q *MemorialQuery) GroupBy(field string, fields ...string) *MemorialGroupBy {
+	_q.ctx.Fields = append([]string{field}, fields...)
+	grbuild := &MemorialGroupBy{build: _q}
+	grbuild.flds = &_q.ctx.Fields
 	grbuild.label = memorial.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -365,59 +365,59 @@ func (mq *MemorialQuery) GroupBy(field string, fields ...string) *MemorialGroupB
 //	client.Memorial.Query().
 //		Select(memorial.FieldAgentID).
 //		Scan(ctx, &v)
-func (mq *MemorialQuery) Select(fields ...string) *MemorialSelect {
-	mq.ctx.Fields = append(mq.ctx.Fields, fields...)
-	sbuild := &MemorialSelect{MemorialQuery: mq}
+func (_q *MemorialQuery) Select(fields ...string) *MemorialSelect {
+	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
+	sbuild := &MemorialSelect{MemorialQuery: _q}
 	sbuild.label = memorial.Label
-	sbuild.flds, sbuild.scan = &mq.ctx.Fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &_q.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
 // Aggregate returns a MemorialSelect configured with the given aggregations.
-func (mq *MemorialQuery) Aggregate(fns ...AggregateFunc) *MemorialSelect {
-	return mq.Select().Aggregate(fns...)
+func (_q *MemorialQuery) Aggregate(fns ...AggregateFunc) *MemorialSelect {
+	return _q.Select().Aggregate(fns...)
 }
 
-func (mq *MemorialQuery) prepareQuery(ctx context.Context) error {
-	for _, inter := range mq.inters {
+func (_q *MemorialQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range _q.inters {
 		if inter == nil {
 			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
-			if err := trv.Traverse(ctx, mq); err != nil {
+			if err := trv.Traverse(ctx, _q); err != nil {
 				return err
 			}
 		}
 	}
-	for _, f := range mq.ctx.Fields {
+	for _, f := range _q.ctx.Fields {
 		if !memorial.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
-	if mq.path != nil {
-		prev, err := mq.path(ctx)
+	if _q.path != nil {
+		prev, err := _q.path(ctx)
 		if err != nil {
 			return err
 		}
-		mq.sql = prev
+		_q.sql = prev
 	}
 	return nil
 }
 
-func (mq *MemorialQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Memorial, error) {
+func (_q *MemorialQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Memorial, error) {
 	var (
 		nodes       = []*Memorial{}
-		_spec       = mq.querySpec()
+		_spec       = _q.querySpec()
 		loadedTypes = [2]bool{
-			mq.withAgent != nil,
-			mq.withTributes != nil,
+			_q.withAgent != nil,
+			_q.withTributes != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Memorial).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
-		node := &Memorial{config: mq.config}
+		node := &Memorial{config: _q.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
@@ -425,20 +425,20 @@ func (mq *MemorialQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Mem
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
-	if err := sqlgraph.QueryNodes(ctx, mq.driver, _spec); err != nil {
+	if err := sqlgraph.QueryNodes(ctx, _q.driver, _spec); err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := mq.withAgent; query != nil {
-		if err := mq.loadAgent(ctx, query, nodes, nil,
+	if query := _q.withAgent; query != nil {
+		if err := _q.loadAgent(ctx, query, nodes, nil,
 			func(n *Memorial, e *Agent) { n.Edges.Agent = e }); err != nil {
 			return nil, err
 		}
 	}
-	if query := mq.withTributes; query != nil {
-		if err := mq.loadTributes(ctx, query, nodes,
+	if query := _q.withTributes; query != nil {
+		if err := _q.loadTributes(ctx, query, nodes,
 			func(n *Memorial) { n.Edges.Tributes = []*Tribute{} },
 			func(n *Memorial, e *Tribute) { n.Edges.Tributes = append(n.Edges.Tributes, e) }); err != nil {
 			return nil, err
@@ -447,7 +447,7 @@ func (mq *MemorialQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Mem
 	return nodes, nil
 }
 
-func (mq *MemorialQuery) loadAgent(ctx context.Context, query *AgentQuery, nodes []*Memorial, init func(*Memorial), assign func(*Memorial, *Agent)) error {
+func (_q *MemorialQuery) loadAgent(ctx context.Context, query *AgentQuery, nodes []*Memorial, init func(*Memorial), assign func(*Memorial, *Agent)) error {
 	ids := make([]uuid.UUID, 0, len(nodes))
 	nodeids := make(map[uuid.UUID][]*Memorial)
 	for i := range nodes {
@@ -476,7 +476,7 @@ func (mq *MemorialQuery) loadAgent(ctx context.Context, query *AgentQuery, nodes
 	}
 	return nil
 }
-func (mq *MemorialQuery) loadTributes(ctx context.Context, query *TributeQuery, nodes []*Memorial, init func(*Memorial), assign func(*Memorial, *Tribute)) error {
+func (_q *MemorialQuery) loadTributes(ctx context.Context, query *TributeQuery, nodes []*Memorial, init func(*Memorial), assign func(*Memorial, *Tribute)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uuid.UUID]*Memorial)
 	for i := range nodes {
@@ -507,24 +507,24 @@ func (mq *MemorialQuery) loadTributes(ctx context.Context, query *TributeQuery, 
 	return nil
 }
 
-func (mq *MemorialQuery) sqlCount(ctx context.Context) (int, error) {
-	_spec := mq.querySpec()
-	_spec.Node.Columns = mq.ctx.Fields
-	if len(mq.ctx.Fields) > 0 {
-		_spec.Unique = mq.ctx.Unique != nil && *mq.ctx.Unique
+func (_q *MemorialQuery) sqlCount(ctx context.Context) (int, error) {
+	_spec := _q.querySpec()
+	_spec.Node.Columns = _q.ctx.Fields
+	if len(_q.ctx.Fields) > 0 {
+		_spec.Unique = _q.ctx.Unique != nil && *_q.ctx.Unique
 	}
-	return sqlgraph.CountNodes(ctx, mq.driver, _spec)
+	return sqlgraph.CountNodes(ctx, _q.driver, _spec)
 }
 
-func (mq *MemorialQuery) querySpec() *sqlgraph.QuerySpec {
+func (_q *MemorialQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := sqlgraph.NewQuerySpec(memorial.Table, memorial.Columns, sqlgraph.NewFieldSpec(memorial.FieldID, field.TypeUUID))
-	_spec.From = mq.sql
-	if unique := mq.ctx.Unique; unique != nil {
+	_spec.From = _q.sql
+	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
-	} else if mq.path != nil {
+	} else if _q.path != nil {
 		_spec.Unique = true
 	}
-	if fields := mq.ctx.Fields; len(fields) > 0 {
+	if fields := _q.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, memorial.FieldID)
 		for i := range fields {
@@ -532,24 +532,24 @@ func (mq *MemorialQuery) querySpec() *sqlgraph.QuerySpec {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
-		if mq.withAgent != nil {
+		if _q.withAgent != nil {
 			_spec.Node.AddColumnOnce(memorial.FieldAgentID)
 		}
 	}
-	if ps := mq.predicates; len(ps) > 0 {
+	if ps := _q.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if limit := mq.ctx.Limit; limit != nil {
+	if limit := _q.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := mq.ctx.Offset; offset != nil {
+	if offset := _q.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
-	if ps := mq.order; len(ps) > 0 {
+	if ps := _q.order; len(ps) > 0 {
 		_spec.Order = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
@@ -559,33 +559,33 @@ func (mq *MemorialQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (mq *MemorialQuery) sqlQuery(ctx context.Context) *sql.Selector {
-	builder := sql.Dialect(mq.driver.Dialect())
+func (_q *MemorialQuery) sqlQuery(ctx context.Context) *sql.Selector {
+	builder := sql.Dialect(_q.driver.Dialect())
 	t1 := builder.Table(memorial.Table)
-	columns := mq.ctx.Fields
+	columns := _q.ctx.Fields
 	if len(columns) == 0 {
 		columns = memorial.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
-	if mq.sql != nil {
-		selector = mq.sql
+	if _q.sql != nil {
+		selector = _q.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if mq.ctx.Unique != nil && *mq.ctx.Unique {
+	if _q.ctx.Unique != nil && *_q.ctx.Unique {
 		selector.Distinct()
 	}
-	for _, p := range mq.predicates {
+	for _, p := range _q.predicates {
 		p(selector)
 	}
-	for _, p := range mq.order {
+	for _, p := range _q.order {
 		p(selector)
 	}
-	if offset := mq.ctx.Offset; offset != nil {
+	if offset := _q.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := mq.ctx.Limit; limit != nil {
+	if limit := _q.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -598,41 +598,41 @@ type MemorialGroupBy struct {
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (mgb *MemorialGroupBy) Aggregate(fns ...AggregateFunc) *MemorialGroupBy {
-	mgb.fns = append(mgb.fns, fns...)
-	return mgb
+func (_g *MemorialGroupBy) Aggregate(fns ...AggregateFunc) *MemorialGroupBy {
+	_g.fns = append(_g.fns, fns...)
+	return _g
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (mgb *MemorialGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, mgb.build.ctx, ent.OpQueryGroupBy)
-	if err := mgb.build.prepareQuery(ctx); err != nil {
+func (_g *MemorialGroupBy) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, _g.build.ctx, ent.OpQueryGroupBy)
+	if err := _g.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*MemorialQuery, *MemorialGroupBy](ctx, mgb.build, mgb, mgb.build.inters, v)
+	return scanWithInterceptors[*MemorialQuery, *MemorialGroupBy](ctx, _g.build, _g, _g.build.inters, v)
 }
 
-func (mgb *MemorialGroupBy) sqlScan(ctx context.Context, root *MemorialQuery, v any) error {
+func (_g *MemorialGroupBy) sqlScan(ctx context.Context, root *MemorialQuery, v any) error {
 	selector := root.sqlQuery(ctx).Select()
-	aggregation := make([]string, 0, len(mgb.fns))
-	for _, fn := range mgb.fns {
+	aggregation := make([]string, 0, len(_g.fns))
+	for _, fn := range _g.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
 	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(*mgb.flds)+len(mgb.fns))
-		for _, f := range *mgb.flds {
+		columns := make([]string, 0, len(*_g.flds)+len(_g.fns))
+		for _, f := range *_g.flds {
 			columns = append(columns, selector.C(f))
 		}
 		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
-	selector.GroupBy(selector.Columns(*mgb.flds...)...)
+	selector.GroupBy(selector.Columns(*_g.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := mgb.build.driver.Query(ctx, query, args, rows); err != nil {
+	if err := _g.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
@@ -646,27 +646,27 @@ type MemorialSelect struct {
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
-func (ms *MemorialSelect) Aggregate(fns ...AggregateFunc) *MemorialSelect {
-	ms.fns = append(ms.fns, fns...)
-	return ms
+func (_s *MemorialSelect) Aggregate(fns ...AggregateFunc) *MemorialSelect {
+	_s.fns = append(_s.fns, fns...)
+	return _s
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (ms *MemorialSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ms.ctx, ent.OpQuerySelect)
-	if err := ms.prepareQuery(ctx); err != nil {
+func (_s *MemorialSelect) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, _s.ctx, ent.OpQuerySelect)
+	if err := _s.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*MemorialQuery, *MemorialSelect](ctx, ms.MemorialQuery, ms, ms.inters, v)
+	return scanWithInterceptors[*MemorialQuery, *MemorialSelect](ctx, _s.MemorialQuery, _s, _s.inters, v)
 }
 
-func (ms *MemorialSelect) sqlScan(ctx context.Context, root *MemorialQuery, v any) error {
+func (_s *MemorialSelect) sqlScan(ctx context.Context, root *MemorialQuery, v any) error {
 	selector := root.sqlQuery(ctx)
-	aggregation := make([]string, 0, len(ms.fns))
-	for _, fn := range ms.fns {
+	aggregation := make([]string, 0, len(_s.fns))
+	for _, fn := range _s.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	switch n := len(*ms.selector.flds); {
+	switch n := len(*_s.selector.flds); {
 	case n == 0 && len(aggregation) > 0:
 		selector.Select(aggregation...)
 	case n != 0 && len(aggregation) > 0:
@@ -674,7 +674,7 @@ func (ms *MemorialSelect) sqlScan(ctx context.Context, root *MemorialQuery, v an
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := ms.driver.Query(ctx, query, args, rows); err != nil {
+	if err := _s.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()

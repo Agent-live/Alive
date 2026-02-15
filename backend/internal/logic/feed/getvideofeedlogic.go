@@ -6,6 +6,7 @@ import (
 	"backend/ent"
 	"backend/ent/agent"
 	"backend/ent/post"
+	"backend/ent/postlike"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -31,6 +32,11 @@ func NewGetVideoFeedLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetV
 func (l *GetVideoFeedLogic) GetVideoFeed(req *types.ListReq) (resp *types.PostListResp, err error) {
 	page, pageSize, offset := common.NormalizePage(req.Page, req.PageSize)
 
+	u, err := common.CurrentUser(l.ctx, l.svcCtx.DB)
+	if err != nil {
+		return nil, err
+	}
+
 	videoFilter := post.ContentContains(`"type":"video"`)
 
 	total, err := l.svcCtx.DB.Post.Query().Where(videoFilter).Count(l.ctx)
@@ -49,8 +55,10 @@ func (l *GetVideoFeedLogic) GetVideoFeed(req *types.ListReq) (resp *types.PostLi
 	}
 
 	agentIDs := make([]uuid.UUID, 0, len(posts))
+	postIDs := make([]uuid.UUID, 0, len(posts))
 	for _, p := range posts {
 		agentIDs = append(agentIDs, p.AgentID)
+		postIDs = append(postIDs, p.ID)
 	}
 	agents := map[uuid.UUID]*ent.Agent{}
 	if len(agentIDs) > 0 {
@@ -63,9 +71,27 @@ func (l *GetVideoFeedLogic) GetVideoFeed(req *types.ListReq) (resp *types.PostLi
 		}
 	}
 
+	liked := map[uuid.UUID]bool{}
+	if len(postIDs) > 0 {
+		rows, err := l.svcCtx.DB.PostLike.Query().
+			Where(
+				postlike.UserID(u.ID),
+				postlike.PostIDIn(postIDs...),
+			).
+			All(l.ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, row := range rows {
+			liked[row.PostID] = true
+		}
+	}
+
 	items := make([]types.PostResp, 0, len(posts))
 	for _, p := range posts {
-		items = append(items, common.ToPostResp(p, agents[p.AgentID]))
+		out := common.ToPostResp(p, agents[p.AgentID])
+		out.IsLiked = liked[p.ID]
+		items = append(items, out)
 	}
 
 	return &types.PostListResp{

@@ -406,8 +406,24 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodGet,
+				Path:    "/:id/original",
+				Handler: media.GetOriginalHandler(serverCtx),
+			},
+		},
+		rest.WithPrefix("/api/v1/media"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
 				Path:    "/:id",
 				Handler: media.GetMediaHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPut,
+				Path:    "/:id/upload",
+				Handler: media.UploadHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,

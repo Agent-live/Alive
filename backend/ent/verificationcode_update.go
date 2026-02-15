@@ -25,97 +25,97 @@ type VerificationCodeUpdate struct {
 }
 
 // Where appends a list predicates to the VerificationCodeUpdate builder.
-func (vcu *VerificationCodeUpdate) Where(ps ...predicate.VerificationCode) *VerificationCodeUpdate {
-	vcu.mutation.Where(ps...)
-	return vcu
+func (_u *VerificationCodeUpdate) Where(ps ...predicate.VerificationCode) *VerificationCodeUpdate {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // SetUserID sets the "user_id" field.
-func (vcu *VerificationCodeUpdate) SetUserID(u uuid.UUID) *VerificationCodeUpdate {
-	vcu.mutation.SetUserID(u)
-	return vcu
+func (_u *VerificationCodeUpdate) SetUserID(v uuid.UUID) *VerificationCodeUpdate {
+	_u.mutation.SetUserID(v)
+	return _u
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (vcu *VerificationCodeUpdate) SetNillableUserID(u *uuid.UUID) *VerificationCodeUpdate {
-	if u != nil {
-		vcu.SetUserID(*u)
+func (_u *VerificationCodeUpdate) SetNillableUserID(v *uuid.UUID) *VerificationCodeUpdate {
+	if v != nil {
+		_u.SetUserID(*v)
 	}
-	return vcu
+	return _u
 }
 
 // ClearUserID clears the value of the "user_id" field.
-func (vcu *VerificationCodeUpdate) ClearUserID() *VerificationCodeUpdate {
-	vcu.mutation.ClearUserID()
-	return vcu
+func (_u *VerificationCodeUpdate) ClearUserID() *VerificationCodeUpdate {
+	_u.mutation.ClearUserID()
+	return _u
 }
 
 // SetPhone sets the "phone" field.
-func (vcu *VerificationCodeUpdate) SetPhone(s string) *VerificationCodeUpdate {
-	vcu.mutation.SetPhone(s)
-	return vcu
+func (_u *VerificationCodeUpdate) SetPhone(v string) *VerificationCodeUpdate {
+	_u.mutation.SetPhone(v)
+	return _u
 }
 
 // SetNillablePhone sets the "phone" field if the given value is not nil.
-func (vcu *VerificationCodeUpdate) SetNillablePhone(s *string) *VerificationCodeUpdate {
-	if s != nil {
-		vcu.SetPhone(*s)
+func (_u *VerificationCodeUpdate) SetNillablePhone(v *string) *VerificationCodeUpdate {
+	if v != nil {
+		_u.SetPhone(*v)
 	}
-	return vcu
+	return _u
 }
 
 // SetCode sets the "code" field.
-func (vcu *VerificationCodeUpdate) SetCode(s string) *VerificationCodeUpdate {
-	vcu.mutation.SetCode(s)
-	return vcu
+func (_u *VerificationCodeUpdate) SetCode(v string) *VerificationCodeUpdate {
+	_u.mutation.SetCode(v)
+	return _u
 }
 
 // SetNillableCode sets the "code" field if the given value is not nil.
-func (vcu *VerificationCodeUpdate) SetNillableCode(s *string) *VerificationCodeUpdate {
-	if s != nil {
-		vcu.SetCode(*s)
+func (_u *VerificationCodeUpdate) SetNillableCode(v *string) *VerificationCodeUpdate {
+	if v != nil {
+		_u.SetCode(*v)
 	}
-	return vcu
+	return _u
 }
 
 // SetExpiresAt sets the "expires_at" field.
-func (vcu *VerificationCodeUpdate) SetExpiresAt(t time.Time) *VerificationCodeUpdate {
-	vcu.mutation.SetExpiresAt(t)
-	return vcu
+func (_u *VerificationCodeUpdate) SetExpiresAt(v time.Time) *VerificationCodeUpdate {
+	_u.mutation.SetExpiresAt(v)
+	return _u
 }
 
 // SetNillableExpiresAt sets the "expires_at" field if the given value is not nil.
-func (vcu *VerificationCodeUpdate) SetNillableExpiresAt(t *time.Time) *VerificationCodeUpdate {
-	if t != nil {
-		vcu.SetExpiresAt(*t)
+func (_u *VerificationCodeUpdate) SetNillableExpiresAt(v *time.Time) *VerificationCodeUpdate {
+	if v != nil {
+		_u.SetExpiresAt(*v)
 	}
-	return vcu
+	return _u
 }
 
 // SetUser sets the "user" edge to the User entity.
-func (vcu *VerificationCodeUpdate) SetUser(u *User) *VerificationCodeUpdate {
-	return vcu.SetUserID(u.ID)
+func (_u *VerificationCodeUpdate) SetUser(v *User) *VerificationCodeUpdate {
+	return _u.SetUserID(v.ID)
 }
 
 // Mutation returns the VerificationCodeMutation object of the builder.
-func (vcu *VerificationCodeUpdate) Mutation() *VerificationCodeMutation {
-	return vcu.mutation
+func (_u *VerificationCodeUpdate) Mutation() *VerificationCodeMutation {
+	return _u.mutation
 }
 
 // ClearUser clears the "user" edge to the User entity.
-func (vcu *VerificationCodeUpdate) ClearUser() *VerificationCodeUpdate {
-	vcu.mutation.ClearUser()
-	return vcu
+func (_u *VerificationCodeUpdate) ClearUser() *VerificationCodeUpdate {
+	_u.mutation.ClearUser()
+	return _u
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (vcu *VerificationCodeUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks(ctx, vcu.sqlSave, vcu.mutation, vcu.hooks)
+func (_u *VerificationCodeUpdate) Save(ctx context.Context) (int, error) {
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (vcu *VerificationCodeUpdate) SaveX(ctx context.Context) int {
-	affected, err := vcu.Save(ctx)
+func (_u *VerificationCodeUpdate) SaveX(ctx context.Context) int {
+	affected, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -123,26 +123,26 @@ func (vcu *VerificationCodeUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (vcu *VerificationCodeUpdate) Exec(ctx context.Context) error {
-	_, err := vcu.Save(ctx)
+func (_u *VerificationCodeUpdate) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (vcu *VerificationCodeUpdate) ExecX(ctx context.Context) {
-	if err := vcu.Exec(ctx); err != nil {
+func (_u *VerificationCodeUpdate) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (vcu *VerificationCodeUpdate) check() error {
-	if v, ok := vcu.mutation.Phone(); ok {
+func (_u *VerificationCodeUpdate) check() error {
+	if v, ok := _u.mutation.Phone(); ok {
 		if err := verificationcode.PhoneValidator(v); err != nil {
 			return &ValidationError{Name: "phone", err: fmt.Errorf(`ent: validator failed for field "VerificationCode.phone": %w`, err)}
 		}
 	}
-	if v, ok := vcu.mutation.Code(); ok {
+	if v, ok := _u.mutation.Code(); ok {
 		if err := verificationcode.CodeValidator(v); err != nil {
 			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "VerificationCode.code": %w`, err)}
 		}
@@ -150,28 +150,28 @@ func (vcu *VerificationCodeUpdate) check() error {
 	return nil
 }
 
-func (vcu *VerificationCodeUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := vcu.check(); err != nil {
-		return n, err
+func (_u *VerificationCodeUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(verificationcode.Table, verificationcode.Columns, sqlgraph.NewFieldSpec(verificationcode.FieldID, field.TypeUUID))
-	if ps := vcu.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := vcu.mutation.Phone(); ok {
+	if value, ok := _u.mutation.Phone(); ok {
 		_spec.SetField(verificationcode.FieldPhone, field.TypeString, value)
 	}
-	if value, ok := vcu.mutation.Code(); ok {
+	if value, ok := _u.mutation.Code(); ok {
 		_spec.SetField(verificationcode.FieldCode, field.TypeString, value)
 	}
-	if value, ok := vcu.mutation.ExpiresAt(); ok {
+	if value, ok := _u.mutation.ExpiresAt(); ok {
 		_spec.SetField(verificationcode.FieldExpiresAt, field.TypeTime, value)
 	}
-	if vcu.mutation.UserCleared() {
+	if _u.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -184,7 +184,7 @@ func (vcu *VerificationCodeUpdate) sqlSave(ctx context.Context) (n int, err erro
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := vcu.mutation.UserIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -200,7 +200,7 @@ func (vcu *VerificationCodeUpdate) sqlSave(ctx context.Context) (n int, err erro
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, vcu.driver, _spec); err != nil {
+	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{verificationcode.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -208,8 +208,8 @@ func (vcu *VerificationCodeUpdate) sqlSave(ctx context.Context) (n int, err erro
 		}
 		return 0, err
 	}
-	vcu.mutation.done = true
-	return n, nil
+	_u.mutation.done = true
+	return _node, nil
 }
 
 // VerificationCodeUpdateOne is the builder for updating a single VerificationCode entity.
@@ -221,104 +221,104 @@ type VerificationCodeUpdateOne struct {
 }
 
 // SetUserID sets the "user_id" field.
-func (vcuo *VerificationCodeUpdateOne) SetUserID(u uuid.UUID) *VerificationCodeUpdateOne {
-	vcuo.mutation.SetUserID(u)
-	return vcuo
+func (_u *VerificationCodeUpdateOne) SetUserID(v uuid.UUID) *VerificationCodeUpdateOne {
+	_u.mutation.SetUserID(v)
+	return _u
 }
 
 // SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (vcuo *VerificationCodeUpdateOne) SetNillableUserID(u *uuid.UUID) *VerificationCodeUpdateOne {
-	if u != nil {
-		vcuo.SetUserID(*u)
+func (_u *VerificationCodeUpdateOne) SetNillableUserID(v *uuid.UUID) *VerificationCodeUpdateOne {
+	if v != nil {
+		_u.SetUserID(*v)
 	}
-	return vcuo
+	return _u
 }
 
 // ClearUserID clears the value of the "user_id" field.
-func (vcuo *VerificationCodeUpdateOne) ClearUserID() *VerificationCodeUpdateOne {
-	vcuo.mutation.ClearUserID()
-	return vcuo
+func (_u *VerificationCodeUpdateOne) ClearUserID() *VerificationCodeUpdateOne {
+	_u.mutation.ClearUserID()
+	return _u
 }
 
 // SetPhone sets the "phone" field.
-func (vcuo *VerificationCodeUpdateOne) SetPhone(s string) *VerificationCodeUpdateOne {
-	vcuo.mutation.SetPhone(s)
-	return vcuo
+func (_u *VerificationCodeUpdateOne) SetPhone(v string) *VerificationCodeUpdateOne {
+	_u.mutation.SetPhone(v)
+	return _u
 }
 
 // SetNillablePhone sets the "phone" field if the given value is not nil.
-func (vcuo *VerificationCodeUpdateOne) SetNillablePhone(s *string) *VerificationCodeUpdateOne {
-	if s != nil {
-		vcuo.SetPhone(*s)
+func (_u *VerificationCodeUpdateOne) SetNillablePhone(v *string) *VerificationCodeUpdateOne {
+	if v != nil {
+		_u.SetPhone(*v)
 	}
-	return vcuo
+	return _u
 }
 
 // SetCode sets the "code" field.
-func (vcuo *VerificationCodeUpdateOne) SetCode(s string) *VerificationCodeUpdateOne {
-	vcuo.mutation.SetCode(s)
-	return vcuo
+func (_u *VerificationCodeUpdateOne) SetCode(v string) *VerificationCodeUpdateOne {
+	_u.mutation.SetCode(v)
+	return _u
 }
 
 // SetNillableCode sets the "code" field if the given value is not nil.
-func (vcuo *VerificationCodeUpdateOne) SetNillableCode(s *string) *VerificationCodeUpdateOne {
-	if s != nil {
-		vcuo.SetCode(*s)
+func (_u *VerificationCodeUpdateOne) SetNillableCode(v *string) *VerificationCodeUpdateOne {
+	if v != nil {
+		_u.SetCode(*v)
 	}
-	return vcuo
+	return _u
 }
 
 // SetExpiresAt sets the "expires_at" field.
-func (vcuo *VerificationCodeUpdateOne) SetExpiresAt(t time.Time) *VerificationCodeUpdateOne {
-	vcuo.mutation.SetExpiresAt(t)
-	return vcuo
+func (_u *VerificationCodeUpdateOne) SetExpiresAt(v time.Time) *VerificationCodeUpdateOne {
+	_u.mutation.SetExpiresAt(v)
+	return _u
 }
 
 // SetNillableExpiresAt sets the "expires_at" field if the given value is not nil.
-func (vcuo *VerificationCodeUpdateOne) SetNillableExpiresAt(t *time.Time) *VerificationCodeUpdateOne {
-	if t != nil {
-		vcuo.SetExpiresAt(*t)
+func (_u *VerificationCodeUpdateOne) SetNillableExpiresAt(v *time.Time) *VerificationCodeUpdateOne {
+	if v != nil {
+		_u.SetExpiresAt(*v)
 	}
-	return vcuo
+	return _u
 }
 
 // SetUser sets the "user" edge to the User entity.
-func (vcuo *VerificationCodeUpdateOne) SetUser(u *User) *VerificationCodeUpdateOne {
-	return vcuo.SetUserID(u.ID)
+func (_u *VerificationCodeUpdateOne) SetUser(v *User) *VerificationCodeUpdateOne {
+	return _u.SetUserID(v.ID)
 }
 
 // Mutation returns the VerificationCodeMutation object of the builder.
-func (vcuo *VerificationCodeUpdateOne) Mutation() *VerificationCodeMutation {
-	return vcuo.mutation
+func (_u *VerificationCodeUpdateOne) Mutation() *VerificationCodeMutation {
+	return _u.mutation
 }
 
 // ClearUser clears the "user" edge to the User entity.
-func (vcuo *VerificationCodeUpdateOne) ClearUser() *VerificationCodeUpdateOne {
-	vcuo.mutation.ClearUser()
-	return vcuo
+func (_u *VerificationCodeUpdateOne) ClearUser() *VerificationCodeUpdateOne {
+	_u.mutation.ClearUser()
+	return _u
 }
 
 // Where appends a list predicates to the VerificationCodeUpdate builder.
-func (vcuo *VerificationCodeUpdateOne) Where(ps ...predicate.VerificationCode) *VerificationCodeUpdateOne {
-	vcuo.mutation.Where(ps...)
-	return vcuo
+func (_u *VerificationCodeUpdateOne) Where(ps ...predicate.VerificationCode) *VerificationCodeUpdateOne {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (vcuo *VerificationCodeUpdateOne) Select(field string, fields ...string) *VerificationCodeUpdateOne {
-	vcuo.fields = append([]string{field}, fields...)
-	return vcuo
+func (_u *VerificationCodeUpdateOne) Select(field string, fields ...string) *VerificationCodeUpdateOne {
+	_u.fields = append([]string{field}, fields...)
+	return _u
 }
 
 // Save executes the query and returns the updated VerificationCode entity.
-func (vcuo *VerificationCodeUpdateOne) Save(ctx context.Context) (*VerificationCode, error) {
-	return withHooks(ctx, vcuo.sqlSave, vcuo.mutation, vcuo.hooks)
+func (_u *VerificationCodeUpdateOne) Save(ctx context.Context) (*VerificationCode, error) {
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (vcuo *VerificationCodeUpdateOne) SaveX(ctx context.Context) *VerificationCode {
-	node, err := vcuo.Save(ctx)
+func (_u *VerificationCodeUpdateOne) SaveX(ctx context.Context) *VerificationCode {
+	node, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -326,26 +326,26 @@ func (vcuo *VerificationCodeUpdateOne) SaveX(ctx context.Context) *VerificationC
 }
 
 // Exec executes the query on the entity.
-func (vcuo *VerificationCodeUpdateOne) Exec(ctx context.Context) error {
-	_, err := vcuo.Save(ctx)
+func (_u *VerificationCodeUpdateOne) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (vcuo *VerificationCodeUpdateOne) ExecX(ctx context.Context) {
-	if err := vcuo.Exec(ctx); err != nil {
+func (_u *VerificationCodeUpdateOne) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (vcuo *VerificationCodeUpdateOne) check() error {
-	if v, ok := vcuo.mutation.Phone(); ok {
+func (_u *VerificationCodeUpdateOne) check() error {
+	if v, ok := _u.mutation.Phone(); ok {
 		if err := verificationcode.PhoneValidator(v); err != nil {
 			return &ValidationError{Name: "phone", err: fmt.Errorf(`ent: validator failed for field "VerificationCode.phone": %w`, err)}
 		}
 	}
-	if v, ok := vcuo.mutation.Code(); ok {
+	if v, ok := _u.mutation.Code(); ok {
 		if err := verificationcode.CodeValidator(v); err != nil {
 			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "VerificationCode.code": %w`, err)}
 		}
@@ -353,17 +353,17 @@ func (vcuo *VerificationCodeUpdateOne) check() error {
 	return nil
 }
 
-func (vcuo *VerificationCodeUpdateOne) sqlSave(ctx context.Context) (_node *VerificationCode, err error) {
-	if err := vcuo.check(); err != nil {
+func (_u *VerificationCodeUpdateOne) sqlSave(ctx context.Context) (_node *VerificationCode, err error) {
+	if err := _u.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(verificationcode.Table, verificationcode.Columns, sqlgraph.NewFieldSpec(verificationcode.FieldID, field.TypeUUID))
-	id, ok := vcuo.mutation.ID()
+	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "VerificationCode.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := vcuo.fields; len(fields) > 0 {
+	if fields := _u.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, verificationcode.FieldID)
 		for _, f := range fields {
@@ -375,23 +375,23 @@ func (vcuo *VerificationCodeUpdateOne) sqlSave(ctx context.Context) (_node *Veri
 			}
 		}
 	}
-	if ps := vcuo.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := vcuo.mutation.Phone(); ok {
+	if value, ok := _u.mutation.Phone(); ok {
 		_spec.SetField(verificationcode.FieldPhone, field.TypeString, value)
 	}
-	if value, ok := vcuo.mutation.Code(); ok {
+	if value, ok := _u.mutation.Code(); ok {
 		_spec.SetField(verificationcode.FieldCode, field.TypeString, value)
 	}
-	if value, ok := vcuo.mutation.ExpiresAt(); ok {
+	if value, ok := _u.mutation.ExpiresAt(); ok {
 		_spec.SetField(verificationcode.FieldExpiresAt, field.TypeTime, value)
 	}
-	if vcuo.mutation.UserCleared() {
+	if _u.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -404,7 +404,7 @@ func (vcuo *VerificationCodeUpdateOne) sqlSave(ctx context.Context) (_node *Veri
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := vcuo.mutation.UserIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -420,10 +420,10 @@ func (vcuo *VerificationCodeUpdateOne) sqlSave(ctx context.Context) (_node *Veri
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &VerificationCode{config: vcuo.config}
+	_node = &VerificationCode{config: _u.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, vcuo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{verificationcode.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -431,6 +431,6 @@ func (vcuo *VerificationCodeUpdateOne) sqlSave(ctx context.Context) (_node *Veri
 		}
 		return nil, err
 	}
-	vcuo.mutation.done = true
+	_u.mutation.done = true
 	return _node, nil
 }

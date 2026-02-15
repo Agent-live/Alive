@@ -45,9 +45,11 @@ type PostEdges struct {
 	Agent *Agent `json:"agent,omitempty"`
 	// PostReplies holds the value of the post_replies edge.
 	PostReplies []*Reply `json:"post_replies,omitempty"`
+	// PostLikes holds the value of the post_likes edge.
+	PostLikes []*PostLike `json:"post_likes,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // AgentOrErr returns the Agent value or an error if the edge
@@ -68,6 +70,15 @@ func (e PostEdges) PostRepliesOrErr() ([]*Reply, error) {
 		return e.PostReplies, nil
 	}
 	return nil, &NotLoadedError{edge: "post_replies"}
+}
+
+// PostLikesOrErr returns the PostLikes value or an error if the edge
+// was not loaded in eager-loading.
+func (e PostEdges) PostLikesOrErr() ([]*PostLike, error) {
+	if e.loadedTypes[2] {
+		return e.PostLikes, nil
+	}
+	return nil, &NotLoadedError{edge: "post_likes"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -92,7 +103,7 @@ func (*Post) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Post fields.
-func (po *Post) assignValues(columns []string, values []any) error {
+func (_m *Post) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -102,52 +113,52 @@ func (po *Post) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				po.ID = *value
+				_m.ID = *value
 			}
 		case post.FieldAgentID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field agent_id", values[i])
 			} else if value != nil {
-				po.AgentID = *value
+				_m.AgentID = *value
 			}
 		case post.FieldContentType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field content_type", values[i])
 			} else if value.Valid {
-				po.ContentType = value.String
+				_m.ContentType = value.String
 			}
 		case post.FieldContent:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field content", values[i])
 			} else if value.Valid {
-				po.Content = value.String
+				_m.Content = value.String
 			}
 		case post.FieldLikes:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field likes", values[i])
 			} else if value.Valid {
-				po.Likes = value.Int64
+				_m.Likes = value.Int64
 			}
 		case post.FieldReplies:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field replies", values[i])
 			} else if value.Valid {
-				po.Replies = value.Int64
+				_m.Replies = value.Int64
 			}
 		case post.FieldShares:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field shares", values[i])
 			} else if value.Valid {
-				po.Shares = value.Int64
+				_m.Shares = value.Int64
 			}
 		case post.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				po.CreatedAt = value.Time
+				_m.CreatedAt = value.Time
 			}
 		default:
-			po.selectValues.Set(columns[i], values[i])
+			_m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -155,63 +166,68 @@ func (po *Post) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the Post.
 // This includes values selected through modifiers, order, etc.
-func (po *Post) Value(name string) (ent.Value, error) {
-	return po.selectValues.Get(name)
+func (_m *Post) Value(name string) (ent.Value, error) {
+	return _m.selectValues.Get(name)
 }
 
 // QueryAgent queries the "agent" edge of the Post entity.
-func (po *Post) QueryAgent() *AgentQuery {
-	return NewPostClient(po.config).QueryAgent(po)
+func (_m *Post) QueryAgent() *AgentQuery {
+	return NewPostClient(_m.config).QueryAgent(_m)
 }
 
 // QueryPostReplies queries the "post_replies" edge of the Post entity.
-func (po *Post) QueryPostReplies() *ReplyQuery {
-	return NewPostClient(po.config).QueryPostReplies(po)
+func (_m *Post) QueryPostReplies() *ReplyQuery {
+	return NewPostClient(_m.config).QueryPostReplies(_m)
+}
+
+// QueryPostLikes queries the "post_likes" edge of the Post entity.
+func (_m *Post) QueryPostLikes() *PostLikeQuery {
+	return NewPostClient(_m.config).QueryPostLikes(_m)
 }
 
 // Update returns a builder for updating this Post.
 // Note that you need to call Post.Unwrap() before calling this method if this Post
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (po *Post) Update() *PostUpdateOne {
-	return NewPostClient(po.config).UpdateOne(po)
+func (_m *Post) Update() *PostUpdateOne {
+	return NewPostClient(_m.config).UpdateOne(_m)
 }
 
 // Unwrap unwraps the Post entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (po *Post) Unwrap() *Post {
-	_tx, ok := po.config.driver.(*txDriver)
+func (_m *Post) Unwrap() *Post {
+	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: Post is not a transactional entity")
 	}
-	po.config.driver = _tx.drv
-	return po
+	_m.config.driver = _tx.drv
+	return _m
 }
 
 // String implements the fmt.Stringer.
-func (po *Post) String() string {
+func (_m *Post) String() string {
 	var builder strings.Builder
 	builder.WriteString("Post(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", po.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("agent_id=")
-	builder.WriteString(fmt.Sprintf("%v", po.AgentID))
+	builder.WriteString(fmt.Sprintf("%v", _m.AgentID))
 	builder.WriteString(", ")
 	builder.WriteString("content_type=")
-	builder.WriteString(po.ContentType)
+	builder.WriteString(_m.ContentType)
 	builder.WriteString(", ")
 	builder.WriteString("content=")
-	builder.WriteString(po.Content)
+	builder.WriteString(_m.Content)
 	builder.WriteString(", ")
 	builder.WriteString("likes=")
-	builder.WriteString(fmt.Sprintf("%v", po.Likes))
+	builder.WriteString(fmt.Sprintf("%v", _m.Likes))
 	builder.WriteString(", ")
 	builder.WriteString("replies=")
-	builder.WriteString(fmt.Sprintf("%v", po.Replies))
+	builder.WriteString(fmt.Sprintf("%v", _m.Replies))
 	builder.WriteString(", ")
 	builder.WriteString("shares=")
-	builder.WriteString(fmt.Sprintf("%v", po.Shares))
+	builder.WriteString(fmt.Sprintf("%v", _m.Shares))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
-	builder.WriteString(po.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

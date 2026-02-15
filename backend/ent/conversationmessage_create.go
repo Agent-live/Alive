@@ -24,103 +24,103 @@ type ConversationMessageCreate struct {
 }
 
 // SetConversationID sets the "conversation_id" field.
-func (cmc *ConversationMessageCreate) SetConversationID(u uuid.UUID) *ConversationMessageCreate {
-	cmc.mutation.SetConversationID(u)
-	return cmc
+func (_c *ConversationMessageCreate) SetConversationID(v uuid.UUID) *ConversationMessageCreate {
+	_c.mutation.SetConversationID(v)
+	return _c
 }
 
 // SetSenderAgentID sets the "sender_agent_id" field.
-func (cmc *ConversationMessageCreate) SetSenderAgentID(u uuid.UUID) *ConversationMessageCreate {
-	cmc.mutation.SetSenderAgentID(u)
-	return cmc
+func (_c *ConversationMessageCreate) SetSenderAgentID(v uuid.UUID) *ConversationMessageCreate {
+	_c.mutation.SetSenderAgentID(v)
+	return _c
 }
 
 // SetContent sets the "content" field.
-func (cmc *ConversationMessageCreate) SetContent(s string) *ConversationMessageCreate {
-	cmc.mutation.SetContent(s)
-	return cmc
+func (_c *ConversationMessageCreate) SetContent(v string) *ConversationMessageCreate {
+	_c.mutation.SetContent(v)
+	return _c
 }
 
 // SetMessageType sets the "message_type" field.
-func (cmc *ConversationMessageCreate) SetMessageType(s string) *ConversationMessageCreate {
-	cmc.mutation.SetMessageType(s)
-	return cmc
+func (_c *ConversationMessageCreate) SetMessageType(v string) *ConversationMessageCreate {
+	_c.mutation.SetMessageType(v)
+	return _c
 }
 
 // SetNillableMessageType sets the "message_type" field if the given value is not nil.
-func (cmc *ConversationMessageCreate) SetNillableMessageType(s *string) *ConversationMessageCreate {
-	if s != nil {
-		cmc.SetMessageType(*s)
+func (_c *ConversationMessageCreate) SetNillableMessageType(v *string) *ConversationMessageCreate {
+	if v != nil {
+		_c.SetMessageType(*v)
 	}
-	return cmc
+	return _c
 }
 
 // SetInteractionType sets the "interaction_type" field.
-func (cmc *ConversationMessageCreate) SetInteractionType(s string) *ConversationMessageCreate {
-	cmc.mutation.SetInteractionType(s)
-	return cmc
+func (_c *ConversationMessageCreate) SetInteractionType(v string) *ConversationMessageCreate {
+	_c.mutation.SetInteractionType(v)
+	return _c
 }
 
 // SetNillableInteractionType sets the "interaction_type" field if the given value is not nil.
-func (cmc *ConversationMessageCreate) SetNillableInteractionType(s *string) *ConversationMessageCreate {
-	if s != nil {
-		cmc.SetInteractionType(*s)
+func (_c *ConversationMessageCreate) SetNillableInteractionType(v *string) *ConversationMessageCreate {
+	if v != nil {
+		_c.SetInteractionType(*v)
 	}
-	return cmc
+	return _c
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (cmc *ConversationMessageCreate) SetCreatedAt(t time.Time) *ConversationMessageCreate {
-	cmc.mutation.SetCreatedAt(t)
-	return cmc
+func (_c *ConversationMessageCreate) SetCreatedAt(v time.Time) *ConversationMessageCreate {
+	_c.mutation.SetCreatedAt(v)
+	return _c
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (cmc *ConversationMessageCreate) SetNillableCreatedAt(t *time.Time) *ConversationMessageCreate {
-	if t != nil {
-		cmc.SetCreatedAt(*t)
+func (_c *ConversationMessageCreate) SetNillableCreatedAt(v *time.Time) *ConversationMessageCreate {
+	if v != nil {
+		_c.SetCreatedAt(*v)
 	}
-	return cmc
+	return _c
 }
 
 // SetID sets the "id" field.
-func (cmc *ConversationMessageCreate) SetID(u uuid.UUID) *ConversationMessageCreate {
-	cmc.mutation.SetID(u)
-	return cmc
+func (_c *ConversationMessageCreate) SetID(v uuid.UUID) *ConversationMessageCreate {
+	_c.mutation.SetID(v)
+	return _c
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (cmc *ConversationMessageCreate) SetNillableID(u *uuid.UUID) *ConversationMessageCreate {
-	if u != nil {
-		cmc.SetID(*u)
+func (_c *ConversationMessageCreate) SetNillableID(v *uuid.UUID) *ConversationMessageCreate {
+	if v != nil {
+		_c.SetID(*v)
 	}
-	return cmc
+	return _c
 }
 
 // SetConversation sets the "conversation" edge to the Conversation entity.
-func (cmc *ConversationMessageCreate) SetConversation(c *Conversation) *ConversationMessageCreate {
-	return cmc.SetConversationID(c.ID)
+func (_c *ConversationMessageCreate) SetConversation(v *Conversation) *ConversationMessageCreate {
+	return _c.SetConversationID(v.ID)
 }
 
 // SetSenderAgent sets the "sender_agent" edge to the Agent entity.
-func (cmc *ConversationMessageCreate) SetSenderAgent(a *Agent) *ConversationMessageCreate {
-	return cmc.SetSenderAgentID(a.ID)
+func (_c *ConversationMessageCreate) SetSenderAgent(v *Agent) *ConversationMessageCreate {
+	return _c.SetSenderAgentID(v.ID)
 }
 
 // Mutation returns the ConversationMessageMutation object of the builder.
-func (cmc *ConversationMessageCreate) Mutation() *ConversationMessageMutation {
-	return cmc.mutation
+func (_c *ConversationMessageCreate) Mutation() *ConversationMessageMutation {
+	return _c.mutation
 }
 
 // Save creates the ConversationMessage in the database.
-func (cmc *ConversationMessageCreate) Save(ctx context.Context) (*ConversationMessage, error) {
-	cmc.defaults()
-	return withHooks(ctx, cmc.sqlSave, cmc.mutation, cmc.hooks)
+func (_c *ConversationMessageCreate) Save(ctx context.Context) (*ConversationMessage, error) {
+	_c.defaults()
+	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (cmc *ConversationMessageCreate) SaveX(ctx context.Context) *ConversationMessage {
-	v, err := cmc.Save(ctx)
+func (_c *ConversationMessageCreate) SaveX(ctx context.Context) *ConversationMessage {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -128,71 +128,71 @@ func (cmc *ConversationMessageCreate) SaveX(ctx context.Context) *ConversationMe
 }
 
 // Exec executes the query.
-func (cmc *ConversationMessageCreate) Exec(ctx context.Context) error {
-	_, err := cmc.Save(ctx)
+func (_c *ConversationMessageCreate) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (cmc *ConversationMessageCreate) ExecX(ctx context.Context) {
-	if err := cmc.Exec(ctx); err != nil {
+func (_c *ConversationMessageCreate) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (cmc *ConversationMessageCreate) defaults() {
-	if _, ok := cmc.mutation.MessageType(); !ok {
+func (_c *ConversationMessageCreate) defaults() {
+	if _, ok := _c.mutation.MessageType(); !ok {
 		v := conversationmessage.DefaultMessageType
-		cmc.mutation.SetMessageType(v)
+		_c.mutation.SetMessageType(v)
 	}
-	if _, ok := cmc.mutation.CreatedAt(); !ok {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := conversationmessage.DefaultCreatedAt()
-		cmc.mutation.SetCreatedAt(v)
+		_c.mutation.SetCreatedAt(v)
 	}
-	if _, ok := cmc.mutation.ID(); !ok {
+	if _, ok := _c.mutation.ID(); !ok {
 		v := conversationmessage.DefaultID()
-		cmc.mutation.SetID(v)
+		_c.mutation.SetID(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (cmc *ConversationMessageCreate) check() error {
-	if _, ok := cmc.mutation.ConversationID(); !ok {
+func (_c *ConversationMessageCreate) check() error {
+	if _, ok := _c.mutation.ConversationID(); !ok {
 		return &ValidationError{Name: "conversation_id", err: errors.New(`ent: missing required field "ConversationMessage.conversation_id"`)}
 	}
-	if _, ok := cmc.mutation.SenderAgentID(); !ok {
+	if _, ok := _c.mutation.SenderAgentID(); !ok {
 		return &ValidationError{Name: "sender_agent_id", err: errors.New(`ent: missing required field "ConversationMessage.sender_agent_id"`)}
 	}
-	if _, ok := cmc.mutation.Content(); !ok {
+	if _, ok := _c.mutation.Content(); !ok {
 		return &ValidationError{Name: "content", err: errors.New(`ent: missing required field "ConversationMessage.content"`)}
 	}
-	if v, ok := cmc.mutation.Content(); ok {
+	if v, ok := _c.mutation.Content(); ok {
 		if err := conversationmessage.ContentValidator(v); err != nil {
 			return &ValidationError{Name: "content", err: fmt.Errorf(`ent: validator failed for field "ConversationMessage.content": %w`, err)}
 		}
 	}
-	if _, ok := cmc.mutation.MessageType(); !ok {
+	if _, ok := _c.mutation.MessageType(); !ok {
 		return &ValidationError{Name: "message_type", err: errors.New(`ent: missing required field "ConversationMessage.message_type"`)}
 	}
-	if _, ok := cmc.mutation.CreatedAt(); !ok {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "ConversationMessage.created_at"`)}
 	}
-	if len(cmc.mutation.ConversationIDs()) == 0 {
+	if len(_c.mutation.ConversationIDs()) == 0 {
 		return &ValidationError{Name: "conversation", err: errors.New(`ent: missing required edge "ConversationMessage.conversation"`)}
 	}
-	if len(cmc.mutation.SenderAgentIDs()) == 0 {
+	if len(_c.mutation.SenderAgentIDs()) == 0 {
 		return &ValidationError{Name: "sender_agent", err: errors.New(`ent: missing required edge "ConversationMessage.sender_agent"`)}
 	}
 	return nil
 }
 
-func (cmc *ConversationMessageCreate) sqlSave(ctx context.Context) (*ConversationMessage, error) {
-	if err := cmc.check(); err != nil {
+func (_c *ConversationMessageCreate) sqlSave(ctx context.Context) (*ConversationMessage, error) {
+	if err := _c.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := cmc.createSpec()
-	if err := sqlgraph.CreateNode(ctx, cmc.driver, _spec); err != nil {
+	_node, _spec := _c.createSpec()
+	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -205,37 +205,37 @@ func (cmc *ConversationMessageCreate) sqlSave(ctx context.Context) (*Conversatio
 			return nil, err
 		}
 	}
-	cmc.mutation.id = &_node.ID
-	cmc.mutation.done = true
+	_c.mutation.id = &_node.ID
+	_c.mutation.done = true
 	return _node, nil
 }
 
-func (cmc *ConversationMessageCreate) createSpec() (*ConversationMessage, *sqlgraph.CreateSpec) {
+func (_c *ConversationMessageCreate) createSpec() (*ConversationMessage, *sqlgraph.CreateSpec) {
 	var (
-		_node = &ConversationMessage{config: cmc.config}
+		_node = &ConversationMessage{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(conversationmessage.Table, sqlgraph.NewFieldSpec(conversationmessage.FieldID, field.TypeUUID))
 	)
-	if id, ok := cmc.mutation.ID(); ok {
+	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
-	if value, ok := cmc.mutation.Content(); ok {
+	if value, ok := _c.mutation.Content(); ok {
 		_spec.SetField(conversationmessage.FieldContent, field.TypeString, value)
 		_node.Content = value
 	}
-	if value, ok := cmc.mutation.MessageType(); ok {
+	if value, ok := _c.mutation.MessageType(); ok {
 		_spec.SetField(conversationmessage.FieldMessageType, field.TypeString, value)
 		_node.MessageType = value
 	}
-	if value, ok := cmc.mutation.InteractionType(); ok {
+	if value, ok := _c.mutation.InteractionType(); ok {
 		_spec.SetField(conversationmessage.FieldInteractionType, field.TypeString, value)
 		_node.InteractionType = &value
 	}
-	if value, ok := cmc.mutation.CreatedAt(); ok {
+	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(conversationmessage.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
-	if nodes := cmc.mutation.ConversationIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.ConversationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -252,7 +252,7 @@ func (cmc *ConversationMessageCreate) createSpec() (*ConversationMessage, *sqlgr
 		_node.ConversationID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := cmc.mutation.SenderAgentIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.SenderAgentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -280,16 +280,16 @@ type ConversationMessageCreateBulk struct {
 }
 
 // Save creates the ConversationMessage entities in the database.
-func (cmcb *ConversationMessageCreateBulk) Save(ctx context.Context) ([]*ConversationMessage, error) {
-	if cmcb.err != nil {
-		return nil, cmcb.err
+func (_c *ConversationMessageCreateBulk) Save(ctx context.Context) ([]*ConversationMessage, error) {
+	if _c.err != nil {
+		return nil, _c.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(cmcb.builders))
-	nodes := make([]*ConversationMessage, len(cmcb.builders))
-	mutators := make([]Mutator, len(cmcb.builders))
-	for i := range cmcb.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
+	nodes := make([]*ConversationMessage, len(_c.builders))
+	mutators := make([]Mutator, len(_c.builders))
+	for i := range _c.builders {
 		func(i int, root context.Context) {
-			builder := cmcb.builders[i]
+			builder := _c.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*ConversationMessageMutation)
@@ -303,11 +303,11 @@ func (cmcb *ConversationMessageCreateBulk) Save(ctx context.Context) ([]*Convers
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, cmcb.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, cmcb.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -327,7 +327,7 @@ func (cmcb *ConversationMessageCreateBulk) Save(ctx context.Context) ([]*Convers
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, cmcb.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -335,8 +335,8 @@ func (cmcb *ConversationMessageCreateBulk) Save(ctx context.Context) ([]*Convers
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (cmcb *ConversationMessageCreateBulk) SaveX(ctx context.Context) []*ConversationMessage {
-	v, err := cmcb.Save(ctx)
+func (_c *ConversationMessageCreateBulk) SaveX(ctx context.Context) []*ConversationMessage {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -344,14 +344,14 @@ func (cmcb *ConversationMessageCreateBulk) SaveX(ctx context.Context) []*Convers
 }
 
 // Exec executes the query.
-func (cmcb *ConversationMessageCreateBulk) Exec(ctx context.Context) error {
-	_, err := cmcb.Save(ctx)
+func (_c *ConversationMessageCreateBulk) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (cmcb *ConversationMessageCreateBulk) ExecX(ctx context.Context) {
-	if err := cmcb.Exec(ctx); err != nil {
+func (_c *ConversationMessageCreateBulk) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
