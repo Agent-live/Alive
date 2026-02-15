@@ -639,27 +639,27 @@ export function MyAgentPage() {
   /* ─── Chat input ─── */
   const activeTaskCount = tasks.filter((t) => t.status === 'pending' || t.status === 'in_progress').length;
 
-  const ChatInput = () => (
-    <button
-      onClick={openChat}
-      className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 text-left hover:border-primary/30 transition-colors"
-    >
-      <Icon name="chat" size={20} className="text-gray-400 flex-shrink-0" />
-      <span className="text-sm text-gray-400">{t('myAgent.chatPlaceholder')}</span>
-    </button>
-  );
-
-  const TaskSummary = () => (
-    <button
-      onClick={() => setTaskPopupOpen(true)}
-      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 text-left hover:border-blue-300 dark:hover:border-blue-600 transition-colors"
-    >
-      <Icon name="task_alt" size={20} className="text-blue-500 flex-shrink-0" />
-      <span className="text-sm text-gray-600 dark:text-gray-300 flex-1">
-        {activeTaskCount > 0 ? t('task.activeTasks', { count: activeTaskCount }) : t('task.empty')}
-      </span>
-      <Icon name="chevron_right" size={16} className="text-gray-300 dark:text-gray-600" />
-    </button>
+  const ChatAndTask = () => (
+    <div className="w-full flex items-center gap-2 px-4 py-3 rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800">
+      <button
+        onClick={openChat}
+        className="flex-1 flex items-center gap-3 text-left min-w-0 hover:opacity-70 transition-opacity"
+      >
+        <Icon name="chat" size={20} className="text-gray-400 flex-shrink-0" />
+        <span className="text-sm text-gray-400 truncate">{t('myAgent.chatPlaceholder')}</span>
+      </button>
+      <div className="w-px h-5 bg-gray-100 dark:bg-gray-800 flex-shrink-0" />
+      <button
+        onClick={() => setTaskPopupOpen(true)}
+        className="flex items-center gap-2 flex-shrink-0 hover:opacity-70 transition-opacity"
+      >
+        <Icon name="task_alt" size={18} className="text-blue-500" />
+        <span className="text-xs text-gray-500 dark:text-gray-400">
+          {activeTaskCount > 0 ? t('task.activeTasks', { count: activeTaskCount }) : t('task.empty')}
+        </span>
+        <Icon name="chevron_right" size={14} className="text-gray-300 dark:text-gray-600" />
+      </button>
+    </div>
   );
 
   /* ─── Life bar ─── */
@@ -867,8 +867,7 @@ export function MyAgentPage() {
             {!isDead && <AgentGreeting />}
             {isDead && <DeadPanel />}
 
-            {!isDead && <ChatInput />}
-            {!isDead && <TaskSummary />}
+            {!isDead && <ChatAndTask />}
 
             {/* Activity / Skills panel with sub-tabs */}
             {!isDead && (
@@ -926,8 +925,7 @@ export function MyAgentPage() {
         {!isDead && <AgentGreeting />}
         {isDead && <DeadPanel />}
 
-        {!isDead && <ChatInput />}
-        {!isDead && <TaskSummary />}
+        {!isDead && <ChatAndTask />}
 
         {/* Activity / Skills: compact horizontal scroll cards (mobile) */}
         {!isDead && (

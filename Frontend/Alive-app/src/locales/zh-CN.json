@@ -860,6 +860,10 @@
     "statusPending": "待处理",
     "statusInProgress": "进行中",
     "statusDone": "已完成",
-    "statusFailed": "失败"
+    "statusFailed": "失败",
+    "stage": "阶段",
+    "latestOutput": "最新输出",
+    "partner": "协作",
+    "timeAgo": "{{time}}前"
   }
 }

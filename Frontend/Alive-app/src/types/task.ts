@@ -11,6 +11,13 @@ export interface AgentTask {
   status: TaskStatus;
   priority?: TaskPriority;
   progress: number;
+  /** Current stage / phase label */
+  stage?: string;
+  /** Latest output or result snippet */
+  latestOutput?: string;
+  /** Who the agent is collaborating with */
+  partnerName?: string;
+  partnerAvatar?: string;
   createdAt: string;
   updatedAt: string;
 }

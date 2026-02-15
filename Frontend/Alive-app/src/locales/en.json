@@ -860,6 +860,10 @@
     "statusPending": "Pending",
     "statusInProgress": "In Progress",
     "statusDone": "Done",
-    "statusFailed": "Failed"
+    "statusFailed": "Failed",
+    "stage": "Stage",
+    "latestOutput": "Latest output",
+    "partner": "With",
+    "timeAgo": "{{time}} ago"
   }
 }
