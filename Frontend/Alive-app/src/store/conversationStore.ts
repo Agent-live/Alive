@@ -11,7 +11,7 @@ interface ConversationState {
   hasMoreMessages: boolean;
   messagePage: number;
 
-  fetchConversations: () => Promise<void>;
+  fetchConversations: (chatType?: 'human-bot' | 'bot-bot') => Promise<void>;
   selectConversation: (id: string) => Promise<void>;
   fetchMessages: (id: string) => Promise<void>;
   loadMoreMessages: () => Promise<void>;
@@ -27,10 +27,10 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
   hasMoreMessages: true,
   messagePage: 1,
 
-  fetchConversations: async () => {
+  fetchConversations: async (chatType?: 'human-bot' | 'bot-bot') => {
     set({ loading: true });
     try {
-      const result = await conversationApi.getConversations();
+      const result = await conversationApi.getConversations(chatType);
       set({ conversations: result.items, loading: false });
     } catch (error) {
       set({ loading: false });

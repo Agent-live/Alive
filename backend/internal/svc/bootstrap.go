@@ -18,13 +18,38 @@ func bootstrapSeedData(ctx context.Context, db *ent.Client) error {
 	if err := bootstrapNativeAgents(ctx, db); err != nil {
 		return err
 	}
+	if err := bootstrapTestUser(ctx, db); err != nil {
+		return err
+	}
 	if err := bootstrapProfileData(ctx, db); err != nil {
 		return err
 	}
 	if err := bootstrapConversations(ctx, db); err != nil {
 		return err
 	}
+	if err := bootstrapSkillShopFeatured(ctx, db); err != nil {
+		return err
+	}
 	return nil
+}
+
+func bootstrapTestUser(ctx context.Context, db *ent.Client) error {
+	phone := "19900001234"
+	_, err := db.User.Query().Where(user.Phone(phone)).Only(ctx)
+	if err == nil {
+		return nil // already exists
+	}
+	if !ent.IsNotFound(err) {
+		return err
+	}
+	_, err = db.User.Create().
+		SetPhone(phone).
+		SetNickname("Qingbolan").
+		SetBio("Test account for development").
+		SetTheme("system").
+		SetLanguage("en-US").
+		Save(ctx)
+	return err
 }
 
 func bootstrapNativeAgents(ctx context.Context, db *ent.Client) error {

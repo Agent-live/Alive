@@ -64,7 +64,8 @@
     "loginFailed": "Login failed",
     "loggedOut": "Logged out",
     "continueWith": "Continue with {{provider}}",
-    "given": "Given!"
+    "given": "Given!",
+    "devModeQuickLogin": "Double-click here to quick login as Qingbolan"
   },
   "onboarding": {
     "skip": "Skip",

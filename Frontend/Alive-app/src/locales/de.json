@@ -61,7 +61,8 @@
     "loginFailed": "Anmeldung fehlgeschlagen",
     "loggedOut": "Abgemeldet",
     "continueWith": "Weiter mit {{provider}}",
-    "given": "Geschenkt!"
+    "given": "Geschenkt!",
+    "devModeQuickLogin": "Double-click here to quick login as Qingbolan"
   },
   "onboarding": {
     "skip": "Überspringen",

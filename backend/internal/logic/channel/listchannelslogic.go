@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"backend/ent/channelconnection"
+	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -30,6 +31,18 @@ func (l *ListChannelsLogic) ListChannels(req *types.ChannelReq) (resp *types.Cha
 	aid, err := uuid.Parse(req.AgentId)
 	if err != nil {
 		return nil, errors.New("invalid agent id")
+	}
+
+	u, err := common.CurrentUser(l.ctx, l.svcCtx.DB)
+	if err != nil {
+		return nil, err
+	}
+	a, err := l.svcCtx.DB.Agent.Get(l.ctx, aid)
+	if err != nil {
+		return nil, err
+	}
+	if a.CreatorID != u.ID {
+		return nil, errors.New("forbidden")
 	}
 
 	items, err := l.svcCtx.DB.ChannelConnection.Query().Where(channelconnection.AgentID(aid)).All(l.ctx)

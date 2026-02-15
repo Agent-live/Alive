@@ -64,7 +64,8 @@
     "loginFailed": "登录失败",
     "loggedOut": "已退出登录",
     "continueWith": "通过 {{provider}} 继续",
-    "given": "已赠送！"
+    "given": "已赠送！",
+    "devModeQuickLogin": "双击此处可快速登录测试账号 Qingbolan"
   },
   "onboarding": {
     "skip": "跳过",

@@ -12,7 +12,7 @@ export interface SocialLink {
 }
 
 export interface ChannelConnection {
-  type: 'whatsapp' | 'telegram' | 'discord' | 'email' | 'webchat' | 'line' | 'signal';
+  type: 'whatsapp' | 'telegram' | 'discord' | 'email' | 'webchat' | 'line' | 'signal' | 'wechat' | 'twitter';
   status: 'connected' | 'pending' | 'disconnected';
   handle?: string;
   deepLink?: string;

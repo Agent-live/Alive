@@ -9,3 +9,7 @@ func mkdirAll(path string) error {
 func writeFile(path string, data []byte) error {
 	return os.WriteFile(path, data, 0644)
 }
+
+func removeAll(path string) error {
+	return os.RemoveAll(path)
+}

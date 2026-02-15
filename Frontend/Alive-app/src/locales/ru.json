@@ -61,7 +61,8 @@
     "loginFailed": "Ошибка входа",
     "loggedOut": "Вы вышли из системы",
     "continueWith": "Продолжить через {{provider}}",
-    "given": "Подарено!"
+    "given": "Подарено!",
+    "devModeQuickLogin": "Double-click here to quick login as Qingbolan"
   },
   "onboarding": {
     "skip": "Пропустить",

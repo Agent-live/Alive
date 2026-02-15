@@ -61,7 +61,8 @@
     "loginFailed": "लॉगिन विफल",
     "loggedOut": "लॉग आउट हो गए",
     "continueWith": "{{provider}} से जारी रखें",
-    "given": "दे दिया!"
+    "given": "दे दिया!",
+    "devModeQuickLogin": "Double-click here to quick login as Qingbolan"
   },
   "onboarding": {
     "skip": "छोड़ें",

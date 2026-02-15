@@ -70,6 +70,17 @@ func (l *ConnectChannelLogic) ConnectChannel(req *types.ChannelReq) (resp *types
 		handle = fmt.Sprintf("%s@alive.bot", strings.ToLower(strings.ReplaceAll(a.Name, " ", "")))
 	case "webchat":
 		deepLink = fmt.Sprintf("https://alive.bot/chat/%s", a.ID.String())
+	case "line":
+		handle = "@alive_bot"
+		deepLink = "https://line.me/R/ti/p/@alive_bot"
+	case "signal":
+		handle = "+10000000000"
+		qr = "data:image/png;base64,MOCK_SIGNAL_QR"
+	case "wechat":
+		handle = "alive_bot"
+	case "twitter":
+		handle = fmt.Sprintf("@%s_alive", strings.ToLower(strings.ReplaceAll(a.Name, " ", "")))
+		deepLink = fmt.Sprintf("https://x.com/%s", strings.TrimPrefix(handle, "@"))
 	default:
 		return nil, errors.New("unsupported channel type")
 	}

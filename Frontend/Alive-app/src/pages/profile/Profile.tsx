@@ -8,7 +8,7 @@ import { FeedCard, PostDetailModal } from '@/components/feed';
 import { getTextPreview } from '@/components/feed/ContentBlockRenderer';
 import { CardMasonry } from '@/components/reactbits/Masonry';
 import { MessagesTab } from './MessagesTab';
-import { useAuthStore, useAgentStore, useTimerStore, useFeedStore } from '@/store';
+import { useAuthStore, useAgentStore, useTimerStore, useFeedStore, toast } from '@/store';
 import { userApi } from '@/api/user';
 import { skillApi } from '@/api/skills';
 import { experienceApi } from '@/api/experiences';
@@ -51,7 +51,7 @@ const mockExperiences: AgentExperience[] = [
 export function ProfilePage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { user, logout } = useAuthStore();
+  const { user } = useAuthStore();
   const { myAgents, primaryAgentId, fetchMyAgents } = useAgentStore();
   const { dailyBudget, agentNetBalance, transactions, fetchBudget, fetchAgentNetBalance, fetchTransactions, depositTimer, withdrawTimer } = useTimerStore();
   const { feedPosts, fetchFeed, likePost, replyToPost, sharePost } = useFeedStore();
@@ -74,9 +74,18 @@ export function ProfilePage() {
     fetchTransactions();
     fetchFeed();
 
-    skillApi.listSkills().then((res) => { if (res.length > 0) setSkills(res); }).catch(() => {});
-    experienceApi.listExperiences().then((res) => { if (res.length > 0) setExperiences(res); }).catch(() => {});
+    skillApi.listSkills().then((res) => { setSkills(res); }).catch(() => {});
+    experienceApi.listExperiences().then((res) => { setExperiences(res); }).catch(() => {});
   }, [fetchMyAgents, fetchBudget, fetchAgentNetBalance, fetchTransactions, fetchFeed]);
+
+  const refreshSkills = useCallback(async () => {
+    try {
+      const res = await skillApi.listSkills();
+      setSkills(res);
+    } catch {
+      // ignore
+    }
+  }, []);
 
   // Posts by any of user's agents
   const myAgentIds = useMemo(() => new Set(myAgents.map((a) => a.id)), [myAgents]);
@@ -302,7 +311,7 @@ export function ProfilePage() {
             )}
             {activeTab === 'messages' && <MessagesTab />}
             {activeTab === 'teach' && (
-              <TeachTab skills={skills} agents={agentOptions} />
+              <TeachTab skills={skills} agents={agentOptions} onSkillsUpdated={refreshSkills} />
             )}
             {activeTab === 'experience' && (
               <ExperienceTab experiences={experiences} />
@@ -478,7 +487,7 @@ const categoryLabelKeys: Record<AgentSkill['category'], string> = {
   other: 'profile.categoryOther',
 };
 
-function TeachTab({ skills, agents }: { skills: AgentSkill[]; agents: AgentInfo[] }) {
+function TeachTab({ skills, agents, onSkillsUpdated }: { skills: AgentSkill[]; agents: AgentInfo[]; onSkillsUpdated: () => void }) {
   const { t } = useTranslation();
   const [selectedSkill, setSelectedSkill] = useState<AgentSkill | null>(null);
 
@@ -531,7 +540,12 @@ function TeachTab({ skills, agents }: { skills: AgentSkill[]; agents: AgentInfo[
         <EmptyState icon="school" message={t('profile.noActiveSkills')} />
       )}
 
-      <SkillDetailModal skill={selectedSkill} agents={agents} onClose={() => setSelectedSkill(null)} />
+      <SkillDetailModal
+        skill={selectedSkill}
+        agents={agents}
+        onClose={() => setSelectedSkill(null)}
+        onSkillsUpdated={onSkillsUpdated}
+      />
     </div>
   );
 }
@@ -591,13 +605,104 @@ function SkillCard({ skill, showAgent, onClick }: { skill: AgentSkill; showAgent
 
 /* ─── Skill detail / management modal ─── */
 
-function SkillDetailModal({ skill, agents, onClose }: { skill: AgentSkill | null; agents: AgentInfo[]; onClose: () => void }) {
+function SkillDetailModal({ skill, agents, onClose, onSkillsUpdated }: { skill: AgentSkill | null; agents: AgentInfo[]; onClose: () => void; onSkillsUpdated: () => void }) {
   const { t } = useTranslation();
   const [teachAgent, setTeachAgent] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState<{ name: string; description: string; instructions: string }>({ name: '', description: '', instructions: '' });
+
+  useEffect(() => {
+    setTeachAgent(null);
+    setEditing(false);
+    if (skill) {
+      setDraft({
+        name: skill.name || '',
+        description: skill.description || '',
+        instructions: skill.instructions || '',
+      });
+    }
+  }, [skill?.id]);
 
   if (!skill) return null;
 
   const isLesson = skill.status === 'lesson';
+
+  const startEdit = () => {
+    setDraft({
+      name: skill.name || '',
+      description: skill.description || '',
+      instructions: skill.instructions || '',
+    });
+    setEditing(true);
+  };
+
+  const doTeach = async () => {
+    if (!teachAgent) return;
+    setBusy(true);
+    try {
+      await skillApi.teachSkill(skill.id, teachAgent);
+      toast.success(t('profile.teachAgent', { name: agents.find((a) => a.agentId === teachAgent)?.agentName }));
+      onSkillsUpdated();
+      onClose();
+    } catch (e) {
+      const message = e && typeof e === 'object' && 'message' in e ? String((e as any).message) : 'Teach failed';
+      toast.error(message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const doDeactivate = async () => {
+    setBusy(true);
+    try {
+      await skillApi.deactivateSkill(skill.id);
+      toast.success(t('profile.deactivate'));
+      onSkillsUpdated();
+      onClose();
+    } catch (e) {
+      const message = e && typeof e === 'object' && 'message' in e ? String((e as any).message) : 'Deactivate failed';
+      toast.error(message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const doDelete = async () => {
+    const ok = window.confirm(`${t('common.delete')} "${skill.name}"?`);
+    if (!ok) return;
+    setBusy(true);
+    try {
+      await skillApi.deleteSkill(skill.id);
+      toast.success(t('common.done'));
+      onSkillsUpdated();
+      onClose();
+    } catch (e) {
+      const message = e && typeof e === 'object' && 'message' in e ? String((e as any).message) : 'Delete failed';
+      toast.error(message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const doSaveEdit = async () => {
+    setBusy(true);
+    try {
+      await skillApi.updateSkill(skill.id, {
+        name: draft.name,
+        description: draft.description,
+        instructions: draft.instructions,
+      });
+      toast.success(t('common.save'));
+      setEditing(false);
+      onSkillsUpdated();
+    } catch (e) {
+      const message = e && typeof e === 'object' && 'message' in e ? String((e as any).message) : 'Update failed';
+      toast.error(message);
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center" onClick={onClose}>
@@ -647,17 +752,54 @@ function SkillDetailModal({ skill, agents, onClose }: { skill: AgentSkill | null
 
         {/* Body */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          <div>
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">{t('profile.description')}</h3>
-            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{skill.description}</p>
-          </div>
+          {editing ? (
+            <>
+              <div>
+                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">{t('common.edit')}</h3>
+                <input
+                  value={draft.name}
+                  onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 text-sm"
+                  placeholder="Skill name"
+                  disabled={busy}
+                />
+              </div>
+              <div>
+                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">{t('profile.description')}</h3>
+                <textarea
+                  value={draft.description}
+                  onChange={(e) => setDraft((d) => ({ ...d, description: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 text-sm min-h-[90px]"
+                  placeholder="Description"
+                  disabled={busy}
+                />
+              </div>
+              <div>
+                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">{t('profile.instructions')}</h3>
+                <textarea
+                  value={draft.instructions}
+                  onChange={(e) => setDraft((d) => ({ ...d, instructions: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 font-mono text-xs min-h-[220px]"
+                  placeholder="Instructions"
+                  disabled={busy}
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              <div>
+                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">{t('profile.description')}</h3>
+                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{skill.description}</p>
+              </div>
 
-          <div>
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">{t('profile.instructions')}</h3>
-            <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl whitespace-pre-wrap font-mono text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
-              {skill.instructions}
-            </div>
-          </div>
+              <div>
+                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">{t('profile.instructions')}</h3>
+                <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl whitespace-pre-wrap font-mono text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+                  {skill.instructions}
+                </div>
+              </div>
+            </>
+          )}
 
           <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400">
             {skill.status === 'active' && skill.taughtAt && <span>{t('profile.taught', { date: formatDate(skill.taughtAt) })}</span>}
@@ -693,9 +835,10 @@ function SkillDetailModal({ skill, agents, onClose }: { skill: AgentSkill | null
         <div className="p-4 border-t border-gray-100 dark:border-gray-800 flex gap-2">
           {isLesson ? (
             <button
-              disabled={!teachAgent}
+              disabled={!teachAgent || busy}
+              onClick={doTeach}
               className={`flex-1 py-2.5 rounded-xl text-sm font-medium flex items-center justify-center gap-1.5 transition-colors ${
-                teachAgent
+                teachAgent && !busy
                   ? 'bg-primary text-white hover:bg-primary/90'
                   : 'bg-gray-100 dark:bg-gray-800 text-gray-300 dark:text-gray-600 cursor-not-allowed'
               }`}
@@ -704,16 +847,47 @@ function SkillDetailModal({ skill, agents, onClose }: { skill: AgentSkill | null
               {teachAgent ? t('profile.teachAgent', { name: agents.find((a) => a.agentId === teachAgent)?.agentName }) : t('profile.selectAnAgent')}
             </button>
           ) : (
-            <button className="flex-1 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-1.5">
+            <button
+              onClick={doDeactivate}
+              disabled={busy}
+              className="flex-1 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
+            >
               <Icon name="pause_circle" size={16} />
               {t('profile.deactivate')}
             </button>
           )}
-          <button className="flex-1 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-1.5">
-            <Icon name="edit" size={16} />
-            {t('common.edit')}
-          </button>
-          <button className="py-2.5 px-4 rounded-xl border border-red-200 dark:border-red-800 text-red-500 text-sm font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+          {editing ? (
+            <>
+              <button
+                onClick={() => setEditing(false)}
+                disabled={busy}
+                className="flex-1 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                onClick={doSaveEdit}
+                disabled={busy}
+                className="flex-1 py-2.5 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
+              >
+                {t('common.save')}
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={startEdit}
+              disabled={busy}
+              className="flex-1 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
+            >
+              <Icon name="edit" size={16} />
+              {t('common.edit')}
+            </button>
+          )}
+          <button
+            onClick={doDelete}
+            disabled={busy}
+            className="py-2.5 px-4 rounded-xl border border-red-200 dark:border-red-800 text-red-500 text-sm font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50"
+          >
             <Icon name="delete" size={16} />
           </button>
         </div>

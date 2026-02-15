@@ -3,6 +3,7 @@ package skill
 import (
 	"context"
 	"errors"
+	"strings"
 
 	"backend/internal/logic/common"
 	"backend/internal/svc"
@@ -41,6 +42,15 @@ func (l *DeactivateSkillLogic) DeactivateSkill(req *types.SkillIdReq) (resp *typ
 	}
 	if row.OwnerUserID != u.ID {
 		return nil, errors.New("forbidden")
+	}
+
+	// Best-effort: remove the bound workspace skill so OpenClaw stops loading it.
+	if row.AgentID != nil && row.Status == "active" {
+		skillRef := row.Name
+		if row.OpenclawSkillID != nil && strings.TrimSpace(*row.OpenclawSkillID) != "" {
+			skillRef = *row.OpenclawSkillID
+		}
+		_ = l.svcCtx.OpenClaw.RemoveSkill(l.ctx, row.AgentID.String(), skillRef)
 	}
 
 	row, err = l.svcCtx.DB.AgentSkill.UpdateOneID(skillID).

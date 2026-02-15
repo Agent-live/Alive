@@ -6,6 +6,8 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"os"
+	"strconv"
 	"strings"
 
 	"backend/ent"
@@ -25,7 +27,8 @@ func main() {
 	flag.Parse()
 
 	var c config.Config
-	conf.MustLoad(*configFile, &c)
+	conf.MustLoad(*configFile, &c, conf.UseEnv())
+	applyEnvOverrides(&c)
 
 	// Standardize API error responses for the frontend (code/message/details JSON).
 	httpx.SetErrorHandlerCtx(func(_ctx context.Context, err error) (int, any) {
@@ -74,4 +77,50 @@ func main() {
 
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 	server.Start()
+}
+
+func applyEnvOverrides(c *config.Config) {
+	// This project ships with a file-based config (etc/alive-api.yaml), but container
+	// environments should be able to override critical knobs via env vars.
+	if c == nil {
+		return
+	}
+
+	if v := strings.TrimSpace(os.Getenv("ALIVE_API_HOST")); v != "" {
+		c.Host = v
+	}
+	if v := strings.TrimSpace(os.Getenv("ALIVE_API_PORT")); v != "" {
+		if p, err := strconv.Atoi(v); err == nil && p > 0 {
+			c.Port = p
+		}
+	}
+
+	if v := strings.TrimSpace(os.Getenv("POSTGRES_DSN")); v != "" {
+		c.Postgres.DSN = v
+	}
+
+	if v := strings.TrimSpace(os.Getenv("OPENCLAW_BASE_URL")); v != "" {
+		c.OpenClaw.BaseURL = v
+	}
+	if v := strings.TrimSpace(os.Getenv("OPENCLAW_GATEWAY_TOKEN")); v != "" {
+		c.OpenClaw.GatewayToken = v
+	}
+	if v := strings.TrimSpace(os.Getenv("OPENCLAW_WORKSPACE_ROOT")); v != "" {
+		c.OpenClaw.WorkspaceRoot = v
+	}
+	if v := strings.TrimSpace(os.Getenv("OPENCLAW_ENABLED")); v != "" {
+		if b, err := strconv.ParseBool(v); err == nil {
+			c.OpenClaw.Enabled = b
+		}
+	}
+	if v := strings.TrimSpace(os.Getenv("OPENCLAW_GREEN_MODE")); v != "" {
+		if b, err := strconv.ParseBool(v); err == nil {
+			c.OpenClaw.GreenMode = b
+		}
+	}
+	if v := strings.TrimSpace(os.Getenv("OPENCLAW_SHARED_GATEWAY")); v != "" {
+		if b, err := strconv.ParseBool(v); err == nil {
+			c.OpenClaw.SharedGateway = b
+		}
+	}
 }

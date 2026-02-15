@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from '../../components/common/Icon';
 import { AgentAvatar } from '../../components/agent';
 import { useAgentStore } from '../../store';
+import { chatApi } from '../../api/chat';
 
 interface ChatMessage {
   id: string;
@@ -22,15 +23,8 @@ export function AgentChatPage() {
 
   const prefill = (location.state as { prefill?: string } | null)?.prefill || '';
 
-  const [messages, setMessages] = useState<ChatMessage[]>(() => {
-    if (!myAgent) return [];
-    return [{
-      id: 'msg_init',
-      role: 'agent' as const,
-      text: myAgent.lastWords || t('myAgent.defaultGreeting', { name: myAgent.name }),
-      timestamp: new Date().toISOString(),
-    }];
-  });
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [sessionId, setSessionId] = useState('main');
   const [input, setInput] = useState(prefill);
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -44,7 +38,53 @@ export function AgentChatPage() {
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
-  const handleSend = useCallback(() => {
+  useEffect(() => {
+    if (!myAgent) return;
+
+    let cancelled = false;
+    chatApi.getHistory()
+      .then((res) => {
+        if (cancelled) return;
+        const history = (res.messages || [])
+          .filter((m) => m.role === 'user' || m.role === 'assistant')
+          .map((m) => ({
+            id: m.id,
+            role: (m.role === 'assistant' ? 'agent' : 'user') as ChatMessage['role'],
+            text: m.content,
+            timestamp: m.createdAt,
+          }));
+
+        if (history.length > 0) {
+          setMessages(history);
+          const last = res.messages?.[res.messages.length - 1];
+          if (last?.sessionId) setSessionId(last.sessionId);
+          return;
+        }
+
+        setMessages([{
+          id: 'msg_init',
+          role: 'agent',
+          text: myAgent.lastWords || t('myAgent.defaultGreeting', { name: myAgent.name }),
+          timestamp: new Date().toISOString(),
+        }]);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error('Failed to load chat history:', err);
+        setMessages([{
+          id: 'msg_init',
+          role: 'agent',
+          text: myAgent.lastWords || t('myAgent.defaultGreeting', { name: myAgent.name }),
+          timestamp: new Date().toISOString(),
+        }]);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [myAgent?.id, t]);
+
+  const handleSend = useCallback(async () => {
     const text = input.trim();
     if (!text || !myAgent) return;
 
@@ -58,26 +98,28 @@ export function AgentChatPage() {
     setInput('');
     setIsTyping(true);
 
-    // Simulate agent reply (in production this would be WebSocket)
-    setTimeout(() => {
-      const replies = [
-        t('chat.mockReply1', { name: myAgent.name }),
-        t('chat.mockReply2'),
-        t('chat.mockReply3'),
-        t('chat.mockReply4'),
-        t('chat.mockReply5'),
-      ];
+    try {
+      const res = await chatApi.send(text, sessionId);
+      if (res.sessionId) setSessionId(res.sessionId);
       const agentMsg: ChatMessage = {
         id: `msg_${Date.now() + 1}`,
         role: 'agent',
-        text: replies[Math.floor(Math.random() * replies.length)],
-        timestamp: new Date().toISOString(),
-        timeCost: Math.ceil(Math.random() * 5) + 1,
+        text: res.reply,
+        timestamp: res.createdAt || new Date().toISOString(),
       };
       setMessages((prev) => [...prev, agentMsg]);
+    } catch (err) {
+      console.error('Failed to send chat message:', err);
+      setMessages((prev) => [...prev, {
+        id: `msg_err_${Date.now()}`,
+        role: 'agent',
+        text: 'Failed to send message. Please try again.',
+        timestamp: new Date().toISOString(),
+      }]);
+    } finally {
       setIsTyping(false);
-    }, 1000 + Math.random() * 2000);
-  }, [input, myAgent, t]);
+    }
+  }, [input, myAgent, sessionId]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {

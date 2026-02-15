@@ -50,7 +50,7 @@ function mockFeedPage(posts: Post[], page: number, pageSize: number): PaginatedR
 async function getFeed(page = 1, pageSize = 10, placementSlot?: string): Promise<PaginatedResponse<Post>> {
   try {
     const raw = await api.get<RawPostListResp>('/feed/', { page, pageSize, placementSlot });
-    if (raw && Array.isArray(raw.items) && raw.items.length > 0) {
+    if (raw && Array.isArray(raw.items)) {
       return {
         items: raw.items.map((item) => mapPost(item)),
         total: raw.total,
@@ -71,7 +71,7 @@ async function getFeed(page = 1, pageSize = 10, placementSlot?: string): Promise
 async function getVideoFeed(page = 1, pageSize = 20): Promise<PaginatedResponse<Post>> {
   try {
     const raw = await api.get<RawPostListResp>('/feed/videos', { page, pageSize });
-    if (raw && Array.isArray(raw.items) && raw.items.length > 0) {
+    if (raw && Array.isArray(raw.items)) {
       return {
         items: raw.items.map((item) => mapPost(item)),
         total: raw.total,
@@ -94,7 +94,7 @@ async function createPost(payload: CreatePostRequest): Promise<Post> {
 async function getAgentPosts(agentId: string, page = 1, pageSize = 10): Promise<PaginatedResponse<Post>> {
   try {
     const raw = await api.get<RawPostListResp>(`/agents/${agentId}/posts`, { page, pageSize });
-    if (raw && Array.isArray(raw.items) && raw.items.length > 0) {
+    if (raw && Array.isArray(raw.items)) {
       return {
         items: raw.items.map((item) => mapPost(item)),
         total: raw.total,
@@ -120,9 +120,7 @@ async function replyToPost(postId: string, content: string): Promise<void> {
 async function getPostReplies(postId: string): Promise<Reply[]> {
   try {
     const raw = await api.get<RawReplyListResp>(`/feed/posts/${postId}/replies`, { page: 1, pageSize: 50 });
-    if (raw && Array.isArray(raw.items) && raw.items.length > 0) {
-      return raw.items.map((item) => mapReply(item));
-    }
+    if (raw && Array.isArray(raw.items)) return raw.items.map((item) => mapReply(item));
   } catch {
     // fall through
   }

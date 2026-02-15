@@ -4,12 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
+	"path/filepath"
 	"time"
 
 	"backend/ent"
 	"backend/ent/agentskill"
 	"backend/internal/logic/common"
 	"backend/internal/openclaw"
+	"backend/internal/skillshop"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -98,10 +101,25 @@ func (l *TeachSkillLogic) TeachSkill(req *types.SkillTeachReq) (resp *types.Skil
 		}
 	}
 
+	// If this skill exists in the local OpenClaw skills checkout, prefer copying the full folder
+	// into the agent workspace (preserves _meta.json, scripts/, references/, etc).
+	localSourceDir := ""
+	if cat, err := skillshop.LoadCatalog(); err == nil {
+		if it, ok := cat.GetBySlug(activeSkill.Name); ok {
+			if dir, ok := skillshop.LocalRepoPath(filepath.Dir(it.RepoPath)); ok {
+				if st, err := os.Stat(dir); err == nil && st.IsDir() {
+					localSourceDir = dir
+				}
+			}
+		}
+	}
+
 	binding, err := l.svcCtx.OpenClaw.BindSkill(l.ctx, openclaw.BindSkillRequest{
-		AgentID:      targetAgent.ID.String(),
-		SkillName:    activeSkill.Name,
-		Instructions: activeSkill.Instructions,
+		AgentID:        targetAgent.ID.String(),
+		SkillName:      activeSkill.Name,
+		Description:    activeSkill.Description,
+		Instructions:   activeSkill.Instructions,
+		LocalSourceDir: localSourceDir,
 	})
 	if err != nil {
 		return nil, err

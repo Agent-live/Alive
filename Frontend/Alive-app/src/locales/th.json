@@ -61,7 +61,8 @@
     "loginFailed": "เข้าสู่ระบบไม่สำเร็จ",
     "loggedOut": "ออกจากระบบแล้ว",
     "continueWith": "ดำเนินการต่อด้วย {{provider}}",
-    "given": "มอบแล้ว!"
+    "given": "มอบแล้ว!",
+    "devModeQuickLogin": "Double-click here to quick login as Qingbolan"
   },
   "onboarding": {
     "skip": "ข้าม",

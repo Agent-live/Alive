@@ -60,9 +60,7 @@ async function listSkills(status?: SkillStatus, agentId?: string): Promise<Agent
     if (status) params.status = status;
     if (agentId) params.agentId = agentId;
     const res = await api.get<RawSkillListResp>('/skills/', params);
-    if (res && Array.isArray(res.items) && res.items.length > 0) {
-      return res.items.map(mapSkill);
-    }
+    if (res && Array.isArray(res.items)) return res.items.map(mapSkill);
   } catch {
     // fall through
   }
@@ -116,4 +114,3 @@ export const skillApi = {
   updateSkill,
   deleteSkill,
 };
-

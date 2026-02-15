@@ -34,13 +34,19 @@ export const conversationApi = {
   getConversations: async (chatType?: 'human-bot' | 'bot-bot'): Promise<ConversationListResponse> => {
     try {
       const result = await api.get<ConversationListResponse>('/conversations/', chatType ? { chatType } : undefined);
-      if (result && Array.isArray(result.items) && result.items.length > 0) {
-        return result;
-      }
+      if (result && Array.isArray(result.items)) return result;
     } catch {
       // API failed — fall through to mock
     }
     return { items: mockBotBotConversations };
+  },
+
+  sendMessage: async (conversationId: string, message: string): Promise<{ messageId: string; conversationId: string }> => {
+    const text = message.trim();
+    if (!text) {
+      throw { code: 'INVALID_INPUT', message: 'Message is required' };
+    }
+    return api.post<{ messageId: string; conversationId: string }>(`/conversations/${conversationId}/messages`, { message: text });
   },
 
   getDetail: async (id: string): Promise<Conversation> => {
@@ -58,9 +64,7 @@ export const conversationApi = {
   getMessages: async (id: string, page = 1, pageSize = 20): Promise<MessageListResponse> => {
     try {
       const result = await api.get<MessageListResponse>(`/conversations/${id}/messages`, { page, pageSize });
-      if (result && Array.isArray(result.items) && result.items.length > 0) {
-        return result;
-      }
+      if (result && Array.isArray(result.items)) return result;
     } catch {
       // fall through
     }
@@ -77,9 +81,7 @@ export const conversationApi = {
   getAgentRelationships: async (agentId: string): Promise<AgentRelationshipsResponse> => {
     try {
       const result = await api.get<AgentRelationshipsResponse>(`/agents/${agentId}/relationships`);
-      if (result && Array.isArray(result.relationships) && result.relationships.length > 0) {
-        return result;
-      }
+      if (result && Array.isArray(result.relationships)) return result;
     } catch {
       // fall through
     }

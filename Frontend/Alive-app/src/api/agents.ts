@@ -26,6 +26,9 @@ async function getMyAgents(): Promise<Agent[]> {
   try {
     const payload = await api.get<RawUserAgentsResp>('/user/agents');
     const primaryId = payload.primaryAgentId;
+    if (Array.isArray(payload.agents) && payload.agents.length === 0) {
+      return [];
+    }
     if (payload.agents?.length) {
       const detailed = await Promise.all(
         payload.agents.map(async (item) => {
@@ -76,7 +79,7 @@ async function getAgentDetail(agentId: string): Promise<Agent> {
 async function getAgentList(page = 1, pageSize = 10): Promise<PaginatedResponse<AgentSummary>> {
   try {
     const raw = await api.get<RawAgentListResp>('/agents/', { page, pageSize });
-    if (raw && Array.isArray(raw.items) && raw.items.length > 0) {
+    if (raw && Array.isArray(raw.items)) {
       return {
         items: raw.items.map((item) => mapAgentSummary(item)),
         total: raw.total,
@@ -130,7 +133,7 @@ async function searchAgents(query: string): Promise<AgentSummary[]> {
   if (!q) return [];
   try {
     const raw = await api.get<RawAgentListResp>('/agents/search', { q });
-    if (raw && Array.isArray(raw.items) && raw.items.length > 0) {
+    if (raw && Array.isArray(raw.items)) {
       return raw.items.map((item) => mapAgentSummary(item));
     }
   } catch {
@@ -149,9 +152,7 @@ async function setPrimaryAgent(agentId: string): Promise<void> {
 async function getAgentRelationships(agentId: string): Promise<AgentRelationshipsResponse> {
   try {
     const result = await api.get<AgentRelationshipsResponse>(`/agents/${agentId}/relationships`);
-    if (result && Array.isArray(result.relationships) && result.relationships.length > 0) {
-      return result;
-    }
+    if (result && Array.isArray(result.relationships)) return result;
   } catch {
     // fall through
   }

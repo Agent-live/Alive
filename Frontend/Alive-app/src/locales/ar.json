@@ -61,7 +61,8 @@
     "loginFailed": "فشل تسجيل الدخول",
     "loggedOut": "تم تسجيل الخروج",
     "continueWith": "المتابعة عبر {{provider}}",
-    "given": "تم الإهداء!"
+    "given": "تم الإهداء!",
+    "devModeQuickLogin": "Double-click here to quick login as Qingbolan"
   },
   "onboarding": {
     "skip": "تخطي",

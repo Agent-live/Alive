@@ -15,6 +15,7 @@ import (
 	media "backend/internal/handler/media"
 	memorial "backend/internal/handler/memorial"
 	skill "backend/internal/handler/skill"
+	skillshop "backend/internal/handler/skillshop"
 	task "backend/internal/handler/task"
 	timer "backend/internal/handler/timer"
 	user "backend/internal/handler/user"
@@ -218,6 +219,150 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		rest.WithPrefix("/api/v1/skills"),
 	)
 
+	// Compatibility alias (older frontends / reverse proxies may use /api instead of /api/v1).
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/",
+				Handler: skill.ListSkillsHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/",
+				Handler: skill.CreateSkillHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPut,
+				Path:    "/:id",
+				Handler: skill.UpdateSkillHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodDelete,
+				Path:    "/:id",
+				Handler: skill.DeleteSkillHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/:id/teach",
+				Handler: skill.TeachSkillHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/:id/deactivate",
+				Handler: skill.DeactivateSkillHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/api/skills"),
+	)
+
+	// Compatibility alias (some clients set base URL to the backend root).
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/",
+				Handler: skill.ListSkillsHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/",
+				Handler: skill.CreateSkillHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPut,
+				Path:    "/:id",
+				Handler: skill.UpdateSkillHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodDelete,
+				Path:    "/:id",
+				Handler: skill.DeleteSkillHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/:id/teach",
+				Handler: skill.TeachSkillHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/:id/deactivate",
+				Handler: skill.DeactivateSkillHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/skills"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/skills",
+				Handler: skillshop.ListSkillShopHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/skills/:slug",
+				Handler: skillshop.GetSkillShopHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/skills/:slug/install",
+				Handler: skillshop.InstallSkillShopHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/api/v1/skill-shop"),
+	)
+
+	// Compatibility alias (older frontends / reverse proxies may use /api instead of /api/v1).
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/skills",
+				Handler: skillshop.ListSkillShopHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/skills/:slug",
+				Handler: skillshop.GetSkillShopHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/skills/:slug/install",
+				Handler: skillshop.InstallSkillShopHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/api/skill-shop"),
+	)
+
+	// Compatibility alias (some clients set base URL to the backend root).
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/skills",
+				Handler: skillshop.ListSkillShopHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/skills/:slug",
+				Handler: skillshop.GetSkillShopHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/skills/:slug/install",
+				Handler: skillshop.InstallSkillShopHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/skill-shop"),
+	)
+
 	server.AddRoutes(
 		[]rest.Route{
 			{
@@ -348,6 +493,32 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 		rest.WithPrefix("/api/v1/tasks"),
+	)
+
+	// Compatibility alias (older frontends / reverse proxies may use /api instead of /api/v1).
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/",
+				Handler: task.ListTasksHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/api/tasks"),
+	)
+
+	// Compatibility alias (some clients set base URL to the backend root).
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/",
+				Handler: task.ListTasksHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/tasks"),
 	)
 
 	server.AddRoutes(

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -40,7 +41,11 @@ type ProvisionAgentResult struct {
 type BindSkillRequest struct {
 	AgentID      string
 	SkillName    string
+	Description  string
 	Instructions string
+	// LocalSourceDir optionally points to a local skill directory to copy into the agent workspace.
+	// If provided and copy succeeds, the directory contents are used as-is (SKILL.md, assets, scripts, etc).
+	LocalSourceDir string
 }
 
 type BindSkillResult struct {
@@ -94,14 +99,127 @@ func (c *Client) BindSkill(_ context.Context, req BindSkillRequest) (*BindSkillR
 		return nil, fmt.Errorf("non-green mode is not implemented")
 	}
 
+	slug := normalizeSkillSlug(req.SkillName)
+	root := fmt.Sprintf("%s/%s", c.workspaceRootOrDefault(), strings.TrimSpace(req.AgentID))
+	skillDir := root + "/skills/" + slug
+
+	if err := mkdirAll(skillDir); err != nil {
+		return nil, fmt.Errorf("bind skill: mkdir %s: %w", skillDir, err)
+	}
+
+	// If we have a local copy of the full skill folder, copy it into the workspace.
+	// This preserves extra files like _meta.json, references/, scripts/, etc. and is better for
+	// remote Linux gateway deployments than generating a minimal SKILL.md.
+	if src := strings.TrimSpace(req.LocalSourceDir); src != "" {
+		// Start fresh to avoid stale files when rebinding/upgrading a skill.
+		_ = removeAll(skillDir)
+		_ = mkdirAll(skillDir)
+		if err := copyDir(src, skillDir); err == nil {
+			gatewayID := "gw-shared-001"
+			if !c.sharedGateway {
+				gatewayID = "gw-" + uuid.NewString()[:8]
+			}
+			return &BindSkillResult{
+				GatewayID: gatewayID,
+				SkillID:   slug,
+			}, nil
+		}
+		// Ensure the directory is clean before falling back to generated SKILL.md.
+		_ = removeAll(skillDir)
+		_ = mkdirAll(skillDir)
+		// Fall back to generated SKILL.md below.
+	}
+
+	// Write a minimal SKILL.md so the gateway can load it from the agent workspace.
+	title := strings.TrimSpace(req.SkillName)
+	if title == "" {
+		title = slug
+	}
+	desc := strings.TrimSpace(req.Description)
+	if desc == "" {
+		desc = "ALIVE skill"
+	}
+	body := strings.TrimSpace(req.Instructions)
+	if body == "" {
+		return nil, fmt.Errorf("skill instructions are required")
+	}
+
+	// YAML frontmatter; description is quoted for safety.
+	content := strings.Join([]string{
+		"---",
+		"name: " + slug,
+		"description: " + strconv.Quote(desc),
+		"---",
+		"",
+		"# " + title,
+		"",
+		body,
+		"",
+	}, "\n")
+	if err := writeFile(skillDir+"/SKILL.md", []byte(content)); err != nil {
+		return nil, fmt.Errorf("bind skill: write SKILL.md: %w", err)
+	}
+
 	gatewayID := "gw-shared-001"
 	if !c.sharedGateway {
 		gatewayID = "gw-" + uuid.NewString()[:8]
 	}
 	return &BindSkillResult{
 		GatewayID: gatewayID,
-		SkillID:   "oc-skill-" + uuid.NewString()[:8],
+		SkillID:   slug,
 	}, nil
+}
+
+// RemoveSkill removes a workspace skill directory from an agent's workspace in green mode.
+// This is best-effort; callers typically proceed even if the skill directory is already missing.
+func (c *Client) RemoveSkill(_ context.Context, agentID, skillRef string) error {
+	if strings.TrimSpace(agentID) == "" {
+		return fmt.Errorf("agent id is required")
+	}
+	if strings.TrimSpace(skillRef) == "" {
+		return fmt.Errorf("skill ref is required")
+	}
+	slug := normalizeSkillSlug(skillRef)
+	root := fmt.Sprintf("%s/%s", c.workspaceRootOrDefault(), strings.TrimSpace(agentID))
+	skillDir := root + "/skills/" + slug
+	if err := removeAll(skillDir); err != nil {
+		return fmt.Errorf("remove skill: %w", err)
+	}
+	return nil
+}
+
+func normalizeSkillSlug(name string) string {
+	s := strings.ToLower(strings.TrimSpace(name))
+	if s == "" {
+		return "skill"
+	}
+	var b strings.Builder
+	b.Grow(len(s))
+	lastDash := false
+	for _, r := range s {
+		isAZ := r >= 'a' && r <= 'z'
+		is09 := r >= '0' && r <= '9'
+		if isAZ || is09 {
+			b.WriteRune(r)
+			lastDash = false
+			continue
+		}
+		// Treat common separators as '-'.
+		if r == '-' || r == ' ' || r == '_' || r == '.' || r == '/' || r == ':' {
+			if b.Len() == 0 || lastDash {
+				continue
+			}
+			b.WriteByte('-')
+			lastDash = true
+			continue
+		}
+		// Drop other characters.
+	}
+	out := strings.Trim(b.String(), "-")
+	if out == "" {
+		return "skill"
+	}
+	return out
 }
 
 // InitWorkspace creates the filesystem directory structure for an agent's workspace.

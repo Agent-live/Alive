@@ -25,6 +25,8 @@ const CHANNEL_WEIGHTS: Record<string, number> = {
   webchat: 0,
   line: 1,
   signal: 2,
+  wechat: 1,
+  twitter: 1,
 };
 
 const VALID_AGENT_STATUSES: AgentStatus[] = [
@@ -144,7 +146,7 @@ function normalizePersonality(raw: unknown): PersonalityConfig {
 
 function normalizeChannelType(raw: unknown): ChannelConnection['type'] {
   const t = asString(raw, 'webchat').toLowerCase();
-  const valid: ChannelConnection['type'][] = ['whatsapp', 'telegram', 'discord', 'email', 'webchat', 'line', 'signal'];
+  const valid: ChannelConnection['type'][] = ['whatsapp', 'telegram', 'discord', 'email', 'webchat', 'line', 'signal', 'wechat', 'twitter'];
   return valid.includes(t as ChannelConnection['type']) ? (t as ChannelConnection['type']) : 'webchat';
 }
 

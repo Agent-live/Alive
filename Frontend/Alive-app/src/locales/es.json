@@ -61,7 +61,8 @@
     "loginFailed": "Error al iniciar sesión",
     "loggedOut": "Sesión cerrada",
     "continueWith": "Continuar con {{provider}}",
-    "given": "¡Entregado!"
+    "given": "¡Entregado!",
+    "devModeQuickLogin": "Double-click here to quick login as Qingbolan"
   },
   "onboarding": {
     "skip": "Omitir",

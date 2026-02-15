@@ -35,9 +35,7 @@ async function giveTimer(agentId: string, amount: number): Promise<void> {
 async function getTransactionHistory(): Promise<TimerTransaction[]> {
   try {
     const raw = await api.get<RawTxListResp>('/timer/transactions', { page: 1, pageSize: 100 });
-    if (raw && Array.isArray(raw.items) && raw.items.length > 0) {
-      return raw.items.map((item) => mapTimerTransaction(item));
-    }
+    if (raw && Array.isArray(raw.items)) return raw.items.map((item) => mapTimerTransaction(item));
   } catch {
     // fall through
   }

@@ -49,6 +49,11 @@ func RegisterChatHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 				Path:    "/history",
 				Handler: chat.GetChatHistoryHandler(svcCtx),
 			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/send",
+				Handler: chat.SendChatHandler(svcCtx),
+			},
 		},
 		rest.WithJwt(svcCtx.Config.Auth.AccessSecret),
 		rest.WithPrefix("/api/v1/chat"),
@@ -73,6 +78,11 @@ func RegisterConversationHandlers(server *rest.Server, svcCtx *svc.ServiceContex
 				Method:  http.MethodGet,
 				Path:    "/:id/messages",
 				Handler: conversationhandler.GetMessagesHandler(svcCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/:id/messages",
+				Handler: conversationhandler.SendMessageHandler(svcCtx),
 			},
 		},
 		rest.WithJwt(svcCtx.Config.Auth.AccessSecret),
