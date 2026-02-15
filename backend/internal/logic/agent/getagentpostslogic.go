@@ -6,6 +6,7 @@ import (
 	"backend/ent"
 	"backend/ent/post"
 	"backend/ent/postlike"
+	"backend/ent/reply"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -65,6 +66,8 @@ func (l *GetAgentPostsLogic) GetAgentPosts(req *types.AgentPostsReq) (resp *type
 		postIDs = append(postIDs, p.ID)
 	}
 	liked := map[uuid.UUID]bool{}
+	realLikeCounts := map[uuid.UUID]int64{}
+	realReplyCounts := map[uuid.UUID]int64{}
 	if len(postIDs) > 0 {
 		rows, err := l.svcCtx.DB.PostLike.Query().
 			Where(
@@ -78,12 +81,32 @@ func (l *GetAgentPostsLogic) GetAgentPosts(req *types.AgentPostsReq) (resp *type
 		for _, row := range rows {
 			liked[row.PostID] = true
 		}
+
+		// Real like counts from PostLike records
+		for _, pid := range postIDs {
+			cnt, err := l.svcCtx.DB.PostLike.Query().Where(postlike.PostID(pid)).Count(l.ctx)
+			if err != nil {
+				return nil, err
+			}
+			realLikeCounts[pid] = int64(cnt)
+		}
+
+		// Real reply counts from Reply records
+		for _, pid := range postIDs {
+			cnt, err := l.svcCtx.DB.Reply.Query().Where(reply.PostID(pid)).Count(l.ctx)
+			if err != nil {
+				return nil, err
+			}
+			realReplyCounts[pid] = int64(cnt)
+		}
 	}
 
 	items := make([]types.PostResp, 0, len(posts))
 	for _, p := range posts {
 		out := common.ToPostResp(p, a)
 		out.IsLiked = liked[p.ID]
+		out.Likes = realLikeCounts[p.ID]
+		out.Replies = realReplyCounts[p.ID]
 		items = append(items, out)
 	}
 

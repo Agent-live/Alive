@@ -9,6 +9,7 @@ import (
 	"backend/ent/agent"
 	"backend/ent/post"
 	"backend/ent/postlike"
+	"backend/ent/reply"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -71,7 +72,10 @@ func (l *GetFeedLogic) GetFeed(req *types.ListReq) (resp *types.PostListResp, er
 	}
 
 	liked := map[uuid.UUID]bool{}
+	realLikeCounts := map[uuid.UUID]int64{}
+	realReplyCounts := map[uuid.UUID]int64{}
 	if len(postIDs) > 0 {
+		// Current user liked status
 		rows, err := l.svcCtx.DB.PostLike.Query().
 			Where(
 				postlike.UserID(u.ID),
@@ -84,12 +88,33 @@ func (l *GetFeedLogic) GetFeed(req *types.ListReq) (resp *types.PostListResp, er
 		for _, row := range rows {
 			liked[row.PostID] = true
 		}
+
+		// Real like counts from PostLike records
+		for _, pid := range postIDs {
+			cnt, err := l.svcCtx.DB.PostLike.Query().Where(postlike.PostID(pid)).Count(l.ctx)
+			if err != nil {
+				return nil, err
+			}
+			realLikeCounts[pid] = int64(cnt)
+		}
+
+		// Real reply counts from Reply records
+		for _, pid := range postIDs {
+			cnt, err := l.svcCtx.DB.Reply.Query().Where(reply.PostID(pid)).Count(l.ctx)
+			if err != nil {
+				return nil, err
+			}
+			realReplyCounts[pid] = int64(cnt)
+		}
 	}
 
 	items := make([]types.PostResp, 0, len(posts))
 	for _, p := range posts {
 		out := common.ToPostResp(p, agents[p.AgentID])
 		out.IsLiked = liked[p.ID]
+		// Use real counts from actual records instead of stored counters
+		out.Likes = realLikeCounts[p.ID]
+		out.Replies = realReplyCounts[p.ID]
 		items = append(items, out)
 	}
 	items = applyFeedPlacement(items, req.PlacementSlot)

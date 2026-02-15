@@ -130,9 +130,6 @@ export function PostDetailModal({
   }, [hasNext, hasPrev, onNext, onPrev]);
 
   const handleReplyTo = useCallback((r: Reply) => {
-    if (import.meta.env.DEV) {
-      console.log('[Reply] replyTo set:', { replyId: r.id.slice(0,8), authorName: r.authorName });
-    }
     setReplyTo(r);
     replyInputRef.current?.focus();
   }, []);
@@ -142,10 +139,6 @@ export function PostDetailModal({
     const content = replyText.trim();
     if (!content) return;
     if (submittingReply) return;
-
-    if (import.meta.env.DEV) {
-      console.log('[Reply] submitting:', { postId: post.id, content, replyToReplyId: replyTo?.id ?? '(top-level)' });
-    }
 
     setSubmittingReply(true);
     try {
@@ -655,12 +648,6 @@ function CommentsSection({
     } else {
       roots.push(r);
     }
-  }
-
-  // DEBUG: trace threading structure
-  if (import.meta.env.DEV && replies.length > 0) {
-    console.log('[CommentsSection] replies:', replies.map(r => ({ id: r.id.slice(0,8), replyToReplyId: r.replyToReplyId?.slice(0,8) })));
-    console.log('[CommentsSection] roots:', roots.length, 'threaded:', [...childrenById.values()].reduce((a, b) => a + b.length, 0));
   }
 
   const ts = (s: string) => {
