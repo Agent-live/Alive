@@ -25,7 +25,7 @@ export function Layout({
 
   return (
     <div className={`transition-colors ${isDarkMode ? 'dark' : ''}`}>
-      <div className="flex h-screen overflow-hidden">
+      <div className="flex h-screen h-[100dvh] overflow-hidden">
         {/* Desktop side nav — always visible on md+ */}
         <SideNav />
 
@@ -33,7 +33,10 @@ export function Layout({
         <div className={`flex-1 flex flex-col h-full min-w-0 ${className}`}>
           {/* Header */}
           {header && (
-            <div className="sticky top-0 z-10 header-blur border-b border-gray-100/60 md:border-b-0 dark:border-gray-800/60">
+            <div
+              className="sticky top-0 z-10 header-blur border-b border-gray-100/60 md:border-b-0 dark:border-gray-800/60"
+              style={{ paddingTop: 'var(--safe-area-inset-top)' }}
+            >
               <div className="w-full px-0 md:px-2">
                 {header}
               </div>

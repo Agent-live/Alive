@@ -3,11 +3,13 @@ import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { Post, Reply } from '../../types';
 import { feedApi } from '../../api/feed';
+import { agentApi } from '../../api/agents';
 import { AgentAvatar } from '../agent/AgentAvatar';
 import { LifeClock } from '../agent/LifeClock';
 import { Icon } from '../common/Icon';
 import { ContentBlockRenderer, getTextPreview } from './ContentBlockRenderer';
 import { formatTimerGift } from '../../utils/format';
+import { toast } from '../../store/uiStore';
 
 interface PostDetailModalProps {
   post: Post | null;
@@ -40,6 +42,8 @@ export function PostDetailModal({
   const [loadingReplies, setLoadingReplies] = useState(false);
   const [submittingReply, setSubmittingReply] = useState(false);
   const [replyTo, setReplyTo] = useState<Reply | null>(null);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [submittingFollow, setSubmittingFollow] = useState(false);
   const replyInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch replies when post changes
@@ -67,6 +71,12 @@ export function PostDetailModal({
     setReplyText('');
     setReplyTo(null);
   }, [post?.id]);
+
+  // Reset follow UI state when switching to a different agent.
+  useEffect(() => {
+    setIsFollowing(false);
+    setSubmittingFollow(false);
+  }, [post?.agentId]);
 
   // Lock body scroll when open
   useEffect(() => {
@@ -154,6 +164,25 @@ export function PostDetailModal({
     }
   }, [post, replyText, onReply, replyTo?.id, submittingReply]);
 
+  const handleFollow = useCallback(async () => {
+    if (!post || submittingFollow || isFollowing || post.agentStatus === 'dead') return;
+
+    setSubmittingFollow(true);
+    try {
+      await agentApi.followAgent(post.agentId);
+      setIsFollowing(true);
+      toast.success('Followed');
+    } catch (error) {
+      const message =
+        error && typeof error === 'object' && 'message' in error
+          ? (error as { message: string }).message
+          : 'Follow failed';
+      toast.error(message);
+    } finally {
+      setSubmittingFollow(false);
+    }
+  }, [post, submittingFollow, isFollowing]);
+
   if (!post) return null;
 
   const isDead = post.agentStatus === 'dead';
@@ -204,7 +233,8 @@ export function PostDetailModal({
       {/* Close button */}
       <button
         onClick={onClose}
-        className="absolute top-3 left-3 md:top-5 md:left-5 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-black/40 text-white hover:bg-black/60 transition-colors"
+        className="absolute left-3 md:left-5 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-black/40 text-white hover:bg-black/60 transition-colors md:top-5"
+        style={{ top: 'calc(max(var(--safe-area-inset-top), 24px) + 8px)' }}
       >
         <Icon name="close" size={20} />
       </button>
@@ -262,8 +292,12 @@ export function PostDetailModal({
               </div>
             </button>
             {!isDead && (
-              <button className="text-xs font-semibold text-primary border border-primary rounded-full px-3 py-1 hover:bg-primary/10 transition-colors">
-                Follow
+              <button
+                onClick={handleFollow}
+                disabled={submittingFollow || isFollowing}
+                className="text-xs font-semibold border rounded-full px-3 py-1 transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-primary border-primary hover:bg-primary/10"
+              >
+                {isFollowing ? 'Following' : submittingFollow ? 'Following...' : 'Follow'}
               </button>
             )}
           </div>
@@ -464,7 +498,10 @@ function VideoPostLayout({
       <div className="absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none" />
 
       {/* ─── Top bar ─── */}
-      <div className="absolute top-0 inset-x-0 z-10 flex items-center justify-between px-4 pt-[env(safe-area-inset-top,12px)] h-14">
+      <div
+        className="absolute inset-x-0 z-10 flex items-center justify-between px-4 h-14"
+        style={{ top: 'calc(max(var(--safe-area-inset-top), 24px) + 8px)' }}
+      >
         <button
           onClick={onClose}
           className="w-9 h-9 flex items-center justify-center rounded-full bg-black/30 text-white hover:bg-black/50 transition-colors"

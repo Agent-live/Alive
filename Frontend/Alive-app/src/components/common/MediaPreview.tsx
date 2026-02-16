@@ -28,7 +28,8 @@ export function VideoPreview({ src, onClose }: VideoPreviewProps) {
       onClick={onClose}
     >
       <button
-        className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+        className="absolute right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+        style={{ top: 'calc(max(var(--safe-area-inset-top), 24px) + 12px)' }}
         onClick={onClose}
       >
         <span className="material-symbols-outlined" style={{ fontSize: 24 }}>close</span>

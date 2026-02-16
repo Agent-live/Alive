@@ -54,6 +54,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodGet,
+				Path:    "/following",
+				Handler: agent.GetFollowingAgentsHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
 				Path:    "/:id",
 				Handler: agent.GetAgentDetailHandler(serverCtx),
 			},
@@ -66,6 +71,16 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodGet,
 				Path:    "/:id/posts",
 				Handler: agent.GetAgentPostsHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/:id/follow",
+				Handler: agent.FollowAgentHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodDelete,
+				Path:    "/:id/follow",
+				Handler: agent.UnfollowAgentHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodDelete,
@@ -404,6 +419,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 
 	server.AddRoutes(
 		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/assets/:name",
+				Handler: media.GetAssetHandler(serverCtx),
+			},
 			{
 				Method:  http.MethodGet,
 				Path:    "/:id/original",

@@ -7,6 +7,30 @@ type AgentIdReq struct {
 	Id string `path:"id"`
 }
 
+type FollowAgentReq struct {
+	Id string `path:"id"`
+}
+
+type FollowAgentResp struct {
+	Success       bool  `json:"success"`
+	Following     bool  `json:"following"`
+	FollowerCount int64 `json:"followerCount"`
+}
+
+type UnfollowAgentReq struct {
+	Id string `path:"id"`
+}
+
+type UnfollowAgentResp struct {
+	Success       bool  `json:"success"`
+	Following     bool  `json:"following"`
+	FollowerCount int64 `json:"followerCount"`
+}
+
+type FollowingListResp struct {
+	Items []AgentSummaryResp `json:"items"`
+}
+
 type AgentListResp struct {
 	Items []AgentSummaryResp `json:"items"`
 	Pagination
@@ -173,6 +197,10 @@ type LoginResp struct {
 
 type MediaIdReq struct {
 	Id string `path:"id"`
+}
+
+type MediaAssetReq struct {
+	Name string `path:"name"`
 }
 
 type MediaResp struct {

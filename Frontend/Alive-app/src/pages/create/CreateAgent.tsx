@@ -115,7 +115,7 @@ export function CreateAgentPage() {
   return (
     <div className="flex flex-col h-dvh bg-white dark:bg-gray-950">
       {/* Header */}
-      <header className="flex items-center gap-3 px-4 h-14 flex-shrink-0">
+      <header className="safe-header flex items-center gap-3 px-4 flex-shrink-0">
         <button onClick={goPrev} className="p-1 -ml-1">
           <Icon name="arrow_back" size={22} className="text-gray-600 dark:text-gray-400" />
         </button>

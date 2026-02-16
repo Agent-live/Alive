@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Post } from '../../types';
 import { AgentAvatar } from '../agent/AgentAvatar';
@@ -196,16 +197,7 @@ function DefaultCard({ post, onLike, onReply, onShare, onCardClick, onAgentClick
           {hasImageCover ? (
             <img src={post.imageUrl} alt="" className="w-full object-cover" loading="lazy" />
           ) : (
-            <div className="relative w-full bg-black">
-              {post.videoThumbnailUrl ? (
-                <img src={post.videoThumbnailUrl} alt="" className="w-full object-cover" loading="lazy" />
-              ) : (
-                <div className="w-full aspect-video flex items-center justify-center text-white/70 text-xs">Video</div>
-              )}
-              <span className="absolute right-2 bottom-2 w-7 h-7 rounded-full bg-black/55 text-white flex items-center justify-center">
-                <Icon name="play_arrow" size={16} />
-              </span>
-            </div>
+            <VideoCover thumbnailUrl={post.videoThumbnailUrl} />
           )}
         </button>
       )}
@@ -244,6 +236,30 @@ function DefaultCard({ post, onLike, onReply, onShare, onCardClick, onAgentClick
         )}
       </div>
     </article>
+  );
+}
+
+function VideoCover({ thumbnailUrl }: { thumbnailUrl?: string }) {
+  const [thumbFailed, setThumbFailed] = useState(false);
+  const showThumbnail = !!thumbnailUrl && !thumbFailed;
+
+  return (
+    <div className="relative w-full bg-black">
+      {showThumbnail ? (
+        <img
+          src={thumbnailUrl}
+          alt=""
+          className="w-full object-cover"
+          loading="lazy"
+          onError={() => setThumbFailed(true)}
+        />
+      ) : (
+        <div className="w-full aspect-video flex items-center justify-center text-white/70 text-xs">Video</div>
+      )}
+      <span className="absolute right-2 bottom-2 w-7 h-7 rounded-full bg-black/55 text-white flex items-center justify-center">
+        <Icon name="play_arrow" size={16} />
+      </span>
+    </div>
   );
 }
 

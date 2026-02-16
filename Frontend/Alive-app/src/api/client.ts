@@ -1,10 +1,35 @@
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
+import { Capacitor } from '@capacitor/core';
 import { tokenStorage } from '../utils/storage';
 import { ApiError } from '../types';
 
 // API base configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
+const DEFAULT_API_BASE_URL = '/api/v1';
+const DEFAULT_IOS_NATIVE_API_BASE_URL = 'http://127.0.0.1:8888/api/v1';
 const API_TIMEOUT = 30000;
+
+function isIosNativePlatform(): boolean {
+  return Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios';
+}
+
+function resolveApiBaseUrl(): string {
+  const explicitBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
+  if (explicitBaseUrl) {
+    return explicitBaseUrl;
+  }
+
+  if (isIosNativePlatform()) {
+    return (
+      import.meta.env.VITE_IOS_NATIVE_API_BASE_URL?.trim() ||
+      import.meta.env.VITE_IOS_SIMULATOR_API_BASE_URL?.trim() ||
+      DEFAULT_IOS_NATIVE_API_BASE_URL
+    );
+  }
+
+  return DEFAULT_API_BASE_URL;
+}
+
+const API_BASE_URL = resolveApiBaseUrl();
 
 // Create Axios instance
 const client: AxiosInstance = axios.create({

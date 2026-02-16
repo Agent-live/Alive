@@ -29,6 +29,7 @@ func main() {
 	var c config.Config
 	conf.MustLoad(*configFile, &c, conf.UseEnv())
 	applyEnvOverrides(&c)
+	syncUploadBodyLimit(&c)
 
 	// Standardize API error responses for the frontend (code/message/details JSON).
 	httpx.SetErrorHandlerCtx(func(_ctx context.Context, err error) (int, any) {
@@ -61,7 +62,17 @@ func main() {
 		}
 	})
 
-	server := rest.MustNewServer(c.RestConf)
+	server := rest.MustNewServer(
+		c.RestConf,
+		rest.WithCors(),
+		rest.WithCorsHeaders(
+			"Authorization",
+			"Content-Type",
+			"Accept",
+			"Origin",
+			"X-Requested-With",
+		),
+	)
 	defer server.Stop()
 
 	ctx := svc.NewServiceContext(c)
@@ -122,5 +133,17 @@ func applyEnvOverrides(c *config.Config) {
 		if b, err := strconv.ParseBool(v); err == nil {
 			c.OpenClaw.SharedGateway = b
 		}
+	}
+}
+
+func syncUploadBodyLimit(c *config.Config) {
+	if c == nil {
+		return
+	}
+	if c.Media.MaxUploadBytes <= 0 {
+		return
+	}
+	if c.MaxBytes <= 0 || c.MaxBytes < c.Media.MaxUploadBytes {
+		c.MaxBytes = c.Media.MaxUploadBytes
 	}
 }

@@ -35,6 +35,7 @@ export {
   GeneralSettingsPage,
   NotificationSettingsPage,
   PrivacySettingsPage,
+  FollowingSettingsPage,
   AboutPage,
   HelpCenterPage,
   StorageSettingsPage,
