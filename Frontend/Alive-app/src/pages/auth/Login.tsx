@@ -10,6 +10,8 @@ import { authApi } from '../../api/auth';
 import { validatePhone, validateCode } from '../../utils/validators';
 
 const MD_BREAKPOINT = 768;
+const DEV_TEST_PHONE = '19900001234';
+const DEV_TEST_CODE = '123456';
 type Step = 'phone' | 'code';
 
 export default function LoginPage() {
@@ -124,6 +126,38 @@ export default function LoginPage() {
     setStep('phone');
     setCode('');
     setCodeError('');
+  };
+
+  const handleDevQuickLogin = async () => {
+    if (isLoggingInRef.current || loading) return;
+
+    // Keep UI state consistent for dev flows.
+    setAgreed(true);
+    setPhone(DEV_TEST_PHONE);
+    setCode(DEV_TEST_CODE);
+    setPhoneError('');
+    setCodeError('');
+
+    setLoading(true);
+    isLoggingInRef.current = true;
+
+    try {
+      // Ensure the latest verification code exists so we don't fail on an expired record.
+      try {
+        await authApi.sendCode(DEV_TEST_PHONE);
+      } catch {
+        // Ignore and still try login; dev DB may allow login without a fresh code.
+      }
+
+      const success = await login(DEV_TEST_PHONE, DEV_TEST_CODE);
+      if (success) {
+        const from = (location.state as { from?: string })?.from || '/';
+        navigate(from, { replace: true });
+      }
+    } finally {
+      setLoading(false);
+      isLoggingInRef.current = false;
+    }
   };
 
   const isPhoneValid = phone.length === 11;
@@ -250,10 +284,16 @@ export default function LoginPage() {
 
               {/* Dev mode hint */}
               {import.meta.env.DEV && (
-                <div className="mt-6 p-4 bg-primary/5 border border-primary/10 rounded-xl">
+                <div
+                  className="mt-6 p-4 bg-primary/5 border border-primary/10 rounded-xl cursor-pointer select-none"
+                  onDoubleClick={handleDevQuickLogin}
+                >
                   <p className="text-sm text-primary font-medium mb-1">{t('auth.devMode')}</p>
                   <p className="text-sm text-gray-500">
                     {t('auth.devModeHint')}
+                  </p>
+                  <p className="text-xs text-primary/60 mt-1">
+                    {t('auth.devModeQuickLogin')}
                   </p>
                 </div>
               )}

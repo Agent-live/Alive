@@ -1,124 +1,78 @@
-/**
- * 认证相关 API
- */
-
 import { LoginRequest, LoginResponse, SendCodeResponse, SocialLoginRequest } from '../types';
-import { mockDelay, mockUser, generateMockId } from './mock';
+import { api } from './client';
+import { mapUser } from './mappers';
 
+const REFRESH_TOKEN_STORAGE_KEY = 'alive_refresh_token';
 
-// 是否使用 Mock API
-const USE_MOCK = true;
+interface RawLoginResponse {
+  token: string;
+  refreshToken?: string;
+  user: unknown;
+  expiresIn: number;
+}
 
-/**
- * 发送验证码
- */
+interface RawRefreshResponse {
+  token: string;
+  expiresIn: number;
+}
+
+function saveRefreshToken(token?: string) {
+  if (!token) return;
+  localStorage.setItem(REFRESH_TOKEN_STORAGE_KEY, token);
+}
+
+function readRefreshToken(): string | null {
+  return localStorage.getItem(REFRESH_TOKEN_STORAGE_KEY);
+}
+
+function clearRefreshToken() {
+  localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
+}
+
 async function sendCode(phone: string): Promise<SendCodeResponse> {
-  if (USE_MOCK) {
-    await mockDelay(500, 1000);
-    console.log(`[Mock] 验证码已发送到 ${phone}: 123456`);
-    return {
-      success: true,
-      expiresIn: 60,
-    };
-  }
-
-  // 真实 API 调用
-  // return api.post('/auth/send-code', { phone });
-  throw new Error('Real API not implemented');
+  return api.post<SendCodeResponse>('/auth/send-code', { phone });
 }
 
-/**
- * 登录
- */
 async function login(data: LoginRequest): Promise<LoginResponse> {
-  if (USE_MOCK) {
-    await mockDelay(800, 1500);
-
-    // 模拟验证码验证（任意 6 位数字都可以）
-    if (!/^\d{6}$/.test(data.code)) {
-      throw { code: 'INVALID_CODE', message: '验证码格式错误' };
-    }
-
-    // 模拟手机号验证
-    if (!/^1[3-9]\d{9}$/.test(data.phone)) {
-      throw { code: 'INVALID_PHONE', message: '手机号格式错误' };
-    }
-
-    const token = `mock_token_${generateMockId('tk')}`;
-
-    return {
-      user: {
-        ...mockUser,
-        phone: data.phone,
-      },
-      token,
-      expiresIn: 86400 * 7, // 7 天
-    };
-  }
-
-  // 真实 API 调用
-  // return api.post('/auth/login', data);
-  throw new Error('Real API not implemented');
+  const res = await api.post<RawLoginResponse>('/auth/login', data);
+  saveRefreshToken(res.refreshToken);
+  return {
+    user: mapUser(res.user),
+    token: res.token,
+    expiresIn: res.expiresIn,
+  };
 }
 
-/**
- * 社交登录
- */
 async function socialLogin(data: SocialLoginRequest): Promise<LoginResponse> {
-  if (USE_MOCK) {
-    await mockDelay(1000, 2000);
-
-    const providerNames: Record<string, string> = {
-      google: 'Google User',
-      apple: 'Apple User',
-      wechat: 'WeChat User',
-      twitter: 'X User',
-    };
-
-    const token = `mock_token_${generateMockId('tk')}`;
-
-    return {
-      user: {
-        ...mockUser,
-        nickname: providerNames[data.provider] || 'Social User',
-      },
-      token,
-      expiresIn: 86400 * 7,
-    };
-  }
-
-  throw new Error('Real API not implemented');
+  const res = await api.post<RawLoginResponse>('/auth/social-login', data);
+  saveRefreshToken(res.refreshToken);
+  return {
+    user: mapUser(res.user),
+    token: res.token,
+    expiresIn: res.expiresIn,
+  };
 }
 
-/**
- * 登出
- */
 async function logout(): Promise<void> {
-  if (USE_MOCK) {
-    await mockDelay(200, 400);
-    return;
+  try {
+    await api.post<{ success: boolean }>('/auth/logout');
+  } finally {
+    clearRefreshToken();
   }
-
-  // 真实 API 调用
-  // return api.post('/auth/logout');
-  throw new Error('Real API not implemented');
 }
 
-/**
- * 刷新 Token
- */
 async function refreshToken(): Promise<{ token: string; expiresIn: number }> {
-  if (USE_MOCK) {
-    await mockDelay(300, 600);
-    return {
-      token: `mock_token_${generateMockId('tk')}`,
-      expiresIn: 86400 * 7,
-    };
+  const refreshTokenValue = readRefreshToken();
+  if (!refreshTokenValue) {
+    throw { code: 'NO_REFRESH_TOKEN', message: 'No refresh token available' };
   }
-
-  // 真实 API 调用
-  // return api.post('/auth/refresh');
-  throw new Error('Real API not implemented');
+  const res = await api.post<RawRefreshResponse>('/auth/refresh', {
+    refreshToken: refreshTokenValue,
+  });
+  return {
+    token: res.token,
+    expiresIn: res.expiresIn,
+  };
 }
 
 export const authApi = {

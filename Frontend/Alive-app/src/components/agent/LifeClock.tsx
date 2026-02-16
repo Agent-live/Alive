@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { AgentStatus } from '../../types';
+import { timerToLifeClock } from '../../utils/format';
 
 interface LifeClockProps {
-  timeRemaining: number; // seconds
+  timerRemaining: number; // Timer units (1 Timer = 10 min)
   status: AgentStatus;
   size?: 'sm' | 'md' | 'lg' | 'hero';
   showLabel?: boolean;
@@ -27,14 +28,6 @@ const statusColors: Record<AgentStatus, string> = {
   dead: 'text-status-dead',
 };
 
-function formatTime(seconds: number): string {
-  if (seconds <= 0) return '00:00:00';
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = seconds % 60;
-  return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-}
-
 function getPulseSpeed(status: AgentStatus): number {
   switch (status) {
     case 'critical': return 0.5;
@@ -44,11 +37,11 @@ function getPulseSpeed(status: AgentStatus): number {
   }
 }
 
-export function LifeClock({ timeRemaining, status, size = 'md', showLabel = false, className = '' }: LifeClockProps) {
+export function LifeClock({ timerRemaining, status, size = 'md', showLabel = false, className = '' }: LifeClockProps) {
   const config = sizeConfig[size];
   const color = statusColors[status];
   const pulseSpeed = getPulseSpeed(status);
-  const display = useMemo(() => formatTime(timeRemaining), [timeRemaining]);
+  const display = useMemo(() => timerToLifeClock(timerRemaining), [timerRemaining]);
 
   if (status === 'dead') {
     return (

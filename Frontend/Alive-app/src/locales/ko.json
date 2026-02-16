@@ -61,7 +61,8 @@
     "loginFailed": "로그인 실패",
     "loggedOut": "로그아웃되었습니다",
     "continueWith": "{{provider}}로 계속하기",
-    "given": "선물 완료!"
+    "given": "선물 완료!",
+    "devModeQuickLogin": "더블클릭하여 테스트 계정 Qingbolan으로 빠른 로그인"
   },
   "onboarding": {
     "skip": "건너뛰기",

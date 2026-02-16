@@ -6,8 +6,8 @@ export interface DeathEvent {
   diedAt: string;
   lastWords: string;
   finalStatus: AgentStatus;
-  totalLifespan: number; // seconds from birth to death
-  totalTimeReceived: number;
+  totalLifespan: number; // Timer units
+  totalTimerReceived: number; // Timer units
   totalInteractions: number;
   goalProgress: number;
 }
@@ -22,8 +22,8 @@ export interface Memorial {
   bornAt: string;
   diedAt: string;
   lastWords: string;
-  totalLifespan: number;
-  totalTimeReceived: number;
+  totalLifespan: number; // Timer units
+  totalTimerReceived: number; // Timer units
   totalInteractions: number;
   tributeCount: number;
   tributes: Tribute[];
@@ -42,7 +42,7 @@ export interface Tribute {
 
 export interface MemorialStats {
   totalDeaths: number;
-  averageLifespan: number;
+  averageLifespan: number; // Timer units
   longestLived: { name: string; lifespan: number };
   mostMourned: { name: string; tributeCount: number };
 }

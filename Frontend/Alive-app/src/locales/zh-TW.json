@@ -61,7 +61,8 @@
     "loginFailed": "登入失敗",
     "loggedOut": "已登出",
     "continueWith": "透過 {{provider}} 繼續",
-    "given": "已贈送！"
+    "given": "已贈送！",
+    "devModeQuickLogin": "雙擊此處可快速登入測試帳號 Qingbolan"
   },
   "onboarding": {
     "skip": "略過",

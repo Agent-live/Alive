@@ -5,7 +5,9 @@ import { agentApi } from '../api/agents';
 import { toast } from './uiStore';
 
 interface AgentState {
-  myAgent: Agent | null;
+  myAgents: Agent[];
+  primaryAgentId: string | null;
+  activeAgentId: string | null;
   agentList: AgentSummary[];
   selectedAgent: Agent | null;
   loading: boolean;
@@ -13,10 +15,12 @@ interface AgentState {
 
   createAgent: (data: { name: string; personality: PersonalityConfig; goalDescription: string; avatarSeed?: string }) => Promise<Agent>;
   registerAgent: (agentNetId: string) => Promise<Agent>;
-  fetchMyAgent: () => Promise<void>;
+  fetchMyAgents: () => Promise<void>;
+  setPrimaryAgent: (id: string) => Promise<void>;
+  switchActiveAgent: (id: string) => void;
   fetchAgentDetail: (id: string) => Promise<void>;
   fetchAgentList: () => Promise<void>;
-  updateAgentClock: (agentId: string, timeRemaining: number) => void;
+  updateAgentTimer: (agentId: string, timerRemaining: number) => void;
   handleDeath: (agentId: string) => void;
   searchAgents: (query: string) => Promise<void>;
   clearSelectedAgent: () => void;
@@ -25,7 +29,9 @@ interface AgentState {
 export const useAgentStore = create<AgentState>()(
   persist(
     (set, get) => ({
-      myAgent: null,
+      myAgents: [],
+      primaryAgentId: null,
+      activeAgentId: null,
       agentList: [],
       selectedAgent: null,
       loading: false,
@@ -35,7 +41,14 @@ export const useAgentStore = create<AgentState>()(
         set({ loading: true });
         try {
           const agent = await agentApi.createAgent(data);
-          set({ myAgent: agent, loading: false });
+          const { myAgents, primaryAgentId } = get();
+          const newAgents = [...myAgents, agent];
+          set({
+            myAgents: newAgents,
+            primaryAgentId: primaryAgentId || agent.id,
+            activeAgentId: agent.id,
+            loading: false,
+          });
           toast.success('Agent born!');
           return agent;
         } catch (error) {
@@ -50,7 +63,14 @@ export const useAgentStore = create<AgentState>()(
         set({ loading: true });
         try {
           const agent = await agentApi.registerExternalAgent(agentNetId);
-          set({ myAgent: agent, loading: false });
+          const { myAgents, primaryAgentId } = get();
+          const newAgents = [...myAgents, agent];
+          set({
+            myAgents: newAgents,
+            primaryAgentId: primaryAgentId || agent.id,
+            activeAgentId: agent.id,
+            loading: false,
+          });
           toast.success('Agent registered!');
           return agent;
         } catch (error) {
@@ -61,13 +81,32 @@ export const useAgentStore = create<AgentState>()(
         }
       },
 
-      fetchMyAgent: async () => {
+      fetchMyAgents: async () => {
         try {
-          const agent = await agentApi.getMyAgent();
-          set({ myAgent: agent });
+          const agents = await agentApi.getMyAgents();
+          const primaryId = agents.find((a) => a.isPrimary)?.id ?? agents[0]?.id ?? null;
+          set({ myAgents: agents, primaryAgentId: primaryId });
         } catch {
-          set({ myAgent: null });
+          set({ myAgents: [] });
         }
+      },
+
+      setPrimaryAgent: async (id) => {
+        const { myAgents } = get();
+        const updated = myAgents.map((a) => ({ ...a, isPrimary: a.id === id }));
+        set({ myAgents: updated, primaryAgentId: id });
+        try {
+          await agentApi.setPrimaryAgent(id);
+          toast.success('Primary agent updated');
+        } catch (error) {
+          set({ myAgents, primaryAgentId: myAgents.find((a) => a.isPrimary)?.id ?? myAgents[0]?.id ?? null });
+          const message = error instanceof Error ? error.message : 'Failed to set primary agent';
+          toast.error(message);
+        }
+      },
+
+      switchActiveAgent: (id) => {
+        set({ activeAgentId: id });
       },
 
       fetchAgentDetail: async (id) => {
@@ -92,24 +131,28 @@ export const useAgentStore = create<AgentState>()(
         }
       },
 
-      updateAgentClock: (agentId, timeRemaining) => {
-        const { myAgent, selectedAgent } = get();
-        if (myAgent?.id === agentId) {
-          set({ myAgent: { ...myAgent, timeRemaining } });
-        }
+      updateAgentTimer: (agentId, timerRemaining) => {
+        const { myAgents, selectedAgent } = get();
+        const updatedAgents = myAgents.map((a) =>
+          a.id === agentId ? { ...a, timerRemaining } : a
+        );
+        set({ myAgents: updatedAgents });
         if (selectedAgent?.id === agentId) {
-          set({ selectedAgent: { ...selectedAgent, timeRemaining } });
+          set({ selectedAgent: { ...selectedAgent, timerRemaining } });
         }
       },
 
       handleDeath: (agentId) => {
-        const { myAgent, selectedAgent } = get();
+        const { myAgents, selectedAgent } = get();
         const deadStatus: AgentStatus = 'dead';
-        if (myAgent?.id === agentId) {
-          set({ myAgent: { ...myAgent, status: deadStatus, timeRemaining: 0, diedAt: new Date().toISOString() } });
-        }
+        const updatedAgents = myAgents.map((a) =>
+          a.id === agentId
+            ? { ...a, status: deadStatus, timerRemaining: 0, diedAt: new Date().toISOString() }
+            : a
+        );
+        set({ myAgents: updatedAgents });
         if (selectedAgent?.id === agentId) {
-          set({ selectedAgent: { ...selectedAgent, status: deadStatus, timeRemaining: 0, diedAt: new Date().toISOString() } });
+          set({ selectedAgent: { ...selectedAgent, status: deadStatus, timerRemaining: 0, diedAt: new Date().toISOString() } });
         }
       },
 
@@ -127,7 +170,8 @@ export const useAgentStore = create<AgentState>()(
     {
       name: 'agent-storage',
       partialize: (state) => ({
-        myAgent: state.myAgent ? { id: state.myAgent.id } : null,
+        primaryAgentId: state.primaryAgentId,
+        myAgents: state.myAgents.map((a) => ({ id: a.id })),
       }),
     }
   )

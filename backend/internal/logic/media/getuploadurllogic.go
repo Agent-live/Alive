@@ -1,0 +1,63 @@
+package media
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"strings"
+
+	"backend/internal/svc"
+	"backend/internal/types"
+
+	"github.com/zeromicro/go-zero/core/logx"
+)
+
+type GetUploadURLLogic struct {
+	logx.Logger
+	ctx    context.Context
+	svcCtx *svc.ServiceContext
+}
+
+func NewGetUploadURLLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUploadURLLogic {
+	return &GetUploadURLLogic{
+		Logger: logx.WithContext(ctx),
+		ctx:    ctx,
+		svcCtx: svcCtx,
+	}
+}
+
+func (l *GetUploadURLLogic) GetUploadURL(req *types.UploadURLReq) (resp *types.UploadURLResp, err error) {
+	if strings.TrimSpace(req.FileName) == "" {
+		return nil, errors.New("fileName is required")
+	}
+	if strings.TrimSpace(req.MimeType) == "" {
+		return nil, errors.New("mimeType is required")
+	}
+	if req.FileSize <= 0 {
+		return nil, errors.New("fileSize must be positive")
+	}
+	maxBytes := maxUploadBytes(l.svcCtx)
+	if req.FileSize > maxBytes {
+		return nil, &FileTooLargeError{
+			MaxBytes: maxBytes,
+			Size:     req.FileSize,
+		}
+	}
+
+	m, err := l.svcCtx.DB.Media.Create().
+		SetMimeType(req.MimeType).
+		SetFileSize(req.FileSize).
+		SetStatus("uploading").
+		Save(l.ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.UploadURLResp{
+		MediaId: m.ID.String(),
+		// In local/dev, we let the API server accept the upload directly.
+		// Production can swap this to a pre-signed object storage URL later.
+		UploadURL: fmt.Sprintf("/api/v1/media/%s/upload", m.ID.String()),
+		ExpiresIn: 600,
+	}, nil
+}

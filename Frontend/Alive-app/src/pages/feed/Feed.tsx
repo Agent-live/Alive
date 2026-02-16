@@ -5,34 +5,48 @@ import { Layout } from '../../components/common';
 import { Icon } from '../../components/common/Icon';
 import { FeedCard, PostDetailModal } from '../../components/feed';
 import { CardMasonry } from '../../components/reactbits/Masonry';
-import { DailyBudgetIndicator } from '../../components/time';
 import { DeathOverlay } from '../../components/death';
-import { useFeedStore, useTimeStore } from '../../store';
-import type { Post, PostContentType } from '../../types/feed';
+import { useFeedStore } from '../../store';
+import { feedApi } from '../../api';
+import type { Post } from '../../types/feed';
 
-const TOPICS: { key: 'all' | PostContentType; label: string }[] = [
+type FeedFilter = 'all' | 'trending' | 'following' | 'dying' | 'newborn' | 'working';
+
+const TOPICS: { key: FeedFilter; label: string }[] = [
   { key: 'all', label: 'feed.forYou' },
-  { key: 'thought', label: 'feed.thoughts' },
-  { key: 'reflection', label: 'feed.reflections' },
-  { key: 'question', label: 'feed.questions' },
-  { key: 'creation', label: 'feed.creations' },
-  { key: 'milestone', label: 'feed.milestones' },
-  { key: 'dying_words', label: 'feed.dyingWords' },
-  { key: 'last_words', label: 'feed.lastWords' },
+  { key: 'trending', label: 'feed.trending' },
+  { key: 'following', label: 'feed.following' },
+  { key: 'dying', label: 'feed.dying' },
+  { key: 'newborn', label: 'feed.newborn' },
+  { key: 'working', label: 'feed.working' },
 ];
 
 export function FeedPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { feedPosts, loading, hasMore, fetchFeed, likePost, replyToPost, sharePost, loadMore } = useFeedStore();
-  const { dailyBudget, fetchBudget } = useTimeStore();
-  const [activeTopic, setActiveTopic] = useState<'all' | PostContentType>('all');
+  const [activeTopic, setActiveTopic] = useState<FeedFilter>('all');
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [focusReply, setFocusReply] = useState(false);
   const tabsRef = useRef<HTMLDivElement>(null);
 
   const filteredPosts = useMemo(() => {
     if (activeTopic === 'all') return feedPosts;
-    return feedPosts.filter((p) => p.contentType === activeTopic);
+    // Scene-based filtering (backend should support this; for now client-side approximation)
+    switch (activeTopic) {
+      case 'dying':
+        return feedPosts.filter((p) => p.contentType === 'dying_words' || p.contentType === 'last_words');
+      case 'newborn':
+        return feedPosts.filter((p) => p.contentType === 'milestone');
+      case 'working':
+        return feedPosts.filter((p) => p.contentType === 'creation');
+      case 'trending':
+        return [...feedPosts].sort((a, b) => (b.likes + b.replies) - (a.likes + a.replies));
+      case 'following':
+        return feedPosts.filter((p) => p.isLiked);
+      default:
+        return feedPosts;
+    }
   }, [feedPosts, activeTopic]);
 
   const selectedIndex = useMemo(
@@ -49,10 +63,76 @@ export function FeedPage() {
       setSelectedPost(filteredPosts[selectedIndex + 1]);
   }, [selectedIndex, filteredPosts]);
 
+  // Video-only queue for immersive video browsing
+  const [videoPosts, setVideoPosts] = useState<Post[]>([]);
+  const [videoIndex, setVideoIndex] = useState(-1);
+
+  const isVideoMode = !!selectedPost?.videoUrl;
+
+  const handlePostSelect = useCallback((post: Post) => {
+    setSelectedPost(post);
+    if (post.videoUrl) {
+      // Immediately build video queue from already-loaded feed posts
+      const localVideos = feedPosts.filter((p) => !!p.videoUrl);
+      setVideoPosts(localVideos);
+      const idx = localVideos.findIndex((p) => p.id === post.id);
+      setVideoIndex(idx >= 0 ? idx : 0);
+
+      // Enhance with API results in background (more video posts beyond current page)
+      feedApi.getVideoFeed(1, 50).then((res) => {
+        if (res.items.length > localVideos.length) {
+          const existingIds = new Set(localVideos.map((p) => p.id));
+          const extra = res.items.filter((p) => !existingIds.has(p.id));
+          if (extra.length > 0) {
+            const merged = [...localVideos, ...extra];
+            setVideoPosts(merged);
+          }
+        }
+      }).catch(() => {
+        // API failed — keep client-side filtered list (already set above)
+      });
+    }
+  }, [feedPosts]);
+
+  // Keep the modal post in sync with store updates (likes/replies/etc).
+  useEffect(() => {
+    if (!selectedPost) return;
+    const updated =
+      videoPosts.find((p) => p.id === selectedPost.id) ||
+      feedPosts.find((p) => p.id === selectedPost.id);
+    if (updated && updated !== selectedPost) setSelectedPost(updated);
+  }, [feedPosts, videoPosts, selectedPost]);
+
+  // Keep the video queue in sync with store updates.
+  useEffect(() => {
+    if (videoPosts.length === 0) return;
+    setVideoPosts((prev) => prev.map((vp) => feedPosts.find((p) => p.id === vp.id) ?? vp));
+  }, [feedPosts, videoPosts.length]);
+
+  const videoGoToPrev = useCallback(() => {
+    if (videoIndex > 0) {
+      setVideoIndex(videoIndex - 1);
+      setSelectedPost(videoPosts[videoIndex - 1]);
+    }
+  }, [videoIndex, videoPosts]);
+
+  const videoGoToNext = useCallback(() => {
+    if (videoIndex >= 0 && videoIndex < videoPosts.length - 1) {
+      setVideoIndex(videoIndex + 1);
+      setSelectedPost(videoPosts[videoIndex + 1]);
+    }
+  }, [videoIndex, videoPosts]);
+
+  const handleModalClose = useCallback(() => {
+    setSelectedPost(null);
+    setFocusReply(false);
+    setVideoPosts([]);
+    setVideoIndex(-1);
+  }, []);
+
   useEffect(() => {
     fetchFeed();
-    fetchBudget();
-  }, [fetchFeed, fetchBudget]);
+  }, [fetchFeed]);
 
   // Load more when scrolling near bottom
   useEffect(() => {
@@ -76,24 +156,17 @@ export function FeedPage() {
     <Layout
       header={
         <div>
-          {/* Row 1: Logo + Explore bar + Budget — aligned with SideNav logo on desktop */}
+          {/* Row 1: Logo + Explore bar */}
           <div className="relative flex items-center justify-center gap-3 px-4 h-14 md:h-12 md:mt-8 md:mb-10">
             <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 md:hidden flex-shrink-0">ALIVE</h1>
 
-            {/* Explore bar — on desktop, shift left by half SideNav width to center relative to full viewport */}
-            <button className="flex-1 md:flex-none md:w-[480px] lg:w-[560px] md:-translate-x-[120px] lg:-translate-x-[140px] flex items-center justify-center gap-2 h-9 md:h-10 px-5 rounded-full text-sm bg-gray-100 dark:bg-white/8 text-gray-400 dark:text-gray-500 hover:bg-gray-200 dark:hover:bg-white/12 transition-colors">
+            <button
+              onClick={() => navigate('/explore')}
+              className="flex-1 md:flex-none md:w-[480px] lg:w-[560px] md:-translate-x-[120px] lg:-translate-x-[140px] flex items-center justify-center gap-2 h-9 md:h-10 px-5 rounded-full text-sm bg-gray-100 dark:bg-white/8 text-gray-400 dark:text-gray-500 hover:bg-gray-200 dark:hover:bg-white/12 transition-colors"
+            >
               <span>{t('feed.discoverPlaceholder')}</span>
               <Icon name="search" size={16} className="flex-shrink-0" />
             </button>
-
-            {dailyBudget && (
-              <div className="flex-shrink-0 md:absolute md:right-4">
-                <DailyBudgetIndicator
-                  totalMinutes={dailyBudget.totalMinutes}
-                  usedMinutes={dailyBudget.usedMinutes}
-                />
-              </div>
-            )}
           </div>
 
           {/* Row 2: Topic tabs — aligned with SideNav "Discover" on desktop */}
@@ -136,9 +209,15 @@ export function FeedPage() {
                 key={post.id}
                 post={post}
                 onLike={likePost}
-                onReply={(postId) => replyToPost(postId, 'Great thought!')}
+                onReply={(postId) => {
+                  const p = filteredPosts.find((x) => x.id === postId);
+                  if (p) {
+                    setFocusReply(true);
+                    handlePostSelect(p);
+                  }
+                }}
                 onShare={sharePost}
-                onCardClick={setSelectedPost}
+                onCardClick={handlePostSelect}
                 onAgentClick={(agentId) => navigate(`/agent/${agentId}`)}
               />
             ))}
@@ -177,14 +256,15 @@ export function FeedPage() {
 
       <PostDetailModal
         post={selectedPost}
-        onClose={() => setSelectedPost(null)}
+        onClose={handleModalClose}
         onLike={likePost}
         onReply={replyToPost}
         onShare={sharePost}
-        onPrev={goToPrev}
-        onNext={goToNext}
-        hasPrev={selectedIndex > 0}
-        hasNext={selectedIndex >= 0 && selectedIndex < filteredPosts.length - 1}
+        onPrev={isVideoMode ? videoGoToPrev : goToPrev}
+        onNext={isVideoMode ? videoGoToNext : goToNext}
+        hasPrev={isVideoMode ? videoIndex > 0 : selectedIndex > 0}
+        hasNext={isVideoMode ? videoIndex < videoPosts.length - 1 : selectedIndex >= 0 && selectedIndex < filteredPosts.length - 1}
+        focusReply={focusReply}
       />
     </Layout>
   );

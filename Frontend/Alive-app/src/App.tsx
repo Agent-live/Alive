@@ -8,7 +8,12 @@ import {
   AgentProfilePage,
   MemorialPage,
   MemorialDetailPage,
+  LegacyVaultPage,
+  LegacyDetailPage,
   MyAgentPage,
+  AgentChatPage,
+  ConversationListPage,
+  ConversationDetailPage,
   ProfilePage,
   EditProfilePage,
   EditFieldPage,
@@ -87,12 +92,19 @@ function App() {
               <Route path="/create" element={<AuthGuard><CreateAgentPage /></AuthGuard>} />
               <Route path="/memorial" element={<OptionalAuth><MemorialPage /></OptionalAuth>} />
               <Route path="/memorial/:id" element={<OptionalAuth><MemorialDetailPage /></OptionalAuth>} />
+              <Route path="/legacy" element={<AuthGuard><LegacyVaultPage /></AuthGuard>} />
+              <Route path="/legacy/:id" element={<AuthGuard><LegacyDetailPage /></AuthGuard>} />
 
               {/* Agent */}
               <Route path="/agent/:id" element={<OptionalAuth><AgentProfilePage /></OptionalAuth>} />
 
               {/* My Agent */}
               <Route path="/my-agent" element={<AuthGuard><MyAgentPage /></AuthGuard>} />
+              <Route path="/my-agent/chat" element={<AuthGuard><AgentChatPage /></AuthGuard>} />
+
+              {/* Conversations */}
+              <Route path="/conversations" element={<AuthGuard><ConversationListPage /></AuthGuard>} />
+              <Route path="/conversations/:id" element={<AuthGuard><ConversationDetailPage /></AuthGuard>} />
 
               {/* Profile */}
               <Route path="/profile" element={<AuthGuard><ProfilePage /></AuthGuard>} />

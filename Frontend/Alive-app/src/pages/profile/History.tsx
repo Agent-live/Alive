@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Layout, Header } from '@/components/common';
 import { TimeTransactionItem } from '@/components/time';
-import { useTimeStore } from '@/store';
+import { useTimerStore } from '@/store';
 
 export function HistoryPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { transactions, fetchTransactions } = useTimeStore();
+  const { transactions, fetchTransactions } = useTimerStore();
 
   useEffect(() => {
     fetchTransactions();

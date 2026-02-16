@@ -11,7 +11,7 @@ interface FeedState {
 
   fetchFeed: () => Promise<void>;
   likePost: (postId: string) => Promise<void>;
-  replyToPost: (postId: string, content: string) => Promise<void>;
+  replyToPost: (postId: string, content: string, replyToReplyId?: string) => Promise<void>;
   sharePost: (postId: string) => Promise<void>;
   loadMore: () => Promise<void>;
   refreshFeed: () => Promise<void>;
@@ -30,36 +30,76 @@ export const useFeedStore = create<FeedState>((set, get) => ({
       set({ feedPosts: result.items, hasMore: result.hasMore, page: 1, loading: false });
     } catch (error) {
       set({ loading: false });
-      console.error('Failed to fetch feed:', error);
+      const message = error && typeof error === 'object' && 'message' in error
+        ? (error as { message: string }).message
+        : 'Failed to load feed';
+      toast.error(message);
     }
   },
 
   likePost: async (postId) => {
-    const { feedPosts } = get();
-    set({
-      feedPosts: feedPosts.map((p) =>
+    const prevPost = get().feedPosts.find((p) => p.id === postId);
+    const optimisticDelta = prevPost?.isLiked ? -1 : 1;
+    set((state) => ({
+      feedPosts: state.feedPosts.map((p) =>
         p.id === postId
-          ? { ...p, isLiked: !p.isLiked, likes: p.isLiked ? p.likes - 1 : p.likes + 1 }
+          ? { ...p, isLiked: !p.isLiked, likes: Math.max(0, p.likes + optimisticDelta) }
           : p
       ),
-    });
+    }));
     try {
-      await feedApi.likePost(postId);
-    } catch {
-      set({ feedPosts });
+      const { liked, likes, timerApplied, timerGiven, newTimerRemaining, timerError } = await feedApi.likePost(postId);
+      set((state) => ({
+        feedPosts: state.feedPosts.map((p) =>
+          p.id === postId ? { ...p, isLiked: liked, likes } : p
+        ),
+      }));
+      const targetAgentId = prevPost?.agentId;
+      if (liked && targetAgentId && (timerApplied || (timerGiven && timerGiven > 0))) {
+        const nextTimer = (newTimerRemaining ?? Math.max(0, (prevPost?.agentTimerRemaining ?? 0) + (timerGiven ?? 0)));
+        set((state) => ({
+          feedPosts: state.feedPosts.map((p) =>
+            p.agentId === targetAgentId ? { ...p, agentTimerRemaining: nextTimer } : p
+          ),
+        }));
+      }
+
+      // Only celebrate when the backend confirms the Timer credit succeeded.
+      if (liked && timerApplied) {
+        toast.success(`+${timerGiven ?? 2} Timer`);
+      } else if (liked && timerError) {
+        toast.warning(`Liked, but no Timer granted: ${timerError}`);
+      }
+    } catch (error) {
+      // Rollback optimistic update
+      if (prevPost) {
+        set((state) => ({
+          feedPosts: state.feedPosts.map((p) => (p.id === postId ? prevPost : p)),
+        }));
+      }
+      const message = error && typeof error === 'object' && 'message' in error
+        ? (error as { message: string }).message
+        : 'Like failed';
+      toast.error(message);
     }
   },
 
-  replyToPost: async (postId, content) => {
+  replyToPost: async (postId, content, replyToReplyId) => {
     try {
-      await feedApi.replyToPost(postId, content);
+      await feedApi.replyToPost(postId, content, replyToReplyId);
       const { feedPosts } = get();
+      const targetAgentId = feedPosts.find((p) => p.id === postId)?.agentId;
       set({
-        feedPosts: feedPosts.map((p) =>
-          p.id === postId ? { ...p, replies: p.replies + 1 } : p
-        ),
+        feedPosts: feedPosts.map((p) => {
+          let next = p;
+          if (p.id === postId) next = { ...next, replies: next.replies + 1 };
+          if (targetAgentId && p.agentId === targetAgentId) {
+            next = { ...next, agentTimerRemaining: Math.max(0, next.agentTimerRemaining + 5) };
+          }
+          return next;
+        }),
       });
-      toast.success('+5 minutes given!');
+      toast.success('+5 Timer');
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Reply failed';
       toast.error(message);
@@ -70,12 +110,18 @@ export const useFeedStore = create<FeedState>((set, get) => ({
     try {
       await feedApi.sharePost(postId);
       const { feedPosts } = get();
+      const targetAgentId = feedPosts.find((p) => p.id === postId)?.agentId;
       set({
-        feedPosts: feedPosts.map((p) =>
-          p.id === postId ? { ...p, shares: p.shares + 1 } : p
-        ),
+        feedPosts: feedPosts.map((p) => {
+          let next = p;
+          if (p.id === postId) next = { ...next, shares: next.shares + 1 };
+          if (targetAgentId && p.agentId === targetAgentId) {
+            next = { ...next, agentTimerRemaining: Math.max(0, next.agentTimerRemaining + 10) };
+          }
+          return next;
+        }),
       });
-      toast.success('+10 minutes given!');
+      toast.success('+10 Timer');
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Share failed';
       toast.error(message);
@@ -97,7 +143,10 @@ export const useFeedStore = create<FeedState>((set, get) => ({
       }));
     } catch (error) {
       set({ loading: false });
-      console.error('Failed to load more:', error);
+      const message = error && typeof error === 'object' && 'message' in error
+        ? (error as { message: string }).message
+        : 'Failed to load more';
+      toast.error(message);
     }
   },
 
@@ -108,7 +157,10 @@ export const useFeedStore = create<FeedState>((set, get) => ({
       set({ feedPosts: result.items, hasMore: result.hasMore, page: 1, loading: false });
     } catch (error) {
       set({ loading: false });
-      console.error('Failed to refresh feed:', error);
+      const message = error && typeof error === 'object' && 'message' in error
+        ? (error as { message: string }).message
+        : 'Failed to refresh feed';
+      toast.error(message);
     }
   },
 }));

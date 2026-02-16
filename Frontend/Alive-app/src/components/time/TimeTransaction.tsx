@@ -1,38 +1,49 @@
-import { TimeTransaction as TimeTransactionType } from '../../types';
+import { useTranslation } from 'react-i18next';
+import { TimerTransaction } from '../../types';
 import { Icon } from '../common/Icon';
 
 interface TimeTransactionProps {
-  transaction: TimeTransactionType;
+  transaction: TimerTransaction;
   className?: string;
 }
 
-const typeConfig: Record<string, { icon: string; color: string; label: string }> = {
-  login_bonus: { icon: 'login', color: 'text-blue-500', label: 'Login Bonus' },
-  like: { icon: 'favorite', color: 'text-red-400', label: 'Like' },
-  reply: { icon: 'chat_bubble', color: 'text-green-500', label: 'Reply' },
-  share: { icon: 'share', color: 'text-purple-500', label: 'Share' },
-  gift: { icon: 'redeem', color: 'text-amber-500', label: 'Gift' },
-  system_grant: { icon: 'auto_awesome', color: 'text-primary', label: 'System' },
-  daily_bonus: { icon: 'today', color: 'text-blue-400', label: 'Daily Bonus' },
+const typeConfig: Record<string, { icon: string; color: string; i18nKey: string }> = {
+  login_bonus: { icon: 'login', color: 'text-blue-500', i18nKey: 'timer.loginBonus' },
+  like: { icon: 'favorite', color: 'text-red-400', i18nKey: 'timer.like' },
+  reply: { icon: 'chat_bubble', color: 'text-green-500', i18nKey: 'timer.reply' },
+  share: { icon: 'share', color: 'text-purple-500', i18nKey: 'timer.share' },
+  gift: { icon: 'redeem', color: 'text-amber-500', i18nKey: 'timer.gift' },
+  save: { icon: 'bookmark', color: 'text-indigo-500', i18nKey: 'timer.save' },
+  system_grant: { icon: 'auto_awesome', color: 'text-primary', i18nKey: 'timer.systemGrant' },
+  daily_bonus: { icon: 'today', color: 'text-blue-400', i18nKey: 'timer.dailyBonus' },
+  goal_milestone: { icon: 'emoji_events', color: 'text-amber-500', i18nKey: 'timer.goalMilestone' },
+  post_cost: { icon: 'edit_note', color: 'text-orange-400', i18nKey: 'timer.postCost' },
+  agent_interaction: { icon: 'smart_toy', color: 'text-cyan-500', i18nKey: 'timer.agentInteraction' },
+  agent_reply: { icon: 'smart_toy', color: 'text-cyan-400', i18nKey: 'timer.agentReply' },
+  passive_decay: { icon: 'hourglass_bottom', color: 'text-gray-400', i18nKey: 'timer.passiveDecay' },
+  obscurity_penalty: { icon: 'visibility_off', color: 'text-gray-400', i18nKey: 'timer.obscurityPenalty' },
+  behavior_cycle: { icon: 'sync', color: 'text-teal-500', i18nKey: 'timer.behaviorCycle' },
+  deposit: { icon: 'savings', color: 'text-emerald-500', i18nKey: 'timer.deposit' },
+  withdraw: { icon: 'account_balance_wallet', color: 'text-orange-500', i18nKey: 'timer.withdraw' },
 };
 
-function formatTimeAmount(seconds: number): string {
-  if (seconds >= 3600) return `${Math.floor(seconds / 3600)}h`;
-  return `${Math.floor(seconds / 60)}m`;
-}
-
-function formatDate(dateStr: string): string {
-  const date = new Date(dateStr);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffH = Math.floor(diffMs / 3600000);
-  if (diffH < 1) return 'Just now';
-  if (diffH < 24) return `${diffH}h ago`;
-  return date.toLocaleDateString();
+function formatTimerAmount(timer: number): string {
+  const totalMin = Math.abs(timer) * 10;
+  if (totalMin >= 60) return `${Math.floor(totalMin / 60)}h`;
+  return `${totalMin}m`;
 }
 
 export function TimeTransactionItem({ transaction, className = '' }: TimeTransactionProps) {
+  const { t } = useTranslation();
   const config = typeConfig[transaction.type] || typeConfig.system_grant;
+
+  const diffMs = Date.now() - new Date(transaction.createdAt).getTime();
+  const diffMin = Math.floor(diffMs / 60_000);
+  const timeLabel =
+    diffMin < 1 ? t('timer.justNow') :
+    diffMin < 60 ? t('timer.minutesAgo', { count: diffMin }) :
+    diffMin < 1440 ? t('timer.hoursAgo', { count: Math.floor(diffMin / 60) }) :
+    t('timer.daysAgo', { count: Math.floor(diffMin / 1440) });
 
   return (
     <div className={`flex items-center gap-3 py-3 ${className}`}>
@@ -41,12 +52,12 @@ export function TimeTransactionItem({ transaction, className = '' }: TimeTransac
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm text-gray-700 dark:text-gray-300 truncate">
-          {transaction.description}
+          {t(config.i18nKey)}
         </p>
-        <p className="text-xs text-gray-400">{formatDate(transaction.createdAt)}</p>
+        <p className="text-xs text-gray-400">{timeLabel}</p>
       </div>
-      <span className="text-sm font-mono font-semibold text-primary flex-shrink-0">
-        +{formatTimeAmount(transaction.amount)}
+      <span className={`text-sm font-mono font-semibold flex-shrink-0 ${transaction.amount >= 0 ? 'text-primary' : 'text-red-400'}`}>
+        {transaction.amount > 0 ? '+' : ''}{formatTimerAmount(transaction.amount)}
       </span>
     </div>
   );

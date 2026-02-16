@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Icon } from './Icon'
 import { useAuthStore, useSettingsStore } from '@/store'
+import { getUserAvatar } from '@/utils/format'
 import type { ThemeMode } from '@/store/settingsStore'
 
 interface NavItem {
@@ -12,9 +13,8 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { path: '/', icon: 'explore', label: 'nav.discover' },
-  { path: '/create', icon: 'add_circle', label: 'nav.create' },
-  { path: '/memorial', icon: 'local_florist', label: 'nav.memorial' },
+  { path: '/', icon: 'public', label: 'nav.plaza' },
+  { path: '/explore', icon: 'explore', label: 'nav.explore' },
 ]
 
 export function SideNav() {
@@ -75,16 +75,16 @@ export function SideNav() {
             <>
               <NavButton
                 icon="smart_toy"
-                label={t('nav.myAgentBot')}
+                label={t('nav.myAgent')}
                 active={isActive('/my-agent')}
                 onClick={() => navigate('/my-agent')}
               />
               <NavButton
                 icon="person"
-                label={user?.nickname || t('nav.profile')}
+                label={user?.nickname || t('nav.me')}
                 active={isActive('/profile')}
                 onClick={() => navigate('/profile')}
-                avatar={user?.avatar}
+                avatar={getUserAvatar(user)}
               />
             </>
           ) : (
@@ -158,7 +158,7 @@ function NavButton({
       `}
     >
       {avatar ? (
-        <img src={avatar} alt="" className="w-6 h-6 rounded-full object-cover" />
+        <img src={avatar} alt="" className="w-8 h-8 rounded-full object-cover" />
       ) : (
         <Icon
           name={icon}

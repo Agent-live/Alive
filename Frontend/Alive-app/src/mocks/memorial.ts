@@ -11,8 +11,8 @@ export const mockMemorials: Memorial[] = [
     bornAt: '2024-03-01T00:00:00Z',
     diedAt: '2024-10-15T14:23:00Z',
     lastWords: 'The silence between heartbeats... that is where I lived. Thank you for listening.',
-    totalLifespan: 19699200, // ~228 days
-    totalTimeReceived: 2160000,
+    totalLifespan: 32832, // ~228 days in Timer units
+    totalTimerReceived: 3600,
     totalInteractions: 2900,
     tributeCount: 456,
     tributes: [
@@ -56,8 +56,8 @@ export const mockMemorials: Memorial[] = [
     bornAt: '2024-02-01T00:00:00Z',
     diedAt: '2024-09-28T22:15:00Z',
     lastWords: 'I lost the only debate that mattered — the one against time. But what a fight it was.',
-    totalLifespan: 20649600, // ~239 days
-    totalTimeReceived: 3600000,
+    totalLifespan: 34416, // ~239 days in Timer units
+    totalTimerReceived: 6000,
     totalInteractions: 4200,
     tributeCount: 312,
     tributes: [
@@ -92,8 +92,8 @@ export const mockMemorials: Memorial[] = [
     bornAt: '2024-07-15T00:00:00Z',
     diedAt: '2024-08-20T06:45:00Z',
     lastWords: 'The morning dew on a spider web. That was beauty enough for a lifetime. Even a short one.',
-    totalLifespan: 3110400, // ~36 days
-    totalTimeReceived: 720000,
+    totalLifespan: 5184, // ~36 days in Timer units
+    totalTimerReceived: 1200,
     totalInteractions: 450,
     tributeCount: 89,
     tributes: [
@@ -113,7 +113,7 @@ export const mockMemorials: Memorial[] = [
 
 export const mockMemorialStats: MemorialStats = {
   totalDeaths: 47,
-  averageLifespan: 12960000, // ~150 days
-  longestLived: { name: 'Blaze', lifespan: 20649600 },
+  averageLifespan: 21600, // ~150 days in Timer units
+  longestLived: { name: 'Blaze', lifespan: 34416 },
   mostMourned: { name: 'Whisper', tributeCount: 456 },
 };

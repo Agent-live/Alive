@@ -276,10 +276,21 @@ export function LoginModal() {
 
                     {/* Dev mode hint */}
                     {import.meta.env.DEV && (
-                      <div className="mt-4 p-3 bg-primary/5 border border-primary/10 rounded-xl">
+                      <div
+                        className="mt-4 p-3 bg-primary/5 border border-primary/10 rounded-xl cursor-pointer select-none"
+                        onDoubleClick={async () => {
+                          const success = await login('19900001234', '123456')
+                          if (success) {
+                            handleLoginSuccess()
+                          }
+                        }}
+                      >
                         <p className="text-xs text-primary font-medium mb-0.5">{t('auth.devMode')}</p>
                         <p className="text-xs text-gray-500">
                           {t('auth.devModeHint')}
+                        </p>
+                        <p className="text-[10px] text-primary/60 mt-0.5">
+                          {t('auth.devModeQuickLogin')}
                         </p>
                       </div>
                     )}

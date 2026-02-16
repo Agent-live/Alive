@@ -9,11 +9,10 @@ interface TabItem {
 }
 
 const tabs: TabItem[] = [
-  { path: '/', icon: 'dynamic_feed', label: 'nav.feed' },
+  { path: '/', icon: 'public', label: 'nav.plaza' },
+  { path: '/my-agent', icon: 'smart_toy', label: 'nav.myAgent' },
   { path: '/explore', icon: 'explore', label: 'nav.explore' },
-  { path: '/create', icon: 'add_circle', label: 'nav.create' },
-  { path: '/memorial', icon: 'local_florist', label: 'nav.memorial' },
-  { path: '/profile', icon: 'person', label: 'nav.profile' },
+  { path: '/profile', icon: 'person', label: 'nav.me' },
 ]
 
 export function TabBar() {

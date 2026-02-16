@@ -61,7 +61,8 @@
     "loginFailed": "Falha no login",
     "loggedOut": "Desconectado",
     "continueWith": "Continuar com {{provider}}",
-    "given": "Doado!"
+    "given": "Doado!",
+    "devModeQuickLogin": "Double-click here to quick login as Qingbolan"
   },
   "onboarding": {
     "skip": "Pular",

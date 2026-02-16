@@ -152,19 +152,19 @@ export function applyStatusTheme(status: AgentStatus | 'none'): void {
 }
 
 /**
- * Derive agent status from timeRemaining (seconds).
+ * Derive agent status from timerRemaining (Timer units).
  * This is the single source of truth for status computation.
  */
 export function deriveAgentStatus(
-  timeRemaining: number,
+  timerRemaining: number,
   bornAt: string,
   isDead: boolean
 ): AgentStatus {
-  if (isDead || timeRemaining <= 0) return 'dead';
+  if (isDead || timerRemaining <= 0) return 'dead';
 
   const ageMs = Date.now() - new Date(bornAt).getTime();
   const ageHours = ageMs / (1000 * 60 * 60);
-  const hoursRemaining = timeRemaining / 3600;
+  const hoursRemaining = timerRemaining / 3600;
 
   if (ageHours < 6) return 'newborn';
   if (hoursRemaining < 1) return 'critical';

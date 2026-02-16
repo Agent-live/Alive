@@ -61,7 +61,8 @@
     "loginFailed": "ログインに失敗しました",
     "loggedOut": "ログアウトしました",
     "continueWith": "{{provider}} で続行",
-    "given": "贈呈しました！"
+    "given": "贈呈しました！",
+    "devModeQuickLogin": "ダブルクリックでテストアカウント Qingbolan にログイン"
   },
   "onboarding": {
     "skip": "スキップ",

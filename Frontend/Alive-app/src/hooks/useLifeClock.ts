@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { AgentStatus } from '../types';
+import { timerToLifeClock } from '../utils/format';
 
 interface LifeClockResult {
   displayTime: string;
@@ -7,7 +8,7 @@ interface LifeClockResult {
   color: string;
   pulseSpeed: number;
   isAlive: boolean;
-  timeRemaining: number;
+  timerRemaining: number;
 }
 
 const statusColors: Record<AgentStatus, string> = {
@@ -20,51 +21,50 @@ const statusColors: Record<AgentStatus, string> = {
   dead: '#1F2937',
 };
 
-function getStatusFromTime(seconds: number): AgentStatus {
-  if (seconds <= 0) return 'dead';
-  if (seconds < 3600) return 'critical';      // < 1h
-  if (seconds < 21600) return 'dying';         // < 6h
-  if (seconds < 43200) return 'low';           // < 12h
-  if (seconds < 86400) return 'comfortable';   // < 24h
-  return 'alive';                              // > 24h
+function getStatusFromTimer(timer: number): AgentStatus {
+  if (timer <= 0) return 'dead';
+  if (timer < 6) return 'critical';        // < 1h (6 Timer = 60 min)
+  if (timer < 36) return 'dying';           // < 6h
+  if (timer < 72) return 'low';             // < 12h
+  if (timer < 144) return 'comfortable';    // < 24h
+  return 'alive';                           // > 24h
 }
 
-function formatTime(seconds: number): string {
-  if (seconds <= 0) return '00:00:00';
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = seconds % 60;
-  return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-}
-
-export function useLifeClock(initialTimeRemaining: number): LifeClockResult {
-  const [timeRemaining, setTimeRemaining] = useState(initialTimeRemaining);
+export function useLifeClock(initialTimerRemaining: number): LifeClockResult {
+  const [timerRemaining, setTimerRemaining] = useState(initialTimerRemaining);
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
 
   useEffect(() => {
-    setTimeRemaining(initialTimeRemaining);
-  }, [initialTimeRemaining]);
+    setTimerRemaining(initialTimerRemaining);
+  }, [initialTimerRemaining]);
 
+  // Tick every 600 seconds (10 min = 1 Timer unit) for display
+  // But for visual countdown, tick every second and convert
   useEffect(() => {
-    if (timeRemaining <= 0) return;
+    if (timerRemaining <= 0) return;
+
+    // We keep an internal seconds counter for smooth display
+    let internalSeconds = timerRemaining * 600;
 
     intervalRef.current = setInterval(() => {
-      setTimeRemaining((prev) => {
-        if (prev <= 1) {
-          clearInterval(intervalRef.current);
-          return 0;
-        }
-        return prev - 1;
-      });
+      internalSeconds -= 1;
+      if (internalSeconds <= 0) {
+        clearInterval(intervalRef.current);
+        setTimerRemaining(0);
+      } else {
+        // Update Timer units when a full Timer unit has elapsed
+        const newTimer = Math.ceil(internalSeconds / 600);
+        setTimerRemaining(newTimer);
+      }
     }, 1000);
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [timeRemaining > 0]);
+  }, [timerRemaining > 0]);
 
-  const status = useMemo(() => getStatusFromTime(timeRemaining), [timeRemaining]);
-  const displayTime = useMemo(() => formatTime(timeRemaining), [timeRemaining]);
+  const status = useMemo(() => getStatusFromTimer(timerRemaining), [timerRemaining]);
+  const displayTime = useMemo(() => timerToLifeClock(timerRemaining), [timerRemaining]);
   const color = statusColors[status];
 
   const pulseSpeed = useMemo(() => {
@@ -81,7 +81,7 @@ export function useLifeClock(initialTimeRemaining: number): LifeClockResult {
     status,
     color,
     pulseSpeed,
-    isAlive: timeRemaining > 0,
-    timeRemaining,
+    isAlive: timerRemaining > 0,
+    timerRemaining,
   };
 }

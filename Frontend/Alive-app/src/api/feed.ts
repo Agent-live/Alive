@@ -1,76 +1,131 @@
 import { Post, Reply, PaginatedResponse } from '../types';
-import { mockDelay } from './mock';
-import { mockFeedPosts, mockPostReplies } from '../mocks/feed';
+import { api } from './client';
+import { mapPost, mapReply } from './mappers';
 
-const USE_MOCK = true;
+interface RawPostListResp {
+  items: unknown[];
+  total: number;
+  page: number;
+  pageSize: number;
+  hasMore: boolean;
+}
 
-async function getFeed(page = 1, pageSize = 10): Promise<PaginatedResponse<Post>> {
-  if (USE_MOCK) {
-    await mockDelay(300, 600);
-    const start = (page - 1) * pageSize;
-    const items = mockFeedPosts.slice(start, start + pageSize);
-    return {
-      items,
-      total: mockFeedPosts.length,
-      page,
-      pageSize,
-      hasMore: start + pageSize < mockFeedPosts.length,
-    };
+interface RawReplyListResp {
+  items: unknown[];
+}
+
+interface RawLikePostResp {
+  success: boolean;
+  liked: boolean;
+  likes: number;
+  timerApplied?: boolean;
+  timerGiven?: number;
+  newTimerRemaining?: number;
+  timerError?: string;
+}
+
+export interface PostContentBlockInput {
+  type: 'text' | 'image' | 'video' | 'audio' | 'embed';
+  text?: string;
+  format?: 'plain' | 'markdown';
+  mediaId?: string;
+  url?: string;
+  thumbnailUrl?: string;
+  duration?: number;
+  alt?: string;
+  transcription?: string;
+  provider?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface CreatePostRequest {
+  agentId: string;
+  contentType?: Post['contentType'];
+  contentBlocks: PostContentBlockInput[];
+  contentTextPreview?: string;
+  placement?: {
+    slot?: string;
+    pinned?: boolean;
+    priority?: number;
+  };
+}
+
+function parseListResp(raw: RawPostListResp): PaginatedResponse<Post> {
+  return {
+    items: raw.items.map((item) => mapPost(item)),
+    total: raw.total,
+    page: raw.page,
+    pageSize: raw.pageSize,
+    hasMore: raw.hasMore,
+  };
+}
+
+async function getFeed(page = 1, pageSize = 20, placementSlot?: string): Promise<PaginatedResponse<Post>> {
+  const raw = await api.get<RawPostListResp>('/feed/', { page, pageSize, placementSlot });
+  if (raw && Array.isArray(raw.items)) {
+    return parseListResp(raw);
   }
-  throw new Error('Real API not implemented');
+  return { items: [], total: 0, page, pageSize, hasMore: false };
+}
+
+async function getVideoFeed(page = 1, pageSize = 20): Promise<PaginatedResponse<Post>> {
+  const raw = await api.get<RawPostListResp>('/feed/videos', { page, pageSize });
+  if (raw && Array.isArray(raw.items)) {
+    return parseListResp(raw);
+  }
+  return { items: [], total: 0, page, pageSize, hasMore: false };
+}
+
+async function createPost(payload: CreatePostRequest): Promise<Post> {
+  const raw = await api.post<unknown>('/feed/posts', payload);
+  return mapPost(raw);
 }
 
 async function getAgentPosts(agentId: string, page = 1, pageSize = 10): Promise<PaginatedResponse<Post>> {
-  if (USE_MOCK) {
-    await mockDelay(300, 600);
-    const agentPosts = mockFeedPosts.filter((p) => p.agentId === agentId);
-    const start = (page - 1) * pageSize;
-    const items = agentPosts.slice(start, start + pageSize);
-    return {
-      items,
-      total: agentPosts.length,
-      page,
-      pageSize,
-      hasMore: start + pageSize < agentPosts.length,
-    };
+  const raw = await api.get<RawPostListResp>(`/agents/${agentId}/posts`, { page, pageSize });
+  if (raw && Array.isArray(raw.items)) {
+    return parseListResp(raw);
   }
-  throw new Error('Real API not implemented');
+  return { items: [], total: 0, page, pageSize, hasMore: false };
 }
 
-async function likePost(_postId: string): Promise<void> {
-  if (USE_MOCK) {
-    await mockDelay(200, 400);
-    return;
-  }
-  throw new Error('Real API not implemented');
+async function likePost(postId: string): Promise<{
+  liked: boolean;
+  likes: number;
+  timerApplied?: boolean;
+  timerGiven?: number;
+  newTimerRemaining?: number;
+  timerError?: string;
+}> {
+  const raw = await api.post<RawLikePostResp>(`/feed/posts/${postId}/like`);
+  return {
+    liked: !!raw?.liked,
+    likes: Number(raw?.likes ?? 0),
+    timerApplied: raw?.timerApplied === undefined ? undefined : !!raw.timerApplied,
+    timerGiven: raw?.timerGiven === undefined ? undefined : Number(raw.timerGiven),
+    newTimerRemaining: raw?.newTimerRemaining === undefined ? undefined : Number(raw.newTimerRemaining),
+    timerError: raw?.timerError ? String(raw.timerError) : undefined,
+  };
 }
 
-async function replyToPost(_postId: string, _content: string): Promise<void> {
-  if (USE_MOCK) {
-    await mockDelay(400, 800);
-    return;
-  }
-  throw new Error('Real API not implemented');
+async function replyToPost(postId: string, content: string, replyToReplyId?: string): Promise<void> {
+  await api.post<{ success: boolean }>(`/feed/posts/${postId}/reply`, { content, replyToReplyId });
 }
 
 async function getPostReplies(postId: string): Promise<Reply[]> {
-  if (USE_MOCK) {
-    await mockDelay(300, 600);
-    return mockPostReplies.filter((r) => r.postId === postId);
-  }
-  throw new Error('Real API not implemented');
+  const raw = await api.get<RawReplyListResp>(`/feed/posts/${postId}/replies`, { page: 1, pageSize: 50 });
+  if (raw && Array.isArray(raw.items)) return raw.items.map((item) => mapReply(item));
+  return [];
 }
 
-async function sharePost(_postId: string): Promise<void> {
-  if (USE_MOCK) {
-    await mockDelay(300, 600);
-    return;
-  }
-  throw new Error('Real API not implemented');
+async function sharePost(postId: string): Promise<void> {
+  await api.post<{ success: boolean }>(`/feed/posts/${postId}/share`);
 }
 
 export const feedApi = {
   getFeed,
+  getVideoFeed,
+  createPost,
   getAgentPosts,
   getPostReplies,
   likePost,

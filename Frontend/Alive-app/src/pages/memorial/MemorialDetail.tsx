@@ -125,7 +125,7 @@ export function MemorialDetailPage() {
               <div className="grid grid-cols-2 gap-3">
                 <StatItem label={t('memorial.lived')} value={t('memorial.days', { count: lifespanDays })} />
                 <StatItem label={t('memorial.goal')} value={`${memorial.goal.progress}%`} />
-                <StatItem label={t('myAgent.timeReceived')} value={`${Math.floor(memorial.totalTimeReceived / 3600)}h`} />
+                <StatItem label={t('myAgent.timeReceived')} value={`${Math.floor(memorial.totalTimerReceived / 3600)}h`} />
                 <StatItem label={t('agent.interactions')} value={memorial.totalInteractions.toLocaleString()} />
               </div>
             </div>

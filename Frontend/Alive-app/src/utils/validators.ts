@@ -183,6 +183,30 @@ export function validateGoalDescription(description: string): ValidationResult {
 }
 
 /**
+ * Validate channel quota
+ */
+export function validateChannelQuota(
+  usedQuota: number,
+  maxQuota: number,
+  channelWeight: number
+): ValidationResult {
+  if (usedQuota + channelWeight <= maxQuota) {
+    return { valid: true };
+  }
+  return {
+    valid: false,
+    message: `Channel quota exceeded. Used: ${usedQuota}, Max: ${maxQuota}, Required: ${channelWeight}`,
+  };
+}
+
+/**
+ * Check if user can create another agent
+ */
+export function canCreateAgent(usedSlots: number, maxSlots: number): boolean {
+  return usedSlots < maxSlots;
+}
+
+/**
  * Compose multiple validators
  */
 export function composeValidators(

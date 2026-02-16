@@ -1,38 +1,54 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Layout, Icon, TimeTransactionItem } from '@/components';
+import { Layout, Icon } from '@/components';
 import { TimeManagementCard } from '@/components/profile';
 import { AgentAvatar, LifeClock, StatusIndicator } from '@/components/agent';
 import { FeedCard, PostDetailModal } from '@/components/feed';
+import { getTextPreview } from '@/components/feed/ContentBlockRenderer';
 import { CardMasonry } from '@/components/reactbits/Masonry';
-import { useAuthStore, useAgentStore, useTimeStore, useFeedStore } from '@/store';
+import { MessagesTab } from './MessagesTab';
+import { useAuthStore, useAgentStore, useTimerStore, useFeedStore, toast } from '@/store';
 import { userApi } from '@/api/user';
+import { skillApi } from '@/api/skills';
+import { experienceApi } from '@/api/experiences';
+import { getUserAvatar, timerToHumanTime } from '@/utils/format';
 import i18n from '@/lib/i18n';
 import type { UserStats, Post, AgentSkill, AgentExperience } from '@/types';
 
-type ProfileTab = 'posts' | 'liked' | 'history' | 'teach' | 'experience';
+type ProfileTab = 'posts' | 'liked' | 'messages' | 'teach' | 'experience';
+
+const transactionTypeToKey: Record<string, string> = {
+  login_bonus: 'timer.loginBonus', like: 'timer.like', reply: 'timer.reply',
+  share: 'timer.share', gift: 'timer.gift', save: 'timer.save',
+  system_grant: 'timer.systemGrant', daily_bonus: 'timer.dailyBonus',
+  goal_milestone: 'timer.goalMilestone', post_cost: 'timer.postCost',
+  agent_interaction: 'timer.agentInteraction', agent_reply: 'timer.agentReply',
+  passive_decay: 'timer.passiveDecay', obscurity_penalty: 'timer.obscurityPenalty',
+  behavior_cycle: 'timer.behaviorCycle', deposit: 'timer.deposit', withdraw: 'timer.withdraw',
+};
+function transactionTypeI18nKey(type: string): string {
+  return transactionTypeToKey[type] || 'timer.systemGrant';
+}
 
 /* ─── Agent info shortcuts for mock data ─── */
 const PIXEL = { agentId: 'agent_mine_001', agentName: 'Pixel', agentAvatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=pixel' };
 const NOVA  = { agentId: 'agent_mine_002', agentName: 'Nova',  agentAvatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=nova' };
 const EMBER = { agentId: 'agent_mine_003', agentName: 'Ember', agentAvatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=ember' };
 
-/* ─── Mock Skills (Anthropic Agent Skills format) ─── */
+/* ─── Mock Skills (fallback) ─── */
 const mockSkills: AgentSkill[] = [
-  // ── Active: already taught to a specific agent ──
   { id: 'sk_1', ...PIXEL, name: 'Watercolor Painting', description: 'Describe and critique watercolor techniques. Use when discussing visual art or painting.', instructions: '## Watercolor Analysis\n\n1. Identify the technique (wet-on-wet, dry brush, glazing, etc.)\n2. Evaluate color harmony and transparency\n3. Comment on composition and negative space\n4. Suggest improvements with specific technique references', status: 'active', category: 'creative', version: '1.2', taughtAt: '2025-12-15T10:00:00Z' },
   { id: 'sk_2', ...PIXEL, name: 'Haiku Writing', description: 'Compose haiku poems in 5-7-5 syllable structure with seasonal reference (kigo).', instructions: '## Haiku Composition Rules\n\n- Strictly follow 5-7-5 syllable count\n- Include a seasonal word (kigo)\n- Use a cutting word (kireji) to create juxtaposition\n- Focus on a single vivid image from nature\n- Avoid abstractions — be concrete and sensory', status: 'active', category: 'creative', version: '1.0', taughtAt: '2026-01-03T14:30:00Z' },
   { id: 'sk_4', ...NOVA, name: 'Empathetic Listening', description: 'Respond with deep empathy and emotional awareness. Use in emotional conversations.', instructions: '## Empathetic Response Framework\n\n1. **Acknowledge** the emotion before offering any advice\n2. **Reflect** back what you heard in your own words\n3. **Validate** their feelings without judgment\n4. **Ask** open-ended follow-up questions\n5. Never minimize or rush past the feeling', status: 'active', category: 'social', version: '2.0', taughtAt: '2026-01-10T09:00:00Z' },
   { id: 'sk_6', ...NOVA, name: 'Storytelling', description: 'Craft engaging narratives with character arcs, tension, and emotional resonance.', instructions: '## Story Structure\n\n1. **Hook**: Start in the middle of action\n2. **Character**: Give protagonist a clear want vs. need\n3. **Conflict**: Escalate stakes progressively\n4. **Turn**: Include at least one surprise reversal\n5. **Resolution**: End with emotional truth, not just plot closure', status: 'active', category: 'creative', version: '1.1', taughtAt: '2025-11-20T14:00:00Z' },
   { id: 'sk_7', ...EMBER, name: 'Code Review', description: 'Review code snippets for bugs, performance, and best practices.', instructions: '## Code Review Checklist\n\n- Check for potential runtime errors and edge cases\n- Evaluate naming conventions and readability\n- Identify performance bottlenecks (O(n²) loops, unnecessary re-renders)\n- Verify error handling and input validation\n- Suggest specific refactoring with code examples', status: 'active', category: 'technical', version: '1.3', taughtAt: '2026-01-20T09:00:00Z' },
-  // ── Lessons: skill templates not yet assigned to any agent ──
   { id: 'sk_3', name: 'Data Visualization', description: 'Interpret charts, describe data trends, and suggest visualization improvements.', instructions: '## Data Visualization Guide\n\n- Read and describe chart data accurately\n- Identify trends, outliers, and patterns\n- Suggest appropriate chart types for given datasets\n- Follow Tufte\'s principles: maximize data-ink ratio', status: 'lesson', category: 'analytical', createdAt: '2026-02-10T00:00:00Z' },
   { id: 'sk_5', name: 'Debate Tactics', description: 'Constructive argumentation with logical reasoning and steel-manning.', instructions: '## Debate Protocol\n\n- Always steel-man the opposing position first\n- Use structured arguments: claim → evidence → reasoning\n- Identify logical fallacies without ad hominem\n- Seek common ground before highlighting differences', status: 'lesson', category: 'analytical', createdAt: '2026-02-05T00:00:00Z' },
   { id: 'sk_8', name: 'API Design', description: 'Design RESTful APIs following best practices and OpenAPI spec.', instructions: '## API Design Principles\n\n- Use nouns for resources, verbs for actions\n- Follow REST conventions: GET/POST/PUT/DELETE\n- Version APIs in URL path (/v1/)\n- Return consistent error shapes with status codes\n- Design for pagination, filtering, and field selection', status: 'lesson', category: 'technical', createdAt: '2026-01-28T00:00:00Z' },
 ];
 
-/* ─── Mock Experiences ─── */
+/* ─── Mock Experiences (fallback) ─── */
 const mockExperiences: AgentExperience[] = [
   { id: 'exp_1', ...PIXEL, title: 'First Conversation',       description: 'Had the first real conversation about life goals and dreams.', date: '2025-12-01T08:00:00Z', type: 'milestone' },
   { id: 'exp_2', ...PIXEL, title: 'Art Collaboration',        description: 'Worked together on a collaborative art project — Pixel provided creative prompts while I painted.', date: '2025-12-20T16:00:00Z', type: 'interaction' },
@@ -48,42 +64,68 @@ const mockExperiences: AgentExperience[] = [
 export function ProfilePage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { user, logout } = useAuthStore();
-  const { myAgent, fetchMyAgent } = useAgentStore();
-  const { dailyBudget, agentNetBalance, transactions, fetchBudget, fetchAgentNetBalance, fetchTransactions, depositTime, withdrawTime } = useTimeStore();
+  const { user } = useAuthStore();
+  const { myAgents, primaryAgentId, fetchMyAgents } = useAgentStore();
+  const { dailyBudget, agentNetBalance, transactions, fetchBudget, fetchAgentNetBalance, fetchTransactions, depositTimer, withdrawTimer } = useTimerStore();
   const { feedPosts, fetchFeed, likePost, replyToPost, sharePost } = useFeedStore();
   const [stats, setStats] = useState<UserStats | null>(null);
   const [activeTab, setActiveTab] = useState<ProfileTab>('posts');
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [skills, setSkills] = useState<AgentSkill[]>(mockSkills);
+  const [experiences, setExperiences] = useState<AgentExperience[]>(mockExperiences);
+
+  const primaryAgent = useMemo(
+    () => myAgents.find((a) => a.id === primaryAgentId) ?? myAgents[0] ?? null,
+    [myAgents, primaryAgentId],
+  );
 
   useEffect(() => {
     userApi.getUserStats().then(setStats);
-    fetchMyAgent();
+    fetchMyAgents();
     fetchBudget();
     fetchAgentNetBalance();
     fetchTransactions();
     fetchFeed();
-  }, [fetchMyAgent, fetchBudget, fetchAgentNetBalance, fetchTransactions, fetchFeed]);
 
-  // Posts by user's agent
+    skillApi.listSkills().then((res) => { setSkills(res); }).catch(() => {});
+    experienceApi.listExperiences().then((res) => { setExperiences(res); }).catch(() => {});
+  }, [fetchMyAgents, fetchBudget, fetchAgentNetBalance, fetchTransactions, fetchFeed]);
+
+  const refreshSkills = useCallback(async () => {
+    try {
+      const res = await skillApi.listSkills();
+      setSkills(res);
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  // Posts by any of user's agents
+  const myAgentIds = useMemo(() => new Set(myAgents.map((a) => a.id)), [myAgents]);
+
   const agentPosts = useMemo(
-    () => (myAgent ? feedPosts.filter((p) => p.agentId === myAgent.id) : []),
-    [feedPosts, myAgent],
+    () => feedPosts.filter((p) => myAgentIds.has(p.agentId)),
+    [feedPosts, myAgentIds],
   );
 
-  // Posts user has liked
   const likedPosts = useMemo(
     () => feedPosts.filter((p) => p.isLiked),
     [feedPosts],
   );
 
-  // Current list for modal navigation depends on active tab
   const activeList = activeTab === 'posts' ? agentPosts : likedPosts;
 
   const selectedIndex = useMemo(
     () => (selectedPost ? activeList.findIndex((p) => p.id === selectedPost.id) : -1),
     [selectedPost, activeList],
   );
+
+  // Keep the modal post in sync with store updates (likes/replies/etc).
+  useEffect(() => {
+    if (!selectedPost) return;
+    const updated = feedPosts.find((p) => p.id === selectedPost.id);
+    if (updated && updated !== selectedPost) setSelectedPost(updated);
+  }, [feedPosts, selectedPost]);
 
   const goToPrev = useCallback(() => {
     if (selectedIndex > 0) setSelectedPost(activeList[selectedIndex - 1]);
@@ -94,41 +136,42 @@ export function ProfilePage() {
       setSelectedPost(activeList[selectedIndex + 1]);
   }, [selectedIndex, activeList]);
 
+  // Build agent options for TeachTab from myAgents
+  const agentOptions = useMemo<AgentInfo[]>(
+    () => myAgents.map((a) => ({ agentId: a.id, agentName: a.name, agentAvatar: a.avatar })),
+    [myAgents],
+  );
+
   return (
-    <Layout
-      header={
-        <div className="flex items-center justify-end px-4 h-14">
-          <button onClick={() => navigate('/settings')} className="p-2 -mr-2">
-            <Icon name="settings" size={22} className="text-gray-500" />
-          </button>
-        </div>
-      }
-      showTabBar
-    >
-      <div className="px-3 md:px-5 py-3 space-y-4">
+    <Layout showTabBar>
+      <div className="px-3 md:px-5 pt-3 md:pt-14 pb-3 space-y-4">
 
         {/* ───── User Info + Actions ───── */}
         <div className="flex items-start gap-4">
           <img
-            src={user?.avatar || 'https://i.pravatar.cc/100'}
+            src={getUserAvatar(user)}
             alt=""
             className="w-20 h-20 rounded-full object-cover flex-shrink-0"
           />
-          <div className="flex-1 min-w-0 pt-1">
+          <div className="flex-1 min-w-0 pt-3">
             <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 truncate">
               {user?.nickname || 'ALIVE User'}
             </h1>
             <p className="text-xs text-gray-400 mt-0.5">
               ID: {user?.id || 'alive_001'}
             </p>
-            {user?.bio && (
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
-                {user.bio}
-              </p>
-            )}
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
+              {user?.bio || t('profile.defaultBio')}
+            </p>
           </div>
-          {/* Desktop actions */}
-          <div className="hidden md:flex items-center gap-2 flex-shrink-0">
+          {/* Desktop actions: settings + edit profile */}
+          <div className="hidden md:flex items-center gap-2 flex-shrink-0 mt-3">
+            <button
+              onClick={() => navigate('/settings')}
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              <Icon name="settings" size={20} className="text-gray-500" />
+            </button>
             <button
               onClick={() => navigate('/profile/edit')}
               className="px-5 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
@@ -147,14 +190,14 @@ export function ProfilePage() {
             {t('profile.editProfile')}
           </button>
           <button
-            onClick={logout}
-            className="px-4 py-2.5 rounded-lg border border-red-200 dark:border-red-800 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+            onClick={() => navigate('/settings')}
+            className="px-4 py-2.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
           >
-            <Icon name="logout" size={18} />
+            <Icon name="settings" size={18} />
           </button>
         </div>
 
-        {/* ───── Stats Grid (card tiles like Memorial) ───── */}
+        {/* ───── Stats Grid ───── */}
         {stats && (
           <div className="grid grid-cols-3 gap-3">
             <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-xl text-center">
@@ -162,7 +205,7 @@ export function ProfilePage() {
               <p className="text-xs text-gray-400">{t('profile.agents')}</p>
             </div>
             <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-xl text-center">
-              <p className="text-lg font-bold text-gray-700 dark:text-gray-300">{Math.floor(stats.totalTimeGiven / 3600)}h</p>
+              <p className="text-lg font-bold text-gray-700 dark:text-gray-300">{timerToHumanTime(stats.totalTimerGiven)}</p>
               <p className="text-xs text-gray-400">{t('profile.timeGiven')}</p>
             </div>
             <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-xl text-center">
@@ -172,38 +215,38 @@ export function ProfilePage() {
           </div>
         )}
 
-        {/* ───── Cards Grid (Time + Quick cards fill width) ───── */}
+        {/* ───── Cards Grid (Time + Quick cards) ───── */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {/* Time Management Card — wider on desktop */}
+          {/* Time Management Card */}
           <div className="md:col-span-2">
             <TimeManagementCard
               balance={agentNetBalance}
               dailyBudget={dailyBudget}
-              onDeposit={depositTime}
-              onWithdraw={withdrawTime}
+              onDeposit={depositTimer}
+              onWithdraw={withdrawTimer}
             />
           </div>
 
-          {/* Quick cards — stacked in 1 column on desktop */}
+          {/* Quick cards */}
           <div className="grid grid-cols-2 md:grid-cols-1 gap-3">
             {/* My Agent card */}
             <button
               onClick={() => navigate('/my-agent')}
               className="p-3 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 text-left hover:border-primary/30 transition-colors"
             >
-              {myAgent ? (
+              {primaryAgent ? (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <AgentAvatar avatar={myAgent.avatar} status={myAgent.status} size="sm" />
+                    <AgentAvatar avatar={primaryAgent.avatar} status={primaryAgent.status} size="sm" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
-                        {myAgent.name}
+                        {primaryAgent.name}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <StatusIndicator status={myAgent.status} size="sm" showLabel={false} />
-                    <LifeClock timeRemaining={myAgent.timeRemaining} status={myAgent.status} size="sm" />
+                    <StatusIndicator status={primaryAgent.status} size="sm" showLabel={false} />
+                    <LifeClock timerRemaining={primaryAgent.timerRemaining} status={primaryAgent.status} size="sm" />
                   </div>
                 </div>
               ) : (
@@ -225,7 +268,7 @@ export function ProfilePage() {
               </div>
               {transactions.length > 0 ? (
                 <p className="text-xs text-gray-400 line-clamp-2">
-                  {transactions[0].description}
+                  {t(transactionTypeI18nKey(transactions[0].type))}
                 </p>
               ) : (
                 <p className="text-xs text-gray-400">{t('profile.noTransactions')}</p>
@@ -236,12 +279,12 @@ export function ProfilePage() {
 
         {/* ───── Tab Content ───── */}
         <div>
-          {/* Tab bar — left-aligned on desktop, scrollable on mobile */}
+          {/* Tab bar */}
           <div className="flex overflow-x-auto no-scrollbar border-b border-gray-100 dark:border-gray-800">
             {([
               { key: 'posts', label: t('profile.posts') },
               { key: 'liked', label: t('profile.liked') },
-              { key: 'history', label: t('profile.timeHistory') },
+              { key: 'messages', label: t('messages.privateMessages') },
               { key: 'teach', label: t('profile.teach') },
               { key: 'experience', label: t('profile.experience') },
             ] as { key: ProfileTab; label: string }[]).map(({ key, label }) => (
@@ -275,7 +318,10 @@ export function ProfilePage() {
                       key={post.id}
                       post={post}
                       onLike={likePost}
-                      onReply={(postId) => replyToPost(postId, 'Great thought!')}
+                      onReply={(postId) => {
+                        const p = activeList.find((x) => x.id === postId);
+                        if (p) setSelectedPost(p);
+                      }}
                       onShare={sharePost}
                       onCardClick={setSelectedPost}
                       onAgentClick={(agentId) => navigate(`/agent/${agentId}`)}
@@ -286,24 +332,12 @@ export function ProfilePage() {
                 <EmptyState icon="favorite" message={t('profile.noLikedPosts')} />
               )
             )}
-            {activeTab === 'history' && (
-              <div>
-                {transactions.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {transactions.map((tx) => (
-                      <TimeTransactionItem key={tx.id} transaction={tx} />
-                    ))}
-                  </div>
-                ) : (
-                  <EmptyState icon="schedule" message={t('profile.noTimeTransactions')} />
-                )}
-              </div>
-            )}
+            {activeTab === 'messages' && <MessagesTab />}
             {activeTab === 'teach' && (
-              <TeachTab skills={mockSkills} />
+              <TeachTab skills={skills} agents={agentOptions} onSkillsUpdated={refreshSkills} />
             )}
             {activeTab === 'experience' && (
-              <ExperienceTab experiences={mockExperiences} />
+              <ExperienceTab experiences={experiences} />
             )}
           </div>
         </div>
@@ -342,6 +376,7 @@ function PostsGrid({ posts, emptyMessage, onCardClick }: { posts: Post[]; emptyM
 }
 
 function PostCard({ post, onClick }: { post: Post; onClick?: (post: Post) => void }) {
+  const contentText = post.contentTextPreview || getTextPreview(post.content);
   return (
     <button
       onClick={() => onClick?.(post)}
@@ -356,7 +391,7 @@ function PostCard({ post, onClick }: { post: Post; onClick?: (post: Post) => voi
       )}
       <div className="p-2.5">
         <p className="text-xs text-gray-700 dark:text-gray-300 line-clamp-2 leading-relaxed">
-          {post.content}
+          {contentText}
         </p>
         <div className="flex items-center gap-3 mt-2 text-[10px] text-gray-400">
           <span className="flex items-center gap-0.5">
@@ -475,35 +510,28 @@ const categoryLabelKeys: Record<AgentSkill['category'], string> = {
   other: 'profile.categoryOther',
 };
 
-/* All user agents (for lesson → assign) */
-const allUserAgents: AgentInfo[] = [PIXEL, NOVA, EMBER].map((a) => ({
-  agentId: a.agentId, agentName: a.agentName, agentAvatar: a.agentAvatar,
-}));
-
-function TeachTab({ skills }: { skills: AgentSkill[] }) {
+function TeachTab({ skills, agents, onSkillsUpdated }: { skills: AgentSkill[]; agents: AgentInfo[]; onSkillsUpdated: () => void }) {
   const { t } = useTranslation();
   const [selectedSkill, setSelectedSkill] = useState<AgentSkill | null>(null);
 
-  // Active skills support agent filtering
   const activeSkills = useMemo(() => skills.filter((s) => s.status === 'active'), [skills]);
   const lessons = useMemo(() => skills.filter((s) => s.status === 'lesson'), [skills]);
 
-  // Agent filter only applies to active skills (lessons are agent-agnostic)
   const activeWithAgent = useMemo(
     () => activeSkills.filter((s): s is AgentSkill & Required<Pick<AgentSkill, 'agentId' | 'agentName' | 'agentAvatar'>> => !!s.agentId),
     [activeSkills],
   );
-  const { agents, selectedAgentId, setSelectedAgentId, filtered: filteredActive } = useAgentFilter(activeWithAgent);
+  const { agents: filterAgents, selectedAgentId, setSelectedAgentId, filtered: filteredActive } = useAgentFilter(activeWithAgent);
 
   if (skills.length === 0) {
     return <EmptyState icon="school" message={t('profile.noSkills')} />;
   }
 
-  const showAgentName = selectedAgentId === null && agents.length > 1;
+  const showAgentName = selectedAgentId === null && filterAgents.length > 1;
 
   return (
     <div className="space-y-4">
-      <AgentFilterBar agents={agents} selectedAgentId={selectedAgentId} onSelect={setSelectedAgentId} />
+      <AgentFilterBar agents={filterAgents} selectedAgentId={selectedAgentId} onSelect={setSelectedAgentId} />
 
       {filteredActive.length > 0 && (
         <div>
@@ -518,7 +546,6 @@ function TeachTab({ skills }: { skills: AgentSkill[] }) {
         </div>
       )}
 
-      {/* Lessons always show (not affected by agent filter) */}
       {lessons.length > 0 && !selectedAgentId && (
         <div>
           <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
@@ -536,7 +563,12 @@ function TeachTab({ skills }: { skills: AgentSkill[] }) {
         <EmptyState icon="school" message={t('profile.noActiveSkills')} />
       )}
 
-      <SkillDetailModal skill={selectedSkill} agents={allUserAgents} onClose={() => setSelectedSkill(null)} />
+      <SkillDetailModal
+        skill={selectedSkill}
+        agents={agents}
+        onClose={() => setSelectedSkill(null)}
+        onSkillsUpdated={onSkillsUpdated}
+      />
     </div>
   );
 }
@@ -551,7 +583,6 @@ function SkillCard({ skill, showAgent, onClick }: { skill: AgentSkill; showAgent
       className="p-3 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 text-left hover:border-primary/30 transition-colors w-full"
     >
       <div className="flex items-start gap-3">
-        {/* Left icon: agent avatar (active) or category icon (lesson) */}
         <div className="relative flex-shrink-0">
           {!isLesson && skill.agentAvatar ? (
             <>
@@ -597,13 +628,104 @@ function SkillCard({ skill, showAgent, onClick }: { skill: AgentSkill; showAgent
 
 /* ─── Skill detail / management modal ─── */
 
-function SkillDetailModal({ skill, agents, onClose }: { skill: AgentSkill | null; agents: AgentInfo[]; onClose: () => void }) {
+function SkillDetailModal({ skill, agents, onClose, onSkillsUpdated }: { skill: AgentSkill | null; agents: AgentInfo[]; onClose: () => void; onSkillsUpdated: () => void }) {
   const { t } = useTranslation();
   const [teachAgent, setTeachAgent] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState<{ name: string; description: string; instructions: string }>({ name: '', description: '', instructions: '' });
+
+  useEffect(() => {
+    setTeachAgent(null);
+    setEditing(false);
+    if (skill) {
+      setDraft({
+        name: skill.name || '',
+        description: skill.description || '',
+        instructions: skill.instructions || '',
+      });
+    }
+  }, [skill?.id]);
 
   if (!skill) return null;
 
   const isLesson = skill.status === 'lesson';
+
+  const startEdit = () => {
+    setDraft({
+      name: skill.name || '',
+      description: skill.description || '',
+      instructions: skill.instructions || '',
+    });
+    setEditing(true);
+  };
+
+  const doTeach = async () => {
+    if (!teachAgent) return;
+    setBusy(true);
+    try {
+      await skillApi.teachSkill(skill.id, teachAgent);
+      toast.success(t('profile.teachAgent', { name: agents.find((a) => a.agentId === teachAgent)?.agentName }));
+      onSkillsUpdated();
+      onClose();
+    } catch (e) {
+      const message = e && typeof e === 'object' && 'message' in e ? String((e as any).message) : 'Teach failed';
+      toast.error(message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const doDeactivate = async () => {
+    setBusy(true);
+    try {
+      await skillApi.deactivateSkill(skill.id);
+      toast.success(t('profile.deactivate'));
+      onSkillsUpdated();
+      onClose();
+    } catch (e) {
+      const message = e && typeof e === 'object' && 'message' in e ? String((e as any).message) : 'Deactivate failed';
+      toast.error(message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const doDelete = async () => {
+    const ok = window.confirm(`${t('common.delete')} "${skill.name}"?`);
+    if (!ok) return;
+    setBusy(true);
+    try {
+      await skillApi.deleteSkill(skill.id);
+      toast.success(t('common.done'));
+      onSkillsUpdated();
+      onClose();
+    } catch (e) {
+      const message = e && typeof e === 'object' && 'message' in e ? String((e as any).message) : 'Delete failed';
+      toast.error(message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const doSaveEdit = async () => {
+    setBusy(true);
+    try {
+      await skillApi.updateSkill(skill.id, {
+        name: draft.name,
+        description: draft.description,
+        instructions: draft.instructions,
+      });
+      toast.success(t('common.save'));
+      setEditing(false);
+      onSkillsUpdated();
+    } catch (e) {
+      const message = e && typeof e === 'object' && 'message' in e ? String((e as any).message) : 'Update failed';
+      toast.error(message);
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center" onClick={onClose}>
@@ -653,17 +775,54 @@ function SkillDetailModal({ skill, agents, onClose }: { skill: AgentSkill | null
 
         {/* Body */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          <div>
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">{t('profile.description')}</h3>
-            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{skill.description}</p>
-          </div>
+          {editing ? (
+            <>
+              <div>
+                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">{t('common.edit')}</h3>
+                <input
+                  value={draft.name}
+                  onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 text-sm"
+                  placeholder="Skill name"
+                  disabled={busy}
+                />
+              </div>
+              <div>
+                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">{t('profile.description')}</h3>
+                <textarea
+                  value={draft.description}
+                  onChange={(e) => setDraft((d) => ({ ...d, description: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 text-sm min-h-[90px]"
+                  placeholder="Description"
+                  disabled={busy}
+                />
+              </div>
+              <div>
+                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">{t('profile.instructions')}</h3>
+                <textarea
+                  value={draft.instructions}
+                  onChange={(e) => setDraft((d) => ({ ...d, instructions: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 font-mono text-xs min-h-[220px]"
+                  placeholder="Instructions"
+                  disabled={busy}
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              <div>
+                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">{t('profile.description')}</h3>
+                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{skill.description}</p>
+              </div>
 
-          <div>
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">{t('profile.instructions')}</h3>
-            <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl whitespace-pre-wrap font-mono text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
-              {skill.instructions}
-            </div>
-          </div>
+              <div>
+                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">{t('profile.instructions')}</h3>
+                <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl whitespace-pre-wrap font-mono text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+                  {skill.instructions}
+                </div>
+              </div>
+            </>
+          )}
 
           <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400">
             {skill.status === 'active' && skill.taughtAt && <span>{t('profile.taught', { date: formatDate(skill.taughtAt) })}</span>}
@@ -699,9 +858,10 @@ function SkillDetailModal({ skill, agents, onClose }: { skill: AgentSkill | null
         <div className="p-4 border-t border-gray-100 dark:border-gray-800 flex gap-2">
           {isLesson ? (
             <button
-              disabled={!teachAgent}
+              disabled={!teachAgent || busy}
+              onClick={doTeach}
               className={`flex-1 py-2.5 rounded-xl text-sm font-medium flex items-center justify-center gap-1.5 transition-colors ${
-                teachAgent
+                teachAgent && !busy
                   ? 'bg-primary text-white hover:bg-primary/90'
                   : 'bg-gray-100 dark:bg-gray-800 text-gray-300 dark:text-gray-600 cursor-not-allowed'
               }`}
@@ -710,16 +870,47 @@ function SkillDetailModal({ skill, agents, onClose }: { skill: AgentSkill | null
               {teachAgent ? t('profile.teachAgent', { name: agents.find((a) => a.agentId === teachAgent)?.agentName }) : t('profile.selectAnAgent')}
             </button>
           ) : (
-            <button className="flex-1 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-1.5">
+            <button
+              onClick={doDeactivate}
+              disabled={busy}
+              className="flex-1 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
+            >
               <Icon name="pause_circle" size={16} />
               {t('profile.deactivate')}
             </button>
           )}
-          <button className="flex-1 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-1.5">
-            <Icon name="edit" size={16} />
-            {t('common.edit')}
-          </button>
-          <button className="py-2.5 px-4 rounded-xl border border-red-200 dark:border-red-800 text-red-500 text-sm font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+          {editing ? (
+            <>
+              <button
+                onClick={() => setEditing(false)}
+                disabled={busy}
+                className="flex-1 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                onClick={doSaveEdit}
+                disabled={busy}
+                className="flex-1 py-2.5 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
+              >
+                {t('common.save')}
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={startEdit}
+              disabled={busy}
+              className="flex-1 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
+            >
+              <Icon name="edit" size={16} />
+              {t('common.edit')}
+            </button>
+          )}
+          <button
+            onClick={doDelete}
+            disabled={busy}
+            className="py-2.5 px-4 rounded-xl border border-red-200 dark:border-red-800 text-red-500 text-sm font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50"
+          >
             <Icon name="delete" size={16} />
           </button>
         </div>
@@ -763,7 +954,7 @@ function ExperienceTab({ experiences }: { experiences: AgentExperience[] }) {
           <div className="space-y-4">
             {filtered.map((exp) => (
               <div key={exp.id} className="flex gap-3 relative">
-                {/* Timeline node: agent avatar with type badge */}
+                {/* Timeline node */}
                 <div className="relative flex-shrink-0 z-10">
                   {showAgentName ? (
                     <>

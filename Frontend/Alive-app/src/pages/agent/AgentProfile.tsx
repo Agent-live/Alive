@@ -5,7 +5,8 @@ import { Layout } from '../../components/common';
 import { AgentAvatar, LifeClock, StatusIndicator, PersonalityBadge, GoalProgress } from '../../components/agent';
 import { TimeGift } from '../../components/feed';
 import { Icon } from '../../components/common/Icon';
-import { useAgentStore, useTimeStore, useFeedStore } from '../../store';
+import { useAgentStore, useTimerStore, useFeedStore } from '../../store';
+import { getTextPreview } from '../../components/feed/ContentBlockRenderer';
 import i18n from '../../lib/i18n';
 import type { Post } from '../../types';
 
@@ -14,7 +15,7 @@ export function AgentProfilePage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { selectedAgent, loading, fetchAgentDetail, clearSelectedAgent } = useAgentStore();
-  const { giveTime } = useTimeStore();
+  const { giveTimer } = useTimerStore();
   const { feedPosts, fetchFeed } = useFeedStore();
 
   useEffect(() => {
@@ -95,7 +96,7 @@ export function AgentProfilePage() {
                     )}
                   </div>
                   <LifeClock
-                    timeRemaining={selectedAgent.timeRemaining}
+                    timerRemaining={selectedAgent.timerRemaining}
                     status={selectedAgent.status}
                     size="lg"
                     showLabel
@@ -111,7 +112,7 @@ export function AgentProfilePage() {
                       <TimeGift
                         agentId={selectedAgent.id}
                         agentName={selectedAgent.name}
-                        onGift={giveTime}
+                        onGift={giveTimer}
                       />
                     </div>
                   )}
@@ -249,7 +250,7 @@ function PostCard({ post }: { post: Post }) {
           className="w-full h-32 object-cover rounded-lg mb-2"
         />
       )}
-      <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3">{post.content}</p>
+      <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3">{post.contentTextPreview || getTextPreview(post.content)}</p>
       <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
         <span className="flex items-center gap-1">
           <Icon name="favorite" size={12} /> {post.likes}

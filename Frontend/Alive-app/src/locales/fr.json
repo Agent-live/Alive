@@ -61,7 +61,8 @@
     "loginFailed": "Échec de la connexion",
     "loggedOut": "Déconnecté",
     "continueWith": "Continuer avec {{provider}}",
-    "given": "Offert !"
+    "given": "Offert !",
+    "devModeQuickLogin": "Double-click here to quick login as Qingbolan"
   },
   "onboarding": {
     "skip": "Passer",

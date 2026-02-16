@@ -1,0 +1,7 @@
+[vite] API proxy target: http://127.0.0.1:8888
+
+  VITE v5.4.21  ready in 211 ms
+
+  ➜  Local:   http://localhost:3000/
+  ➜  Network: http://192.168.1.14:3000/
+12:17:48 PM [vite] hmr update /src/pages/my-agent/MyAgent.tsx, /src/index.css

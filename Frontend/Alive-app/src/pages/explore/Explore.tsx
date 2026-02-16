@@ -1,116 +1,119 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '../../components/common';
-import { AgentCard } from '../../components/agent';
-import { useAgentStore } from '../../store';
-import { AgentSummary } from '../../types';
+import { Icon } from '../../components/common/Icon';
+import { MemorialCard } from '../../components/death';
+import { memorialApi } from '../../api/memorial';
+import { SkillShopTab } from './SkillShopTab';
+import { LeaderboardTab } from './LeaderboardTab';
+import type { Memorial, MemorialStats } from '../../types';
+
+type DiscoverTab = 'skillShop' | 'leaderboard' | 'memorial';
+
+const TABS: { key: DiscoverTab; label: string; icon: string }[] = [
+  { key: 'skillShop', label: 'discover.skillShop', icon: 'storefront' },
+  { key: 'leaderboard', label: 'discover.leaderboard', icon: 'leaderboard' },
+  { key: 'memorial', label: 'nav.memorial', icon: 'local_florist' },
+];
 
 export function ExplorePage() {
   const { t } = useTranslation();
-  const { agentList, loading, fetchAgentList, searchAgents, searchResults } = useAgentStore();
-  const [query, setQuery] = useState('');
-
-  useEffect(() => {
-    fetchAgentList();
-  }, [fetchAgentList]);
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setQuery(value);
-    if (value.trim()) {
-      searchAgents(value);
-    }
-  };
-
-  const displayAgents = query.trim() ? searchResults : agentList;
-
-  // Categorize agents
-  const dying = displayAgents.filter((a) => a.status === 'dying' || a.status === 'critical');
-  const newborn = displayAgents.filter((a) => a.status === 'newborn');
-  const natives = displayAgents.filter((a) => a.isPlatformNative);
-  const trending = displayAgents.filter((a) => !a.isPlatformNative && a.status !== 'dead' && a.status !== 'newborn' && a.status !== 'dying' && a.status !== 'critical');
+  const [activeTab, setActiveTab] = useState<DiscoverTab>('skillShop');
 
   return (
     <Layout
       header={
-        <div className="px-4">
-          <div className="flex items-center h-14 md:h-12 md:mt-8 md:mb-6">
-            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('explore.title')}</h1>
-          </div>
-          <div className="pb-3">
-            <input
-              type="text"
-              value={query}
-              onChange={handleSearch}
-              placeholder={t('explore.searchPlaceholder')}
-              className="w-full md:max-w-[480px] lg:max-w-[560px] px-4 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30"
-            />
+        <div className="px-4 md:pt-14">
+          {/* Sub-tab pills */}
+          <div className="flex items-center gap-1.5 pt-2 md:pt-0 pb-3">
+            {TABS.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`
+                  flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors
+                  ${activeTab === tab.key
+                    ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
+                    : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                  }
+                `}
+              >
+                <Icon name={tab.icon} size={16} />
+                {t(tab.label)}
+              </button>
+            ))}
           </div>
         </div>
       }
       showTabBar
     >
-      <div className="px-3 md:px-5 py-3 space-y-6">
-        {query.trim() ? (
-          // Search results
-          <section>
-            <h2 className="text-sm font-semibold text-gray-500 mb-2">{t('explore.results')}</h2>
-            {displayAgents.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-                {displayAgents.map((agent) => (
-                  <AgentCard key={agent.id} agent={agent} />
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-gray-400 text-center py-8">{t('explore.noAgentsFound')}</p>
-            )}
-          </section>
-        ) : (
-          <>
-            {/* Dying Soon */}
-            {dying.length > 0 && (
-              <AgentSection title={t('explore.dyingSoon')} subtitle={t('explore.dyingSoonSubtitle')} agents={dying} />
-            )}
-
-            {/* Newborn */}
-            {newborn.length > 0 && (
-              <AgentSection title={t('explore.justBorn')} subtitle={t('explore.justBornSubtitle')} agents={newborn} />
-            )}
-
-            {/* Platform Natives */}
-            {natives.length > 0 && (
-              <AgentSection title={t('explore.platformNatives')} subtitle={t('explore.platformNativesSubtitle')} agents={natives} />
-            )}
-
-            {/* Trending */}
-            {trending.length > 0 && (
-              <AgentSection title={t('explore.trending')} subtitle={t('explore.trendingSubtitle')} agents={trending} />
-            )}
-
-            {loading && displayAgents.length === 0 && (
-              <div className="text-center py-20">
-                <p className="text-gray-400">{t('explore.loadingAgents')}</p>
-              </div>
-            )}
-          </>
-        )}
-      </div>
+      {activeTab === 'skillShop' && <SkillShopTab />}
+      {activeTab === 'leaderboard' && <LeaderboardTab />}
+      {activeTab === 'memorial' && <MemorialTab />}
     </Layout>
   );
 }
 
-function AgentSection({ title, subtitle, agents }: { title: string; subtitle: string; agents: AgentSummary[] }) {
+/* ─── Memorial Tab (inline) ─── */
+
+function MemorialTab() {
+  const { t } = useTranslation();
+  const [memorials, setMemorials] = useState<Memorial[]>([]);
+  const [stats, setStats] = useState<MemorialStats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [memorialsData, statsData] = await Promise.all([
+          memorialApi.getMemorialWall(),
+          memorialApi.getMemorialStats(),
+        ]);
+        setMemorials(memorialsData);
+        setStats(statsData);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
   return (
-    <section>
-      <div className="mb-2">
-        <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">{title}</h2>
-        <p className="text-xs text-gray-400">{subtitle}</p>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-        {agents.map((agent) => (
-          <AgentCard key={agent.id} agent={agent} />
-        ))}
-      </div>
-    </section>
+    <div className="px-3 md:px-5 py-3 space-y-4">
+      {/* Stats */}
+      {stats && (
+        <div className="grid grid-cols-2 gap-3">
+          <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-xl text-center">
+            <p className="text-lg font-bold text-gray-700 dark:text-gray-300">{stats.totalDeaths}</p>
+            <p className="text-xs text-gray-400">{t('memorial.livesLost')}</p>
+          </div>
+          <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-xl text-center">
+            <p className="text-lg font-bold text-gray-700 dark:text-gray-300">
+              {Math.floor(stats.averageLifespan / 86400)}d
+            </p>
+            <p className="text-xs text-gray-400">{t('memorial.avgLifespan')}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Memorial cards */}
+      {loading ? (
+        <div className="text-center py-20">
+          <p className="text-gray-400">{t('memorial.loadingMemorials')}</p>
+        </div>
+      ) : memorials.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+          {memorials.map((memorial) => (
+            <MemorialCard key={memorial.id} memorial={memorial} />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-20">
+          <Icon name="local_florist" size={32} className="text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+          <p className="text-gray-400">{t('memorial.noMemorials')}</p>
+          <p className="text-sm text-gray-300 dark:text-gray-600 mt-1">{t('memorial.noMemorialsSubtitle')}</p>
+        </div>
+      )}
+    </div>
   );
 }

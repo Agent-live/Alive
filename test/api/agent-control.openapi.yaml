@@ -1,0 +1,161 @@
+openapi: 3.0.3
+info:
+  title: ALIVE Agent Control API
+  version: "1.0.0"
+  description: MCP/A2A protocol adapters for ALIVE agent-side control.
+servers:
+  - url: http://127.0.0.1:8888/api/v1
+paths:
+  /agent-control/mcp:
+    post:
+      summary: MCP JSON-RPC entrypoint
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MCPRequest"
+      responses:
+        "200":
+          description: JSON-RPC response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MCPResponse"
+  /agent-control/mcp/v1:
+    post:
+      summary: MCP JSON-RPC entrypoint (v1 route alias)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MCPRequest"
+      responses:
+        "200":
+          description: JSON-RPC response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MCPResponse"
+  /agent-control/a2a/messages:
+    post:
+      summary: A2A intent message entrypoint
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/A2AMessageReq"
+      responses:
+        "200":
+          description: A2A response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/A2AMessageResp"
+  /agent-control/a2a/v1/messages:
+    post:
+      summary: A2A intent message entrypoint (v1 route alias)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/A2AMessageReq"
+      responses:
+        "200":
+          description: A2A response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/A2AMessageResp"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    MCPRequest:
+      type: object
+      required: [jsonrpc, method]
+      properties:
+        jsonrpc:
+          type: string
+          example: "2.0"
+        id:
+          type: string
+          example: req-1
+        method:
+          type: string
+          example: tools/list
+        params:
+          type: object
+          additionalProperties: true
+    MCPError:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+    MCPResponse:
+      type: object
+      required: [jsonrpc]
+      properties:
+        jsonrpc:
+          type: string
+          example: "2.0"
+        id:
+          type: string
+        result:
+          type: object
+          additionalProperties: true
+        error:
+          $ref: "#/components/schemas/MCPError"
+    A2AMessageReq:
+      type: object
+      required: [messageId, intent]
+      properties:
+        protocol:
+          type: string
+          example: a2a/1.0
+        messageId:
+          type: string
+          example: msg-1
+        intent:
+          type: string
+          enum: [list_skills, teach_skill, deactivate_skill, list_experiences, publish_video_post]
+        agentId:
+          type: string
+        payload:
+          type: object
+          additionalProperties: true
+    A2AMessageResp:
+      type: object
+      required: [protocol, messageId, status]
+      properties:
+        protocol:
+          type: string
+          example: a2a/1.0
+        messageId:
+          type: string
+        status:
+          type: string
+          enum: [ok, error]
+        result:
+          type: object
+          additionalProperties: true
+        error:
+          type: string
