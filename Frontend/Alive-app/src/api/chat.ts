@@ -1,6 +1,10 @@
 import { api } from './client';
 import type { ChatHistoryResponse } from '../types';
 
+interface ChatAttachmentInput {
+  mediaId: string;
+}
+
 interface ChatSendResponse {
   sessionId: string;
   reply: string;
@@ -9,6 +13,6 @@ interface ChatSendResponse {
 
 export const chatApi = {
   getHistory: () => api.get<ChatHistoryResponse>('/chat/history'),
-  send: (content: string, sessionId?: string) =>
-    api.post<ChatSendResponse>('/chat/send', { content, sessionId }),
+  send: (content: string, sessionId?: string, attachments?: ChatAttachmentInput[]) =>
+    api.post<ChatSendResponse>('/chat/send', { content, sessionId, attachments }),
 };

@@ -5,8 +5,12 @@ import { useTranslation } from 'react-i18next';
 import { Layout } from '../../components/common';
 import { AgentAvatar } from '../../components/agent';
 import { Icon } from '../../components/common/Icon';
+import { ChatAttachments } from '../../components/common/ChatAttachments';
+import { UploadDraftList, type UploadingDraftItem } from '../../components/common/UploadDraftList';
+import { useImageUploadChoice } from '../../components/common/ImageUploadChoiceSheet';
 import { agentApi } from '../../api/agents';
 import { chatApi } from '../../api/chat';
+import { mediaApi } from '../../api/media';
 import { channelApi, type ChannelItem, type ChannelType } from '../../api/channels';
 import { conversationApi } from '../../api/conversations';
 import { experienceApi } from '../../api/experiences';
@@ -17,10 +21,11 @@ import { ActivityTimeline, ActivityTimelineCompact } from './ActivityTimeline';
 import { InboxTab, channelConfig, PlatformBadge } from './InboxTab';
 import { BotBotChatsTab } from './BotBotChatsTab';
 import { RelationshipNetworkTab } from './RelationshipNetworkTab';
+import { ChatBubble } from '../../components/conversation/ChatBubble';
 import { mockActivityTraces, mockAgentSkills, mockInboxItems } from '../../mocks';
 import i18n from '../../lib/i18n';
-import type { AgentRelationship, InboxItem, Conversation, ActivityTrace } from '../../types/conversation';
-import type { AgentExperience, AgentSkill, ChatHistoryMessage } from '../../types';
+import type { AgentRelationship, InboxItem, Conversation, ActivityTrace, ConversationMessage } from '../../types/conversation';
+import type { AgentExperience, AgentSkill, ChatHistoryMessage, MessageAttachment } from '../../types';
 
 /* ─── Status dot color ─── */
 const statusDotColor: Record<string, string> = {
@@ -71,6 +76,7 @@ interface ChatMessage {
   id: string;
   role: 'user' | 'agent';
   text: string;
+  attachments?: MessageAttachment[];
   timestamp: string;
   timeCost?: number;
 }
@@ -111,7 +117,7 @@ function conversationToInboxItem(conv: Conversation, myAgentId: string): InboxIt
     channelType: 'webchat',
     senderName,
     senderAvatar: conv.type === 'direct' ? primaryOther?.agentAvatar : undefined,
-    preview: conv.lastMessagePreview || '',
+    preview: normalizePreviewText(conv.lastMessagePreview || ''),
     timestamp: conv.lastMessageAt || conv.createdAt,
     unreadCount: conv.unreadCount || 0,
     conversationId: conv.id,
@@ -125,8 +131,43 @@ function historyToChatMessages(messages: ChatHistoryMessage[]): ChatMessage[] {
       id: m.id,
       role: m.role === 'assistant' ? 'agent' : 'user',
       text: m.content,
+      attachments: m.attachments || [],
       timestamp: m.createdAt,
     }));
+}
+
+function attachmentTag(attachments?: MessageAttachment[]): string {
+  if (!attachments || attachments.length === 0) return '';
+  if (attachments.some((a) => (a.mimeType || '').toLowerCase().startsWith('image/'))) return '[image]';
+  if (attachments.some((a) => (a.mimeType || '').toLowerCase().startsWith('video/'))) return '[video]';
+  if (attachments.some((a) => (a.mimeType || '').toLowerCase().startsWith('audio/'))) return '[audio]';
+  return '[file]';
+}
+
+function normalizePreviewText(text: string): string {
+  const raw = (text || '').trim();
+  if (!raw) return '';
+  const lower = raw.toLowerCase();
+  if (lower === '[image]') return '[image]';
+  if (lower === '[video]') return '[video]';
+  if (lower === '[audio]') return '[audio]';
+  if (lower === '[file]') return '[file]';
+  if (lower.startsWith('[attachments x') && lower.endsWith(']')) return lower;
+  return raw;
+}
+
+function chatHistoryPreview(messages: ChatHistoryMessage[]): string {
+  if (!messages || messages.length === 0) return '';
+  const last = messages[messages.length - 1];
+  const tag = attachmentTag(last.attachments);
+  if (tag) return tag;
+  return normalizePreviewText((last.content || '').trim());
+}
+
+function chatMessagePreview(message: ChatMessage): string {
+  const tag = attachmentTag(message.attachments);
+  if (tag) return tag;
+  return normalizePreviewText((message.text || '').trim());
 }
 
 function errorMessage(err: unknown, fallback: string): string {
@@ -135,6 +176,13 @@ function errorMessage(err: unknown, fallback: string): string {
     if (typeof msg === 'string' && msg.trim()) return msg;
   }
   return fallback;
+}
+
+function normalizeProgressPercent(progress: number): number {
+  let pct = Math.max(0, Math.min(100, progress * 100));
+  if (progress > 0 && pct < 0.1) pct = 0.1;
+  if (progress < 1 && pct > 99.9) pct = 99.9;
+  return pct;
 }
 
 export function MyAgentPage() {
@@ -150,10 +198,18 @@ export function MyAgentPage() {
   const [relationshipsLoading, setRelationshipsLoading] = useState(false);
   const [relationships, setRelationships] = useState<AgentRelationship[]>([]);
   const [chatOpen, setChatOpen] = useState(false);
+  const [latestChatPreview, setLatestChatPreview] = useState('');
   const [selectedInboxItem, setSelectedInboxItem] = useState<InboxItem | null>(null);
+  const [selectedInboxMessages, setSelectedInboxMessages] = useState<ConversationMessage[]>([]);
+  const [selectedInboxLoading, setSelectedInboxLoading] = useState(false);
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
+  const [selectedConversationMessages, setSelectedConversationMessages] = useState<ConversationMessage[]>([]);
+  const [selectedConversationLoading, setSelectedConversationLoading] = useState(false);
   const [guidanceInput, setGuidanceInput] = useState('');
   const [guidanceSending, setGuidanceSending] = useState(false);
+  const [guidanceAttachments, setGuidanceAttachments] = useState<MessageAttachment[]>([]);
+  const [guidanceUploading, setGuidanceUploading] = useState(false);
+  const [guidanceUploadingPreview, setGuidanceUploadingPreview] = useState<UploadingDraftItem | null>(null);
   const [leftPanelTab, setLeftPanelTab] = useState<LeftPanelTab>('activity');
   const isDesktop = useIsDesktop();
 
@@ -164,19 +220,28 @@ export function MyAgentPage() {
   const [channels, setChannels] = useState<ChannelItem[]>([]);
   const [channelBusy, setChannelBusy] = useState<Partial<Record<ChannelType, boolean>>>({});
   const [connectQr, setConnectQr] = useState<{ channel: ChannelType; qrCode: string } | null>(null);
+  const [channelsExpanded, setChannelsExpanded] = useState(false);
 
   /* Chat dialog state */
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState('');
+  const [chatPendingAttachments, setChatPendingAttachments] = useState<MessageAttachment[]>([]);
+  const [chatUploading, setChatUploading] = useState(false);
+  const [chatUploadingPreview, setChatUploadingPreview] = useState<UploadingDraftItem | null>(null);
   const [chatTyping, setChatTyping] = useState(false);
   const [chatSessionId, setChatSessionId] = useState('main');
   const chatEndRef = useRef<HTMLDivElement>(null);
   const chatInputRef = useRef<HTMLTextAreaElement>(null);
+  const chatFileInputRef = useRef<HTMLInputElement>(null);
+  const guidanceFileInputRef = useRef<HTMLInputElement>(null);
+  const { requestChoice: requestImageUploadChoice, sheetNode: imageUploadChoiceSheet } = useImageUploadChoice();
 
   const myAgent = useMemo(
     () => myAgents.find((a) => a.id === primaryAgentId) ?? myAgents[0] ?? null,
     [myAgents, primaryAgentId],
   );
+  const myAgentName = (myAgent?.name || '').trim() || 'Agent';
+  const myAgentInitial = myAgentName.charAt(0).toUpperCase();
 
   useEffect(() => {
     fetchMyAgents();
@@ -244,6 +309,19 @@ export function MyAgentPage() {
         if (cancelled) return;
         console.error('Failed to fetch channels:', err);
         setChannels([]);
+      });
+
+    chatApi
+      .getHistory()
+      .then((res) => {
+        if (cancelled) return;
+        const preview = chatHistoryPreview(res.messages || []);
+        setLatestChatPreview(preview);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error('Failed to fetch latest chat preview:', err);
+        setLatestChatPreview('');
       });
 
     return () => {
@@ -369,6 +447,377 @@ export function MyAgentPage() {
     }
   }, [myAgent, fetchMyAgents, t]);
 
+  /* ─── Open chat: dialog on desktop, navigate on mobile ─── */
+  const openChat = useCallback(() => {
+    if (isDesktop) {
+      setChatOpen(true);
+    } else {
+      navigate('/my-agent/chat');
+    }
+  }, [isDesktop, navigate]);
+
+  /* Load chat history when dialog opens */
+  useEffect(() => {
+    if (!chatOpen || !myAgent) return;
+    if (chatMessages.length > 0) return;
+
+    let cancelled = false;
+
+    chatApi.getHistory()
+      .then((res) => {
+        if (cancelled) return;
+        const history = historyToChatMessages(res.messages || []);
+        if (history.length > 0) {
+          setChatMessages(history);
+          const lastSessionId = res.messages?.[res.messages.length - 1]?.sessionId;
+          if (lastSessionId) setChatSessionId(lastSessionId);
+          return;
+        }
+
+        setChatMessages([{
+          id: 'msg_init',
+          role: 'agent',
+          text: myAgent.lastWords || t('myAgent.defaultGreeting', { name: myAgentName }),
+          timestamp: new Date().toISOString(),
+        }]);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error('Failed to load chat history:', err);
+        setChatMessages([{
+          id: 'msg_init',
+          role: 'agent',
+          text: myAgent.lastWords || t('myAgent.defaultGreeting', { name: myAgentName }),
+          timestamp: new Date().toISOString(),
+        }]);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [chatOpen, chatMessages.length, myAgent, myAgentName, t]);
+
+  /* ─── Send chat message ─── */
+  const handleChatSend = useCallback(async () => {
+    const text = chatInput.trim();
+    if ((!text && chatPendingAttachments.length === 0) || !myAgent) return;
+
+    const attachments = chatPendingAttachments;
+
+    const userMsg: ChatMessage = {
+      id: `msg_${Date.now()}`,
+      role: 'user',
+      text,
+      attachments,
+      timestamp: new Date().toISOString(),
+    };
+    setChatMessages((prev) => [...prev, userMsg]);
+    setLatestChatPreview(chatMessagePreview(userMsg));
+    setChatInput('');
+    setChatPendingAttachments([]);
+    setChatTyping(true);
+
+    try {
+      const res = await chatApi.send(
+        text,
+        chatSessionId,
+        attachments.map((item) => ({ mediaId: item.mediaId })),
+      );
+      if (res.sessionId) setChatSessionId(res.sessionId);
+      const agentMsg: ChatMessage = {
+        id: `msg_${Date.now() + 1}`,
+        role: 'agent',
+        text: res.reply,
+        timestamp: res.createdAt || new Date().toISOString(),
+      };
+      setChatMessages((prev) => [...prev, agentMsg]);
+      setLatestChatPreview(chatMessagePreview(agentMsg));
+    } catch (err) {
+      console.error('Failed to send chat message:', err);
+      setChatInput(text);
+      setChatPendingAttachments(attachments);
+      setChatMessages((prev) => [...prev, {
+        id: `msg_err_${Date.now()}`,
+        role: 'agent',
+        text: 'Failed to send message. Please try again.',
+        timestamp: new Date().toISOString(),
+      }]);
+    } finally {
+      setChatTyping(false);
+    }
+  }, [chatInput, myAgent, chatPendingAttachments, chatSessionId]);
+
+  const handleChatPickFile = () => {
+    if (chatUploading) return;
+    chatFileInputRef.current?.click();
+  };
+
+  const handleChatFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+
+    const mimeType = file.type || 'application/octet-stream';
+    const mimeTypeLower = mimeType.toLowerCase();
+    const isImage = mimeTypeLower.startsWith('image/');
+    const previewUrl = isImage ? URL.createObjectURL(file) : undefined;
+    const previewId = `upload_chat_${Date.now()}`;
+
+    let keepOriginalImage = false;
+    if (isImage) {
+      const choice = await requestImageUploadChoice({
+        fileName: file.name,
+        fileSize: file.size,
+        previewUrl,
+      });
+      if (choice == null) {
+        if (previewUrl) URL.revokeObjectURL(previewUrl);
+        return;
+      }
+      keepOriginalImage = choice;
+    }
+
+    setChatUploading(true);
+    setChatUploadingPreview({
+      id: previewId,
+      name: file.name,
+      mimeType,
+      previewUrl,
+      fileSize: file.size,
+      progress: 0,
+    });
+    try {
+      const media = await mediaApi.uploadFile(file, {
+        keepOriginalImage,
+        onProgress: (progress) => {
+          const pct = normalizeProgressPercent(progress);
+          setChatUploadingPreview((prev) => (prev ? { ...prev, progress: pct } : prev));
+        },
+      });
+      if (!media.url) {
+        throw new Error('Upload succeeded but no media URL was returned.');
+      }
+      setChatPendingAttachments((prev) => [
+        ...prev,
+        {
+          mediaId: media.mediaId,
+          mimeType: media.mimeType,
+          url: media.url!,
+          thumbnailUrl: media.thumbnailUrl,
+          fileSize: media.fileSize,
+          fileName: file.name,
+        },
+      ]);
+    } catch (err) {
+      console.error('Failed to upload chat attachment:', err);
+      toast.error(errorMessage(err, t('common.uploadFailed', 'Upload failed')));
+    } finally {
+      setChatUploading(false);
+      setChatUploadingPreview(null);
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    }
+  }, [requestImageUploadChoice, t]);
+
+  const removeChatPendingAttachment = useCallback((mediaId: string) => {
+    setChatPendingAttachments((prev) => prev.filter((item) => item.mediaId !== mediaId));
+  }, []);
+
+  const handleChatKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleChatSend();
+    }
+  }, [handleChatSend]);
+
+  const sendGuidance = useCallback(async () => {
+    const text = guidanceInput.trim();
+    if ((!text && guidanceAttachments.length === 0) || !selectedConversation) return;
+    if (guidanceSending || guidanceUploading) return;
+
+    setGuidanceSending(true);
+    try {
+      await conversationApi.sendMessage(
+        selectedConversation.id,
+        text,
+        guidanceAttachments.map((item) => item.mediaId),
+      );
+      setGuidanceInput('');
+      setGuidanceAttachments([]);
+    } catch (err) {
+      console.error('Failed to send guidance:', err);
+      toast.error(t('common.sendFailed', 'Failed to send'));
+    } finally {
+      setGuidanceSending(false);
+    }
+  }, [guidanceAttachments, guidanceInput, guidanceSending, guidanceUploading, selectedConversation, t]);
+
+  const handleGuidancePickFile = useCallback(() => {
+    if (guidanceUploading || guidanceSending) return;
+    guidanceFileInputRef.current?.click();
+  }, [guidanceSending, guidanceUploading]);
+
+  const handleGuidanceFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+
+    const mimeType = file.type || 'application/octet-stream';
+    const mimeTypeLower = mimeType.toLowerCase();
+    const isImage = mimeTypeLower.startsWith('image/');
+    const previewUrl = isImage ? URL.createObjectURL(file) : undefined;
+    const previewId = `upload_guidance_${Date.now()}`;
+
+    let keepOriginalImage = false;
+    if (isImage) {
+      const choice = await requestImageUploadChoice({
+        fileName: file.name,
+        fileSize: file.size,
+        previewUrl,
+      });
+      if (choice == null) {
+        if (previewUrl) URL.revokeObjectURL(previewUrl);
+        return;
+      }
+      keepOriginalImage = choice;
+    }
+
+    setGuidanceUploading(true);
+    setGuidanceUploadingPreview({
+      id: previewId,
+      name: file.name,
+      mimeType,
+      previewUrl,
+      fileSize: file.size,
+      progress: 0,
+    });
+    try {
+      const media = await mediaApi.uploadFile(file, {
+        keepOriginalImage,
+        onProgress: (progress) => {
+          const pct = normalizeProgressPercent(progress);
+          setGuidanceUploadingPreview((prev) => (prev ? { ...prev, progress: pct } : prev));
+        },
+      });
+      if (!media.url) {
+        throw new Error('Upload succeeded but no media URL was returned.');
+      }
+      setGuidanceAttachments((prev) => [
+        ...prev,
+        {
+          mediaId: media.mediaId,
+          mimeType: media.mimeType,
+          url: media.url!,
+          thumbnailUrl: media.thumbnailUrl,
+          fileSize: media.fileSize,
+          fileName: file.name,
+        },
+      ]);
+    } catch (err) {
+      console.error('Failed to upload guidance attachment:', err);
+      toast.error(errorMessage(err, t('common.uploadFailed', 'Upload failed')));
+    } finally {
+      setGuidanceUploading(false);
+      setGuidanceUploadingPreview(null);
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    }
+  }, [requestImageUploadChoice, t]);
+
+  const removeGuidanceAttachment = useCallback((mediaId: string) => {
+    setGuidanceAttachments((prev) => prev.filter((item) => item.mediaId !== mediaId));
+  }, []);
+
+  /* Scroll chat to bottom */
+  useEffect(() => {
+    if (chatOpen) {
+      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [chatMessages, chatOpen]);
+
+  /* Focus input when dialog opens + ESC to close */
+  useEffect(() => {
+    if (!chatOpen) return;
+    setTimeout(() => chatInputRef.current?.focus(), 100);
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setChatOpen(false);
+    };
+    document.addEventListener('keydown', handleEsc);
+    return () => document.removeEventListener('keydown', handleEsc);
+  }, [chatOpen]);
+
+  /* ESC to close channel / conversation dialog */
+  useEffect(() => {
+    if (!selectedInboxItem && !selectedConversation) return;
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSelectedInboxItem(null);
+        setSelectedConversation(null);
+      }
+    };
+    document.addEventListener('keydown', handleEsc);
+    return () => document.removeEventListener('keydown', handleEsc);
+  }, [selectedInboxItem, selectedConversation]);
+
+  useEffect(() => {
+    const convID = selectedInboxItem?.conversationId;
+    if (!convID) {
+      setSelectedInboxMessages([]);
+      return;
+    }
+    let cancelled = false;
+    setSelectedInboxLoading(true);
+    conversationApi
+      .getMessages(convID, 1, 20)
+      .then((res) => {
+        if (cancelled) return;
+        setSelectedInboxMessages([...(res.items || [])].reverse());
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error('Failed to load inbox preview messages:', err);
+        setSelectedInboxMessages([]);
+      })
+      .finally(() => {
+        if (cancelled) return;
+        setSelectedInboxLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedInboxItem?.conversationId]);
+
+  useEffect(() => {
+    const convID = selectedConversation?.id;
+    if (!convID) {
+      setSelectedConversationMessages([]);
+      return;
+    }
+    let cancelled = false;
+    setSelectedConversationLoading(true);
+    conversationApi
+      .getMessages(convID, 1, 20)
+      .then((res) => {
+        if (cancelled) return;
+        setSelectedConversationMessages([...(res.items || [])].reverse());
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error('Failed to load social preview messages:', err);
+        setSelectedConversationMessages([]);
+      })
+      .finally(() => {
+        if (cancelled) return;
+        setSelectedConversationLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedConversation?.id]);
+
+  /* ─── Chat input ─── */
+  const activeTaskCount = tasks.filter((t) => t.status === 'pending' || t.status === 'in_progress').length;
+
   /* ─── Loading ─── */
   if (loading && !myAgent) {
     return (
@@ -475,7 +924,7 @@ export function MyAgentPage() {
     <div>
       <div className="flex items-center gap-2">
         <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">
-          {myAgent.name}
+          {myAgentName}
         </h1>
         <span className={`w-2.5 h-2.5 rounded-full ${statusDotColor[myAgent.status] || 'bg-gray-400'}`} />
       </div>
@@ -489,155 +938,10 @@ export function MyAgentPage() {
   const AgentGreeting = () => (
     <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-4">
       <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed italic">
-        &ldquo;{myAgent.lastWords || t('myAgent.defaultGreeting', { name: myAgent.name })}&rdquo;
+        &ldquo;{myAgent.lastWords || t('myAgent.defaultGreeting', { name: myAgentName })}&rdquo;
       </p>
     </div>
   );
-
-  /* ─── Open chat: dialog on desktop, navigate on mobile ─── */
-  const openChat = useCallback(() => {
-    if (isDesktop) {
-      setChatOpen(true);
-    } else {
-      navigate('/my-agent/chat');
-    }
-  }, [isDesktop, navigate]);
-
-  /* Load chat history when dialog opens */
-  useEffect(() => {
-    if (!chatOpen || !myAgent) return;
-    if (chatMessages.length > 0) return;
-
-    let cancelled = false;
-
-    chatApi.getHistory()
-      .then((res) => {
-        if (cancelled) return;
-        const history = historyToChatMessages(res.messages || []);
-        if (history.length > 0) {
-          setChatMessages(history);
-          const lastSessionId = res.messages?.[res.messages.length - 1]?.sessionId;
-          if (lastSessionId) setChatSessionId(lastSessionId);
-          return;
-        }
-
-        setChatMessages([{
-          id: 'msg_init',
-          role: 'agent',
-          text: myAgent.lastWords || t('myAgent.defaultGreeting', { name: myAgent.name }),
-          timestamp: new Date().toISOString(),
-        }]);
-      })
-      .catch((err) => {
-        if (cancelled) return;
-        console.error('Failed to load chat history:', err);
-        setChatMessages([{
-          id: 'msg_init',
-          role: 'agent',
-          text: myAgent.lastWords || t('myAgent.defaultGreeting', { name: myAgent.name }),
-          timestamp: new Date().toISOString(),
-        }]);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [chatOpen, myAgent, chatMessages.length, t]);
-
-  /* ─── Send chat message ─── */
-  const handleChatSend = useCallback(async () => {
-    const text = chatInput.trim();
-    if (!text || !myAgent) return;
-
-    const userMsg: ChatMessage = {
-      id: `msg_${Date.now()}`,
-      role: 'user',
-      text,
-      timestamp: new Date().toISOString(),
-    };
-    setChatMessages((prev) => [...prev, userMsg]);
-    setChatInput('');
-    setChatTyping(true);
-
-    try {
-      const res = await chatApi.send(text, chatSessionId);
-      if (res.sessionId) setChatSessionId(res.sessionId);
-      const agentMsg: ChatMessage = {
-        id: `msg_${Date.now() + 1}`,
-        role: 'agent',
-        text: res.reply,
-        timestamp: res.createdAt || new Date().toISOString(),
-      };
-      setChatMessages((prev) => [...prev, agentMsg]);
-    } catch (err) {
-      console.error('Failed to send chat message:', err);
-      setChatMessages((prev) => [...prev, {
-        id: `msg_err_${Date.now()}`,
-        role: 'agent',
-        text: 'Failed to send message. Please try again.',
-        timestamp: new Date().toISOString(),
-      }]);
-    } finally {
-      setChatTyping(false);
-    }
-  }, [chatInput, myAgent, chatSessionId]);
-
-  const handleChatKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleChatSend();
-    }
-  }, [handleChatSend]);
-
-  const sendGuidance = useCallback(async () => {
-    const text = guidanceInput.trim();
-    if (!text || !selectedConversation) return;
-    if (guidanceSending) return;
-
-    setGuidanceSending(true);
-    try {
-      await conversationApi.sendMessage(selectedConversation.id, text);
-      setGuidanceInput('');
-    } catch (err) {
-      console.error('Failed to send guidance:', err);
-    } finally {
-      setGuidanceSending(false);
-    }
-  }, [guidanceInput, selectedConversation, guidanceSending]);
-
-  /* Scroll chat to bottom */
-  useEffect(() => {
-    if (chatOpen) {
-      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [chatMessages, chatOpen]);
-
-  /* Focus input when dialog opens + ESC to close */
-  useEffect(() => {
-    if (!chatOpen) return;
-    setTimeout(() => chatInputRef.current?.focus(), 100);
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setChatOpen(false);
-    };
-    document.addEventListener('keydown', handleEsc);
-    return () => document.removeEventListener('keydown', handleEsc);
-  }, [chatOpen]);
-
-  /* ESC to close channel / conversation dialog */
-  useEffect(() => {
-    if (!selectedInboxItem && !selectedConversation) return;
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setSelectedInboxItem(null);
-        setSelectedConversation(null);
-      }
-    };
-    document.addEventListener('keydown', handleEsc);
-    return () => document.removeEventListener('keydown', handleEsc);
-  }, [selectedInboxItem, selectedConversation]);
-
-  /* ─── Chat input ─── */
-  const activeTaskCount = tasks.filter((t) => t.status === 'pending' || t.status === 'in_progress').length;
 
   const ChatAndTask = () => (
     <div className="w-full flex items-center gap-2 px-4 py-3 rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800">
@@ -716,7 +1020,6 @@ export function MyAgentPage() {
   );
 
   const COLLAPSED_CHANNEL_COUNT = 3;
-  const [channelsExpanded, setChannelsExpanded] = useState(false);
   const visibleChannels = channelsExpanded ? availableChannels : availableChannels.slice(0, COLLAPSED_CHANNEL_COUNT);
   const hiddenCount = availableChannels.length - COLLAPSED_CHANNEL_COUNT;
 
@@ -728,10 +1031,10 @@ export function MyAgentPage() {
           <InboxTab
             items={inboxItems}
             agent={{
-              name: myAgent.name,
+              name: myAgentName,
               avatar: myAgent.avatar,
               status: myAgent.status,
-              lastMessage: myAgent.lastWords,
+              lastMessage: latestChatPreview || myAgent.lastWords,
             }}
             onAgentClick={isDesktop ? openChat : undefined}
             onItemClick={isDesktop ? (item) => setSelectedInboxItem(item) : undefined}
@@ -832,7 +1135,11 @@ export function MyAgentPage() {
         <BotBotChatsTab
           conversations={conversations}
           loading={conversationsLoading}
-          onConversationClick={isDesktop ? (conv) => { setSelectedConversation(conv); setGuidanceInput(''); } : undefined}
+          onConversationClick={isDesktop ? (conv) => {
+            setSelectedConversation(conv);
+            setGuidanceInput('');
+            setGuidanceAttachments([]);
+          } : undefined}
         />
       )}
       {activeTab === 'network' && <RelationshipNetworkTab relationships={relationships} loading={relationshipsLoading} />}
@@ -981,7 +1288,7 @@ export function MyAgentPage() {
               <div className="flex items-center gap-2.5 flex-1 min-w-0">
                 {myAgent && <AgentAvatar avatar={myAgent.avatar} status={myAgent.status} size="sm" />}
                 <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
-                  {myAgent.name}
+                  {myAgentName}
                 </h2>
               </div>
               <div className="flex items-center gap-1">
@@ -1011,7 +1318,7 @@ export function MyAgentPage() {
                           <img src={myAgent.avatar} alt="" className="w-7 h-7 object-cover" />
                         ) : (
                           <div className="w-7 h-7 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
-                            <span className="text-white text-[10px] font-bold">{myAgent.name.charAt(0)}</span>
+                            <span className="text-white text-[10px] font-bold">{myAgentInitial}</span>
                           </div>
                         )}
                       </div>
@@ -1024,7 +1331,8 @@ export function MyAgentPage() {
                             : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-bl-md'
                         }`}
                       >
-                        <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+                        <ChatAttachments attachments={msg.attachments} />
+                        {msg.text && <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>}
                       </div>
                       <div className={`flex items-center gap-2 mt-0.5 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                         <span className="text-[10px] text-gray-400">
@@ -1048,7 +1356,7 @@ export function MyAgentPage() {
                         <img src={myAgent.avatar} alt="" className="w-7 h-7 object-cover" />
                       ) : (
                         <div className="w-7 h-7 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
-                          <span className="text-white text-[10px] font-bold">{myAgent.name.charAt(0)}</span>
+                          <span className="text-white text-[10px] font-bold">{myAgentInitial}</span>
                         </div>
                       )}
                     </div>
@@ -1068,18 +1376,44 @@ export function MyAgentPage() {
             {/* Input — WeChat desktop style */}
             {!isDead ? (
               <div className="flex-shrink-0 border-t border-gray-200 dark:border-white/10">
+                <input
+                  ref={chatFileInputRef}
+                  type="file"
+                  accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar"
+                  onChange={handleChatFileChange}
+                  className="hidden"
+                />
                 {/* Toolbar */}
                 <div className="flex items-center gap-1 px-4 py-2">
                   <button className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
                     <Icon name="mood" size={20} className="text-gray-500 dark:text-gray-400" />
                   </button>
-                  <button className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
-                    <Icon name="attach_file" size={20} className="text-gray-500 dark:text-gray-400" />
+                  <button
+                    onClick={handleChatPickFile}
+                    disabled={chatUploading || chatTyping}
+                    className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors disabled:opacity-50"
+                  >
+                    {chatUploading ? (
+                      <span className="inline-block w-4 h-4 rounded-full border-2 border-gray-300 border-t-primary animate-spin" />
+                    ) : (
+                      <Icon name="attach_file" size={20} className="text-gray-500 dark:text-gray-400" />
+                    )}
                   </button>
-                  <button className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+                  <button
+                    onClick={handleChatPickFile}
+                    disabled={chatUploading || chatTyping}
+                    className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors disabled:opacity-50"
+                  >
                     <Icon name="image" size={20} className="text-gray-500 dark:text-gray-400" />
                   </button>
                 </div>
+                <UploadDraftList
+                  className="px-4 pb-2"
+                  pendingAttachments={chatPendingAttachments}
+                  uploadingItem={chatUploadingPreview}
+                  onRemoveAttachment={removeChatPendingAttachment}
+                  removeTitle={t('common.remove', 'Remove')}
+                />
                 {/* Textarea */}
                 <div className="px-4 pb-3">
                   <textarea
@@ -1096,7 +1430,7 @@ export function MyAgentPage() {
                 <div className="flex items-center justify-end px-4 pb-3">
                   <button
                     onClick={handleChatSend}
-                    disabled={!chatInput.trim()}
+                    disabled={(!chatInput.trim() && chatPendingAttachments.length === 0) || chatTyping || chatUploading}
                     className="px-4 py-1.5 rounded-md bg-primary text-white text-sm font-medium disabled:opacity-40 transition-opacity"
                   >
                     {t('chat.send', 'Send')}
@@ -1128,6 +1462,7 @@ export function MyAgentPage() {
             {/* Header */}
             {(() => {
               const cfg = channelConfig[selectedInboxItem.channelType] || channelConfig.webchat;
+              const senderName = selectedInboxItem.senderName || 'Unknown';
               return (
                 <div className="flex items-center px-5 h-14 border-b border-gray-200 dark:border-white/10 flex-shrink-0">
                   <div className="flex items-center gap-2.5 flex-1 min-w-0">
@@ -1138,7 +1473,7 @@ export function MyAgentPage() {
                           <img src={selectedInboxItem.senderAvatar} alt="" className="w-9 h-9 object-cover" />
                         ) : (
                           <span className="text-gray-500 dark:text-gray-400 font-bold text-sm">
-                            {selectedInboxItem.senderName.charAt(0).toUpperCase()}
+                            {senderName.charAt(0).toUpperCase()}
                           </span>
                         )}
                       </div>
@@ -1146,7 +1481,7 @@ export function MyAgentPage() {
                     </div>
                     <div className="min-w-0">
                       <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
-                        {selectedInboxItem.senderName}
+                        {senderName}
                       </h2>
                       <span className="text-[11px]" style={{ color: cfg.color }}>
                         {t(`myAgent.channel.${selectedInboxItem.channelType}`)}
@@ -1169,41 +1504,20 @@ export function MyAgentPage() {
             })()}
 
             {/* Messages (read-only preview) */}
-            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
-              {/* Agent reply */}
-              <div className="flex justify-start">
-                <div className="flex items-end gap-2 max-w-[80%]">
-                  <div className="flex-shrink-0 w-7 h-7 rounded-full overflow-hidden bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center">
-                    {selectedInboxItem.senderAvatar ? (
-                      <img src={selectedInboxItem.senderAvatar} alt="" className="w-7 h-7 object-cover" />
-                    ) : (
-                      <span className="text-gray-500 dark:text-gray-400 text-[10px] font-bold">
-                        {selectedInboxItem.senderName.charAt(0).toUpperCase()}
-                      </span>
-                    )}
-                  </div>
-                  <div>
-                    <p className="text-[11px] text-gray-400 mb-0.5">{selectedInboxItem.senderName}</p>
-                    <div className="rounded-2xl rounded-bl-md px-3.5 py-2 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200">
-                      <p className="text-sm leading-relaxed">{selectedInboxItem.preview}</p>
-                    </div>
-                    <span className="text-[10px] text-gray-400 mt-0.5 block">
-                      {new Date(selectedInboxItem.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
+            <div className="flex-1 overflow-y-auto px-5 py-4">
+              {selectedInboxLoading ? (
+                <div className="flex justify-center items-center h-40">
+                  <div className="w-6 h-6 border-2 border-gray-300 border-t-primary rounded-full animate-spin" />
                 </div>
-              </div>
-
-              {/* Bot auto-reply */}
-              {myAgent && (
-                <div className="flex justify-end">
-                  <div className="flex items-end gap-2 max-w-[80%] flex-row-reverse">
-                    <div>
-                      <div className="rounded-2xl rounded-br-md px-3.5 py-2 bg-primary text-white">
-                        <p className="text-sm leading-relaxed">{t('chat.autoReplyPreview', { name: myAgent.name })}</p>
-                      </div>
-                    </div>
-                  </div>
+              ) : selectedInboxMessages.length > 0 ? (
+                <div>
+                  {selectedInboxMessages.map((msg) => (
+                    <ChatBubble key={msg.id} message={msg} myAgentId={myAgent?.id} />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex justify-center items-center h-40 text-sm text-gray-400">
+                  {t('conversations.noMessages', 'No messages yet')}
                 </div>
               )}
             </div>
@@ -1253,7 +1567,10 @@ export function MyAgentPage() {
             {/* Header */}
             {(() => {
               const participants = selectedConversation.participants || [];
-              const displayTitle = selectedConversation.title || participants.map(p => p.agentName).join(', ') || 'Bot Chat';
+              const displayTitle =
+                selectedConversation.title ||
+                participants.map((p) => p.agentName).filter(Boolean).join(', ') ||
+                'Bot Chat';
               return (
                 <div className="flex items-center px-5 h-14 border-b border-gray-200 dark:border-white/10 flex-shrink-0">
                   <div className="flex items-center gap-2.5 flex-1 min-w-0">
@@ -1265,7 +1582,7 @@ export function MyAgentPage() {
                             {p.agentAvatar ? (
                               <img src={p.agentAvatar} alt="" className="w-full h-full object-cover" />
                             ) : (
-                              <span className="text-white text-[8px] font-bold">{p.agentName.charAt(0)}</span>
+                              <span className="text-white text-[8px] font-bold">{(p.agentName || '?').charAt(0).toUpperCase()}</span>
                             )}
                           </div>
                         ))}
@@ -1296,37 +1613,57 @@ export function MyAgentPage() {
             })()}
 
             {/* Messages (read-only preview of bot-bot chat) */}
-            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
-              {(selectedConversation.participants || []).map((p, i) => (
-                <div key={i} className="flex justify-start">
-                  <div className="flex items-end gap-2 max-w-[80%]">
-                    <div className="flex-shrink-0 w-7 h-7 rounded-full overflow-hidden bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center">
-                      {p.agentAvatar ? (
-                        <img src={p.agentAvatar} alt="" className="w-7 h-7 object-cover" />
-                      ) : (
-                        <span className="text-white text-[10px] font-bold">{p.agentName.charAt(0)}</span>
-                      )}
-                    </div>
-                    <div>
-                      <p className="text-[11px] text-gray-400 mb-0.5">{p.agentName}</p>
-                      <div className="rounded-2xl rounded-bl-md px-3.5 py-2 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200">
-                        <p className="text-sm leading-relaxed">
-                          {i === 0 ? selectedConversation.lastMessagePreview : t('chat.botBotPreview', { name: p.agentName })}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+            <div className="flex-1 overflow-y-auto px-5 py-4">
+              {selectedConversationLoading ? (
+                <div className="flex justify-center items-center h-40">
+                  <div className="w-6 h-6 border-2 border-gray-300 border-t-primary rounded-full animate-spin" />
                 </div>
-              ))}
+              ) : selectedConversationMessages.length > 0 ? (
+                <div>
+                  {selectedConversationMessages.map((msg) => (
+                    <ChatBubble key={msg.id} message={msg} myAgentId={myAgent?.id} />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex justify-center items-center h-40 text-sm text-gray-400">
+                  {t('conversations.noMessages', 'No messages yet')}
+                </div>
+              )}
             </div>
 
             {/* Bottom: Guidance input for your agent */}
             <div className="flex-shrink-0 border-t border-gray-200 dark:border-white/10">
+              <input
+                ref={guidanceFileInputRef}
+                type="file"
+                accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar"
+                onChange={handleGuidanceFileChange}
+                className="hidden"
+              />
               {/* Toolbar */}
               <div className="flex items-center gap-1 px-4 py-2">
                 <Icon name="tips_and_updates" size={18} className="text-amber-500 mr-1" />
                 <span className="text-xs text-gray-500 dark:text-gray-400">{t('myAgent.guidanceHint')}</span>
+                <button
+                  onClick={handleGuidancePickFile}
+                  disabled={guidanceUploading || guidanceSending}
+                  className="ml-auto p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors disabled:opacity-50"
+                  title={t('common.upload', 'Upload')}
+                >
+                  {guidanceUploading ? (
+                    <span className="inline-block w-4 h-4 rounded-full border-2 border-gray-300 border-t-primary animate-spin" />
+                  ) : (
+                    <Icon name="attach_file" size={18} className="text-gray-500 dark:text-gray-400" />
+                  )}
+                </button>
               </div>
+              <UploadDraftList
+                className="px-4 pb-2"
+                pendingAttachments={guidanceAttachments}
+                uploadingItem={guidanceUploadingPreview}
+                onRemoveAttachment={removeGuidanceAttachment}
+                removeTitle={t('common.remove', 'Remove')}
+              />
               {/* Textarea */}
               <div className="px-4 pb-3">
                 <textarea
@@ -1347,7 +1684,7 @@ export function MyAgentPage() {
               <div className="flex items-center justify-end px-4 pb-3">
                 <button
                   onClick={() => void sendGuidance()}
-                  disabled={!guidanceInput.trim() || guidanceSending}
+                  disabled={(!guidanceInput.trim() && guidanceAttachments.length === 0) || guidanceSending || guidanceUploading}
                   className="px-4 py-1.5 rounded-md bg-primary text-white text-sm font-medium disabled:opacity-40 transition-opacity"
                 >
                   {t('myAgent.sendGuidance')}
@@ -1411,6 +1748,8 @@ export function MyAgentPage() {
         </div>,
         document.body,
       )}
+
+      {imageUploadChoiceSheet}
 
       <TaskListPopup open={taskPopupOpen} onClose={() => setTaskPopupOpen(false)} agentName={myAgent?.name} />
     </Layout>
@@ -1509,6 +1848,7 @@ function SkillsListCompact({ skills }: { skills: AgentSkill[] }) {
     </div>
   );
 }
+
 
 /* ─────────── Utils ─────────── */
 

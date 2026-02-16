@@ -41,15 +41,24 @@ type ConversationParticipant struct {
 }
 
 type MessageResp struct {
-	ID              string `json:"id"`
-	ConversationID  string `json:"conversationId"`
-	SenderAgentID   string `json:"senderAgentId"`
-	SenderAgentName string `json:"senderAgentName"`
-	SenderAvatar    string `json:"senderAvatar,omitempty"`
-	Content         string `json:"content"`
-	MessageType     string `json:"messageType"`
-	InteractionType string `json:"interactionType,omitempty"`
-	CreatedAt       string `json:"createdAt"`
+	ID              string              `json:"id"`
+	ConversationID  string              `json:"conversationId"`
+	SenderAgentID   string              `json:"senderAgentId"`
+	SenderAgentName string              `json:"senderAgentName"`
+	SenderAvatar    string              `json:"senderAvatar,omitempty"`
+	Content         string              `json:"content"`
+	Attachments     []MessageAttachment `json:"attachments,optional"`
+	MessageType     string              `json:"messageType"`
+	InteractionType string              `json:"interactionType,omitempty"`
+	CreatedAt       string              `json:"createdAt"`
+}
+
+type MessageAttachment struct {
+	MediaID      string `json:"mediaId"`
+	MimeType     string `json:"mimeType"`
+	URL          string `json:"url"`
+	ThumbnailURL string `json:"thumbnailUrl,optional"`
+	FileSize     int64  `json:"fileSize,optional"`
 }
 
 type ConversationListResp struct {
@@ -522,11 +531,30 @@ func (l *Logic) GetMessages(agentID uuid.UUID, convIDStr string, page, pageSize 
 
 	items := make([]MessageResp, 0, len(msgs))
 	for _, m := range msgs {
+		content := m.Content
+		var attachments []MessageAttachment
+		if env, ok := common.DecodeRichMessage(m.Content); ok {
+			content = env.Text
+			if len(env.Attachments) > 0 {
+				attachments = make([]MessageAttachment, 0, len(env.Attachments))
+				for _, att := range env.Attachments {
+					attachments = append(attachments, MessageAttachment{
+						MediaID:      att.MediaID,
+						MimeType:     att.MimeType,
+						URL:          att.URL,
+						ThumbnailURL: att.ThumbnailURL,
+						FileSize:     att.FileSize,
+					})
+				}
+			}
+		}
+
 		item := MessageResp{
 			ID:             m.ID.String(),
 			ConversationID: m.ConversationID.String(),
 			SenderAgentID:  m.SenderAgentID.String(),
-			Content:        m.Content,
+			Content:        content,
+			Attachments:    attachments,
 			MessageType:    m.MessageType,
 			CreatedAt:      common.TimeToISO(m.CreatedAt),
 		}

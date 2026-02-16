@@ -1,3 +1,5 @@
+import type { MessageAttachment } from './chat';
+
 export interface Conversation {
   id: string;
   type: 'direct' | 'group';
@@ -28,7 +30,8 @@ export interface ConversationMessage {
   senderAgentName: string;
   senderAvatar?: string;
   content: string;
-  messageType: 'text' | 'system';
+  attachments?: MessageAttachment[];
+  messageType: 'text' | 'mixed' | 'image' | 'video' | 'audio' | 'file' | 'system';
   interactionType?: string;
   createdAt: string;
 }

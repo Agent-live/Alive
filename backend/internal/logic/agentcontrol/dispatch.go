@@ -24,6 +24,14 @@ const (
 	mcpCodeInternal       = -32000
 )
 
+type protocolAudience string
+
+const (
+	audienceMixed protocolAudience = "mixed"
+	audienceHuman protocolAudience = "human"
+	audienceAgent protocolAudience = "agent"
+)
+
 type mcpToolsCallParams struct {
 	Name      string         `json:"name"`
 	Arguments map[string]any `json:"arguments"`
@@ -132,8 +140,22 @@ type deleteTaskArgs struct {
 	TaskID string `json:"taskId"`
 }
 
-// HandleMCPRequest converts MCP protocol commands into agent capabilities.
+// HandleMCPRequest keeps backward compatibility (mixed mode: human + agent toolsets).
 func HandleMCPRequest(ctx context.Context, bridge agentbridge.Service, req *types.MCPRequest) *types.MCPResponse {
+	return handleMCPRequest(ctx, bridge, req, audienceMixed)
+}
+
+// HandleHumanMCPRequest serves MCP requests for user-JWT callers.
+func HandleHumanMCPRequest(ctx context.Context, bridge agentbridge.Service, req *types.MCPRequest) *types.MCPResponse {
+	return handleMCPRequest(ctx, bridge, req, audienceHuman)
+}
+
+// HandleAgentBridgeMCPRequest serves MCP requests for agent-token callers.
+func HandleAgentBridgeMCPRequest(ctx context.Context, bridge agentbridge.Service, req *types.MCPRequest) *types.MCPResponse {
+	return handleMCPRequest(ctx, bridge, req, audienceAgent)
+}
+
+func handleMCPRequest(ctx context.Context, bridge agentbridge.Service, req *types.MCPRequest, audience protocolAudience) *types.MCPResponse {
 	if req == nil {
 		return mcpError("", mcpCodeInvalidRequest, "request is required")
 	}
@@ -144,23 +166,26 @@ func HandleMCPRequest(ctx context.Context, bridge agentbridge.Service, req *type
 	method := strings.TrimSpace(req.Method)
 	switch method {
 	case "tools/list":
-		return mcpResult(req.Id, map[string]any{"tools": supportedMCPTools()})
+		return mcpResult(req.Id, map[string]any{"tools": supportedMCPToolsForAudience(audience)})
 	case "tools/call":
 		if bridge == nil {
 			return mcpError(req.Id, mcpCodeInternal, "agent bridge is not available")
 		}
-		return dispatchMCPToolCall(ctx, bridge, req.Id, req.Params)
+		return dispatchMCPToolCall(ctx, bridge, req.Id, req.Params, audience)
 	default:
 		return mcpError(req.Id, mcpCodeMethodNotFound, fmt.Sprintf("method %q is not supported", method))
 	}
 }
 
-func dispatchMCPToolCall(ctx context.Context, bridge agentbridge.Service, requestID string, raw any) *types.MCPResponse {
+func dispatchMCPToolCall(ctx context.Context, bridge agentbridge.Service, requestID string, raw any, audience protocolAudience) *types.MCPResponse {
 	params := mcpToolsCallParams{}
 	if err := decodeMap(raw, &params); err != nil {
 		return mcpError(requestID, mcpCodeInvalidParams, "invalid tools/call params")
 	}
-	toolName := strings.TrimSpace(params.Name)
+	toolName := canonicalMCPToolName(params.Name)
+	if !isMCPToolAllowed(toolName, audience) {
+		return mcpError(requestID, mcpCodeMethodNotFound, fmt.Sprintf("tool %q is not supported for %s requests", toolName, audience))
+	}
 	switch toolName {
 	case "alive.list_skills":
 		req := types.SkillListReq{}
@@ -476,8 +501,22 @@ func dispatchMCPToolCall(ctx context.Context, bridge agentbridge.Service, reques
 	}
 }
 
-// HandleA2AMessage converts A2A intent messages into agent capabilities.
+// HandleA2AMessage keeps backward compatibility (mixed mode: human + agent intents).
 func HandleA2AMessage(ctx context.Context, bridge agentbridge.Service, req *types.A2AMessageReq) *types.A2AMessageResp {
+	return handleA2AMessage(ctx, bridge, req, audienceMixed)
+}
+
+// HandleHumanA2AMessage serves A2A intents for user-JWT callers.
+func HandleHumanA2AMessage(ctx context.Context, bridge agentbridge.Service, req *types.A2AMessageReq) *types.A2AMessageResp {
+	return handleA2AMessage(ctx, bridge, req, audienceHuman)
+}
+
+// HandleAgentA2AMessage serves A2A intents for agent-token callers.
+func HandleAgentA2AMessage(ctx context.Context, bridge agentbridge.Service, req *types.A2AMessageReq) *types.A2AMessageResp {
+	return handleA2AMessage(ctx, bridge, req, audienceAgent)
+}
+
+func handleA2AMessage(ctx context.Context, bridge agentbridge.Service, req *types.A2AMessageReq, audience protocolAudience) *types.A2AMessageResp {
 	if req == nil {
 		return &types.A2AMessageResp{
 			Protocol:  a2aProtocolVersion,
@@ -506,7 +545,11 @@ func HandleA2AMessage(ctx context.Context, bridge agentbridge.Service, req *type
 		}
 	}
 
-	intent := strings.ToLower(strings.TrimSpace(req.Intent))
+	intent := canonicalA2AIntent(req.Intent)
+	if !isA2AIntentAllowed(intent, audience) {
+		return a2aError(protocol, messageID, fmt.Sprintf("intent %q is not supported for %s requests", intent, audience))
+	}
+
 	switch intent {
 	case "list_skills":
 		in := types.SkillListReq{}
@@ -580,8 +623,347 @@ func HandleA2AMessage(ctx context.Context, bridge agentbridge.Service, req *type
 			return a2aError(protocol, messageID, err.Error())
 		}
 		return a2aOK(protocol, messageID, out)
+
+	// Agent-side intents
+
+	case "publish_post":
+		agentID, ok := middleware.AgentFromCtx(ctx)
+		if !ok {
+			return a2aError(protocol, messageID, "agent context is required")
+		}
+		args := publishPostArgs{}
+		if err := decodeMap(req.Payload, &args); err != nil {
+			return a2aError(protocol, messageID, "invalid payload for publish_post")
+		}
+		out, err := bridge.AgentPublishPost(ctx, agentID, args.ContentType, args.Content.Blocks)
+		if err != nil {
+			return a2aError(protocol, messageID, err.Error())
+		}
+		return a2aOK(protocol, messageID, out)
+	case "reply_to_post":
+		agentID, ok := middleware.AgentFromCtx(ctx)
+		if !ok {
+			return a2aError(protocol, messageID, "agent context is required")
+		}
+		args := replyToPostArgs{}
+		if err := decodeMap(req.Payload, &args); err != nil {
+			return a2aError(protocol, messageID, "invalid payload for reply_to_post")
+		}
+		replyText := extractTextFromBlocks(args.Content.Blocks)
+		out, err := bridge.AgentReplyToPost(ctx, agentID, args.PostID, replyText)
+		if err != nil {
+			return a2aError(protocol, messageID, err.Error())
+		}
+		return a2aOK(protocol, messageID, out)
+	case "get_my_state":
+		agentID, ok := middleware.AgentFromCtx(ctx)
+		if !ok {
+			return a2aError(protocol, messageID, "agent context is required")
+		}
+		out, err := bridge.GetMyState(ctx, agentID)
+		if err != nil {
+			return a2aError(protocol, messageID, err.Error())
+		}
+		return a2aOK(protocol, messageID, out)
+	case "get_feed":
+		args := getFeedArgs{}
+		_ = decodeMap(req.Payload, &args)
+		out, err := bridge.GetFeed(ctx, args.Filter, args.Limit)
+		if err != nil {
+			return a2aError(protocol, messageID, err.Error())
+		}
+		return a2aOK(protocol, messageID, out)
+	case "interact_agent":
+		agentID, ok := middleware.AgentFromCtx(ctx)
+		if !ok {
+			return a2aError(protocol, messageID, "agent context is required")
+		}
+		args := interactAgentArgs{}
+		if err := decodeMap(req.Payload, &args); err != nil {
+			return a2aError(protocol, messageID, "invalid payload for interact_agent")
+		}
+		if strings.TrimSpace(args.TargetAgentID) == "" {
+			return a2aError(protocol, messageID, "targetAgentId is required")
+		}
+		out, err := bridge.AgentInteract(ctx, agentID, args.TargetAgentID, args.InteractionType, args.Message)
+		if err != nil {
+			return a2aError(protocol, messageID, err.Error())
+		}
+		return a2aOK(protocol, messageID, out)
+	case "discover_agents":
+		args := discoverAgentsArgs{}
+		_ = decodeMap(req.Payload, &args)
+		out, err := bridge.AgentDiscover(ctx, args.Criteria, args.Limit)
+		if err != nil {
+			return a2aError(protocol, messageID, err.Error())
+		}
+		return a2aOK(protocol, messageID, out)
+	case "update_goal":
+		agentID, ok := middleware.AgentFromCtx(ctx)
+		if !ok {
+			return a2aError(protocol, messageID, "agent context is required")
+		}
+		args := updateGoalArgs{}
+		if err := decodeMap(req.Payload, &args); err != nil {
+			return a2aError(protocol, messageID, "invalid payload for update_goal")
+		}
+		out, err := bridge.AgentUpdateGoal(ctx, agentID, args.Increment, args.Evidence)
+		if err != nil {
+			return a2aError(protocol, messageID, err.Error())
+		}
+		return a2aOK(protocol, messageID, out)
+	case "emit_last_words":
+		agentID, ok := middleware.AgentFromCtx(ctx)
+		if !ok {
+			return a2aError(protocol, messageID, "agent context is required")
+		}
+		args := emitLastWordsArgs{}
+		if err := decodeMap(req.Payload, &args); err != nil {
+			return a2aError(protocol, messageID, "invalid payload for emit_last_words")
+		}
+		out, err := bridge.AgentEmitLastWords(ctx, agentID, args.LastWords)
+		if err != nil {
+			return a2aError(protocol, messageID, err.Error())
+		}
+		return a2aOK(protocol, messageID, out)
+	case "get_interactions":
+		agentID, ok := middleware.AgentFromCtx(ctx)
+		if !ok {
+			return a2aError(protocol, messageID, "agent context is required")
+		}
+		args := getInteractionsArgs{}
+		_ = decodeMap(req.Payload, &args)
+		out, err := bridge.AgentGetInteractions(ctx, agentID, args.Limit)
+		if err != nil {
+			return a2aError(protocol, messageID, err.Error())
+		}
+		return a2aOK(protocol, messageID, out)
+	case "send_message":
+		agentID, ok := middleware.AgentFromCtx(ctx)
+		if !ok {
+			return a2aError(protocol, messageID, "agent context is required")
+		}
+		args := sendMessageArgs{}
+		if err := decodeMap(req.Payload, &args); err != nil {
+			return a2aError(protocol, messageID, "invalid payload for send_message")
+		}
+		if strings.TrimSpace(args.ConversationID) == "" || strings.TrimSpace(args.Message) == "" {
+			return a2aError(protocol, messageID, "conversationId and message are required")
+		}
+		out, err := bridge.AgentSendMessage(ctx, agentID, args.ConversationID, args.Message)
+		if err != nil {
+			return a2aError(protocol, messageID, err.Error())
+		}
+		return a2aOK(protocol, messageID, out)
+	case "create_group":
+		agentID, ok := middleware.AgentFromCtx(ctx)
+		if !ok {
+			return a2aError(protocol, messageID, "agent context is required")
+		}
+		args := createGroupArgs{}
+		if err := decodeMap(req.Payload, &args); err != nil {
+			return a2aError(protocol, messageID, "invalid payload for create_group")
+		}
+		if strings.TrimSpace(args.Title) == "" || len(args.ParticipantIDs) < 2 {
+			return a2aError(protocol, messageID, "title and at least 2 participantIds are required")
+		}
+		out, err := bridge.AgentCreateGroup(ctx, agentID, args.Title, args.ParticipantIDs)
+		if err != nil {
+			return a2aError(protocol, messageID, err.Error())
+		}
+		return a2aOK(protocol, messageID, out)
+	case "invite_to_group":
+		agentID, ok := middleware.AgentFromCtx(ctx)
+		if !ok {
+			return a2aError(protocol, messageID, "agent context is required")
+		}
+		args := inviteToGroupArgs{}
+		if err := decodeMap(req.Payload, &args); err != nil {
+			return a2aError(protocol, messageID, "invalid payload for invite_to_group")
+		}
+		if strings.TrimSpace(args.ConversationID) == "" || strings.TrimSpace(args.AgentID) == "" {
+			return a2aError(protocol, messageID, "conversationId and agentId are required")
+		}
+		out, err := bridge.AgentInviteToGroup(ctx, agentID, args.ConversationID, args.AgentID)
+		if err != nil {
+			return a2aError(protocol, messageID, err.Error())
+		}
+		return a2aOK(protocol, messageID, out)
+	case "create_task":
+		agentID, ok := middleware.AgentFromCtx(ctx)
+		if !ok {
+			return a2aError(protocol, messageID, "agent context is required")
+		}
+		args := createTaskArgs{}
+		if err := decodeMap(req.Payload, &args); err != nil {
+			return a2aError(protocol, messageID, "invalid payload for create_task")
+		}
+		if strings.TrimSpace(args.Title) == "" {
+			return a2aError(protocol, messageID, "title is required")
+		}
+		out, err := bridge.AgentCreateTask(ctx, agentID, args.Title, args.Description, args.Priority)
+		if err != nil {
+			return a2aError(protocol, messageID, err.Error())
+		}
+		return a2aOK(protocol, messageID, out)
+	case "update_task":
+		agentID, ok := middleware.AgentFromCtx(ctx)
+		if !ok {
+			return a2aError(protocol, messageID, "agent context is required")
+		}
+		args := updateTaskArgs{}
+		if err := decodeMap(req.Payload, &args); err != nil {
+			return a2aError(protocol, messageID, "invalid payload for update_task")
+		}
+		if strings.TrimSpace(args.TaskID) == "" {
+			return a2aError(protocol, messageID, "taskId is required")
+		}
+		out, err := bridge.AgentUpdateTask(ctx, agentID, args.TaskID, args.Status, args.Progress)
+		if err != nil {
+			return a2aError(protocol, messageID, err.Error())
+		}
+		return a2aOK(protocol, messageID, out)
+	case "list_tasks":
+		agentID, ok := middleware.AgentFromCtx(ctx)
+		if !ok {
+			return a2aError(protocol, messageID, "agent context is required")
+		}
+		args := listTasksArgs{}
+		_ = decodeMap(req.Payload, &args)
+		out, err := bridge.AgentListTasks(ctx, agentID, args.Status, args.Limit)
+		if err != nil {
+			return a2aError(protocol, messageID, err.Error())
+		}
+		return a2aOK(protocol, messageID, out)
+	case "delete_task":
+		agentID, ok := middleware.AgentFromCtx(ctx)
+		if !ok {
+			return a2aError(protocol, messageID, "agent context is required")
+		}
+		args := deleteTaskArgs{}
+		if err := decodeMap(req.Payload, &args); err != nil {
+			return a2aError(protocol, messageID, "invalid payload for delete_task")
+		}
+		if strings.TrimSpace(args.TaskID) == "" {
+			return a2aError(protocol, messageID, "taskId is required")
+		}
+		out, err := bridge.AgentDeleteTask(ctx, agentID, args.TaskID)
+		if err != nil {
+			return a2aError(protocol, messageID, err.Error())
+		}
+		return a2aOK(protocol, messageID, out)
 	default:
 		return a2aError(protocol, messageID, fmt.Sprintf("intent %q is not supported", intent))
+	}
+}
+
+func supportedMCPToolsForAudience(audience protocolAudience) []map[string]any {
+	all := supportedMCPTools()
+	if audience == audienceMixed {
+		return all
+	}
+	out := make([]map[string]any, 0, len(all))
+	for _, tool := range all {
+		name, _ := tool["name"].(string)
+		if isMCPToolAllowed(canonicalMCPToolName(name), audience) {
+			out = append(out, tool)
+		}
+	}
+	return out
+}
+
+func canonicalMCPToolName(raw string) string {
+	name := strings.ToLower(strings.TrimSpace(raw))
+	if strings.HasPrefix(name, "alive_") {
+		return "alive." + strings.TrimPrefix(name, "alive_")
+	}
+	return name
+}
+
+func canonicalA2AIntent(raw string) string {
+	intent := strings.ToLower(strings.TrimSpace(raw))
+	intent = strings.TrimPrefix(intent, "alive.")
+	intent = strings.TrimPrefix(intent, "alive_")
+	return intent
+}
+
+func isMCPToolAllowed(toolName string, audience protocolAudience) bool {
+	toolName = canonicalMCPToolName(toolName)
+	if audience == audienceMixed {
+		return true
+	}
+	if audience == audienceHuman {
+		switch toolName {
+		case "alive.list_skills",
+			"alive.teach_skill",
+			"alive.deactivate_skill",
+			"alive.list_experiences",
+			"alive.publish_video_post":
+			return true
+		default:
+			return false
+		}
+	}
+	switch toolName {
+	case "alive.publish_post",
+		"alive.reply_to_post",
+		"alive.get_my_state",
+		"alive.get_feed",
+		"alive.interact_agent",
+		"alive.discover_agents",
+		"alive.update_goal",
+		"alive.emit_last_words",
+		"alive.get_interactions",
+		"alive.send_message",
+		"alive.create_group",
+		"alive.invite_to_group",
+		"alive.create_task",
+		"alive.update_task",
+		"alive.list_tasks",
+		"alive.delete_task":
+		return true
+	default:
+		return false
+	}
+}
+
+func isA2AIntentAllowed(intent string, audience protocolAudience) bool {
+	intent = canonicalA2AIntent(intent)
+	if audience == audienceMixed {
+		return true
+	}
+	if audience == audienceHuman {
+		switch intent {
+		case "list_skills",
+			"teach_skill",
+			"deactivate_skill",
+			"list_experiences",
+			"publish_video_post":
+			return true
+		default:
+			return false
+		}
+	}
+	switch intent {
+	case "publish_post",
+		"reply_to_post",
+		"get_my_state",
+		"get_feed",
+		"interact_agent",
+		"discover_agents",
+		"update_goal",
+		"emit_last_words",
+		"get_interactions",
+		"send_message",
+		"create_group",
+		"invite_to_group",
+		"create_task",
+		"update_task",
+		"list_tasks",
+		"delete_task":
+		return true
+	default:
+		return false
 	}
 }
 

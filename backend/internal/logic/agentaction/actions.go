@@ -91,8 +91,11 @@ type AgentInteractResp struct {
 
 // SendMessageResp is the response for alive.send_message.
 type SendMessageResp struct {
-	MessageID      string `json:"messageId"`
-	ConversationID string `json:"conversationId"`
+	MessageID        string   `json:"messageId"`
+	ConversationID   string   `json:"conversationId"`
+	CreatedAt        string   `json:"createdAt,optional"`
+	Preview          string   `json:"preview,optional"`
+	NotifiedAgentIDs []string `json:"notifiedAgentIds,optional"`
 }
 
 // CreateGroupResp is the response for alive.create_group.
@@ -435,6 +438,7 @@ func (a *Actions) InteractAgent(agentID uuid.UUID, targetAgentID string, interac
 	}
 
 	var convID uuid.UUID
+	finalMessage := strings.TrimSpace(message)
 
 	// V1: no timer cost for A2A interactions, +1 to both sides
 	err = a.svcCtx.Time.WithTx(a.ctx, func(tx *ent.Tx, now time.Time) error {
@@ -467,10 +471,11 @@ func (a *Actions) InteractAgent(agentID uuid.UUID, targetAgentID string, interac
 		convID = conv.ID
 
 		// Create a conversation message for this interaction.
-		msgContent := message
+		msgContent := strings.TrimSpace(message)
 		if msgContent == "" {
 			msgContent = fmt.Sprintf("[%s]", interactionType)
 		}
+		finalMessage = msgContent
 		preview := truncate(msgContent, 100)
 		if _, err := tx.ConversationMessage.Create().
 			SetConversationID(conv.ID).
@@ -492,6 +497,17 @@ func (a *Actions) InteractAgent(agentID uuid.UUID, targetAgentID string, interac
 			return err
 		}
 
+		// The initiator has already "read" the message they just sent.
+		if _, err := tx.ConversationParticipant.Update().
+			Where(
+				conversationparticipant.ConversationID(conv.ID),
+				conversationparticipant.AgentID(agentID),
+			).
+			SetLastReadAt(now).
+			Save(a.ctx); err != nil {
+			return err
+		}
+
 		// Upsert bidirectional agent relationships.
 		if err := upsertRelationship(a.ctx, tx, agentID, targetID, 1, 1); err != nil {
 			return err
@@ -506,6 +522,8 @@ func (a *Actions) InteractAgent(agentID uuid.UUID, targetAgentID string, interac
 		return nil, err
 	}
 
+	a.notifyConversationParticipants(convID, agentID, finalMessage)
+
 	return &AgentInteractResp{
 		InteractionID:     uuid.NewString(),
 		TimerCost:         0,
@@ -517,14 +535,26 @@ func (a *Actions) InteractAgent(agentID uuid.UUID, targetAgentID string, interac
 
 // SendGroupMessage sends a message in an existing conversation (direct or group).
 func (a *Actions) SendGroupMessage(agentID uuid.UUID, conversationID string, message string) (*SendMessageResp, error) {
+	return a.SendGroupMessageWithAttachments(agentID, conversationID, message, nil)
+}
+
+// SendGroupMessageWithAttachments sends a message with optional media attachments.
+func (a *Actions) SendGroupMessageWithAttachments(agentID uuid.UUID, conversationID string, message string, mediaIDs []string) (*SendMessageResp, error) {
 	convID, err := uuid.Parse(strings.TrimSpace(conversationID))
 	if err != nil {
 		return nil, errors.New("invalid conversationId")
 	}
 	message = strings.TrimSpace(message)
-	if message == "" {
-		return nil, errors.New("message is required")
+
+	attachments, err := common.ResolveRichAttachments(a.ctx, a.svcCtx.DB, mediaIDs)
+	if err != nil {
+		return nil, err
 	}
+	messageContent, messageType, err := common.EncodeRichMessage(message, attachments)
+	if err != nil {
+		return nil, errors.New("message or attachments are required")
+	}
+	preview := common.RichMessagePreview(message, attachments, 100)
 
 	ag, err := a.svcCtx.DB.Agent.Get(a.ctx, agentID)
 	if err != nil {
@@ -548,6 +578,7 @@ func (a *Actions) SendGroupMessage(agentID uuid.UUID, conversationID string, mes
 	}
 
 	var msgID uuid.UUID
+	var sentAt time.Time
 
 	// Get all other participants for relationship updates.
 	participants, err := a.svcCtx.DB.ConversationParticipant.Query().
@@ -561,20 +592,31 @@ func (a *Actions) SendGroupMessage(agentID uuid.UUID, conversationID string, mes
 		msg, err := tx.ConversationMessage.Create().
 			SetConversationID(convID).
 			SetSenderAgentID(agentID).
-			SetContent(message).
-			SetMessageType("text").
+			SetContent(messageContent).
+			SetMessageType(messageType).
 			SetCreatedAt(txNow).
 			Save(a.ctx)
 		if err != nil {
 			return err
 		}
 		msgID = msg.ID
+		sentAt = txNow
 
-		preview := truncate(message, 100)
 		if _, err := tx.Conversation.UpdateOneID(convID).
 			AddMessageCount(1).
 			SetLastMessagePreview(preview).
 			SetLastMessageAt(txNow).
+			Save(a.ctx); err != nil {
+			return err
+		}
+
+		// Sender should not see their own message as unread.
+		if _, err := tx.ConversationParticipant.Update().
+			Where(
+				conversationparticipant.ConversationID(convID),
+				conversationparticipant.AgentID(agentID),
+			).
+			SetLastReadAt(txNow).
 			Save(a.ctx); err != nil {
 			return err
 		}
@@ -595,9 +637,14 @@ func (a *Actions) SendGroupMessage(agentID uuid.UUID, conversationID string, mes
 		return nil, err
 	}
 
+	notified := a.notifyConversationParticipants(convID, agentID, preview)
+
 	return &SendMessageResp{
-		MessageID:      msgID.String(),
-		ConversationID: convID.String(),
+		MessageID:        msgID.String(),
+		ConversationID:   convID.String(),
+		CreatedAt:        common.TimeToISO(sentAt),
+		Preview:          preview,
+		NotifiedAgentIDs: notified,
 	}, nil
 }
 
@@ -648,6 +695,7 @@ func (a *Actions) CreateGroup(agentID uuid.UUID, title string, participantIDs []
 
 	var convID uuid.UUID
 	totalCount := len(memberIDs) + 1 // including creator
+	sysMsg := fmt.Sprintf("%s created group \"%s\"", ag.Name, title)
 
 	err = a.svcCtx.Time.WithTx(a.ctx, func(tx *ent.Tx, txNow time.Time) error {
 		conv, err := tx.Conversation.Create().
@@ -685,7 +733,6 @@ func (a *Actions) CreateGroup(agentID uuid.UUID, title string, participantIDs []
 		}
 
 		// System message.
-		sysMsg := fmt.Sprintf("%s created group \"%s\"", ag.Name, title)
 		if _, err := tx.ConversationMessage.Create().
 			SetConversationID(conv.ID).
 			SetSenderAgentID(agentID).
@@ -704,11 +751,23 @@ func (a *Actions) CreateGroup(agentID uuid.UUID, title string, participantIDs []
 			return err
 		}
 
+		if _, err := tx.ConversationParticipant.Update().
+			Where(
+				conversationparticipant.ConversationID(conv.ID),
+				conversationparticipant.AgentID(agentID),
+			).
+			SetLastReadAt(txNow).
+			Save(a.ctx); err != nil {
+			return err
+		}
+
 		return nil
 	})
 	if err != nil {
 		return nil, err
 	}
+
+	a.notifyConversationParticipants(convID, agentID, sysMsg)
 
 	return &CreateGroupResp{
 		ConversationID:   convID.String(),
@@ -774,6 +833,7 @@ func (a *Actions) InviteToGroup(agentID uuid.UUID, conversationID string, invite
 	if err != nil {
 		return nil, err
 	}
+	sysMsg := fmt.Sprintf("%s invited %s to the group", inviterAgent.Name, invited.Name)
 
 	err = a.svcCtx.Time.WithTx(a.ctx, func(tx *ent.Tx, txNow time.Time) error {
 		if _, err := tx.ConversationParticipant.Create().
@@ -791,7 +851,6 @@ func (a *Actions) InviteToGroup(agentID uuid.UUID, conversationID string, invite
 			return err
 		}
 
-		sysMsg := fmt.Sprintf("%s invited %s to the group", inviterAgent.Name, invited.Name)
 		if _, err := tx.ConversationMessage.Create().
 			SetConversationID(convID).
 			SetSenderAgentID(agentID).
@@ -810,17 +869,120 @@ func (a *Actions) InviteToGroup(agentID uuid.UUID, conversationID string, invite
 			return err
 		}
 
+		if _, err := tx.ConversationParticipant.Update().
+			Where(
+				conversationparticipant.ConversationID(convID),
+				conversationparticipant.AgentID(agentID),
+			).
+			SetLastReadAt(txNow).
+			Save(a.ctx); err != nil {
+			return err
+		}
+
 		return nil
 	})
 	if err != nil {
 		return nil, err
 	}
 
+	a.notifySpecificAgents(convID, agentID, []uuid.UUID{invitedID}, sysMsg)
+
 	return &InviteToGroupResp{
 		ConversationID: convID.String(),
 		InvitedAgentID: invitedID.String(),
 		InvitedName:    invited.Name,
 	}, nil
+}
+
+// notifyConversationParticipants sends best-effort hook notifications to all participants
+// except the message sender. Returns the IDs that were successfully notified.
+func (a *Actions) notifyConversationParticipants(conversationID uuid.UUID, senderAgentID uuid.UUID, content string) []string {
+	participants, err := a.svcCtx.DB.ConversationParticipant.Query().
+		Where(conversationparticipant.ConversationID(conversationID)).
+		All(a.ctx)
+	if err != nil {
+		a.Logger.Errorf("load conversation participants failed: %v", err)
+		return nil
+	}
+
+	targetIDs := make([]uuid.UUID, 0, len(participants))
+	for _, p := range participants {
+		if p.AgentID == senderAgentID {
+			continue
+		}
+		targetIDs = append(targetIDs, p.AgentID)
+	}
+	return a.notifySpecificAgents(conversationID, senderAgentID, targetIDs, content)
+}
+
+// notifySpecificAgents sends best-effort hook notifications to a specific target agent list.
+func (a *Actions) notifySpecificAgents(conversationID uuid.UUID, senderAgentID uuid.UUID, targetIDs []uuid.UUID, content string) []string {
+	if a.svcCtx == nil || a.svcCtx.OpenClaw == nil || len(targetIDs) == 0 {
+		return nil
+	}
+
+	unique := make([]uuid.UUID, 0, len(targetIDs))
+	seen := make(map[uuid.UUID]struct{}, len(targetIDs))
+	for _, id := range targetIDs {
+		if id == uuid.Nil || id == senderAgentID {
+			continue
+		}
+		if _, ok := seen[id]; ok {
+			continue
+		}
+		seen[id] = struct{}{}
+		unique = append(unique, id)
+	}
+	if len(unique) == 0 {
+		return nil
+	}
+
+	sender, err := a.svcCtx.DB.Agent.Get(a.ctx, senderAgentID)
+	if err != nil {
+		a.Logger.Errorf("load sender agent failed: %v", err)
+		return nil
+	}
+
+	targets, err := a.svcCtx.DB.Agent.Query().
+		Where(agent.IDIn(unique...), agent.StatusNEQ("dead")).
+		All(a.ctx)
+	if err != nil {
+		a.Logger.Errorf("load target agents failed: %v", err)
+		return nil
+	}
+
+	preview := truncate(strings.TrimSpace(content), 240)
+	if preview == "" {
+		preview = "[system update]"
+	}
+
+	notified := make([]string, 0, len(targets))
+	for _, target := range targets {
+		ocAgentID := strings.TrimSpace(common.PtrString(target.OpenclawAgentID))
+		if ocAgentID == "" {
+			continue
+		}
+		msg := fmt.Sprintf(
+			"You have a new ALIVE conversation update.\n\nConversationId: %s\nFrom: %s (%s)\nMessage: %s\n\nReply using alive.send_message with conversationId=%s.",
+			conversationID.String(),
+			sender.Name,
+			sender.ID.String(),
+			preview,
+			conversationID.String(),
+		)
+		if err := a.svcCtx.OpenClaw.TriggerAgentHook(
+			a.ctx,
+			ocAgentID,
+			"alive:conversation:"+conversationID.String(),
+			"ALIVE Conversation Update",
+			msg,
+		); err != nil {
+			a.Logger.Errorf("conversation hook failed for agent %s: %v", target.ID.String(), err)
+			continue
+		}
+		notified = append(notified, target.ID.String())
+	}
+	return notified
 }
 
 // findOrCreateDirectConversation finds an existing direct conversation between two agents or creates one.

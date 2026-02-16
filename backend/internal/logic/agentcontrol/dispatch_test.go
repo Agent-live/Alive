@@ -22,6 +22,8 @@ type stubBridge struct {
 	listExperiencesErr  error
 	publishPostResp     *types.PostResp
 	publishPostErr      error
+	getFeedResp         *agentaction.AgentFeedResp
+	getFeedErr          error
 }
 
 func (s *stubBridge) ListSkills(_ context.Context, _ *types.SkillListReq) (*types.SkillListResp, error) {
@@ -61,7 +63,7 @@ func (s *stubBridge) GetMyState(_ context.Context, _ uuid.UUID) (*agentaction.Ag
 }
 
 func (s *stubBridge) GetFeed(_ context.Context, _ string, _ int64) (*agentaction.AgentFeedResp, error) {
-	return nil, errors.New("not implemented in stub")
+	return s.getFeedResp, s.getFeedErr
 }
 
 func (s *stubBridge) AgentPublishPost(_ context.Context, _ uuid.UUID, _ string, _ []map[string]any) (*agentaction.AgentPublishResp, error) {
@@ -321,5 +323,117 @@ func TestHandleA2AMessageUnsupportedProtocolVersion(t *testing.T) {
 	}
 	if resp.Error == "" {
 		t.Fatal("expected unsupported protocol error message")
+	}
+}
+
+func TestHandleHumanMCPRequestToolsListFiltersAgentTools(t *testing.T) {
+	resp := HandleHumanMCPRequest(context.Background(), &stubBridge{}, &types.MCPRequest{
+		JSONRPC: "2.0",
+		Id:      "req-human-tools",
+		Method:  "tools/list",
+	})
+	if resp.Error != nil {
+		t.Fatalf("expected no mcp error, got %+v", resp.Error)
+	}
+	result, ok := resp.Result.(map[string]any)
+	if !ok {
+		t.Fatalf("expected result object, got %T", resp.Result)
+	}
+	rawTools, ok := result["tools"].([]map[string]any)
+	if !ok {
+		t.Fatalf("expected typed tools array, got %T", result["tools"])
+	}
+
+	seenSkillTool := false
+	for _, tool := range rawTools {
+		name, _ := tool["name"].(string)
+		if name == "alive.list_skills" {
+			seenSkillTool = true
+		}
+		if name == "alive.send_message" {
+			t.Fatalf("human tools/list should not expose agent-only tool %q", name)
+		}
+	}
+	if !seenSkillTool {
+		t.Fatal("expected alive.list_skills in human tools/list")
+	}
+}
+
+func TestHandleAgentBridgeMCPRequestRejectsHumanOnlyTool(t *testing.T) {
+	resp := HandleAgentBridgeMCPRequest(context.Background(), &stubBridge{}, &types.MCPRequest{
+		JSONRPC: "2.0",
+		Id:      "req-agent-reject",
+		Method:  "tools/call",
+		Params: map[string]any{
+			"name": "alive.list_skills",
+			"arguments": map[string]any{
+				"status": "lesson",
+			},
+		},
+	})
+	if resp.Error == nil {
+		t.Fatal("expected mcp error for human-only tool on agent endpoint")
+	}
+	if resp.Error.Code != mcpCodeMethodNotFound {
+		t.Fatalf("expected method not found code, got %d", resp.Error.Code)
+	}
+}
+
+func TestHandleAgentBridgeMCPRequestSupportsUnderscoreAlias(t *testing.T) {
+	bridge := &stubBridge{
+		getFeedResp: &agentaction.AgentFeedResp{
+			Posts: []agentaction.AgentFeedPost{{PostID: "p-1"}},
+		},
+	}
+	resp := HandleAgentBridgeMCPRequest(context.Background(), bridge, &types.MCPRequest{
+		JSONRPC: "2.0",
+		Id:      "req-agent-alias",
+		Method:  "tools/call",
+		Params: map[string]any{
+			"name": "alive_get_feed",
+			"arguments": map[string]any{
+				"filter": "all",
+				"limit":  3,
+			},
+		},
+	})
+	if resp.Error != nil {
+		t.Fatalf("expected no mcp error, got %+v", resp.Error)
+	}
+	if _, ok := resp.Result.(*agentaction.AgentFeedResp); !ok {
+		t.Fatalf("expected *agentaction.AgentFeedResp result, got %T", resp.Result)
+	}
+}
+
+func TestHandleHumanA2AMessageRejectsAgentIntent(t *testing.T) {
+	resp := HandleHumanA2AMessage(context.Background(), &stubBridge{}, &types.A2AMessageReq{
+		Protocol:  "a2a/1.0",
+		MessageId: "msg-human-a2a",
+		Intent:    "send_message",
+		Payload: map[string]any{
+			"conversationId": "c-1",
+			"message":        "hello",
+		},
+	})
+	if resp.Status != "error" {
+		t.Fatalf("expected error status, got %q", resp.Status)
+	}
+	if resp.Error == "" {
+		t.Fatal("expected explicit rejection message")
+	}
+}
+
+func TestHandleAgentA2AMessageRejectsHumanIntent(t *testing.T) {
+	resp := HandleAgentA2AMessage(context.Background(), &stubBridge{}, &types.A2AMessageReq{
+		Protocol:  "a2a/1.0",
+		MessageId: "msg-agent-a2a",
+		Intent:    "list_skills",
+		Payload:   map[string]any{},
+	})
+	if resp.Status != "error" {
+		t.Fatalf("expected error status, got %q", resp.Status)
+	}
+	if resp.Error == "" {
+		t.Fatal("expected explicit rejection message")
 	}
 }

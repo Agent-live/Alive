@@ -2,6 +2,7 @@ package chat
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -16,8 +17,13 @@ import (
 )
 
 type sendChatReq struct {
-	Content   string `json:"content"`
-	SessionID string `json:"sessionId,optional"`
+	Content     string                  `json:"content,optional"`
+	SessionID   string                  `json:"sessionId,optional"`
+	Attachments []sendChatAttachmentReq `json:"attachments,optional"`
+}
+
+type sendChatAttachmentReq struct {
+	MediaID string `json:"mediaId"`
 }
 
 type sendChatResp struct {
@@ -43,8 +49,15 @@ func SendChatHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		}
 
 		userText := strings.TrimSpace(req.Content)
-		if userText == "" {
-			httpx.ErrorCtx(r.Context(), w, errors.New("content is required"))
+		attachments, err := common.ResolveRichAttachments(r.Context(), svcCtx.DB, attachmentMediaIDs(req.Attachments))
+		if err != nil {
+			httpx.ErrorCtx(r.Context(), w, err)
+			return
+		}
+
+		userContent, _, err := common.EncodeRichMessage(userText, attachments)
+		if err != nil {
+			httpx.ErrorCtx(r.Context(), w, errors.New("content or attachments are required"))
 			return
 		}
 
@@ -81,9 +94,14 @@ func SendChatHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			SetUserID(u.ID).
 			SetSessionID(sessionID).
 			SetRole("user").
-			SetContent(userText).
+			SetContent(userContent).
 			SetCreatedAt(now).
 			Save(r.Context())
+
+		promptText := userText
+		if len(attachments) > 0 {
+			promptText = buildChatPrompt(userText, attachments)
+		}
 
 		openclawAgentID := common.PtrString(ag.OpenclawAgentID)
 		assistantText, err := svcCtx.OpenClaw.ChatCompletion(
@@ -91,7 +109,7 @@ func SendChatHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			openclawAgentID,
 			sessionID,
 			u.ID.String(),
-			userText,
+			promptText,
 		)
 		if err != nil {
 			// Best-effort fallback: return a clear message and still persist it.
@@ -116,4 +134,37 @@ func SendChatHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			CreatedAt: common.TimeToISO(assistantNow),
 		})
 	}
+}
+
+func attachmentMediaIDs(in []sendChatAttachmentReq) []string {
+	if len(in) == 0 {
+		return nil
+	}
+	out := make([]string, 0, len(in))
+	seen := make(map[string]struct{}, len(in))
+	for _, item := range in {
+		id := strings.TrimSpace(item.MediaID)
+		if id == "" {
+			continue
+		}
+		if _, ok := seen[id]; ok {
+			continue
+		}
+		seen[id] = struct{}{}
+		out = append(out, id)
+	}
+	return out
+}
+
+func buildChatPrompt(text string, attachments []common.RichMessageAttachment) string {
+	parts := make([]string, 0, len(attachments)+1)
+	if strings.TrimSpace(text) != "" {
+		parts = append(parts, strings.TrimSpace(text))
+	}
+	parts = append(parts, "User attached the following files:")
+	for idx, item := range attachments {
+		label := common.AttachmentMessageType(item.MimeType)
+		parts = append(parts, fmt.Sprintf("%d. [%s] %s", idx+1, label, item.URL))
+	}
+	return strings.Join(parts, "\n")
 }

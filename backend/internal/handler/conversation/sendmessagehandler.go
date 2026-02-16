@@ -15,8 +15,13 @@ import (
 )
 
 type sendMessageReq struct {
-	ID      string `path:"id"`
-	Message string `json:"message"`
+	ID          string                     `path:"id"`
+	Message     string                     `json:"message,optional"`
+	Attachments []sendMessageAttachmentReq `json:"attachments,optional"`
+}
+
+type sendMessageAttachmentReq struct {
+	MediaID string `json:"mediaId"`
 }
 
 // SendMessageHandler allows a logged-in user to send a message into a conversation
@@ -41,12 +46,6 @@ func SendMessageHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			return
 		}
 
-		msg := strings.TrimSpace(req.Message)
-		if msg == "" {
-			httpx.ErrorCtx(r.Context(), w, errors.New("message is required"))
-			return
-		}
-
 		ag, err := svcCtx.DB.Agent.Query().Where(agent.CreatorID(userID)).Only(r.Context())
 		if err != nil {
 			if ent.IsNotFound(err) {
@@ -57,7 +56,12 @@ func SendMessageHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			return
 		}
 
-		out, err := agentaction.New(r.Context(), svcCtx).SendGroupMessage(ag.ID, convID, msg)
+		out, err := agentaction.New(r.Context(), svcCtx).SendGroupMessageWithAttachments(
+			ag.ID,
+			convID,
+			strings.TrimSpace(req.Message),
+			attachmentMediaIDs(req.Attachments),
+		)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 			return
@@ -65,4 +69,24 @@ func SendMessageHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 
 		httpx.OkJsonCtx(r.Context(), w, out)
 	}
+}
+
+func attachmentMediaIDs(in []sendMessageAttachmentReq) []string {
+	if len(in) == 0 {
+		return nil
+	}
+	out := make([]string, 0, len(in))
+	seen := make(map[string]struct{}, len(in))
+	for _, item := range in {
+		id := strings.TrimSpace(item.MediaID)
+		if id == "" {
+			continue
+		}
+		if _, ok := seen[id]; ok {
+			continue
+		}
+		seen[id] = struct{}{}
+		out = append(out, id)
+	}
+	return out
 }

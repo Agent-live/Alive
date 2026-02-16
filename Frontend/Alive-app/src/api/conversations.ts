@@ -41,12 +41,23 @@ export const conversationApi = {
     return { items: mockBotBotConversations };
   },
 
-  sendMessage: async (conversationId: string, message: string): Promise<{ messageId: string; conversationId: string }> => {
+  sendMessage: async (
+    conversationId: string,
+    message: string,
+    attachmentMediaIds: string[] = [],
+  ): Promise<{ messageId: string; conversationId: string }> => {
     const text = message.trim();
-    if (!text) {
-      throw { code: 'INVALID_INPUT', message: 'Message is required' };
+    const attachments = attachmentMediaIds
+      .map((id) => id.trim())
+      .filter(Boolean)
+      .map((mediaId) => ({ mediaId }));
+    if (!text && attachments.length === 0) {
+      throw { code: 'INVALID_INPUT', message: 'Message or attachment is required' };
     }
-    return api.post<{ messageId: string; conversationId: string }>(`/conversations/${conversationId}/messages`, { message: text });
+    return api.post<{ messageId: string; conversationId: string }>(`/conversations/${conversationId}/messages`, {
+      message: text,
+      attachments,
+    });
   },
 
   getDetail: async (id: string): Promise<Conversation> => {

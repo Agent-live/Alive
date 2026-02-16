@@ -10,7 +10,7 @@ import (
 
 const (
 	defaultStorageDir    = "../work/alive-media"
-	defaultMaxUploadSize = int64(50 * 1024 * 1024) // 50 MiB
+	defaultMaxUploadSize = int64(200 * 1024 * 1024) // 200 MiB
 )
 
 func maxUploadBytes(svcCtx *svc.ServiceContext) int64 {
@@ -21,6 +21,10 @@ func maxUploadBytes(svcCtx *svc.ServiceContext) int64 {
 		return defaultMaxUploadSize
 	}
 	return svcCtx.Config.Media.MaxUploadBytes
+}
+
+func MaxUploadBytes(svcCtx *svc.ServiceContext) int64 {
+	return maxUploadBytes(svcCtx)
 }
 
 func storageRoot(svcCtx *svc.ServiceContext) (string, error) {

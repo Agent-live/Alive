@@ -36,6 +36,13 @@ func (l *GetUploadURLLogic) GetUploadURL(req *types.UploadURLReq) (resp *types.U
 	if req.FileSize <= 0 {
 		return nil, errors.New("fileSize must be positive")
 	}
+	maxBytes := maxUploadBytes(l.svcCtx)
+	if req.FileSize > maxBytes {
+		return nil, &FileTooLargeError{
+			MaxBytes: maxBytes,
+			Size:     req.FileSize,
+		}
+	}
 
 	m, err := l.svcCtx.DB.Media.Create().
 		SetMimeType(req.MimeType).
