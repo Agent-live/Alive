@@ -25,11 +25,12 @@ var upgrader = websocket.Upgrader{
 }
 
 type chatMessage struct {
-	Type      string `json:"type"` // "message", "typing", "error"
-	Content   string `json:"content"`
-	Role      string `json:"role"` // "user" or "assistant"
-	SessionID string `json:"sessionId"`
-	Timestamp string `json:"timestamp"`
+	Type        string                  `json:"type"` // "message", "typing", "error"
+	Content     string                  `json:"content"`
+	Attachments []sendChatAttachmentReq `json:"attachments,optional"`
+	Role        string                  `json:"role"` // "user" or "assistant"
+	SessionID   string                  `json:"sessionId"`
+	Timestamp   string                  `json:"timestamp"`
 }
 
 // WebSocketHandler upgrades HTTP to WebSocket for user-agent chat.
@@ -98,7 +99,18 @@ func WebSocketHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			}
 
 			userText := strings.TrimSpace(incoming.Content)
-			if userText == "" {
+			attachments, err := common.ResolveRichAttachments(r.Context(), svcCtx.DB, attachmentMediaIDs(incoming.Attachments))
+			if err != nil {
+				_ = conn.WriteJSON(chatMessage{
+					Type:      "error",
+					Content:   "invalid attachments",
+					Timestamp: time.Now().UTC().Format(time.RFC3339),
+				})
+				continue
+			}
+
+			userContent, _, err := common.EncodeRichMessage(userText, attachments)
+			if err != nil {
 				continue
 			}
 
@@ -108,7 +120,7 @@ func WebSocketHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 				SetUserID(u.ID).
 				SetSessionID(sessionID).
 				SetRole("user").
-				SetContent(userText).
+				SetContent(userContent).
 				SetCreatedAt(time.Now().UTC()).
 				Save(r.Context())
 
@@ -119,13 +131,18 @@ func WebSocketHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 				Timestamp: time.Now().UTC().Format(time.RFC3339),
 			})
 
+			promptText := userText
+			if len(attachments) > 0 {
+				promptText = buildChatPrompt(userText, attachments)
+			}
+
 			// Call OpenClaw for agent response
 			response, err := svcCtx.OpenClaw.ChatCompletion(
 				r.Context(),
 				openclawAgentID,
 				sessionID,
 				u.ID.String(),
-				userText,
+				promptText,
 			)
 			if err != nil {
 				logx.Errorf("openclaw chat error: %v", err)

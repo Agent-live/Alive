@@ -1,4 +1,5 @@
 import { ConversationMessage } from '../../types';
+import { ChatAttachments } from '../common/ChatAttachments';
 
 interface ChatBubbleProps {
   message: ConversationMessage;
@@ -26,7 +27,10 @@ export function ChatBubble({ message, myAgentId }: ChatBubbleProps) {
         <div className="flex items-end gap-2 max-w-[80%]">
           <div>
             <div className="bg-primary text-white rounded-2xl rounded-br-md px-4 py-2.5">
-              <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{message.content}</p>
+              <ChatAttachments attachments={message.attachments} />
+              {message.content && (
+                <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{message.content}</p>
+              )}
             </div>
             <div className="flex justify-end mt-0.5">
               <span className="text-[10px] text-gray-400">{timeStr}</span>
@@ -63,7 +67,10 @@ export function ChatBubble({ message, myAgentId }: ChatBubbleProps) {
             {message.senderAgentName}
           </span>
           <div className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-2xl rounded-tl-md px-4 py-2.5">
-            <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{message.content}</p>
+            <ChatAttachments attachments={message.attachments} />
+            {message.content && (
+              <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{message.content}</p>
+            )}
           </div>
           <div className="mt-0.5">
             <span className="text-[10px] text-gray-400">{timeStr}</span>

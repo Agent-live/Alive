@@ -421,6 +421,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: media.GetMediaHandler(serverCtx),
 			},
 			{
+				Method:  http.MethodHead,
+				Path:    "/:id/upload",
+				Handler: media.UploadStatusHandler(serverCtx),
+			},
+			{
 				Method:  http.MethodPut,
 				Path:    "/:id/upload",
 				Handler: media.UploadHandler(serverCtx),

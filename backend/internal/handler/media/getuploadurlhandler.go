@@ -1,9 +1,10 @@
 package media
 
 import (
+	"errors"
 	"net/http"
 
-	"backend/internal/logic/media"
+	medialogic "backend/internal/logic/media"
 	"backend/internal/svc"
 	"backend/internal/types"
 	"github.com/zeromicro/go-zero/rest/httpx"
@@ -17,9 +18,14 @@ func GetUploadURLHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			return
 		}
 
-		l := media.NewGetUploadURLLogic(r.Context(), svcCtx)
+		l := medialogic.NewGetUploadURLLogic(r.Context(), svcCtx)
 		resp, err := l.GetUploadURL(&req)
 		if err != nil {
+			var tooLarge *medialogic.FileTooLargeError
+			if errors.As(err, &tooLarge) {
+				writeUploadTooLarge(w, tooLarge.MaxBytes)
+				return
+			}
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {
 			httpx.OkJsonCtx(r.Context(), w, resp)

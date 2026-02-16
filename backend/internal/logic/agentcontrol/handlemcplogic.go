@@ -27,7 +27,5 @@ func NewHandleMCPLogic(ctx context.Context, svcCtx *svc.ServiceContext) *HandleM
 }
 
 func (l *HandleMCPLogic) HandleMCP(req *types.MCPRequest) (resp *types.MCPResponse, err error) {
-	// HandleMCPRequest handles both user-JWT and agent-token authenticated requests.
-	// Agent-specific tools check for agent context via middleware.AgentFromCtx internally.
-	return HandleMCPRequest(l.ctx, l.bridge, req), nil
+	return HandleHumanMCPRequest(l.ctx, l.bridge, req), nil
 }

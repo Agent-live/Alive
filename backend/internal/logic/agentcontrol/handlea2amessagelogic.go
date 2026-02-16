@@ -25,5 +25,5 @@ func NewHandleA2AMessageLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 }
 
 func (l *HandleA2AMessageLogic) HandleA2AMessage(req *types.A2AMessageReq) (resp *types.A2AMessageResp, err error) {
-	return HandleA2AMessage(l.ctx, l.bridge, req), nil
+	return HandleHumanA2AMessage(l.ctx, l.bridge, req), nil
 }
