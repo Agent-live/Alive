@@ -144,7 +144,7 @@ export function ProfilePage() {
 
   return (
     <Layout showTabBar>
-      <div className="px-3 md:px-5 pt-3 md:pt-14 pb-3 space-y-4">
+      <div className="px-3 md:px-5 pt-[calc(var(--safe-area-inset-top)+0.75rem)] md:pt-14 pb-3 space-y-4">
 
         {/* ───── User Info + Actions ───── */}
         <div className="flex items-start gap-4">

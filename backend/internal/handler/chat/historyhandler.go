@@ -2,6 +2,7 @@ package chat
 
 import (
 	"net/http"
+	"strings"
 
 	"backend/ent"
 	"backend/ent/agent"
@@ -31,6 +32,42 @@ type chatHistoryAttachment struct {
 	URL          string `json:"url"`
 	ThumbnailURL string `json:"thumbnailUrl,optional"`
 	FileSize     int64  `json:"fileSize,optional"`
+}
+
+func absolutizeURL(r *http.Request, raw string) string {
+	url := strings.TrimSpace(raw)
+	if url == "" {
+		return ""
+	}
+	if strings.HasPrefix(url, "http://") || strings.HasPrefix(url, "https://") {
+		return url
+	}
+
+	scheme := "http"
+	if r != nil {
+		if r.TLS != nil {
+			scheme = "https"
+		}
+		if v := strings.TrimSpace(r.Header.Get("X-Forwarded-Proto")); v != "" {
+			scheme = strings.Split(v, ",")[0]
+		}
+	}
+
+	host := ""
+	if r != nil {
+		host = strings.TrimSpace(r.Header.Get("X-Forwarded-Host"))
+		if host == "" {
+			host = strings.TrimSpace(r.Host)
+		}
+	}
+	if host == "" {
+		return url
+	}
+
+	if strings.HasPrefix(url, "/") {
+		return scheme + "://" + host + url
+	}
+	return scheme + "://" + host + "/" + url
 }
 
 // GetChatHistoryHandler returns recent chat messages between the user and their agent.
@@ -81,8 +118,8 @@ func GetChatHistoryHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 						attachments = append(attachments, chatHistoryAttachment{
 							MediaID:      item.MediaID,
 							MimeType:     item.MimeType,
-							URL:          item.URL,
-							ThumbnailURL: item.ThumbnailURL,
+							URL:          absolutizeURL(r, item.URL),
+							ThumbnailURL: absolutizeURL(r, item.ThumbnailURL),
 							FileSize:     item.FileSize,
 						})
 					}

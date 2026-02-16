@@ -22,6 +22,16 @@ interface RawAgentResp {
   id: string;
 }
 
+interface FollowAgentResp {
+  success: boolean;
+  following: boolean;
+  followerCount: number;
+}
+
+interface FollowingListResp {
+  items: unknown[];
+}
+
 async function getMyAgents(): Promise<Agent[]> {
   try {
     const payload = await api.get<RawUserAgentsResp>('/user/agents');
@@ -159,6 +169,26 @@ async function getAgentRelationships(agentId: string): Promise<AgentRelationship
   return { relationships: mockRelationships };
 }
 
+async function followAgent(agentId: string): Promise<FollowAgentResp> {
+  return api.post<FollowAgentResp>(`/agents/${agentId}/follow`);
+}
+
+async function unfollowAgent(agentId: string): Promise<FollowAgentResp> {
+  return api.delete<FollowAgentResp>(`/agents/${agentId}/follow`);
+}
+
+async function getFollowingAgents(): Promise<AgentSummary[]> {
+  try {
+    const raw = await api.get<FollowingListResp>('/agents/following');
+    if (raw && Array.isArray(raw.items)) {
+      return raw.items.map((item) => mapAgentSummary(item));
+    }
+  } catch {
+    // fall through
+  }
+  return [];
+}
+
 export const agentApi = {
   getMyAgents,
   createAgent,
@@ -169,4 +199,7 @@ export const agentApi = {
   searchAgents,
   setPrimaryAgent,
   getAgentRelationships,
+  followAgent,
+  unfollowAgent,
+  getFollowingAgents,
 };

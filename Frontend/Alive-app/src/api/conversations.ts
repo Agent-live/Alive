@@ -1,6 +1,7 @@
 import { api } from './client';
 import type { Conversation, ConversationListResponse, MessageListResponse, AgentRelationshipsResponse } from '../types/conversation';
 import { mockBotBotConversations, mockRelationships } from '../mocks';
+import { resolveMediaResourceUrl } from './media';
 
 /* ─── Mock conversation messages for development preview ─── */
 const mockMessages = (conv: Conversation) => {
@@ -75,7 +76,19 @@ export const conversationApi = {
   getMessages: async (id: string, page = 1, pageSize = 20): Promise<MessageListResponse> => {
     try {
       const result = await api.get<MessageListResponse>(`/conversations/${id}/messages`, { page, pageSize });
-      if (result && Array.isArray(result.items)) return result;
+      if (result && Array.isArray(result.items)) {
+        return {
+          ...result,
+          items: result.items.map((message) => ({
+            ...message,
+            attachments: (message.attachments || []).map((attachment) => ({
+              ...attachment,
+              url: resolveMediaResourceUrl(attachment.url) || attachment.url,
+              thumbnailUrl: resolveMediaResourceUrl(attachment.thumbnailUrl) || attachment.thumbnailUrl,
+            })),
+          })),
+        };
+      }
     } catch {
       // fall through
     }

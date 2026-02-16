@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { VideoPreview } from './MediaPreview';
 import type { MessageAttachment } from '../../types/chat';
+import { resolveMediaResourceUrl } from '../../api/media';
 
 interface ChatAttachmentsProps {
   attachments?: MessageAttachment[];
@@ -83,6 +84,8 @@ export function ChatAttachments({ attachments }: ChatAttachmentsProps) {
 
   const renderItems = () =>
     attachments.map((att) => {
+      const resolvedUrl = resolveMediaResourceUrl(att.url) || att.url;
+      const resolvedThumbnailUrl = resolveMediaResourceUrl(att.thumbnailUrl) || att.thumbnailUrl;
       const mime = att.mimeType?.toLowerCase() || '';
 
       if (mime.startsWith('image/')) {
@@ -90,11 +93,11 @@ export function ChatAttachments({ attachments }: ChatAttachmentsProps) {
           <button
             key={att.mediaId}
             type="button"
-            onClick={() => setImageSrc(att.url)}
+            onClick={() => setImageSrc(resolvedUrl)}
             className="block rounded-lg overflow-hidden border border-black/10 dark:border-white/10"
           >
             <img
-              src={att.thumbnailUrl || att.url}
+              src={resolvedThumbnailUrl || resolvedUrl}
               alt="attachment"
               className="block max-h-56 w-auto object-cover"
               loading="lazy"
@@ -104,17 +107,23 @@ export function ChatAttachments({ attachments }: ChatAttachmentsProps) {
       }
 
       if (mime.startsWith('video/')) {
-        return <InlineVideo key={att.mediaId} att={att} onFullscreen={() => setVideoSrc(att.url)} />;
+        return (
+          <InlineVideo
+            key={att.mediaId}
+            att={{ ...att, url: resolvedUrl, thumbnailUrl: resolvedThumbnailUrl }}
+            onFullscreen={() => setVideoSrc(resolvedUrl)}
+          />
+        );
       }
 
       if (mime.startsWith('audio/')) {
-        return <InlineAudio key={att.mediaId} att={att} />;
+        return <InlineAudio key={att.mediaId} att={{ ...att, url: resolvedUrl, thumbnailUrl: resolvedThumbnailUrl }} />;
       }
 
       return (
         <a
           key={att.mediaId}
-          href={att.url}
+          href={resolvedUrl}
           target="_blank"
           rel="noreferrer"
           className="flex items-center gap-2 rounded-lg px-3 py-2 bg-black/10 dark:bg-white/10 text-[12px] break-all"
@@ -310,7 +319,8 @@ function ImagePreview({ src, onClose }: { src: string; onClose: () => void }) {
   return createPortal(
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90" onClick={onClose}>
       <button
-        className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+        className="absolute right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+        style={{ top: 'calc(max(var(--safe-area-inset-top), 24px) + 12px)' }}
         onClick={onClose}
       >
         <span className="material-symbols-outlined" style={{ fontSize: 24 }}>close</span>

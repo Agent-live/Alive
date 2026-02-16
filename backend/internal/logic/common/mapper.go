@@ -2,6 +2,7 @@ package common
 
 import (
 	"encoding/json"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -114,9 +115,10 @@ func ToAgentResp(a *ent.Agent, creatorName string, channels []*ent.ChannelConnec
 }
 
 func ToPostResp(p *ent.Post, a *ent.Agent) types.PostResp {
-	preview := p.Content
-	placement := parsePlacement(p.Content)
-	if parsedPreview := parsePostPreview(p.Content); parsedPreview != "" {
+	normalizedContent := normalizePostContentMediaURLs(p.Content)
+	preview := normalizedContent
+	placement := parsePlacement(normalizedContent)
+	if parsedPreview := parsePostPreview(normalizedContent); parsedPreview != "" {
 		preview = parsedPreview
 	}
 
@@ -124,7 +126,7 @@ func ToPostResp(p *ent.Post, a *ent.Agent) types.PostResp {
 		Id:                  p.ID.String(),
 		AgentId:             p.AgentID.String(),
 		ContentType:         p.ContentType,
-		Content:             p.Content,
+		Content:             normalizedContent,
 		ContentTextPreview:  preview,
 		ModerationStatus:    "approved",
 		SourceChannel:       "platform",
@@ -144,6 +146,102 @@ func ToPostResp(p *ent.Post, a *ent.Agent) types.PostResp {
 		resp.AgentTimerRemaining = a.TimerRemaining
 	}
 	return resp
+}
+
+func normalizePostContentMediaURLs(content string) string {
+	trimmed := strings.TrimSpace(content)
+	if trimmed == "" {
+		return content
+	}
+	if !strings.HasPrefix(trimmed, "{") && !strings.HasPrefix(trimmed, "[") {
+		return content
+	}
+
+	var payload any
+	if err := json.Unmarshal([]byte(trimmed), &payload); err != nil {
+		return content
+	}
+	if !normalizeMediaURLsInJSON(payload) {
+		return content
+	}
+
+	raw, err := json.Marshal(payload)
+	if err != nil {
+		return content
+	}
+	return string(raw)
+}
+
+func normalizeMediaURLsInJSON(input any) bool {
+	changed := false
+	switch value := input.(type) {
+	case map[string]any:
+		for k, v := range value {
+			if (k == "url" || k == "thumbnailUrl") && v != nil {
+				if raw, ok := v.(string); ok {
+					normalized := normalizeMediaResourcePath(raw)
+					if normalized != raw {
+						value[k] = normalized
+						changed = true
+					}
+				}
+			}
+			if normalizeMediaURLsInJSON(v) {
+				changed = true
+			}
+		}
+	case []any:
+		for _, item := range value {
+			if normalizeMediaURLsInJSON(item) {
+				changed = true
+			}
+		}
+	}
+	return changed
+}
+
+func normalizeMediaResourcePath(raw string) string {
+	trimmed := strings.TrimSpace(raw)
+	if trimmed == "" {
+		return raw
+	}
+	if strings.HasPrefix(trimmed, "http://") || strings.HasPrefix(trimmed, "https://") {
+		return trimmed
+	}
+	if strings.HasPrefix(trimmed, "data:") || strings.HasPrefix(trimmed, "blob:") {
+		return trimmed
+	}
+
+	switch {
+	case strings.HasPrefix(trimmed, "/assets/"):
+		if name, ok := assetFileName(strings.TrimPrefix(trimmed, "/assets/")); ok {
+			return "/api/v1/media/assets/" + name
+		}
+		return trimmed
+	case strings.HasPrefix(trimmed, "assets/"):
+		if name, ok := assetFileName(strings.TrimPrefix(trimmed, "assets/")); ok {
+			return "/api/v1/media/assets/" + name
+		}
+		return trimmed
+	case strings.HasPrefix(trimmed, "/api/media/"):
+		return "/api/v1/" + strings.TrimPrefix(trimmed, "/api/media/")
+	case strings.HasPrefix(trimmed, "api/media/"):
+		return "/api/v1/" + strings.TrimPrefix(trimmed, "api/media/")
+	case strings.HasPrefix(trimmed, "/media/"):
+		return "/api/v1" + trimmed
+	case strings.HasPrefix(trimmed, "media/"):
+		return "/api/v1/" + trimmed
+	default:
+		return trimmed
+	}
+}
+
+func assetFileName(raw string) (string, bool) {
+	name := filepath.Base(strings.TrimSpace(raw))
+	if name == "" || name == "." || name == ".." {
+		return "", false
+	}
+	return name, true
 }
 
 func parsePostPreview(content string) string {
@@ -197,6 +295,7 @@ func parsePlacement(content string) *types.PostPlacementResp {
 }
 
 func ToReplyResp(r *ent.Reply) types.ReplyResp {
+	normalizedContent := normalizePostContentMediaURLs(r.Content)
 	timerGiven := int64(0)
 	if strings.EqualFold(strings.TrimSpace(r.AuthorType), "human") {
 		timerGiven = 5
@@ -209,8 +308,8 @@ func ToReplyResp(r *ent.Reply) types.ReplyResp {
 		AuthorId:           r.AuthorID,
 		AuthorName:         r.AuthorName,
 		AuthorAvatar:       PtrString(r.AuthorAvatar),
-		Content:            r.Content,
-		ContentTextPreview: r.Content,
+		Content:            normalizedContent,
+		ContentTextPreview: normalizedContent,
 		ModerationStatus:   "approved",
 		TimerGiven:         timerGiven,
 		CreatedAt:          TimeToISO(r.CreatedAt),

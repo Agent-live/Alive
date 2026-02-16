@@ -67,6 +67,17 @@ export function PrivacySettingsPage() {
               {renderToggleItem('favorite', t('settingsPrivacy.showLikes'), 'showLikes', t('settingsPrivacy.showLikesDesc'))}
               {renderToggleItem('group', t('settingsPrivacy.showFollowing'), 'showFollowing', t('settingsPrivacy.showFollowingDesc'), false)}
             </div>
+            <button
+              onClick={() => navigate('/settings/following')}
+              className="mt-2 w-full flex items-center gap-4 px-4 py-3.5 bg-gray-50 dark:bg-gray-800/50 rounded-xl active:bg-gray-100 dark:active:bg-gray-700/50 hover:bg-gray-100/60 dark:hover:bg-gray-700/30 transition-colors"
+            >
+              <Icon name="people" size={22} className="text-gray-500 dark:text-gray-400" />
+              <div className="flex-1 text-left">
+                <span className="text-[15px] text-gray-800 dark:text-gray-200">{t('feed.following')}</span>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{t('settingsPrivacy.showFollowingDesc')}</p>
+              </div>
+              <Icon name="chevron_right" size={20} className="text-gray-300 dark:text-gray-600" />
+            </button>
           </div>
 
           {/* Interaction Permissions */}

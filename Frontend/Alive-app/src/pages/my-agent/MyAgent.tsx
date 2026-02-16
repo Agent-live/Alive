@@ -1224,7 +1224,7 @@ export function MyAgentPage() {
       </div>
 
       {/* ─── MOBILE LAYOUT (<md) ─── */}
-      <div className="md:hidden px-4 py-4 space-y-5 max-w-lg mx-auto">
+      <div className="md:hidden px-4 pb-4 pt-[calc(var(--safe-area-inset-top)+1rem)] space-y-5 max-w-lg mx-auto">
         <AgentSwitcher />
         <AgentIdentity />
         {!isDead && <LifeBar />}

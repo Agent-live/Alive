@@ -1,4 +1,4 @@
-import { api } from './client';
+import client, { api } from './client';
 import { tokenStorage } from '../utils/storage';
 
 export interface UploadURLPayload {
@@ -51,15 +51,95 @@ async function getUploadURL(payload: UploadURLPayload): Promise<UploadURLRespons
   return api.post<UploadURLResponse>('/media/upload-url', payload);
 }
 
+function normalizeMediaResourceUrl(url?: string): string | undefined {
+  if (!url || !url.trim()) return undefined;
+  const trimmed = url.trim();
+
+  // Keep absolute URLs and special schemes untouched.
+  if (/^(https?:)?\/\//i.test(trimmed) || /^(data|blob|capacitor|file):/i.test(trimmed)) {
+    return appendMediaTokenIfNeeded(resolveUploadUrl(trimmed));
+  }
+
+  // Seed/static assets should go through backend media API.
+  if (trimmed.startsWith('/assets/') || trimmed.startsWith('assets/')) {
+    const name = trimmed.replace(/^\/?assets\//, '');
+    const backendAssetUrl = resolveApiResourceUrl(`media/assets/${name}`);
+    return appendMediaTokenIfNeeded(backendAssetUrl);
+  }
+
+  // Backend media/API resources should resolve against API base URL.
+  if (
+    trimmed.startsWith('/api/') ||
+    trimmed.startsWith('api/') ||
+    trimmed.startsWith('/media/') ||
+    trimmed.startsWith('media/')
+  ) {
+    return appendMediaTokenIfNeeded(resolveUploadUrl(trimmed));
+  }
+
+  // Default to app origin for unknown relative paths.
+  if (typeof window !== 'undefined') {
+    try {
+      return new URL(trimmed, window.location.href).toString();
+    } catch {
+      return trimmed;
+    }
+  }
+  return trimmed;
+}
+
+function resolveApiResourceUrl(path: string): string {
+  const normalized = path.replace(/^\/+/, '');
+  const apiBase = resolveApiBaseUrl();
+  if (apiBase) {
+    try {
+      const base = apiBase.endsWith('/') ? apiBase : `${apiBase}/`;
+      return new URL(normalized, base).toString();
+    } catch {
+      // fall through
+    }
+  }
+  return `/${normalized}`;
+}
+
+function appendMediaTokenIfNeeded(url: string): string {
+  const token = tokenStorage.get();
+  if (!token) return url;
+
+  try {
+    const resolved = typeof window !== 'undefined' ? new URL(url, window.location.href) : new URL(url);
+    const isMediaPath = resolved.pathname.includes('/media/');
+    if (!isMediaPath) return resolved.toString();
+    // Built-in seed assets are served by backend API but do not require auth.
+    if (resolved.pathname.includes('/media/assets/')) return resolved.toString();
+    if (!resolved.searchParams.has('token')) {
+      resolved.searchParams.set('token', token);
+    }
+    return resolved.toString();
+  } catch {
+    return url;
+  }
+}
+
+function normalizeMediaFile(file: MediaFile): MediaFile {
+  return {
+    ...file,
+    url: normalizeMediaResourceUrl(file.url),
+    thumbnailUrl: normalizeMediaResourceUrl(file.thumbnailUrl),
+  };
+}
+
 async function confirmUpload(mediaId: string): Promise<MediaFile> {
-  return api.post<MediaFile>(`/media/${mediaId}/confirm`);
+  const file = await api.post<MediaFile>(`/media/${mediaId}/confirm`);
+  return normalizeMediaFile(file);
 }
 
 async function getMedia(mediaId: string): Promise<MediaFile> {
-  return api.get<MediaFile>(`/media/${mediaId}`);
+  const file = await api.get<MediaFile>(`/media/${mediaId}`);
+  return normalizeMediaFile(file);
 }
 
-function sameOrigin(url: string): boolean {
+function sameWindowOrigin(url: string): boolean {
   if (typeof window === 'undefined') return false;
   try {
     const resolved = new URL(url, window.location.href);
@@ -69,10 +149,60 @@ function sameOrigin(url: string): boolean {
   }
 }
 
+function resolveApiBaseUrl(): string | null {
+  const baseURL = (client.defaults.baseURL || '').trim();
+  if (!baseURL) return null;
+  try {
+    return new URL(baseURL).toString();
+  } catch {
+    if (typeof window === 'undefined') return null;
+    try {
+      return new URL(baseURL, window.location.origin).toString();
+    } catch {
+      return null;
+    }
+  }
+}
+
+function sameApiOrigin(url: string): boolean {
+  const apiBase = resolveApiBaseUrl();
+  if (!apiBase) return false;
+  try {
+    return new URL(url).origin === new URL(apiBase).origin;
+  } catch {
+    return false;
+  }
+}
+
+function resolveUploadUrl(uploadUrl: string): string {
+  const trimmed = uploadUrl.trim();
+  if (!trimmed) return trimmed;
+  try {
+    return new URL(trimmed).toString();
+  } catch {
+    const apiBase = resolveApiBaseUrl();
+    if (apiBase) {
+      try {
+        return new URL(trimmed, apiBase).toString();
+      } catch {
+        // keep falling back
+      }
+    }
+    if (typeof window !== 'undefined') {
+      try {
+        return new URL(trimmed, window.location.href).toString();
+      } catch {
+        return trimmed;
+      }
+    }
+    return trimmed;
+  }
+}
+
 function buildAuthHeaderIfNeeded(uploadUrl: string): Record<string, string> {
   const headers: Record<string, string> = {};
   const token = tokenStorage.get();
-  if (token && sameOrigin(uploadUrl)) {
+  if (token && (sameApiOrigin(uploadUrl) || sameWindowOrigin(uploadUrl))) {
     headers.Authorization = `Bearer ${token}`;
   }
   return headers;
@@ -246,12 +376,13 @@ async function uploadWholeFileToStorage(
 }
 
 async function uploadToStorage(uploadUrl: string, file: File, onProgress?: (progress: number) => void): Promise<void> {
-  const authHeaders = buildAuthHeaderIfNeeded(uploadUrl);
-  if (sameOrigin(uploadUrl)) {
-    await uploadResumableToStorage(uploadUrl, file, authHeaders, onProgress);
+  const resolvedUploadUrl = resolveUploadUrl(uploadUrl);
+  const authHeaders = buildAuthHeaderIfNeeded(resolvedUploadUrl);
+  if (sameWindowOrigin(resolvedUploadUrl)) {
+    await uploadResumableToStorage(resolvedUploadUrl, file, authHeaders, onProgress);
     return;
   }
-  await uploadWholeFileToStorage(uploadUrl, file, authHeaders);
+  await uploadWholeFileToStorage(resolvedUploadUrl, file, authHeaders);
 }
 
 function outputMimeTypeForCompressedImage(file: File): string {
@@ -348,3 +479,5 @@ export const mediaApi = {
   getMedia,
   uploadFile,
 };
+
+export const resolveMediaResourceUrl = normalizeMediaResourceUrl;

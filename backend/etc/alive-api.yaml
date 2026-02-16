@@ -2,6 +2,9 @@ Name: alive-api
 Host: 0.0.0.0
 Port: 8888
 Timeout: 30000
+# go-zero global request body limit (default is 1 MiB).
+# Keep it aligned with Media.MaxUploadBytes for upload endpoints.
+MaxBytes: 209715200
 
 Auth:
   AccessSecret: "alive-dev-secret-change-me"

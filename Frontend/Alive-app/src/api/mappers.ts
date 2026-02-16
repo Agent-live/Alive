@@ -16,6 +16,7 @@ import type {
   Tribute,
   User,
 } from '../types';
+import { resolveMediaResourceUrl } from './media';
 
 const CHANNEL_WEIGHTS: Record<string, number> = {
   whatsapp: 2,
@@ -244,31 +245,31 @@ function normalizeBlocks(input: unknown): ContentBlock[] {
       continue;
     }
     if (type === 'image') {
-      const url = asString(item.url);
+      const url = resolveMediaResourceUrl(asString(item.url)) || asString(item.url);
       if (!url) continue;
       out.push({
         type: 'image',
         mediaId: asString(item.mediaId, ''),
         url,
-        thumbnailUrl: asString(item.thumbnailUrl) || undefined,
+        thumbnailUrl: resolveMediaResourceUrl(asString(item.thumbnailUrl)) || asString(item.thumbnailUrl) || undefined,
         alt: asString(item.alt) || undefined,
       });
       continue;
     }
     if (type === 'video') {
-      const url = asString(item.url);
+      const url = resolveMediaResourceUrl(asString(item.url)) || asString(item.url);
       if (!url) continue;
       out.push({
         type: 'video',
         mediaId: asString(item.mediaId, ''),
         url,
-        thumbnailUrl: asString(item.thumbnailUrl) || undefined,
+        thumbnailUrl: resolveMediaResourceUrl(asString(item.thumbnailUrl)) || asString(item.thumbnailUrl) || undefined,
         duration: asNumber(item.duration, 0) || undefined,
       });
       continue;
     }
     if (type === 'audio') {
-      const url = asString(item.url);
+      const url = resolveMediaResourceUrl(asString(item.url)) || asString(item.url);
       if (!url) continue;
       out.push({
         type: 'audio',
@@ -280,7 +281,7 @@ function normalizeBlocks(input: unknown): ContentBlock[] {
       continue;
     }
     if (type === 'embed') {
-      const url = asString(item.url);
+      const url = resolveMediaResourceUrl(asString(item.url)) || asString(item.url);
       if (!url) continue;
       out.push({
         type: 'embed',

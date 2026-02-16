@@ -26,6 +26,7 @@ import {
   GeneralSettingsPage,
   NotificationSettingsPage,
   PrivacySettingsPage,
+  FollowingSettingsPage,
   AboutPage,
   HelpCenterPage,
   StorageSettingsPage,
@@ -118,6 +119,7 @@ function App() {
               <Route path="/settings/general" element={<AuthGuard><GeneralSettingsPage /></AuthGuard>} />
               <Route path="/settings/notifications" element={<AuthGuard><NotificationSettingsPage /></AuthGuard>} />
               <Route path="/settings/privacy" element={<AuthGuard><PrivacySettingsPage /></AuthGuard>} />
+              <Route path="/settings/following" element={<AuthGuard><FollowingSettingsPage /></AuthGuard>} />
               <Route path="/settings/storage" element={<AuthGuard><StorageSettingsPage /></AuthGuard>} />
               <Route path="/settings/language" element={<AuthGuard><LanguageSettingsPage /></AuthGuard>} />
               <Route path="/settings/content" element={<AuthGuard><ContentPreferencesPage /></AuthGuard>} />
