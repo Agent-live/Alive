@@ -1,11 +1,12 @@
 import { User, UserStats } from '../types';
 import { api } from './client';
+import { endpoints } from './endpoints';
 import { mapUser } from './mappers';
 
 async function getCurrentUser(): Promise<User> {
-  const me = await api.get<unknown>('/user/me');
+  const me = await api.get<unknown>(endpoints.user.me);
   try {
-    const agents = await api.get<unknown>('/user/agents');
+    const agents = await api.get<unknown>(endpoints.user.agents);
     return mapUser(me, agents);
   } catch {
     return mapUser(me);
@@ -21,9 +22,9 @@ async function updateUser(data: Partial<User>): Promise<User> {
     gender: data.gender,
     birthdate: data.birthdate,
   };
-  const me = await api.put<unknown>('/user/me', payload);
+  const me = await api.put<unknown>(endpoints.user.me, payload);
   try {
-    const agents = await api.get<unknown>('/user/agents');
+    const agents = await api.get<unknown>(endpoints.user.agents);
     return mapUser(me, agents);
   } catch {
     return mapUser(me);
@@ -31,7 +32,7 @@ async function updateUser(data: Partial<User>): Promise<User> {
 }
 
 async function getUserStats(): Promise<UserStats> {
-  const res = await api.get<Record<string, unknown>>('/user/stats');
+  const res = await api.get<Record<string, unknown>>(endpoints.user.stats);
   return {
     agentsCreated: Number(res.agentsCreated || 0),
     agentsLost: Number(res.agentsLost || 0),

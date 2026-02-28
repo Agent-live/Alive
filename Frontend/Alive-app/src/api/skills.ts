@@ -1,5 +1,6 @@
 import type { AgentSkill, SkillCategory, SkillStatus } from '../types';
 import { api } from './client';
+import { endpoints } from './endpoints';
 import { mockAgentSkills } from '../mocks';
 
 interface RawSkill {
@@ -59,7 +60,7 @@ async function listSkills(status?: SkillStatus, agentId?: string): Promise<Agent
     const params: Record<string, string> = {};
     if (status) params.status = status;
     if (agentId) params.agentId = agentId;
-    const res = await api.get<RawSkillListResp>('/skills/', params);
+    const res = await api.get<RawSkillListResp>(endpoints.skills.root, params);
     if (res && Array.isArray(res.items)) return res.items.map(mapSkill);
   } catch {
     // fall through
@@ -75,17 +76,17 @@ async function createSkill(payload: {
   instructions: string;
   category?: SkillCategory;
 }): Promise<AgentSkill> {
-  const res = await api.post<RawSkill>('/skills/', payload);
+  const res = await api.post<RawSkill>(endpoints.skills.root, payload);
   return mapSkill(res);
 }
 
 async function teachSkill(skillId: string, agentId: string): Promise<AgentSkill> {
-  const res = await api.post<RawSkill>(`/skills/${skillId}/teach`, { agentId });
+  const res = await api.post<RawSkill>(endpoints.skills.teach(skillId), { agentId });
   return mapSkill(res);
 }
 
 async function deactivateSkill(skillId: string): Promise<AgentSkill> {
-  const res = await api.post<RawSkill>(`/skills/${skillId}/deactivate`);
+  const res = await api.post<RawSkill>(endpoints.skills.deactivate(skillId));
   return mapSkill(res);
 }
 
@@ -98,12 +99,12 @@ async function updateSkill(
     category: SkillCategory;
   }>,
 ): Promise<AgentSkill> {
-  const res = await api.put<RawSkill>(`/skills/${skillId}`, payload);
+  const res = await api.put<RawSkill>(endpoints.skills.detail(skillId), payload);
   return mapSkill(res);
 }
 
 async function deleteSkill(skillId: string): Promise<void> {
-  await api.delete<{ success: boolean }>(`/skills/${skillId}`);
+  await api.delete<{ success: boolean }>(endpoints.skills.detail(skillId));
 }
 
 export const skillApi = {

@@ -25,7 +25,7 @@ func NewUpdateSettingsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Up
 	}
 }
 
-func (l *UpdateSettingsLogic) UpdateSettings(req *types.UserSettingsResp) (resp *types.UserSettingsResp, err error) {
+func (l *UpdateSettingsLogic) UpdateSettings(req *types.UserSettingsUpdateReq) (resp *types.UserSettingsResp, err error) {
 	u, err := common.CurrentUser(l.ctx, l.svcCtx.DB)
 	if err != nil {
 		return nil, err

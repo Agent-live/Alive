@@ -10,8 +10,8 @@ import (
 
 	"backend/ent"
 	"backend/ent/agentskill"
+	"backend/internal/aliveagent"
 	"backend/internal/logic/common"
-	"backend/internal/openclaw"
 	"backend/internal/skillshop"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -101,10 +101,10 @@ func (l *TeachSkillLogic) TeachSkill(req *types.SkillTeachReq) (resp *types.Skil
 		}
 	}
 
-	// If this skill exists in the local OpenClaw skills checkout, prefer copying the full folder
+	// If this skill exists in the local AliveAgent skills checkout, prefer copying the full folder
 	// into the agent workspace (preserves _meta.json, scripts/, references/, etc).
 	localSourceDir := ""
-	if cat, err := skillshop.LoadCatalog(); err == nil {
+	if cat, err := skillshop.LoadBundledCatalog(); err == nil {
 		if it, ok := cat.GetBySlug(activeSkill.Name); ok {
 			if dir, ok := skillshop.LocalRepoPath(filepath.Dir(it.RepoPath)); ok {
 				if st, err := os.Stat(dir); err == nil && st.IsDir() {
@@ -114,7 +114,7 @@ func (l *TeachSkillLogic) TeachSkill(req *types.SkillTeachReq) (resp *types.Skil
 		}
 	}
 
-	binding, err := l.svcCtx.OpenClaw.BindSkill(l.ctx, openclaw.BindSkillRequest{
+	binding, err := l.svcCtx.AliveAgent.BindSkill(l.ctx, aliveagent.BindSkillRequest{
 		AgentID:        targetAgent.ID.String(),
 		SkillName:      activeSkill.Name,
 		Description:    activeSkill.Description,
@@ -129,8 +129,8 @@ func (l *TeachSkillLogic) TeachSkill(req *types.SkillTeachReq) (resp *types.Skil
 		SetStatus("active").
 		SetAgentID(agentID).
 		SetTaughtAt(time.Now()).
-		SetOpenclawGatewayID(binding.GatewayID).
-		SetOpenclawSkillID(binding.SkillID).
+		SetAliveAgentGatewayID(binding.GatewayID).
+		SetAliveAgentSkillID(binding.SkillID).
 		Save(l.ctx)
 	if err != nil {
 		return nil, err

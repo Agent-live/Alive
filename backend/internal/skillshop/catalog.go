@@ -3,7 +3,6 @@ package skillshop
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"sort"
 	"strings"
 	"sync"
@@ -38,82 +37,28 @@ type Catalog struct {
 var catalogJSON []byte
 
 var (
-	catalogOnce sync.Once
-	catalogInst *Catalog
-	catalogErr  error
+	bundledCatalogOnce sync.Once
+	bundledCatalogInst *Catalog
+	bundledCatalogErr  error
 )
 
 func LoadCatalog() (*Catalog, error) {
-	catalogOnce.Do(func() {
+	return LoadBundledCatalog()
+}
+
+// LoadBundledCatalog loads only the embedded catalog.json without scanning local skills.
+// Use this when startup code needs a stable slug lookup without paying local FS scan cost.
+func LoadBundledCatalog() (*Catalog, error) {
+	bundledCatalogOnce.Do(func() {
 		base := &Catalog{}
 		if err := json.Unmarshal(catalogJSON, base); err != nil {
-			catalogErr = fmt.Errorf("skillshop: load catalog: %w", err)
+			bundledCatalogErr = fmt.Errorf("skillshop: load catalog: %w", err)
 			return
 		}
-
-		// If a local checkout of openclaw/skills exists, merge it in so the skill shop can
-		// truly list "all skills" offline. The embedded catalog remains the fallback and also
-		// provides better categories for slugs it already knows about.
-		merged := base
-		if root := LocalRepoRoot(); root != "" {
-			// Prefer the local checkout as source-of-truth for existence. If an embedded entry no
-			// longer exists on disk, drop it so the UI doesn't show dead skills.
-			filtered := make([]Item, 0, len(base.Items))
-			for _, it := range base.Items {
-				rp := strings.TrimSpace(it.RepoPath)
-				if rp == "" {
-					continue
-				}
-				full, ok := safeJoin(root, rp)
-				if ok {
-					if _, err := os.Stat(full); err == nil {
-						filtered = append(filtered, it)
-						continue
-					}
-				}
-				// Case-insensitive FS: some repos have both SKILL.md and skill.md. Accept either.
-				if strings.HasSuffix(rp, "/SKILL.md") {
-					alt := strings.TrimSuffix(rp, "/SKILL.md") + "/skill.md"
-					if full, ok := safeJoin(root, alt); ok {
-						if _, err := os.Stat(full); err == nil {
-							it.RepoPath = alt
-							filtered = append(filtered, it)
-							continue
-						}
-					}
-				}
-			}
-			base.Items = filtered
-
-			skip := make(map[string]bool, len(base.Items))
-			for _, it := range base.Items {
-				key := strings.ToLower(strings.TrimSpace(it.Slug))
-				if key == "" {
-					continue
-				}
-				skip[key] = true
-			}
-			if localItems, err := scanLocalSkills(root, skip); err == nil && len(localItems) > 0 {
-				merged = mergeCatalog(base, localItems)
-			}
-		}
-
-		merged.bySlug = make(map[string]*Item, len(merged.Items))
-		for i := range merged.Items {
-			it := &merged.Items[i]
-			key := strings.ToLower(strings.TrimSpace(it.Slug))
-			if key == "" {
-				continue
-			}
-			// First wins.
-			if _, exists := merged.bySlug[key]; !exists {
-				merged.bySlug[key] = it
-			}
-		}
-
-		catalogInst = merged
+		buildCatalogIndex(base)
+		bundledCatalogInst = base
 	})
-	return catalogInst, catalogErr
+	return bundledCatalogInst, bundledCatalogErr
 }
 
 func mergeCatalog(base *Catalog, localItems []Item) *Catalog {
@@ -146,6 +91,40 @@ func mergeCatalog(base *Catalog, localItems []Item) *Catalog {
 	out.Items = items
 	out.Categories = computeCategories(items)
 	return out
+}
+
+func cloneCatalog(in *Catalog) *Catalog {
+	if in == nil {
+		return &Catalog{}
+	}
+	out := &Catalog{
+		GeneratedAt: in.GeneratedAt,
+	}
+	if len(in.Categories) > 0 {
+		out.Categories = append([]Category(nil), in.Categories...)
+	}
+	if len(in.Items) > 0 {
+		out.Items = append([]Item(nil), in.Items...)
+	}
+	return out
+}
+
+func buildCatalogIndex(c *Catalog) {
+	if c == nil {
+		return
+	}
+	c.bySlug = make(map[string]*Item, len(c.Items))
+	for i := range c.Items {
+		it := &c.Items[i]
+		key := strings.ToLower(strings.TrimSpace(it.Slug))
+		if key == "" {
+			continue
+		}
+		// First wins.
+		if _, exists := c.bySlug[key]; !exists {
+			c.bySlug[key] = it
+		}
+	}
 }
 
 func computeCategories(items []Item) []Category {

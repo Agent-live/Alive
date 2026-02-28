@@ -1,5 +1,6 @@
 import type { AgentSkill, SkillCategory, SkillStatus } from '../types';
 import { api } from './client';
+import { endpoints } from './endpoints';
 
 export interface SkillShopCategory {
   key: string;
@@ -91,17 +92,17 @@ async function listSkillShop(params?: {
   pageSize?: number;
   includeInstalled?: boolean;
 }): Promise<SkillShopListResp> {
-  return api.get<SkillShopListResp>('/skill-shop/skills', params);
+  return api.get<SkillShopListResp>(endpoints.skillShop.list, params);
 }
 
 async function getSkillShop(slug: string, opts?: { includeReadme?: boolean }): Promise<SkillShopDetailResp> {
-  return api.get<SkillShopDetailResp>(`/skill-shop/skills/${slug}`, {
+  return api.get<SkillShopDetailResp>(endpoints.skillShop.detail(slug), {
     includeReadme: opts?.includeReadme ?? true,
   });
 }
 
 async function installSkillShop(slug: string, agentId?: string): Promise<{ template: AgentSkill; active?: AgentSkill }> {
-  const res = await api.post<RawInstallResp>(`/skill-shop/skills/${slug}/install`, agentId ? { agentId } : {});
+  const res = await api.post<RawInstallResp>(endpoints.skillShop.install(slug), agentId ? { agentId } : {});
   return {
     template: mapSkill(res.template),
     active: res.active ? mapSkill(res.active) : undefined,

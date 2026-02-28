@@ -1,4 +1,4 @@
-package openclaw
+package aliveagent
 
 import (
 	"bytes"
@@ -14,7 +14,7 @@ import (
 	"github.com/google/uuid"
 )
 
-// Client wraps OpenClaw orchestration calls.
+// Client wraps AliveAgent gateway orchestration calls.
 // V1 green mode provisions logical agents on a shared gateway (no per-agent process).
 type Client struct {
 	enabled       bool
@@ -33,9 +33,9 @@ type ProvisionAgentRequest struct {
 }
 
 type ProvisionAgentResult struct {
-	GatewayID       string
-	OpenClawAgentID string
-	WorkspacePath   string
+	GatewayID      string
+	AgentRuntimeID string
+	WorkspacePath  string
 }
 
 type BindSkillRequest struct {
@@ -81,9 +81,9 @@ func (c *Client) ProvisionAgent(_ context.Context, req ProvisionAgentRequest) (*
 	}
 
 	return &ProvisionAgentResult{
-		GatewayID:       gatewayID,
-		OpenClawAgentID: "oc-" + req.AgentID,
-		WorkspacePath:   fmt.Sprintf("%s/%s", c.workspaceRootOrDefault(), req.AgentID),
+		GatewayID:      gatewayID,
+		AgentRuntimeID: "agent-" + req.AgentID,
+		WorkspacePath:  fmt.Sprintf("%s/%s", c.workspaceRootOrDefault(), req.AgentID),
 	}, nil
 }
 
@@ -246,7 +246,7 @@ func (c *Client) InitWorkspace(agentID, name string, personality []byte, goalDes
 		"personality":     json.RawMessage(personality),
 		"goalDescription": goalDescription,
 		"agentToken":      agentToken,
-		"openclawMode":    "green",
+		"runtimeMode":     "green",
 		"createdAt":       time.Now().UTC().Format(time.RFC3339),
 	}
 	configBytes, err := json.MarshalIndent(config, "", "  ")
@@ -297,14 +297,14 @@ type hookAgentRequest struct {
 	TimeoutSeconds int64  `json:"timeoutSeconds,optional"`
 }
 
-// TriggerAgentHook sends an async webhook run to the OpenClaw gateway (`POST /hooks/agent`).
+// TriggerAgentHook sends an async webhook run to the AliveAgent gateway (`POST /hooks/agent`).
 // This is best-effort and returns an error only when the request cannot be dispatched.
 func (c *Client) TriggerAgentHook(ctx context.Context, agentID, sessionKey, name, message string) error {
 	if !c.enabled {
 		return nil
 	}
 	if strings.TrimSpace(c.baseURL) == "" {
-		return fmt.Errorf("openclaw base url is not configured")
+		return fmt.Errorf("agent gateway base url is not configured")
 	}
 	if strings.TrimSpace(message) == "" {
 		return fmt.Errorf("hook message is required")
@@ -345,7 +345,7 @@ func (c *Client) TriggerAgentHook(ctx context.Context, agentID, sessionKey, name
 	_, _ = io.Copy(io.Discard, res.Body)
 
 	if res.StatusCode < 200 || res.StatusCode > 299 {
-		return fmt.Errorf("openclaw hook failed: status=%d", res.StatusCode)
+		return fmt.Errorf("agent hook failed: status=%d", res.StatusCode)
 	}
 	return nil
 }
@@ -370,25 +370,35 @@ type chatCompletionResponse struct {
 	} `json:"choices"`
 }
 
-// ChatCompletion calls the OpenClaw OpenAI-compatible endpoint (`POST /v1/chat/completions`)
+// ChatCompletion calls the AliveAgent OpenAI-compatible endpoint (`POST /v1/chat/completions`)
 // and returns the assistant's response text.
 func (c *Client) ChatCompletion(ctx context.Context, agentID, sessionKey, userID, text string) (string, error) {
 	if !c.enabled {
-		return "", fmt.Errorf("openclaw is disabled")
+		return "", fmt.Errorf("agent gateway is disabled")
 	}
 	if strings.TrimSpace(c.baseURL) == "" {
-		return "", fmt.Errorf("openclaw base url is not configured")
+		return "", fmt.Errorf("agent gateway base url is not configured")
 	}
 	if strings.TrimSpace(text) == "" {
 		return "", fmt.Errorf("chat text is required")
 	}
 
+	model := "agent:main"
+	if trimmedAgentID := strings.TrimSpace(agentID); trimmedAgentID != "" {
+		model = "agent:" + trimmedAgentID
+	}
+	sessionUser := strings.TrimSpace(userID)
+	if trimmedSessionKey := strings.TrimSpace(sessionKey); trimmedSessionKey != "" {
+		// Align with AliveAgent docs: `user` is enough to derive stable session routing.
+		sessionUser = trimmedSessionKey
+	}
+
 	payload := chatCompletionRequest{
-		Model: "openclaw",
+		Model: model,
 		Messages: []chatCompletionMessage{
 			{Role: "user", Content: strings.TrimSpace(text)},
 		},
-		User: strings.TrimSpace(userID),
+		User: sessionUser,
 	}
 	raw, err := json.Marshal(payload)
 	if err != nil {
@@ -400,12 +410,6 @@ func (c *Client) ChatCompletion(ctx context.Context, agentID, sessionKey, userID
 		return "", err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	if strings.TrimSpace(agentID) != "" {
-		req.Header.Set("x-openclaw-agent-id", strings.TrimSpace(agentID))
-	}
-	if strings.TrimSpace(sessionKey) != "" {
-		req.Header.Set("x-openclaw-session-key", strings.TrimSpace(sessionKey))
-	}
 	c.applyGatewayAuth(req)
 
 	res, err := c.httpClient.Do(req)
@@ -419,7 +423,7 @@ func (c *Client) ChatCompletion(ctx context.Context, agentID, sessionKey, userID
 		return "", err
 	}
 	if res.StatusCode < 200 || res.StatusCode > 299 {
-		return "", fmt.Errorf("openclaw chat failed: status=%d body=%s", res.StatusCode, strings.TrimSpace(string(body)))
+		return "", fmt.Errorf("agent chat failed: status=%d body=%s", res.StatusCode, strings.TrimSpace(string(body)))
 	}
 
 	out := chatCompletionResponse{}
@@ -427,7 +431,7 @@ func (c *Client) ChatCompletion(ctx context.Context, agentID, sessionKey, userID
 		return "", err
 	}
 	if len(out.Choices) == 0 {
-		return "", fmt.Errorf("openclaw chat returned no choices")
+		return "", fmt.Errorf("agent chat returned no choices")
 	}
 	content := out.Choices[0].Message.Content
 	switch v := content.(type) {
@@ -437,7 +441,7 @@ func (c *Client) ChatCompletion(ctx context.Context, agentID, sessionKey, userID
 		// Some OpenAI-compatible APIs can return structured content; fall back to JSON.
 		rawContent, err := json.Marshal(v)
 		if err != nil {
-			return "", fmt.Errorf("openclaw chat returned unsupported content type")
+			return "", fmt.Errorf("agent chat returned unsupported content type")
 		}
 		return strings.TrimSpace(string(rawContent)), nil
 	}
@@ -449,5 +453,4 @@ func (c *Client) applyGatewayAuth(req *http.Request) {
 		return
 	}
 	req.Header.Set("Authorization", "Bearer "+token)
-	req.Header.Set("x-openclaw-token", token)
 }

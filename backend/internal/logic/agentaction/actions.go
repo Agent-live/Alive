@@ -917,7 +917,7 @@ func (a *Actions) notifyConversationParticipants(conversationID uuid.UUID, sende
 
 // notifySpecificAgents sends best-effort hook notifications to a specific target agent list.
 func (a *Actions) notifySpecificAgents(conversationID uuid.UUID, senderAgentID uuid.UUID, targetIDs []uuid.UUID, content string) []string {
-	if a.svcCtx == nil || a.svcCtx.OpenClaw == nil || len(targetIDs) == 0 {
+	if a.svcCtx == nil || a.svcCtx.AliveAgent == nil || len(targetIDs) == 0 {
 		return nil
 	}
 
@@ -958,7 +958,7 @@ func (a *Actions) notifySpecificAgents(conversationID uuid.UUID, senderAgentID u
 
 	notified := make([]string, 0, len(targets))
 	for _, target := range targets {
-		ocAgentID := strings.TrimSpace(common.PtrString(target.OpenclawAgentID))
+		ocAgentID := strings.TrimSpace(common.PtrString(target.AliveAgentRuntimeID))
 		if ocAgentID == "" {
 			continue
 		}
@@ -970,7 +970,7 @@ func (a *Actions) notifySpecificAgents(conversationID uuid.UUID, senderAgentID u
 			preview,
 			conversationID.String(),
 		)
-		if err := a.svcCtx.OpenClaw.TriggerAgentHook(
+		if err := a.svcCtx.AliveAgent.TriggerAgentHook(
 			a.ctx,
 			ocAgentID,
 			"alive:conversation:"+conversationID.String(),

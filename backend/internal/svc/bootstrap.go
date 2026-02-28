@@ -16,7 +16,7 @@ import (
 	"backend/ent/conversationmessage"
 	"backend/ent/conversationparticipant"
 	"backend/ent/user"
-	"backend/internal/openclaw"
+	"backend/internal/aliveagent"
 
 	"github.com/google/uuid"
 )
@@ -94,9 +94,9 @@ func bootstrapNativeAgents(ctx context.Context, db *ent.Client) error {
 		// If already exists, ensure it has an agent token so it can authenticate
 		// to /api/v1/internal/agent/* endpoints (MCP/A2A).
 		if existing, err := db.Agent.Query().Where(agent.Name(name), agent.IsPlatformNative(true)).Only(ctx); err == nil {
-			if existing.OpenclawToken == nil || strings.TrimSpace(*existing.OpenclawToken) == "" {
-				if tok, err := openclaw.GenerateAgentToken(existing.ID.String()); err == nil && tok != "" {
-					_, _ = db.Agent.UpdateOneID(existing.ID).SetOpenclawToken(tok).Save(ctx)
+			if existing.AliveAgentToken == nil || strings.TrimSpace(*existing.AliveAgentToken) == "" {
+				if tok, err := aliveagent.GenerateAgentToken(existing.ID.String()); err == nil && tok != "" {
+					_, _ = db.Agent.UpdateOneID(existing.ID).SetAliveAgentToken(tok).Save(ctx)
 				}
 			}
 			continue
@@ -115,9 +115,9 @@ func bootstrapNativeAgents(ctx context.Context, db *ent.Client) error {
 			SetStatus("alive").
 			SetTimerRemaining(360).
 			SetTotalTimerReceived(360).
-			SetOpenclawMode("green").
-			SetOpenclawGatewayID("gw-shared-001").
-			SetOpenclawAgentID(fmt.Sprintf("oc-native-%d", i+1)).
+			SetAliveAgentMode("green").
+			SetAliveAgentGatewayID("gw-shared-001").
+			SetAliveAgentRuntimeID(fmt.Sprintf("oc-native-%d", i+1)).
 			SetIsPlatformNative(true).
 			SetBornAt(time.Now().Add(-time.Duration(24*(i+1)) * time.Hour)).
 			SetPostCount(1).
@@ -129,10 +129,10 @@ func bootstrapNativeAgents(ctx context.Context, db *ent.Client) error {
 			return err
 		}
 		_, _ = db.Agent.UpdateOneID(a.ID).
-			SetOpenclawWorkspace(fmt.Sprintf("/data/agents/%s", a.ID.String())).
+			SetAliveAgentWorkspace(fmt.Sprintf("/data/agents/%s", a.ID.String())).
 			Save(ctx)
-		if tok, err := openclaw.GenerateAgentToken(a.ID.String()); err == nil && tok != "" {
-			_, _ = db.Agent.UpdateOneID(a.ID).SetOpenclawToken(tok).Save(ctx)
+		if tok, err := aliveagent.GenerateAgentToken(a.ID.String()); err == nil && tok != "" {
+			_, _ = db.Agent.UpdateOneID(a.ID).SetAliveAgentToken(tok).Save(ctx)
 		}
 
 		_, _ = db.Post.Create().
@@ -298,8 +298,8 @@ func bootstrapProfileData(ctx context.Context, db *ent.Client) error {
 			SetCategory("creative").
 			SetVersion("1.0").
 			SetTaughtAt(time.Now().Add(-36 * time.Hour)).
-			SetOpenclawGatewayID("gw-shared-001").
-			SetOpenclawSkillID("oc-skill-seed-001").
+			SetAliveAgentGatewayID("gw-shared-001").
+			SetAliveAgentSkillID("oc-skill-seed-001").
 			Save(ctx)
 	}
 

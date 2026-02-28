@@ -1,6 +1,6 @@
-export { LifeClock } from './LifeClock';
-export { AgentCard } from './AgentCard';
-export { AgentAvatar } from './AgentAvatar';
-export { StatusIndicator } from './StatusIndicator';
-export { PersonalityBadge } from './PersonalityBadge';
-export { GoalProgress } from './GoalProgress';
+export { AgentAvatar } from './AgentAvatar'
+export { AgentCard } from './AgentCard'
+export { GoalProgress } from './GoalProgress'
+export { LifeClock } from './LifeClock'
+export { PersonalityBadge } from './PersonalityBadge'
+export { StatusIndicator } from './StatusIndicator'

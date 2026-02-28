@@ -2,6 +2,7 @@ package svc
 
 import (
 	"context"
+	"os"
 	"strings"
 
 	"backend/ent"
@@ -15,7 +16,7 @@ const (
 	skillShopFeaturedUserNickname = "ALIVE Skill Shop"
 )
 
-// bootstrapSkillShopFeatured seeds the "featured 26" OpenClaw skills into the Alive database.
+// bootstrapSkillShopFeatured seeds the "featured 26" AliveAgent skills into the Alive database.
 //
 // We store them as lesson templates owned by a dedicated system user so:
 // - the backend can install them without GitHub fetches
@@ -26,49 +27,77 @@ func bootstrapSkillShopFeatured(ctx context.Context, db *ent.Client) error {
 		return err
 	}
 
-	catalog, err := skillshop.LoadCatalog()
+	featured := skillshop.FeaturedSlugs()
+	if len(featured) == 0 {
+		return nil
+	}
+
+	existingRows, err := db.AgentSkill.Query().
+		Where(
+			agentskill.OwnerUserID(sysUser.ID),
+			agentskill.DeletedAtIsNil(),
+			agentskill.StatusEQ("lesson"),
+			agentskill.NameIn(featured...),
+		).
+		All(ctx)
+	if err != nil {
+		return err
+	}
+	existing := make(map[string]bool, len(existingRows))
+	for _, row := range existingRows {
+		key := strings.ToLower(strings.TrimSpace(row.Name))
+		if key == "" {
+			continue
+		}
+		existing[key] = true
+	}
+
+	missing := make([]string, 0, len(featured))
+	for _, slug := range featured {
+		clean := strings.TrimSpace(slug)
+		if clean == "" {
+			continue
+		}
+		if existing[strings.ToLower(clean)] {
+			continue
+		}
+		missing = append(missing, clean)
+	}
+	if len(missing) == 0 {
+		return nil
+	}
+
+	// Use the embedded catalog only: local full-repo scans are expensive and can block startup.
+	catalog, err := skillshop.LoadBundledCatalog()
 	if err != nil {
 		return err
 	}
 
-	for _, slug := range skillshop.FeaturedSlugs() {
-		if strings.TrimSpace(slug) == "" {
-			continue
-		}
-
-		exists, err := db.AgentSkill.Query().
-			Where(
-				agentskill.OwnerUserID(sysUser.ID),
-				agentskill.DeletedAtIsNil(),
-				agentskill.StatusEQ("lesson"),
-				agentskill.NameEQ(slug),
-			).
-			Exist(ctx)
-		if err != nil {
-			return err
-		}
-		if exists {
-			continue
-		}
-
+	for _, slug := range missing {
 		it, ok := catalog.GetBySlug(slug)
 		if !ok {
 			continue
 		}
 
-		md, err := skillshop.FetchSkillMarkdown(ctx, it)
-		if err != nil {
-			return err
-		}
-		instructions := strings.TrimSpace(skillshop.StripFrontmatter(md))
+		desc := strings.TrimSpace(it.Description)
+		instructions := desc
 		if instructions == "" {
-			continue
+			instructions = "Open the upstream skill doc for full instructions."
+		}
+
+		// Prefer local SKILL.md contents when available; avoid network fetches in startup path.
+		if fullPath, ok := skillshop.LocalRepoPath(it.RepoPath); ok {
+			if b, err := os.ReadFile(fullPath); err == nil {
+				if parsed := strings.TrimSpace(skillshop.StripFrontmatter(string(b))); parsed != "" {
+					instructions = parsed
+				}
+			}
 		}
 
 		_, err = db.AgentSkill.Create().
 			SetOwnerUserID(sysUser.ID).
 			SetName(it.Slug).
-			SetDescription(strings.TrimSpace(it.Description)).
+			SetDescription(desc).
 			SetInstructions(instructions).
 			SetStatus("lesson").
 			SetCategory(skillshop.MapShopCategoryToInternal(it.Category)).

@@ -30,8 +30,8 @@ func (AgentSkill) Fields() []ent.Field {
 		field.String("category").Default("other"),
 		field.String("version").Optional().Nillable(),
 		field.Time("taught_at").Optional().Nillable(),
-		field.String("openclaw_gateway_id").Optional().Nillable(),
-		field.String("openclaw_skill_id").Optional().Nillable(),
+		field.String("alive_agent_gateway_id").Optional().Nillable(),
+		field.String("alive_agent_skill_id").Optional().Nillable(),
 		field.Time("deleted_at").Optional().Nillable(),
 	}
 }

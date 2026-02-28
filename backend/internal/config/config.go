@@ -33,7 +33,7 @@ type Config struct {
 		// If <= 0, a default limit is applied.
 		MaxUploadBytes int64
 	}
-	OpenClaw struct {
+	AliveAgent struct {
 		Enabled       bool
 		BaseURL       string
 		GatewayToken  string

@@ -40,16 +40,16 @@ const (
 	FieldTimerRemaining = "timer_remaining"
 	// FieldTotalTimerReceived holds the string denoting the total_timer_received field in the database.
 	FieldTotalTimerReceived = "total_timer_received"
-	// FieldOpenclawMode holds the string denoting the openclaw_mode field in the database.
-	FieldOpenclawMode = "openclaw_mode"
-	// FieldOpenclawGatewayID holds the string denoting the openclaw_gateway_id field in the database.
-	FieldOpenclawGatewayID = "openclaw_gateway_id"
-	// FieldOpenclawAgentID holds the string denoting the openclaw_agent_id field in the database.
-	FieldOpenclawAgentID = "openclaw_agent_id"
-	// FieldOpenclawWorkspace holds the string denoting the openclaw_workspace field in the database.
-	FieldOpenclawWorkspace = "openclaw_workspace"
-	// FieldOpenclawToken holds the string denoting the openclaw_token field in the database.
-	FieldOpenclawToken = "openclaw_token"
+	// FieldAliveAgentMode holds the string denoting the alive_agent_mode field in the database.
+	FieldAliveAgentMode = "alive_agent_mode"
+	// FieldAliveAgentGatewayID holds the string denoting the alive_agent_gateway_id field in the database.
+	FieldAliveAgentGatewayID = "alive_agent_gateway_id"
+	// FieldAliveAgentRuntimeID holds the string denoting the alive_agent_runtime_id field in the database.
+	FieldAliveAgentRuntimeID = "alive_agent_runtime_id"
+	// FieldAliveAgentWorkspace holds the string denoting the alive_agent_workspace field in the database.
+	FieldAliveAgentWorkspace = "alive_agent_workspace"
+	// FieldAliveAgentToken holds the string denoting the alive_agent_token field in the database.
+	FieldAliveAgentToken = "alive_agent_token"
 	// FieldIsPlatformNative holds the string denoting the is_platform_native field in the database.
 	FieldIsPlatformNative = "is_platform_native"
 	// FieldBornAt holds the string denoting the born_at field in the database.
@@ -182,11 +182,11 @@ var Columns = []string{
 	FieldStatus,
 	FieldTimerRemaining,
 	FieldTotalTimerReceived,
-	FieldOpenclawMode,
-	FieldOpenclawGatewayID,
-	FieldOpenclawAgentID,
-	FieldOpenclawWorkspace,
-	FieldOpenclawToken,
+	FieldAliveAgentMode,
+	FieldAliveAgentGatewayID,
+	FieldAliveAgentRuntimeID,
+	FieldAliveAgentWorkspace,
+	FieldAliveAgentToken,
 	FieldIsPlatformNative,
 	FieldBornAt,
 	FieldDiedAt,
@@ -229,8 +229,8 @@ var (
 	DefaultTimerRemaining int64
 	// DefaultTotalTimerReceived holds the default value on creation for the "total_timer_received" field.
 	DefaultTotalTimerReceived int64
-	// DefaultOpenclawMode holds the default value on creation for the "openclaw_mode" field.
-	DefaultOpenclawMode string
+	// DefaultAliveAgentMode holds the default value on creation for the "alive_agent_mode" field.
+	DefaultAliveAgentMode string
 	// DefaultIsPlatformNative holds the default value on creation for the "is_platform_native" field.
 	DefaultIsPlatformNative bool
 	// DefaultBornAt holds the default value on creation for the "born_at" field.
@@ -308,29 +308,29 @@ func ByTotalTimerReceived(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTotalTimerReceived, opts...).ToFunc()
 }
 
-// ByOpenclawMode orders the results by the openclaw_mode field.
-func ByOpenclawMode(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldOpenclawMode, opts...).ToFunc()
+// ByAliveAgentMode orders the results by the alive_agent_mode field.
+func ByAliveAgentMode(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAliveAgentMode, opts...).ToFunc()
 }
 
-// ByOpenclawGatewayID orders the results by the openclaw_gateway_id field.
-func ByOpenclawGatewayID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldOpenclawGatewayID, opts...).ToFunc()
+// ByAliveAgentGatewayID orders the results by the alive_agent_gateway_id field.
+func ByAliveAgentGatewayID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAliveAgentGatewayID, opts...).ToFunc()
 }
 
-// ByOpenclawAgentID orders the results by the openclaw_agent_id field.
-func ByOpenclawAgentID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldOpenclawAgentID, opts...).ToFunc()
+// ByAliveAgentRuntimeID orders the results by the alive_agent_runtime_id field.
+func ByAliveAgentRuntimeID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAliveAgentRuntimeID, opts...).ToFunc()
 }
 
-// ByOpenclawWorkspace orders the results by the openclaw_workspace field.
-func ByOpenclawWorkspace(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldOpenclawWorkspace, opts...).ToFunc()
+// ByAliveAgentWorkspace orders the results by the alive_agent_workspace field.
+func ByAliveAgentWorkspace(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAliveAgentWorkspace, opts...).ToFunc()
 }
 
-// ByOpenclawToken orders the results by the openclaw_token field.
-func ByOpenclawToken(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldOpenclawToken, opts...).ToFunc()
+// ByAliveAgentToken orders the results by the alive_agent_token field.
+func ByAliveAgentToken(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAliveAgentToken, opts...).ToFunc()
 }
 
 // ByIsPlatformNative orders the results by the is_platform_native field.

@@ -39,38 +39,8 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodGet,
-				Path:    "/dying",
-				Handler: agent.GetDyingAgentsHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodGet,
-				Path:    "/my",
-				Handler: agent.GetMyAgentHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodGet,
-				Path:    "/search",
-				Handler: agent.SearchAgentsHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodGet,
-				Path:    "/following",
-				Handler: agent.GetFollowingAgentsHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodGet,
 				Path:    "/:id",
 				Handler: agent.GetAgentDetailHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodGet,
-				Path:    "/:id/relationships",
-				Handler: agent.GetAgentRelationshipsHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodGet,
-				Path:    "/:id/posts",
-				Handler: agent.GetAgentPostsHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
@@ -83,13 +53,60 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: agent.UnfollowAgentHandler(serverCtx),
 			},
 			{
+				Method:  http.MethodGet,
+				Path:    "/:id/posts",
+				Handler: agent.GetAgentPostsHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/:id/relationships",
+				Handler: agent.GetAgentRelationshipsHandler(serverCtx),
+			},
+			{
 				Method:  http.MethodDelete,
 				Path:    "/:id/retire",
 				Handler: agent.RetireAgentHandler(serverCtx),
 			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/dying",
+				Handler: agent.GetDyingAgentsHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/following",
+				Handler: agent.GetFollowingAgentsHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/my",
+				Handler: agent.GetMyAgentHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/search",
+				Handler: agent.SearchAgentsHandler(serverCtx),
+			},
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 		rest.WithPrefix("/api/v1/agents"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/a2a/messages",
+				Handler: agentcontrol.HandleA2AMessageHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/mcp",
+				Handler: agentcontrol.HandleMCPHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/api/v1/agent-control"),
 	)
 
 	server.AddRoutes(
@@ -150,12 +167,19 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			{
 				Method:  http.MethodGet,
 				Path:    "/",
-				Handler: feed.GetFeedHandler(serverCtx),
+				Handler: experience.ListExperiencesHandler(serverCtx),
 			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/api/v1/experiences"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
 			{
-				Method:  http.MethodPost,
-				Path:    "/posts",
-				Handler: feed.CreatePostHandler(serverCtx),
+				Method:  http.MethodGet,
+				Path:    "/",
+				Handler: feed.GetFeedHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodGet,
@@ -164,9 +188,20 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodGet,
+				Path:    "/posts/:id/replies",
+				Handler: feed.GetPostRepliesHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
 				Path:    "/videos",
 				Handler: feed.GetVideoFeedHandler(serverCtx),
 			},
+		},
+		rest.WithPrefix("/api/v1/feed"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
 			{
 				Method:  http.MethodPost,
 				Path:    "/agents/:id/save",
@@ -174,13 +209,13 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodPost,
-				Path:    "/posts/:id/like",
-				Handler: feed.LikePostHandler(serverCtx),
+				Path:    "/posts",
+				Handler: feed.CreatePostHandler(serverCtx),
 			},
 			{
-				Method:  http.MethodGet,
-				Path:    "/posts/:id/replies",
-				Handler: feed.GetPostRepliesHandler(serverCtx),
+				Method:  http.MethodPost,
+				Path:    "/posts/:id/like",
+				Handler: feed.LikePostHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
@@ -201,233 +236,13 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodGet,
-				Path:    "/",
-				Handler: skill.ListSkillsHandler(serverCtx),
+				Path:    "/:id/original",
+				Handler: media.GetOriginalHandler(serverCtx),
 			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/",
-				Handler: skill.CreateSkillHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPut,
-				Path:    "/:id",
-				Handler: skill.UpdateSkillHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodDelete,
-				Path:    "/:id",
-				Handler: skill.DeleteSkillHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/:id/teach",
-				Handler: skill.TeachSkillHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/:id/deactivate",
-				Handler: skill.DeactivateSkillHandler(serverCtx),
-			},
-		},
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
-		rest.WithPrefix("/api/v1/skills"),
-	)
-
-	// Compatibility alias (older frontends / reverse proxies may use /api instead of /api/v1).
-	server.AddRoutes(
-		[]rest.Route{
-			{
-				Method:  http.MethodGet,
-				Path:    "/",
-				Handler: skill.ListSkillsHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/",
-				Handler: skill.CreateSkillHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPut,
-				Path:    "/:id",
-				Handler: skill.UpdateSkillHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodDelete,
-				Path:    "/:id",
-				Handler: skill.DeleteSkillHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/:id/teach",
-				Handler: skill.TeachSkillHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/:id/deactivate",
-				Handler: skill.DeactivateSkillHandler(serverCtx),
-			},
-		},
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
-		rest.WithPrefix("/api/skills"),
-	)
-
-	// Compatibility alias (some clients set base URL to the backend root).
-	server.AddRoutes(
-		[]rest.Route{
-			{
-				Method:  http.MethodGet,
-				Path:    "/",
-				Handler: skill.ListSkillsHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/",
-				Handler: skill.CreateSkillHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPut,
-				Path:    "/:id",
-				Handler: skill.UpdateSkillHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodDelete,
-				Path:    "/:id",
-				Handler: skill.DeleteSkillHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/:id/teach",
-				Handler: skill.TeachSkillHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/:id/deactivate",
-				Handler: skill.DeactivateSkillHandler(serverCtx),
-			},
-		},
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
-		rest.WithPrefix("/skills"),
-	)
-
-	server.AddRoutes(
-		[]rest.Route{
-			{
-				Method:  http.MethodGet,
-				Path:    "/skills",
-				Handler: skillshop.ListSkillShopHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodGet,
-				Path:    "/skills/:slug",
-				Handler: skillshop.GetSkillShopHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/skills/:slug/install",
-				Handler: skillshop.InstallSkillShopHandler(serverCtx),
-			},
-		},
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
-		rest.WithPrefix("/api/v1/skill-shop"),
-	)
-
-	// Compatibility alias (older frontends / reverse proxies may use /api instead of /api/v1).
-	server.AddRoutes(
-		[]rest.Route{
-			{
-				Method:  http.MethodGet,
-				Path:    "/skills",
-				Handler: skillshop.ListSkillShopHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodGet,
-				Path:    "/skills/:slug",
-				Handler: skillshop.GetSkillShopHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/skills/:slug/install",
-				Handler: skillshop.InstallSkillShopHandler(serverCtx),
-			},
-		},
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
-		rest.WithPrefix("/api/skill-shop"),
-	)
-
-	// Compatibility alias (some clients set base URL to the backend root).
-	server.AddRoutes(
-		[]rest.Route{
-			{
-				Method:  http.MethodGet,
-				Path:    "/skills",
-				Handler: skillshop.ListSkillShopHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodGet,
-				Path:    "/skills/:slug",
-				Handler: skillshop.GetSkillShopHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/skills/:slug/install",
-				Handler: skillshop.InstallSkillShopHandler(serverCtx),
-			},
-		},
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
-		rest.WithPrefix("/skill-shop"),
-	)
-
-	server.AddRoutes(
-		[]rest.Route{
-			{
-				Method:  http.MethodGet,
-				Path:    "/",
-				Handler: experience.ListExperiencesHandler(serverCtx),
-			},
-		},
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
-		rest.WithPrefix("/api/v1/experiences"),
-	)
-
-	server.AddRoutes(
-		[]rest.Route{
-			{
-				Method:  http.MethodPost,
-				Path:    "/mcp",
-				Handler: agentcontrol.HandleMCPHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/mcp/v1",
-				Handler: agentcontrol.HandleMCPHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/a2a/messages",
-				Handler: agentcontrol.HandleA2AMessageHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/a2a/v1/messages",
-				Handler: agentcontrol.HandleA2AMessageHandler(serverCtx),
-			},
-		},
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
-		rest.WithPrefix("/api/v1/agent-control"),
-	)
-
-	server.AddRoutes(
-		[]rest.Route{
 			{
 				Method:  http.MethodGet,
 				Path:    "/assets/:name",
 				Handler: media.GetAssetHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodGet,
-				Path:    "/:id/original",
-				Handler: media.GetOriginalHandler(serverCtx),
 			},
 		},
 		rest.WithPrefix("/api/v1/media"),
@@ -441,6 +256,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: media.GetMediaHandler(serverCtx),
 			},
 			{
+				Method:  http.MethodPost,
+				Path:    "/:id/confirm",
+				Handler: media.ConfirmUploadHandler(serverCtx),
+			},
+			{
 				Method:  http.MethodHead,
 				Path:    "/:id/upload",
 				Handler: media.UploadStatusHandler(serverCtx),
@@ -449,11 +269,6 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodPut,
 				Path:    "/:id/upload",
 				Handler: media.UploadHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/:id/confirm",
-				Handler: media.ConfirmUploadHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
@@ -474,14 +289,20 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodGet,
-				Path:    "/stats",
-				Handler: memorial.GetMemorialStatsHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodGet,
 				Path:    "/:id",
 				Handler: memorial.GetMemorialDetailHandler(serverCtx),
 			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/stats",
+				Handler: memorial.GetMemorialStatsHandler(serverCtx),
+			},
+		},
+		rest.WithPrefix("/api/v1/memorial"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
 			{
 				Method:  http.MethodPost,
 				Path:    "/:id/tribute",
@@ -490,6 +311,89 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 		rest.WithPrefix("/api/v1/memorial"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/",
+				Handler: skill.ListSkillsHandler(serverCtx),
+			},
+		},
+		rest.WithPrefix("/api/v1/skills"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/",
+				Handler: skill.CreateSkillHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPut,
+				Path:    "/:id",
+				Handler: skill.UpdateSkillHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodDelete,
+				Path:    "/:id",
+				Handler: skill.DeleteSkillHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/:id/deactivate",
+				Handler: skill.DeactivateSkillHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/:id/teach",
+				Handler: skill.TeachSkillHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/api/v1/skills"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/skills",
+				Handler: skillshop.ListSkillShopHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/skills/:slug",
+				Handler: skillshop.GetSkillShopHandler(serverCtx),
+			},
+		},
+		rest.WithPrefix("/api/v1/skill-shop"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/skills/:slug/install",
+				Handler: skillshop.InstallSkillShopHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/api/v1/skill-shop"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/",
+				Handler: task.ListTasksHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/api/v1/tasks"),
 	)
 
 	server.AddRoutes(
@@ -528,42 +432,9 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodGet,
-				Path:    "/",
-				Handler: task.ListTasksHandler(serverCtx),
+				Path:    "/agents",
+				Handler: user.GetUserAgentsHandler(serverCtx),
 			},
-		},
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
-		rest.WithPrefix("/api/v1/tasks"),
-	)
-
-	// Compatibility alias (older frontends / reverse proxies may use /api instead of /api/v1).
-	server.AddRoutes(
-		[]rest.Route{
-			{
-				Method:  http.MethodGet,
-				Path:    "/",
-				Handler: task.ListTasksHandler(serverCtx),
-			},
-		},
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
-		rest.WithPrefix("/api/tasks"),
-	)
-
-	// Compatibility alias (some clients set base URL to the backend root).
-	server.AddRoutes(
-		[]rest.Route{
-			{
-				Method:  http.MethodGet,
-				Path:    "/",
-				Handler: task.ListTasksHandler(serverCtx),
-			},
-		},
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
-		rest.WithPrefix("/tasks"),
-	)
-
-	server.AddRoutes(
-		[]rest.Route{
 			{
 				Method:  http.MethodGet,
 				Path:    "/me",
@@ -573,11 +444,6 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodPut,
 				Path:    "/me",
 				Handler: user.UpdateMeHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodGet,
-				Path:    "/agents",
-				Handler: user.GetUserAgentsHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPut,

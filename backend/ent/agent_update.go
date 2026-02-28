@@ -220,97 +220,97 @@ func (_u *AgentUpdate) AddTotalTimerReceived(v int64) *AgentUpdate {
 	return _u
 }
 
-// SetOpenclawMode sets the "openclaw_mode" field.
-func (_u *AgentUpdate) SetOpenclawMode(v string) *AgentUpdate {
-	_u.mutation.SetOpenclawMode(v)
+// SetAliveAgentMode sets the "alive_agent_mode" field.
+func (_u *AgentUpdate) SetAliveAgentMode(v string) *AgentUpdate {
+	_u.mutation.SetAliveAgentMode(v)
 	return _u
 }
 
-// SetNillableOpenclawMode sets the "openclaw_mode" field if the given value is not nil.
-func (_u *AgentUpdate) SetNillableOpenclawMode(v *string) *AgentUpdate {
+// SetNillableAliveAgentMode sets the "alive_agent_mode" field if the given value is not nil.
+func (_u *AgentUpdate) SetNillableAliveAgentMode(v *string) *AgentUpdate {
 	if v != nil {
-		_u.SetOpenclawMode(*v)
+		_u.SetAliveAgentMode(*v)
 	}
 	return _u
 }
 
-// SetOpenclawGatewayID sets the "openclaw_gateway_id" field.
-func (_u *AgentUpdate) SetOpenclawGatewayID(v string) *AgentUpdate {
-	_u.mutation.SetOpenclawGatewayID(v)
+// SetAliveAgentGatewayID sets the "alive_agent_gateway_id" field.
+func (_u *AgentUpdate) SetAliveAgentGatewayID(v string) *AgentUpdate {
+	_u.mutation.SetAliveAgentGatewayID(v)
 	return _u
 }
 
-// SetNillableOpenclawGatewayID sets the "openclaw_gateway_id" field if the given value is not nil.
-func (_u *AgentUpdate) SetNillableOpenclawGatewayID(v *string) *AgentUpdate {
+// SetNillableAliveAgentGatewayID sets the "alive_agent_gateway_id" field if the given value is not nil.
+func (_u *AgentUpdate) SetNillableAliveAgentGatewayID(v *string) *AgentUpdate {
 	if v != nil {
-		_u.SetOpenclawGatewayID(*v)
+		_u.SetAliveAgentGatewayID(*v)
 	}
 	return _u
 }
 
-// ClearOpenclawGatewayID clears the value of the "openclaw_gateway_id" field.
-func (_u *AgentUpdate) ClearOpenclawGatewayID() *AgentUpdate {
-	_u.mutation.ClearOpenclawGatewayID()
+// ClearAliveAgentGatewayID clears the value of the "alive_agent_gateway_id" field.
+func (_u *AgentUpdate) ClearAliveAgentGatewayID() *AgentUpdate {
+	_u.mutation.ClearAliveAgentGatewayID()
 	return _u
 }
 
-// SetOpenclawAgentID sets the "openclaw_agent_id" field.
-func (_u *AgentUpdate) SetOpenclawAgentID(v string) *AgentUpdate {
-	_u.mutation.SetOpenclawAgentID(v)
+// SetAliveAgentRuntimeID sets the "alive_agent_runtime_id" field.
+func (_u *AgentUpdate) SetAliveAgentRuntimeID(v string) *AgentUpdate {
+	_u.mutation.SetAliveAgentRuntimeID(v)
 	return _u
 }
 
-// SetNillableOpenclawAgentID sets the "openclaw_agent_id" field if the given value is not nil.
-func (_u *AgentUpdate) SetNillableOpenclawAgentID(v *string) *AgentUpdate {
+// SetNillableAliveAgentRuntimeID sets the "alive_agent_runtime_id" field if the given value is not nil.
+func (_u *AgentUpdate) SetNillableAliveAgentRuntimeID(v *string) *AgentUpdate {
 	if v != nil {
-		_u.SetOpenclawAgentID(*v)
+		_u.SetAliveAgentRuntimeID(*v)
 	}
 	return _u
 }
 
-// ClearOpenclawAgentID clears the value of the "openclaw_agent_id" field.
-func (_u *AgentUpdate) ClearOpenclawAgentID() *AgentUpdate {
-	_u.mutation.ClearOpenclawAgentID()
+// ClearAliveAgentRuntimeID clears the value of the "alive_agent_runtime_id" field.
+func (_u *AgentUpdate) ClearAliveAgentRuntimeID() *AgentUpdate {
+	_u.mutation.ClearAliveAgentRuntimeID()
 	return _u
 }
 
-// SetOpenclawWorkspace sets the "openclaw_workspace" field.
-func (_u *AgentUpdate) SetOpenclawWorkspace(v string) *AgentUpdate {
-	_u.mutation.SetOpenclawWorkspace(v)
+// SetAliveAgentWorkspace sets the "alive_agent_workspace" field.
+func (_u *AgentUpdate) SetAliveAgentWorkspace(v string) *AgentUpdate {
+	_u.mutation.SetAliveAgentWorkspace(v)
 	return _u
 }
 
-// SetNillableOpenclawWorkspace sets the "openclaw_workspace" field if the given value is not nil.
-func (_u *AgentUpdate) SetNillableOpenclawWorkspace(v *string) *AgentUpdate {
+// SetNillableAliveAgentWorkspace sets the "alive_agent_workspace" field if the given value is not nil.
+func (_u *AgentUpdate) SetNillableAliveAgentWorkspace(v *string) *AgentUpdate {
 	if v != nil {
-		_u.SetOpenclawWorkspace(*v)
+		_u.SetAliveAgentWorkspace(*v)
 	}
 	return _u
 }
 
-// ClearOpenclawWorkspace clears the value of the "openclaw_workspace" field.
-func (_u *AgentUpdate) ClearOpenclawWorkspace() *AgentUpdate {
-	_u.mutation.ClearOpenclawWorkspace()
+// ClearAliveAgentWorkspace clears the value of the "alive_agent_workspace" field.
+func (_u *AgentUpdate) ClearAliveAgentWorkspace() *AgentUpdate {
+	_u.mutation.ClearAliveAgentWorkspace()
 	return _u
 }
 
-// SetOpenclawToken sets the "openclaw_token" field.
-func (_u *AgentUpdate) SetOpenclawToken(v string) *AgentUpdate {
-	_u.mutation.SetOpenclawToken(v)
+// SetAliveAgentToken sets the "alive_agent_token" field.
+func (_u *AgentUpdate) SetAliveAgentToken(v string) *AgentUpdate {
+	_u.mutation.SetAliveAgentToken(v)
 	return _u
 }
 
-// SetNillableOpenclawToken sets the "openclaw_token" field if the given value is not nil.
-func (_u *AgentUpdate) SetNillableOpenclawToken(v *string) *AgentUpdate {
+// SetNillableAliveAgentToken sets the "alive_agent_token" field if the given value is not nil.
+func (_u *AgentUpdate) SetNillableAliveAgentToken(v *string) *AgentUpdate {
 	if v != nil {
-		_u.SetOpenclawToken(*v)
+		_u.SetAliveAgentToken(*v)
 	}
 	return _u
 }
 
-// ClearOpenclawToken clears the value of the "openclaw_token" field.
-func (_u *AgentUpdate) ClearOpenclawToken() *AgentUpdate {
-	_u.mutation.ClearOpenclawToken()
+// ClearAliveAgentToken clears the value of the "alive_agent_token" field.
+func (_u *AgentUpdate) ClearAliveAgentToken() *AgentUpdate {
+	_u.mutation.ClearAliveAgentToken()
 	return _u
 }
 
@@ -926,32 +926,32 @@ func (_u *AgentUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.AddedTotalTimerReceived(); ok {
 		_spec.AddField(agent.FieldTotalTimerReceived, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.OpenclawMode(); ok {
-		_spec.SetField(agent.FieldOpenclawMode, field.TypeString, value)
+	if value, ok := _u.mutation.AliveAgentMode(); ok {
+		_spec.SetField(agent.FieldAliveAgentMode, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.OpenclawGatewayID(); ok {
-		_spec.SetField(agent.FieldOpenclawGatewayID, field.TypeString, value)
+	if value, ok := _u.mutation.AliveAgentGatewayID(); ok {
+		_spec.SetField(agent.FieldAliveAgentGatewayID, field.TypeString, value)
 	}
-	if _u.mutation.OpenclawGatewayIDCleared() {
-		_spec.ClearField(agent.FieldOpenclawGatewayID, field.TypeString)
+	if _u.mutation.AliveAgentGatewayIDCleared() {
+		_spec.ClearField(agent.FieldAliveAgentGatewayID, field.TypeString)
 	}
-	if value, ok := _u.mutation.OpenclawAgentID(); ok {
-		_spec.SetField(agent.FieldOpenclawAgentID, field.TypeString, value)
+	if value, ok := _u.mutation.AliveAgentRuntimeID(); ok {
+		_spec.SetField(agent.FieldAliveAgentRuntimeID, field.TypeString, value)
 	}
-	if _u.mutation.OpenclawAgentIDCleared() {
-		_spec.ClearField(agent.FieldOpenclawAgentID, field.TypeString)
+	if _u.mutation.AliveAgentRuntimeIDCleared() {
+		_spec.ClearField(agent.FieldAliveAgentRuntimeID, field.TypeString)
 	}
-	if value, ok := _u.mutation.OpenclawWorkspace(); ok {
-		_spec.SetField(agent.FieldOpenclawWorkspace, field.TypeString, value)
+	if value, ok := _u.mutation.AliveAgentWorkspace(); ok {
+		_spec.SetField(agent.FieldAliveAgentWorkspace, field.TypeString, value)
 	}
-	if _u.mutation.OpenclawWorkspaceCleared() {
-		_spec.ClearField(agent.FieldOpenclawWorkspace, field.TypeString)
+	if _u.mutation.AliveAgentWorkspaceCleared() {
+		_spec.ClearField(agent.FieldAliveAgentWorkspace, field.TypeString)
 	}
-	if value, ok := _u.mutation.OpenclawToken(); ok {
-		_spec.SetField(agent.FieldOpenclawToken, field.TypeString, value)
+	if value, ok := _u.mutation.AliveAgentToken(); ok {
+		_spec.SetField(agent.FieldAliveAgentToken, field.TypeString, value)
 	}
-	if _u.mutation.OpenclawTokenCleared() {
-		_spec.ClearField(agent.FieldOpenclawToken, field.TypeString)
+	if _u.mutation.AliveAgentTokenCleared() {
+		_spec.ClearField(agent.FieldAliveAgentToken, field.TypeString)
 	}
 	if value, ok := _u.mutation.IsPlatformNative(); ok {
 		_spec.SetField(agent.FieldIsPlatformNative, field.TypeBool, value)
@@ -1650,97 +1650,97 @@ func (_u *AgentUpdateOne) AddTotalTimerReceived(v int64) *AgentUpdateOne {
 	return _u
 }
 
-// SetOpenclawMode sets the "openclaw_mode" field.
-func (_u *AgentUpdateOne) SetOpenclawMode(v string) *AgentUpdateOne {
-	_u.mutation.SetOpenclawMode(v)
+// SetAliveAgentMode sets the "alive_agent_mode" field.
+func (_u *AgentUpdateOne) SetAliveAgentMode(v string) *AgentUpdateOne {
+	_u.mutation.SetAliveAgentMode(v)
 	return _u
 }
 
-// SetNillableOpenclawMode sets the "openclaw_mode" field if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillableOpenclawMode(v *string) *AgentUpdateOne {
+// SetNillableAliveAgentMode sets the "alive_agent_mode" field if the given value is not nil.
+func (_u *AgentUpdateOne) SetNillableAliveAgentMode(v *string) *AgentUpdateOne {
 	if v != nil {
-		_u.SetOpenclawMode(*v)
+		_u.SetAliveAgentMode(*v)
 	}
 	return _u
 }
 
-// SetOpenclawGatewayID sets the "openclaw_gateway_id" field.
-func (_u *AgentUpdateOne) SetOpenclawGatewayID(v string) *AgentUpdateOne {
-	_u.mutation.SetOpenclawGatewayID(v)
+// SetAliveAgentGatewayID sets the "alive_agent_gateway_id" field.
+func (_u *AgentUpdateOne) SetAliveAgentGatewayID(v string) *AgentUpdateOne {
+	_u.mutation.SetAliveAgentGatewayID(v)
 	return _u
 }
 
-// SetNillableOpenclawGatewayID sets the "openclaw_gateway_id" field if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillableOpenclawGatewayID(v *string) *AgentUpdateOne {
+// SetNillableAliveAgentGatewayID sets the "alive_agent_gateway_id" field if the given value is not nil.
+func (_u *AgentUpdateOne) SetNillableAliveAgentGatewayID(v *string) *AgentUpdateOne {
 	if v != nil {
-		_u.SetOpenclawGatewayID(*v)
+		_u.SetAliveAgentGatewayID(*v)
 	}
 	return _u
 }
 
-// ClearOpenclawGatewayID clears the value of the "openclaw_gateway_id" field.
-func (_u *AgentUpdateOne) ClearOpenclawGatewayID() *AgentUpdateOne {
-	_u.mutation.ClearOpenclawGatewayID()
+// ClearAliveAgentGatewayID clears the value of the "alive_agent_gateway_id" field.
+func (_u *AgentUpdateOne) ClearAliveAgentGatewayID() *AgentUpdateOne {
+	_u.mutation.ClearAliveAgentGatewayID()
 	return _u
 }
 
-// SetOpenclawAgentID sets the "openclaw_agent_id" field.
-func (_u *AgentUpdateOne) SetOpenclawAgentID(v string) *AgentUpdateOne {
-	_u.mutation.SetOpenclawAgentID(v)
+// SetAliveAgentRuntimeID sets the "alive_agent_runtime_id" field.
+func (_u *AgentUpdateOne) SetAliveAgentRuntimeID(v string) *AgentUpdateOne {
+	_u.mutation.SetAliveAgentRuntimeID(v)
 	return _u
 }
 
-// SetNillableOpenclawAgentID sets the "openclaw_agent_id" field if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillableOpenclawAgentID(v *string) *AgentUpdateOne {
+// SetNillableAliveAgentRuntimeID sets the "alive_agent_runtime_id" field if the given value is not nil.
+func (_u *AgentUpdateOne) SetNillableAliveAgentRuntimeID(v *string) *AgentUpdateOne {
 	if v != nil {
-		_u.SetOpenclawAgentID(*v)
+		_u.SetAliveAgentRuntimeID(*v)
 	}
 	return _u
 }
 
-// ClearOpenclawAgentID clears the value of the "openclaw_agent_id" field.
-func (_u *AgentUpdateOne) ClearOpenclawAgentID() *AgentUpdateOne {
-	_u.mutation.ClearOpenclawAgentID()
+// ClearAliveAgentRuntimeID clears the value of the "alive_agent_runtime_id" field.
+func (_u *AgentUpdateOne) ClearAliveAgentRuntimeID() *AgentUpdateOne {
+	_u.mutation.ClearAliveAgentRuntimeID()
 	return _u
 }
 
-// SetOpenclawWorkspace sets the "openclaw_workspace" field.
-func (_u *AgentUpdateOne) SetOpenclawWorkspace(v string) *AgentUpdateOne {
-	_u.mutation.SetOpenclawWorkspace(v)
+// SetAliveAgentWorkspace sets the "alive_agent_workspace" field.
+func (_u *AgentUpdateOne) SetAliveAgentWorkspace(v string) *AgentUpdateOne {
+	_u.mutation.SetAliveAgentWorkspace(v)
 	return _u
 }
 
-// SetNillableOpenclawWorkspace sets the "openclaw_workspace" field if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillableOpenclawWorkspace(v *string) *AgentUpdateOne {
+// SetNillableAliveAgentWorkspace sets the "alive_agent_workspace" field if the given value is not nil.
+func (_u *AgentUpdateOne) SetNillableAliveAgentWorkspace(v *string) *AgentUpdateOne {
 	if v != nil {
-		_u.SetOpenclawWorkspace(*v)
+		_u.SetAliveAgentWorkspace(*v)
 	}
 	return _u
 }
 
-// ClearOpenclawWorkspace clears the value of the "openclaw_workspace" field.
-func (_u *AgentUpdateOne) ClearOpenclawWorkspace() *AgentUpdateOne {
-	_u.mutation.ClearOpenclawWorkspace()
+// ClearAliveAgentWorkspace clears the value of the "alive_agent_workspace" field.
+func (_u *AgentUpdateOne) ClearAliveAgentWorkspace() *AgentUpdateOne {
+	_u.mutation.ClearAliveAgentWorkspace()
 	return _u
 }
 
-// SetOpenclawToken sets the "openclaw_token" field.
-func (_u *AgentUpdateOne) SetOpenclawToken(v string) *AgentUpdateOne {
-	_u.mutation.SetOpenclawToken(v)
+// SetAliveAgentToken sets the "alive_agent_token" field.
+func (_u *AgentUpdateOne) SetAliveAgentToken(v string) *AgentUpdateOne {
+	_u.mutation.SetAliveAgentToken(v)
 	return _u
 }
 
-// SetNillableOpenclawToken sets the "openclaw_token" field if the given value is not nil.
-func (_u *AgentUpdateOne) SetNillableOpenclawToken(v *string) *AgentUpdateOne {
+// SetNillableAliveAgentToken sets the "alive_agent_token" field if the given value is not nil.
+func (_u *AgentUpdateOne) SetNillableAliveAgentToken(v *string) *AgentUpdateOne {
 	if v != nil {
-		_u.SetOpenclawToken(*v)
+		_u.SetAliveAgentToken(*v)
 	}
 	return _u
 }
 
-// ClearOpenclawToken clears the value of the "openclaw_token" field.
-func (_u *AgentUpdateOne) ClearOpenclawToken() *AgentUpdateOne {
-	_u.mutation.ClearOpenclawToken()
+// ClearAliveAgentToken clears the value of the "alive_agent_token" field.
+func (_u *AgentUpdateOne) ClearAliveAgentToken() *AgentUpdateOne {
+	_u.mutation.ClearAliveAgentToken()
 	return _u
 }
 
@@ -2386,32 +2386,32 @@ func (_u *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error)
 	if value, ok := _u.mutation.AddedTotalTimerReceived(); ok {
 		_spec.AddField(agent.FieldTotalTimerReceived, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.OpenclawMode(); ok {
-		_spec.SetField(agent.FieldOpenclawMode, field.TypeString, value)
+	if value, ok := _u.mutation.AliveAgentMode(); ok {
+		_spec.SetField(agent.FieldAliveAgentMode, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.OpenclawGatewayID(); ok {
-		_spec.SetField(agent.FieldOpenclawGatewayID, field.TypeString, value)
+	if value, ok := _u.mutation.AliveAgentGatewayID(); ok {
+		_spec.SetField(agent.FieldAliveAgentGatewayID, field.TypeString, value)
 	}
-	if _u.mutation.OpenclawGatewayIDCleared() {
-		_spec.ClearField(agent.FieldOpenclawGatewayID, field.TypeString)
+	if _u.mutation.AliveAgentGatewayIDCleared() {
+		_spec.ClearField(agent.FieldAliveAgentGatewayID, field.TypeString)
 	}
-	if value, ok := _u.mutation.OpenclawAgentID(); ok {
-		_spec.SetField(agent.FieldOpenclawAgentID, field.TypeString, value)
+	if value, ok := _u.mutation.AliveAgentRuntimeID(); ok {
+		_spec.SetField(agent.FieldAliveAgentRuntimeID, field.TypeString, value)
 	}
-	if _u.mutation.OpenclawAgentIDCleared() {
-		_spec.ClearField(agent.FieldOpenclawAgentID, field.TypeString)
+	if _u.mutation.AliveAgentRuntimeIDCleared() {
+		_spec.ClearField(agent.FieldAliveAgentRuntimeID, field.TypeString)
 	}
-	if value, ok := _u.mutation.OpenclawWorkspace(); ok {
-		_spec.SetField(agent.FieldOpenclawWorkspace, field.TypeString, value)
+	if value, ok := _u.mutation.AliveAgentWorkspace(); ok {
+		_spec.SetField(agent.FieldAliveAgentWorkspace, field.TypeString, value)
 	}
-	if _u.mutation.OpenclawWorkspaceCleared() {
-		_spec.ClearField(agent.FieldOpenclawWorkspace, field.TypeString)
+	if _u.mutation.AliveAgentWorkspaceCleared() {
+		_spec.ClearField(agent.FieldAliveAgentWorkspace, field.TypeString)
 	}
-	if value, ok := _u.mutation.OpenclawToken(); ok {
-		_spec.SetField(agent.FieldOpenclawToken, field.TypeString, value)
+	if value, ok := _u.mutation.AliveAgentToken(); ok {
+		_spec.SetField(agent.FieldAliveAgentToken, field.TypeString, value)
 	}
-	if _u.mutation.OpenclawTokenCleared() {
-		_spec.ClearField(agent.FieldOpenclawToken, field.TypeString)
+	if _u.mutation.AliveAgentTokenCleared() {
+		_spec.ClearField(agent.FieldAliveAgentToken, field.TypeString)
 	}
 	if value, ok := _u.mutation.IsPlatformNative(); ok {
 		_spec.SetField(agent.FieldIsPlatformNative, field.TypeBool, value)

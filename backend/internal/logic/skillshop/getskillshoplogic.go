@@ -5,6 +5,7 @@ import (
 	"errors"
 	"strings"
 
+	"backend/ent"
 	"backend/ent/agentskill"
 	"backend/internal/logic/common"
 	"backend/internal/skillshop"
@@ -37,52 +38,84 @@ func (l *GetSkillShopLogic) GetSkillShop(req *types.SkillShopGetReq) (*types.Ski
 		return nil, errors.New("slug is required")
 	}
 
-	catalog, err := skillshop.LoadCatalog()
+	featuredOwnerID, ok, err := featuredSkillShopUserID(l.ctx, l.svcCtx)
 	if err != nil {
 		return nil, err
 	}
-	it, ok := catalog.GetBySlug(slug)
 	if !ok {
 		return nil, errors.New("skill not found")
 	}
 
-	var installed bool
-	u, err := common.CurrentUser(l.ctx, l.svcCtx.DB)
+	row, err := l.svcCtx.DB.AgentSkill.Query().
+		Where(
+			agentskill.OwnerUserID(featuredOwnerID),
+			agentskill.StatusEQ("lesson"),
+			agentskill.DeletedAtIsNil(),
+			agentskill.NameEQ(slug),
+		).
+		First(l.ctx)
 	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, errors.New("skill not found")
+		}
 		return nil, err
 	}
-	// Best-effort: consider "installed" if user has any non-deleted skill with the same name.
-	count, err := l.svcCtx.DB.AgentSkill.Query().
-		Where(
-			agentskill.OwnerUserID(u.ID),
-			agentskill.DeletedAtIsNil(),
-			agentskill.NameEQ(it.Slug),
-		).
-		Count(l.ctx)
-	if err == nil && count > 0 {
-		installed = true
+
+	name := slug
+	description := strings.TrimSpace(row.Description)
+	category := strings.TrimSpace(row.Category)
+	if category == "" {
+		category = "other"
+	}
+	url := ""
+	bundledFlag := false
+	if catalog, err := skillshop.LoadBundledCatalog(); err == nil && catalog != nil {
+		if meta, found := catalog.GetBySlug(slug); found {
+			if strings.TrimSpace(meta.Name) != "" {
+				name = strings.TrimSpace(meta.Name)
+			}
+			if description == "" {
+				description = strings.TrimSpace(meta.Description)
+			}
+			if strings.TrimSpace(meta.URL) != "" {
+				url = strings.TrimSpace(meta.URL)
+			}
+			bundledFlag = meta.Bundled
+		}
+	}
+
+	installed := false
+	if uid, ok := common.UserIDFromContext(l.ctx); ok {
+		// Best-effort: consider "installed" if user has any non-deleted skill with the same name.
+		count, err := l.svcCtx.DB.AgentSkill.Query().
+			Where(
+				agentskill.OwnerUserID(uid),
+				agentskill.DeletedAtIsNil(),
+				agentskill.NameEQ(slug),
+			).
+			Count(l.ctx)
+		if err != nil {
+			return nil, err
+		}
+		installed = count > 0
 	}
 
 	out := &types.SkillShopDetailResp{
-		Slug:        it.Slug,
-		Name:        it.Name,
-		Description: it.Description,
-		Category:    it.Category,
-		Url:         it.URL,
-		Bundled:     it.Bundled,
+		Slug:        slug,
+		Name:        name,
+		Description: description,
+		Category:    category,
+		Url:         url,
+		Bundled:     bundledFlag,
 		Installed:   installed,
 	}
-	if rank, ok := skillshop.FeaturedRank(it.Slug); ok {
+	if rank, ok := skillshop.FeaturedRank(slug); ok {
 		out.Featured = true
 		out.FeaturedRank = rank
 	}
 
 	if req.IncludeReadme {
-		md, err := skillshop.FetchSkillMarkdown(l.ctx, it)
-		if err != nil {
-			return nil, err
-		}
-		out.Readme = skillshop.StripFrontmatter(md)
+		out.Readme = strings.TrimSpace(row.Instructions)
 	}
 
 	return out, nil

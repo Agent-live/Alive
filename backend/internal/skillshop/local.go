@@ -12,7 +12,7 @@ var (
 	localRepoRoot string
 )
 
-// LocalRepoRoot returns a filesystem path to a local clone of the openclaw/skills repo if found.
+// LocalRepoRoot returns a filesystem path to a local clone of the alive-agent/skills repo if found.
 //
 // This is optional: if not found, the backend will fall back to fetching skill markdown from GitHub.
 func LocalRepoRoot() string {
@@ -35,9 +35,8 @@ func LocalRepoPath(repoPath string) (string, bool) {
 func findLocalRepoRoot() string {
 	// Highest priority: explicit env override.
 	for _, key := range []string{
-		"ALIVE_OPENCLAW_SKILLS_DIR",
+		"ALIVE_AGENT_SKILLS_DIR",
 		"ALIVE_SKILLS_REPO_ROOT",
-		"OPENCLAW_SKILLS_DIR",
 	} {
 		if v := strings.TrimSpace(os.Getenv(key)); v != "" && dirExists(v) {
 			return v
@@ -46,8 +45,8 @@ func findLocalRepoRoot() string {
 
 	// Common container mount / host paths.
 	for _, p := range []string{
-		"/opt/openclaw-skills",
-		"/app/openclaw-skills",
+		"/opt/alive-agent-skills",
+		"/app/alive-agent-skills",
 	} {
 		if dirExists(p) {
 			return p
@@ -56,8 +55,8 @@ func findLocalRepoRoot() string {
 
 	// Repo-relative defaults for local dev.
 	for _, p := range []string{
-		"openclaw-skills",
-		filepath.Join("..", "openclaw-skills"),
+		"alive-agent-skills",
+		filepath.Join("..", "alive-agent-skills"),
 	} {
 		if dirExists(p) {
 			if abs, err := filepath.Abs(p); err == nil {

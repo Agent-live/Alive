@@ -68,6 +68,7 @@ func findAssetPath(name string) (string, error) {
 		return "", err
 	}
 
+	// Search order favors backend-local assets first, then Frontend public assets.
 	candidates := []string{
 		filepath.Join(wd, "..", "assets", name),
 		filepath.Join(wd, "assets", name),

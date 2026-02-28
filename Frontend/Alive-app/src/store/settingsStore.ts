@@ -36,6 +36,7 @@ interface SettingsState {
 
   // Apply server-side user settings without re-syncing them back to the server.
   applyRemoteUserSettings: (settings: { theme?: string; language?: string }) => void
+  syncRemoteSettings: (patch: { theme?: ThemeMode; language?: LanguageCode }) => Promise<void>
 }
 
 // Font size values — labels are i18n keys resolved at render time
@@ -102,6 +103,14 @@ export const useSettingsStore = create<SettingsState>()(
         }
       },
 
+      syncRemoteSettings: async (patch: { theme?: ThemeMode; language?: LanguageCode }) => {
+        const { themeMode, language } = get()
+        await settingsApi.updateUserSettings({
+          theme: patch.theme ?? themeMode,
+          language: patch.language ?? language,
+        })
+      },
+
       setThemeMode: (mode) => {
         let isDark = false
         if (mode === 'system') {
@@ -113,7 +122,7 @@ export const useSettingsStore = create<SettingsState>()(
         set({ themeMode: mode, isDarkMode: isDark })
         applyTheme(isDark)
 
-        void settingsApi.updateUserSettings({ theme: mode }).catch((err) => {
+        void get().syncRemoteSettings({ theme: mode }).catch((err) => {
           console.warn('Failed to sync theme setting:', err)
           toast.error('Failed to save theme setting')
         })
@@ -129,7 +138,7 @@ export const useSettingsStore = create<SettingsState>()(
         set({ themeMode: newMode, isDarkMode: !isDarkMode })
         applyTheme(!isDarkMode)
 
-        void settingsApi.updateUserSettings({ theme: newMode }).catch((err) => {
+        void get().syncRemoteSettings({ theme: newMode }).catch((err) => {
           console.warn('Failed to sync theme setting:', err)
           toast.error('Failed to save theme setting')
         })
@@ -148,7 +157,7 @@ export const useSettingsStore = create<SettingsState>()(
           document.documentElement.dir = config.dir
         }
 
-        void settingsApi.updateUserSettings({ language: lang }).catch((err) => {
+        void get().syncRemoteSettings({ language: lang }).catch((err) => {
           console.warn('Failed to sync language setting:', err)
           toast.error('Failed to save language setting')
         })

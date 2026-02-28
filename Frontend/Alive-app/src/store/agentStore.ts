@@ -87,7 +87,7 @@ export const useAgentStore = create<AgentState>()(
           const primaryId = agents.find((a) => a.isPrimary)?.id ?? agents[0]?.id ?? null;
           set({ myAgents: agents, primaryAgentId: primaryId });
         } catch {
-          set({ myAgents: [] });
+          set({ myAgents: [], primaryAgentId: null, activeAgentId: null });
         }
       },
 
@@ -171,7 +171,6 @@ export const useAgentStore = create<AgentState>()(
       name: 'agent-storage',
       partialize: (state) => ({
         primaryAgentId: state.primaryAgentId,
-        myAgents: state.myAgents.map((a) => ({ id: a.id })),
       }),
     }
   )

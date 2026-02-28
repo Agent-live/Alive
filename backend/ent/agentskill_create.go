@@ -159,30 +159,30 @@ func (_c *AgentSkillCreate) SetNillableTaughtAt(v *time.Time) *AgentSkillCreate 
 	return _c
 }
 
-// SetOpenclawGatewayID sets the "openclaw_gateway_id" field.
-func (_c *AgentSkillCreate) SetOpenclawGatewayID(v string) *AgentSkillCreate {
-	_c.mutation.SetOpenclawGatewayID(v)
+// SetAliveAgentGatewayID sets the "alive_agent_gateway_id" field.
+func (_c *AgentSkillCreate) SetAliveAgentGatewayID(v string) *AgentSkillCreate {
+	_c.mutation.SetAliveAgentGatewayID(v)
 	return _c
 }
 
-// SetNillableOpenclawGatewayID sets the "openclaw_gateway_id" field if the given value is not nil.
-func (_c *AgentSkillCreate) SetNillableOpenclawGatewayID(v *string) *AgentSkillCreate {
+// SetNillableAliveAgentGatewayID sets the "alive_agent_gateway_id" field if the given value is not nil.
+func (_c *AgentSkillCreate) SetNillableAliveAgentGatewayID(v *string) *AgentSkillCreate {
 	if v != nil {
-		_c.SetOpenclawGatewayID(*v)
+		_c.SetAliveAgentGatewayID(*v)
 	}
 	return _c
 }
 
-// SetOpenclawSkillID sets the "openclaw_skill_id" field.
-func (_c *AgentSkillCreate) SetOpenclawSkillID(v string) *AgentSkillCreate {
-	_c.mutation.SetOpenclawSkillID(v)
+// SetAliveAgentSkillID sets the "alive_agent_skill_id" field.
+func (_c *AgentSkillCreate) SetAliveAgentSkillID(v string) *AgentSkillCreate {
+	_c.mutation.SetAliveAgentSkillID(v)
 	return _c
 }
 
-// SetNillableOpenclawSkillID sets the "openclaw_skill_id" field if the given value is not nil.
-func (_c *AgentSkillCreate) SetNillableOpenclawSkillID(v *string) *AgentSkillCreate {
+// SetNillableAliveAgentSkillID sets the "alive_agent_skill_id" field if the given value is not nil.
+func (_c *AgentSkillCreate) SetNillableAliveAgentSkillID(v *string) *AgentSkillCreate {
 	if v != nil {
-		_c.SetOpenclawSkillID(*v)
+		_c.SetAliveAgentSkillID(*v)
 	}
 	return _c
 }
@@ -407,13 +407,13 @@ func (_c *AgentSkillCreate) createSpec() (*AgentSkill, *sqlgraph.CreateSpec) {
 		_spec.SetField(agentskill.FieldTaughtAt, field.TypeTime, value)
 		_node.TaughtAt = &value
 	}
-	if value, ok := _c.mutation.OpenclawGatewayID(); ok {
-		_spec.SetField(agentskill.FieldOpenclawGatewayID, field.TypeString, value)
-		_node.OpenclawGatewayID = &value
+	if value, ok := _c.mutation.AliveAgentGatewayID(); ok {
+		_spec.SetField(agentskill.FieldAliveAgentGatewayID, field.TypeString, value)
+		_node.AliveAgentGatewayID = &value
 	}
-	if value, ok := _c.mutation.OpenclawSkillID(); ok {
-		_spec.SetField(agentskill.FieldOpenclawSkillID, field.TypeString, value)
-		_node.OpenclawSkillID = &value
+	if value, ok := _c.mutation.AliveAgentSkillID(); ok {
+		_spec.SetField(agentskill.FieldAliveAgentSkillID, field.TypeString, value)
+		_node.AliveAgentSkillID = &value
 	}
 	if value, ok := _c.mutation.DeletedAt(); ok {
 		_spec.SetField(agentskill.FieldDeletedAt, field.TypeTime, value)

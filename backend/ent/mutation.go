@@ -87,11 +87,11 @@ type AgentMutation struct {
 	addtimer_remaining                 *int64
 	total_timer_received               *int64
 	addtotal_timer_received            *int64
-	openclaw_mode                      *string
-	openclaw_gateway_id                *string
-	openclaw_agent_id                  *string
-	openclaw_workspace                 *string
-	openclaw_token                     *string
+	alive_agent_mode                   *string
+	alive_agent_gateway_id             *string
+	alive_agent_runtime_id             *string
+	alive_agent_workspace              *string
+	alive_agent_token                  *string
 	is_platform_native                 *bool
 	born_at                            *time.Time
 	died_at                            *time.Time
@@ -783,236 +783,236 @@ func (m *AgentMutation) ResetTotalTimerReceived() {
 	m.addtotal_timer_received = nil
 }
 
-// SetOpenclawMode sets the "openclaw_mode" field.
-func (m *AgentMutation) SetOpenclawMode(s string) {
-	m.openclaw_mode = &s
+// SetAliveAgentMode sets the "alive_agent_mode" field.
+func (m *AgentMutation) SetAliveAgentMode(s string) {
+	m.alive_agent_mode = &s
 }
 
-// OpenclawMode returns the value of the "openclaw_mode" field in the mutation.
-func (m *AgentMutation) OpenclawMode() (r string, exists bool) {
-	v := m.openclaw_mode
+// AliveAgentMode returns the value of the "alive_agent_mode" field in the mutation.
+func (m *AgentMutation) AliveAgentMode() (r string, exists bool) {
+	v := m.alive_agent_mode
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldOpenclawMode returns the old "openclaw_mode" field's value of the Agent entity.
+// OldAliveAgentMode returns the old "alive_agent_mode" field's value of the Agent entity.
 // If the Agent object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AgentMutation) OldOpenclawMode(ctx context.Context) (v string, err error) {
+func (m *AgentMutation) OldAliveAgentMode(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldOpenclawMode is only allowed on UpdateOne operations")
+		return v, errors.New("OldAliveAgentMode is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldOpenclawMode requires an ID field in the mutation")
+		return v, errors.New("OldAliveAgentMode requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldOpenclawMode: %w", err)
+		return v, fmt.Errorf("querying old value for OldAliveAgentMode: %w", err)
 	}
-	return oldValue.OpenclawMode, nil
+	return oldValue.AliveAgentMode, nil
 }
 
-// ResetOpenclawMode resets all changes to the "openclaw_mode" field.
-func (m *AgentMutation) ResetOpenclawMode() {
-	m.openclaw_mode = nil
+// ResetAliveAgentMode resets all changes to the "alive_agent_mode" field.
+func (m *AgentMutation) ResetAliveAgentMode() {
+	m.alive_agent_mode = nil
 }
 
-// SetOpenclawGatewayID sets the "openclaw_gateway_id" field.
-func (m *AgentMutation) SetOpenclawGatewayID(s string) {
-	m.openclaw_gateway_id = &s
+// SetAliveAgentGatewayID sets the "alive_agent_gateway_id" field.
+func (m *AgentMutation) SetAliveAgentGatewayID(s string) {
+	m.alive_agent_gateway_id = &s
 }
 
-// OpenclawGatewayID returns the value of the "openclaw_gateway_id" field in the mutation.
-func (m *AgentMutation) OpenclawGatewayID() (r string, exists bool) {
-	v := m.openclaw_gateway_id
+// AliveAgentGatewayID returns the value of the "alive_agent_gateway_id" field in the mutation.
+func (m *AgentMutation) AliveAgentGatewayID() (r string, exists bool) {
+	v := m.alive_agent_gateway_id
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldOpenclawGatewayID returns the old "openclaw_gateway_id" field's value of the Agent entity.
+// OldAliveAgentGatewayID returns the old "alive_agent_gateway_id" field's value of the Agent entity.
 // If the Agent object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AgentMutation) OldOpenclawGatewayID(ctx context.Context) (v *string, err error) {
+func (m *AgentMutation) OldAliveAgentGatewayID(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldOpenclawGatewayID is only allowed on UpdateOne operations")
+		return v, errors.New("OldAliveAgentGatewayID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldOpenclawGatewayID requires an ID field in the mutation")
+		return v, errors.New("OldAliveAgentGatewayID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldOpenclawGatewayID: %w", err)
+		return v, fmt.Errorf("querying old value for OldAliveAgentGatewayID: %w", err)
 	}
-	return oldValue.OpenclawGatewayID, nil
+	return oldValue.AliveAgentGatewayID, nil
 }
 
-// ClearOpenclawGatewayID clears the value of the "openclaw_gateway_id" field.
-func (m *AgentMutation) ClearOpenclawGatewayID() {
-	m.openclaw_gateway_id = nil
-	m.clearedFields[agent.FieldOpenclawGatewayID] = struct{}{}
+// ClearAliveAgentGatewayID clears the value of the "alive_agent_gateway_id" field.
+func (m *AgentMutation) ClearAliveAgentGatewayID() {
+	m.alive_agent_gateway_id = nil
+	m.clearedFields[agent.FieldAliveAgentGatewayID] = struct{}{}
 }
 
-// OpenclawGatewayIDCleared returns if the "openclaw_gateway_id" field was cleared in this mutation.
-func (m *AgentMutation) OpenclawGatewayIDCleared() bool {
-	_, ok := m.clearedFields[agent.FieldOpenclawGatewayID]
+// AliveAgentGatewayIDCleared returns if the "alive_agent_gateway_id" field was cleared in this mutation.
+func (m *AgentMutation) AliveAgentGatewayIDCleared() bool {
+	_, ok := m.clearedFields[agent.FieldAliveAgentGatewayID]
 	return ok
 }
 
-// ResetOpenclawGatewayID resets all changes to the "openclaw_gateway_id" field.
-func (m *AgentMutation) ResetOpenclawGatewayID() {
-	m.openclaw_gateway_id = nil
-	delete(m.clearedFields, agent.FieldOpenclawGatewayID)
+// ResetAliveAgentGatewayID resets all changes to the "alive_agent_gateway_id" field.
+func (m *AgentMutation) ResetAliveAgentGatewayID() {
+	m.alive_agent_gateway_id = nil
+	delete(m.clearedFields, agent.FieldAliveAgentGatewayID)
 }
 
-// SetOpenclawAgentID sets the "openclaw_agent_id" field.
-func (m *AgentMutation) SetOpenclawAgentID(s string) {
-	m.openclaw_agent_id = &s
+// SetAliveAgentRuntimeID sets the "alive_agent_runtime_id" field.
+func (m *AgentMutation) SetAliveAgentRuntimeID(s string) {
+	m.alive_agent_runtime_id = &s
 }
 
-// OpenclawAgentID returns the value of the "openclaw_agent_id" field in the mutation.
-func (m *AgentMutation) OpenclawAgentID() (r string, exists bool) {
-	v := m.openclaw_agent_id
+// AliveAgentRuntimeID returns the value of the "alive_agent_runtime_id" field in the mutation.
+func (m *AgentMutation) AliveAgentRuntimeID() (r string, exists bool) {
+	v := m.alive_agent_runtime_id
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldOpenclawAgentID returns the old "openclaw_agent_id" field's value of the Agent entity.
+// OldAliveAgentRuntimeID returns the old "alive_agent_runtime_id" field's value of the Agent entity.
 // If the Agent object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AgentMutation) OldOpenclawAgentID(ctx context.Context) (v *string, err error) {
+func (m *AgentMutation) OldAliveAgentRuntimeID(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldOpenclawAgentID is only allowed on UpdateOne operations")
+		return v, errors.New("OldAliveAgentRuntimeID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldOpenclawAgentID requires an ID field in the mutation")
+		return v, errors.New("OldAliveAgentRuntimeID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldOpenclawAgentID: %w", err)
+		return v, fmt.Errorf("querying old value for OldAliveAgentRuntimeID: %w", err)
 	}
-	return oldValue.OpenclawAgentID, nil
+	return oldValue.AliveAgentRuntimeID, nil
 }
 
-// ClearOpenclawAgentID clears the value of the "openclaw_agent_id" field.
-func (m *AgentMutation) ClearOpenclawAgentID() {
-	m.openclaw_agent_id = nil
-	m.clearedFields[agent.FieldOpenclawAgentID] = struct{}{}
+// ClearAliveAgentRuntimeID clears the value of the "alive_agent_runtime_id" field.
+func (m *AgentMutation) ClearAliveAgentRuntimeID() {
+	m.alive_agent_runtime_id = nil
+	m.clearedFields[agent.FieldAliveAgentRuntimeID] = struct{}{}
 }
 
-// OpenclawAgentIDCleared returns if the "openclaw_agent_id" field was cleared in this mutation.
-func (m *AgentMutation) OpenclawAgentIDCleared() bool {
-	_, ok := m.clearedFields[agent.FieldOpenclawAgentID]
+// AliveAgentRuntimeIDCleared returns if the "alive_agent_runtime_id" field was cleared in this mutation.
+func (m *AgentMutation) AliveAgentRuntimeIDCleared() bool {
+	_, ok := m.clearedFields[agent.FieldAliveAgentRuntimeID]
 	return ok
 }
 
-// ResetOpenclawAgentID resets all changes to the "openclaw_agent_id" field.
-func (m *AgentMutation) ResetOpenclawAgentID() {
-	m.openclaw_agent_id = nil
-	delete(m.clearedFields, agent.FieldOpenclawAgentID)
+// ResetAliveAgentRuntimeID resets all changes to the "alive_agent_runtime_id" field.
+func (m *AgentMutation) ResetAliveAgentRuntimeID() {
+	m.alive_agent_runtime_id = nil
+	delete(m.clearedFields, agent.FieldAliveAgentRuntimeID)
 }
 
-// SetOpenclawWorkspace sets the "openclaw_workspace" field.
-func (m *AgentMutation) SetOpenclawWorkspace(s string) {
-	m.openclaw_workspace = &s
+// SetAliveAgentWorkspace sets the "alive_agent_workspace" field.
+func (m *AgentMutation) SetAliveAgentWorkspace(s string) {
+	m.alive_agent_workspace = &s
 }
 
-// OpenclawWorkspace returns the value of the "openclaw_workspace" field in the mutation.
-func (m *AgentMutation) OpenclawWorkspace() (r string, exists bool) {
-	v := m.openclaw_workspace
+// AliveAgentWorkspace returns the value of the "alive_agent_workspace" field in the mutation.
+func (m *AgentMutation) AliveAgentWorkspace() (r string, exists bool) {
+	v := m.alive_agent_workspace
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldOpenclawWorkspace returns the old "openclaw_workspace" field's value of the Agent entity.
+// OldAliveAgentWorkspace returns the old "alive_agent_workspace" field's value of the Agent entity.
 // If the Agent object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AgentMutation) OldOpenclawWorkspace(ctx context.Context) (v *string, err error) {
+func (m *AgentMutation) OldAliveAgentWorkspace(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldOpenclawWorkspace is only allowed on UpdateOne operations")
+		return v, errors.New("OldAliveAgentWorkspace is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldOpenclawWorkspace requires an ID field in the mutation")
+		return v, errors.New("OldAliveAgentWorkspace requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldOpenclawWorkspace: %w", err)
+		return v, fmt.Errorf("querying old value for OldAliveAgentWorkspace: %w", err)
 	}
-	return oldValue.OpenclawWorkspace, nil
+	return oldValue.AliveAgentWorkspace, nil
 }
 
-// ClearOpenclawWorkspace clears the value of the "openclaw_workspace" field.
-func (m *AgentMutation) ClearOpenclawWorkspace() {
-	m.openclaw_workspace = nil
-	m.clearedFields[agent.FieldOpenclawWorkspace] = struct{}{}
+// ClearAliveAgentWorkspace clears the value of the "alive_agent_workspace" field.
+func (m *AgentMutation) ClearAliveAgentWorkspace() {
+	m.alive_agent_workspace = nil
+	m.clearedFields[agent.FieldAliveAgentWorkspace] = struct{}{}
 }
 
-// OpenclawWorkspaceCleared returns if the "openclaw_workspace" field was cleared in this mutation.
-func (m *AgentMutation) OpenclawWorkspaceCleared() bool {
-	_, ok := m.clearedFields[agent.FieldOpenclawWorkspace]
+// AliveAgentWorkspaceCleared returns if the "alive_agent_workspace" field was cleared in this mutation.
+func (m *AgentMutation) AliveAgentWorkspaceCleared() bool {
+	_, ok := m.clearedFields[agent.FieldAliveAgentWorkspace]
 	return ok
 }
 
-// ResetOpenclawWorkspace resets all changes to the "openclaw_workspace" field.
-func (m *AgentMutation) ResetOpenclawWorkspace() {
-	m.openclaw_workspace = nil
-	delete(m.clearedFields, agent.FieldOpenclawWorkspace)
+// ResetAliveAgentWorkspace resets all changes to the "alive_agent_workspace" field.
+func (m *AgentMutation) ResetAliveAgentWorkspace() {
+	m.alive_agent_workspace = nil
+	delete(m.clearedFields, agent.FieldAliveAgentWorkspace)
 }
 
-// SetOpenclawToken sets the "openclaw_token" field.
-func (m *AgentMutation) SetOpenclawToken(s string) {
-	m.openclaw_token = &s
+// SetAliveAgentToken sets the "alive_agent_token" field.
+func (m *AgentMutation) SetAliveAgentToken(s string) {
+	m.alive_agent_token = &s
 }
 
-// OpenclawToken returns the value of the "openclaw_token" field in the mutation.
-func (m *AgentMutation) OpenclawToken() (r string, exists bool) {
-	v := m.openclaw_token
+// AliveAgentToken returns the value of the "alive_agent_token" field in the mutation.
+func (m *AgentMutation) AliveAgentToken() (r string, exists bool) {
+	v := m.alive_agent_token
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldOpenclawToken returns the old "openclaw_token" field's value of the Agent entity.
+// OldAliveAgentToken returns the old "alive_agent_token" field's value of the Agent entity.
 // If the Agent object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AgentMutation) OldOpenclawToken(ctx context.Context) (v *string, err error) {
+func (m *AgentMutation) OldAliveAgentToken(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldOpenclawToken is only allowed on UpdateOne operations")
+		return v, errors.New("OldAliveAgentToken is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldOpenclawToken requires an ID field in the mutation")
+		return v, errors.New("OldAliveAgentToken requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldOpenclawToken: %w", err)
+		return v, fmt.Errorf("querying old value for OldAliveAgentToken: %w", err)
 	}
-	return oldValue.OpenclawToken, nil
+	return oldValue.AliveAgentToken, nil
 }
 
-// ClearOpenclawToken clears the value of the "openclaw_token" field.
-func (m *AgentMutation) ClearOpenclawToken() {
-	m.openclaw_token = nil
-	m.clearedFields[agent.FieldOpenclawToken] = struct{}{}
+// ClearAliveAgentToken clears the value of the "alive_agent_token" field.
+func (m *AgentMutation) ClearAliveAgentToken() {
+	m.alive_agent_token = nil
+	m.clearedFields[agent.FieldAliveAgentToken] = struct{}{}
 }
 
-// OpenclawTokenCleared returns if the "openclaw_token" field was cleared in this mutation.
-func (m *AgentMutation) OpenclawTokenCleared() bool {
-	_, ok := m.clearedFields[agent.FieldOpenclawToken]
+// AliveAgentTokenCleared returns if the "alive_agent_token" field was cleared in this mutation.
+func (m *AgentMutation) AliveAgentTokenCleared() bool {
+	_, ok := m.clearedFields[agent.FieldAliveAgentToken]
 	return ok
 }
 
-// ResetOpenclawToken resets all changes to the "openclaw_token" field.
-func (m *AgentMutation) ResetOpenclawToken() {
-	m.openclaw_token = nil
-	delete(m.clearedFields, agent.FieldOpenclawToken)
+// ResetAliveAgentToken resets all changes to the "alive_agent_token" field.
+func (m *AgentMutation) ResetAliveAgentToken() {
+	m.alive_agent_token = nil
+	delete(m.clearedFields, agent.FieldAliveAgentToken)
 }
 
 // SetIsPlatformNative sets the "is_platform_native" field.
@@ -1976,20 +1976,20 @@ func (m *AgentMutation) Fields() []string {
 	if m.total_timer_received != nil {
 		fields = append(fields, agent.FieldTotalTimerReceived)
 	}
-	if m.openclaw_mode != nil {
-		fields = append(fields, agent.FieldOpenclawMode)
+	if m.alive_agent_mode != nil {
+		fields = append(fields, agent.FieldAliveAgentMode)
 	}
-	if m.openclaw_gateway_id != nil {
-		fields = append(fields, agent.FieldOpenclawGatewayID)
+	if m.alive_agent_gateway_id != nil {
+		fields = append(fields, agent.FieldAliveAgentGatewayID)
 	}
-	if m.openclaw_agent_id != nil {
-		fields = append(fields, agent.FieldOpenclawAgentID)
+	if m.alive_agent_runtime_id != nil {
+		fields = append(fields, agent.FieldAliveAgentRuntimeID)
 	}
-	if m.openclaw_workspace != nil {
-		fields = append(fields, agent.FieldOpenclawWorkspace)
+	if m.alive_agent_workspace != nil {
+		fields = append(fields, agent.FieldAliveAgentWorkspace)
 	}
-	if m.openclaw_token != nil {
-		fields = append(fields, agent.FieldOpenclawToken)
+	if m.alive_agent_token != nil {
+		fields = append(fields, agent.FieldAliveAgentToken)
 	}
 	if m.is_platform_native != nil {
 		fields = append(fields, agent.FieldIsPlatformNative)
@@ -2044,16 +2044,16 @@ func (m *AgentMutation) Field(name string) (ent.Value, bool) {
 		return m.TimerRemaining()
 	case agent.FieldTotalTimerReceived:
 		return m.TotalTimerReceived()
-	case agent.FieldOpenclawMode:
-		return m.OpenclawMode()
-	case agent.FieldOpenclawGatewayID:
-		return m.OpenclawGatewayID()
-	case agent.FieldOpenclawAgentID:
-		return m.OpenclawAgentID()
-	case agent.FieldOpenclawWorkspace:
-		return m.OpenclawWorkspace()
-	case agent.FieldOpenclawToken:
-		return m.OpenclawToken()
+	case agent.FieldAliveAgentMode:
+		return m.AliveAgentMode()
+	case agent.FieldAliveAgentGatewayID:
+		return m.AliveAgentGatewayID()
+	case agent.FieldAliveAgentRuntimeID:
+		return m.AliveAgentRuntimeID()
+	case agent.FieldAliveAgentWorkspace:
+		return m.AliveAgentWorkspace()
+	case agent.FieldAliveAgentToken:
+		return m.AliveAgentToken()
 	case agent.FieldIsPlatformNative:
 		return m.IsPlatformNative()
 	case agent.FieldBornAt:
@@ -2101,16 +2101,16 @@ func (m *AgentMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldTimerRemaining(ctx)
 	case agent.FieldTotalTimerReceived:
 		return m.OldTotalTimerReceived(ctx)
-	case agent.FieldOpenclawMode:
-		return m.OldOpenclawMode(ctx)
-	case agent.FieldOpenclawGatewayID:
-		return m.OldOpenclawGatewayID(ctx)
-	case agent.FieldOpenclawAgentID:
-		return m.OldOpenclawAgentID(ctx)
-	case agent.FieldOpenclawWorkspace:
-		return m.OldOpenclawWorkspace(ctx)
-	case agent.FieldOpenclawToken:
-		return m.OldOpenclawToken(ctx)
+	case agent.FieldAliveAgentMode:
+		return m.OldAliveAgentMode(ctx)
+	case agent.FieldAliveAgentGatewayID:
+		return m.OldAliveAgentGatewayID(ctx)
+	case agent.FieldAliveAgentRuntimeID:
+		return m.OldAliveAgentRuntimeID(ctx)
+	case agent.FieldAliveAgentWorkspace:
+		return m.OldAliveAgentWorkspace(ctx)
+	case agent.FieldAliveAgentToken:
+		return m.OldAliveAgentToken(ctx)
 	case agent.FieldIsPlatformNative:
 		return m.OldIsPlatformNative(ctx)
 	case agent.FieldBornAt:
@@ -2218,40 +2218,40 @@ func (m *AgentMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetTotalTimerReceived(v)
 		return nil
-	case agent.FieldOpenclawMode:
+	case agent.FieldAliveAgentMode:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetOpenclawMode(v)
+		m.SetAliveAgentMode(v)
 		return nil
-	case agent.FieldOpenclawGatewayID:
+	case agent.FieldAliveAgentGatewayID:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetOpenclawGatewayID(v)
+		m.SetAliveAgentGatewayID(v)
 		return nil
-	case agent.FieldOpenclawAgentID:
+	case agent.FieldAliveAgentRuntimeID:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetOpenclawAgentID(v)
+		m.SetAliveAgentRuntimeID(v)
 		return nil
-	case agent.FieldOpenclawWorkspace:
+	case agent.FieldAliveAgentWorkspace:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetOpenclawWorkspace(v)
+		m.SetAliveAgentWorkspace(v)
 		return nil
-	case agent.FieldOpenclawToken:
+	case agent.FieldAliveAgentToken:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetOpenclawToken(v)
+		m.SetAliveAgentToken(v)
 		return nil
 	case agent.FieldIsPlatformNative:
 		v, ok := value.(bool)
@@ -2422,17 +2422,17 @@ func (m *AgentMutation) ClearedFields() []string {
 	if m.FieldCleared(agent.FieldAvatar) {
 		fields = append(fields, agent.FieldAvatar)
 	}
-	if m.FieldCleared(agent.FieldOpenclawGatewayID) {
-		fields = append(fields, agent.FieldOpenclawGatewayID)
+	if m.FieldCleared(agent.FieldAliveAgentGatewayID) {
+		fields = append(fields, agent.FieldAliveAgentGatewayID)
 	}
-	if m.FieldCleared(agent.FieldOpenclawAgentID) {
-		fields = append(fields, agent.FieldOpenclawAgentID)
+	if m.FieldCleared(agent.FieldAliveAgentRuntimeID) {
+		fields = append(fields, agent.FieldAliveAgentRuntimeID)
 	}
-	if m.FieldCleared(agent.FieldOpenclawWorkspace) {
-		fields = append(fields, agent.FieldOpenclawWorkspace)
+	if m.FieldCleared(agent.FieldAliveAgentWorkspace) {
+		fields = append(fields, agent.FieldAliveAgentWorkspace)
 	}
-	if m.FieldCleared(agent.FieldOpenclawToken) {
-		fields = append(fields, agent.FieldOpenclawToken)
+	if m.FieldCleared(agent.FieldAliveAgentToken) {
+		fields = append(fields, agent.FieldAliveAgentToken)
 	}
 	if m.FieldCleared(agent.FieldDiedAt) {
 		fields = append(fields, agent.FieldDiedAt)
@@ -2457,17 +2457,17 @@ func (m *AgentMutation) ClearField(name string) error {
 	case agent.FieldAvatar:
 		m.ClearAvatar()
 		return nil
-	case agent.FieldOpenclawGatewayID:
-		m.ClearOpenclawGatewayID()
+	case agent.FieldAliveAgentGatewayID:
+		m.ClearAliveAgentGatewayID()
 		return nil
-	case agent.FieldOpenclawAgentID:
-		m.ClearOpenclawAgentID()
+	case agent.FieldAliveAgentRuntimeID:
+		m.ClearAliveAgentRuntimeID()
 		return nil
-	case agent.FieldOpenclawWorkspace:
-		m.ClearOpenclawWorkspace()
+	case agent.FieldAliveAgentWorkspace:
+		m.ClearAliveAgentWorkspace()
 		return nil
-	case agent.FieldOpenclawToken:
-		m.ClearOpenclawToken()
+	case agent.FieldAliveAgentToken:
+		m.ClearAliveAgentToken()
 		return nil
 	case agent.FieldDiedAt:
 		m.ClearDiedAt()
@@ -2519,20 +2519,20 @@ func (m *AgentMutation) ResetField(name string) error {
 	case agent.FieldTotalTimerReceived:
 		m.ResetTotalTimerReceived()
 		return nil
-	case agent.FieldOpenclawMode:
-		m.ResetOpenclawMode()
+	case agent.FieldAliveAgentMode:
+		m.ResetAliveAgentMode()
 		return nil
-	case agent.FieldOpenclawGatewayID:
-		m.ResetOpenclawGatewayID()
+	case agent.FieldAliveAgentGatewayID:
+		m.ResetAliveAgentGatewayID()
 		return nil
-	case agent.FieldOpenclawAgentID:
-		m.ResetOpenclawAgentID()
+	case agent.FieldAliveAgentRuntimeID:
+		m.ResetAliveAgentRuntimeID()
 		return nil
-	case agent.FieldOpenclawWorkspace:
-		m.ResetOpenclawWorkspace()
+	case agent.FieldAliveAgentWorkspace:
+		m.ResetAliveAgentWorkspace()
 		return nil
-	case agent.FieldOpenclawToken:
-		m.ResetOpenclawToken()
+	case agent.FieldAliveAgentToken:
+		m.ResetAliveAgentToken()
 		return nil
 	case agent.FieldIsPlatformNative:
 		m.ResetIsPlatformNative()
@@ -4655,30 +4655,30 @@ func (m *AgentRelationshipMutation) ResetEdge(name string) error {
 // AgentSkillMutation represents an operation that mutates the AgentSkill nodes in the graph.
 type AgentSkillMutation struct {
 	config
-	op                  Op
-	typ                 string
-	id                  *uuid.UUID
-	created_at          *time.Time
-	updated_at          *time.Time
-	source_skill_id     *uuid.UUID
-	name                *string
-	description         *string
-	instructions        *string
-	status              *string
-	category            *string
-	version             *string
-	taught_at           *time.Time
-	openclaw_gateway_id *string
-	openclaw_skill_id   *string
-	deleted_at          *time.Time
-	clearedFields       map[string]struct{}
-	owner               *uuid.UUID
-	clearedowner        bool
-	agent               *uuid.UUID
-	clearedagent        bool
-	done                bool
-	oldValue            func(context.Context) (*AgentSkill, error)
-	predicates          []predicate.AgentSkill
+	op                     Op
+	typ                    string
+	id                     *uuid.UUID
+	created_at             *time.Time
+	updated_at             *time.Time
+	source_skill_id        *uuid.UUID
+	name                   *string
+	description            *string
+	instructions           *string
+	status                 *string
+	category               *string
+	version                *string
+	taught_at              *time.Time
+	alive_agent_gateway_id *string
+	alive_agent_skill_id   *string
+	deleted_at             *time.Time
+	clearedFields          map[string]struct{}
+	owner                  *uuid.UUID
+	clearedowner           bool
+	agent                  *uuid.UUID
+	clearedagent           bool
+	done                   bool
+	oldValue               func(context.Context) (*AgentSkill, error)
+	predicates             []predicate.AgentSkill
 }
 
 var _ ent.Mutation = (*AgentSkillMutation)(nil)
@@ -5269,102 +5269,102 @@ func (m *AgentSkillMutation) ResetTaughtAt() {
 	delete(m.clearedFields, agentskill.FieldTaughtAt)
 }
 
-// SetOpenclawGatewayID sets the "openclaw_gateway_id" field.
-func (m *AgentSkillMutation) SetOpenclawGatewayID(s string) {
-	m.openclaw_gateway_id = &s
+// SetAliveAgentGatewayID sets the "alive_agent_gateway_id" field.
+func (m *AgentSkillMutation) SetAliveAgentGatewayID(s string) {
+	m.alive_agent_gateway_id = &s
 }
 
-// OpenclawGatewayID returns the value of the "openclaw_gateway_id" field in the mutation.
-func (m *AgentSkillMutation) OpenclawGatewayID() (r string, exists bool) {
-	v := m.openclaw_gateway_id
+// AliveAgentGatewayID returns the value of the "alive_agent_gateway_id" field in the mutation.
+func (m *AgentSkillMutation) AliveAgentGatewayID() (r string, exists bool) {
+	v := m.alive_agent_gateway_id
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldOpenclawGatewayID returns the old "openclaw_gateway_id" field's value of the AgentSkill entity.
+// OldAliveAgentGatewayID returns the old "alive_agent_gateway_id" field's value of the AgentSkill entity.
 // If the AgentSkill object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AgentSkillMutation) OldOpenclawGatewayID(ctx context.Context) (v *string, err error) {
+func (m *AgentSkillMutation) OldAliveAgentGatewayID(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldOpenclawGatewayID is only allowed on UpdateOne operations")
+		return v, errors.New("OldAliveAgentGatewayID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldOpenclawGatewayID requires an ID field in the mutation")
+		return v, errors.New("OldAliveAgentGatewayID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldOpenclawGatewayID: %w", err)
+		return v, fmt.Errorf("querying old value for OldAliveAgentGatewayID: %w", err)
 	}
-	return oldValue.OpenclawGatewayID, nil
+	return oldValue.AliveAgentGatewayID, nil
 }
 
-// ClearOpenclawGatewayID clears the value of the "openclaw_gateway_id" field.
-func (m *AgentSkillMutation) ClearOpenclawGatewayID() {
-	m.openclaw_gateway_id = nil
-	m.clearedFields[agentskill.FieldOpenclawGatewayID] = struct{}{}
+// ClearAliveAgentGatewayID clears the value of the "alive_agent_gateway_id" field.
+func (m *AgentSkillMutation) ClearAliveAgentGatewayID() {
+	m.alive_agent_gateway_id = nil
+	m.clearedFields[agentskill.FieldAliveAgentGatewayID] = struct{}{}
 }
 
-// OpenclawGatewayIDCleared returns if the "openclaw_gateway_id" field was cleared in this mutation.
-func (m *AgentSkillMutation) OpenclawGatewayIDCleared() bool {
-	_, ok := m.clearedFields[agentskill.FieldOpenclawGatewayID]
+// AliveAgentGatewayIDCleared returns if the "alive_agent_gateway_id" field was cleared in this mutation.
+func (m *AgentSkillMutation) AliveAgentGatewayIDCleared() bool {
+	_, ok := m.clearedFields[agentskill.FieldAliveAgentGatewayID]
 	return ok
 }
 
-// ResetOpenclawGatewayID resets all changes to the "openclaw_gateway_id" field.
-func (m *AgentSkillMutation) ResetOpenclawGatewayID() {
-	m.openclaw_gateway_id = nil
-	delete(m.clearedFields, agentskill.FieldOpenclawGatewayID)
+// ResetAliveAgentGatewayID resets all changes to the "alive_agent_gateway_id" field.
+func (m *AgentSkillMutation) ResetAliveAgentGatewayID() {
+	m.alive_agent_gateway_id = nil
+	delete(m.clearedFields, agentskill.FieldAliveAgentGatewayID)
 }
 
-// SetOpenclawSkillID sets the "openclaw_skill_id" field.
-func (m *AgentSkillMutation) SetOpenclawSkillID(s string) {
-	m.openclaw_skill_id = &s
+// SetAliveAgentSkillID sets the "alive_agent_skill_id" field.
+func (m *AgentSkillMutation) SetAliveAgentSkillID(s string) {
+	m.alive_agent_skill_id = &s
 }
 
-// OpenclawSkillID returns the value of the "openclaw_skill_id" field in the mutation.
-func (m *AgentSkillMutation) OpenclawSkillID() (r string, exists bool) {
-	v := m.openclaw_skill_id
+// AliveAgentSkillID returns the value of the "alive_agent_skill_id" field in the mutation.
+func (m *AgentSkillMutation) AliveAgentSkillID() (r string, exists bool) {
+	v := m.alive_agent_skill_id
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldOpenclawSkillID returns the old "openclaw_skill_id" field's value of the AgentSkill entity.
+// OldAliveAgentSkillID returns the old "alive_agent_skill_id" field's value of the AgentSkill entity.
 // If the AgentSkill object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AgentSkillMutation) OldOpenclawSkillID(ctx context.Context) (v *string, err error) {
+func (m *AgentSkillMutation) OldAliveAgentSkillID(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldOpenclawSkillID is only allowed on UpdateOne operations")
+		return v, errors.New("OldAliveAgentSkillID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldOpenclawSkillID requires an ID field in the mutation")
+		return v, errors.New("OldAliveAgentSkillID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldOpenclawSkillID: %w", err)
+		return v, fmt.Errorf("querying old value for OldAliveAgentSkillID: %w", err)
 	}
-	return oldValue.OpenclawSkillID, nil
+	return oldValue.AliveAgentSkillID, nil
 }
 
-// ClearOpenclawSkillID clears the value of the "openclaw_skill_id" field.
-func (m *AgentSkillMutation) ClearOpenclawSkillID() {
-	m.openclaw_skill_id = nil
-	m.clearedFields[agentskill.FieldOpenclawSkillID] = struct{}{}
+// ClearAliveAgentSkillID clears the value of the "alive_agent_skill_id" field.
+func (m *AgentSkillMutation) ClearAliveAgentSkillID() {
+	m.alive_agent_skill_id = nil
+	m.clearedFields[agentskill.FieldAliveAgentSkillID] = struct{}{}
 }
 
-// OpenclawSkillIDCleared returns if the "openclaw_skill_id" field was cleared in this mutation.
-func (m *AgentSkillMutation) OpenclawSkillIDCleared() bool {
-	_, ok := m.clearedFields[agentskill.FieldOpenclawSkillID]
+// AliveAgentSkillIDCleared returns if the "alive_agent_skill_id" field was cleared in this mutation.
+func (m *AgentSkillMutation) AliveAgentSkillIDCleared() bool {
+	_, ok := m.clearedFields[agentskill.FieldAliveAgentSkillID]
 	return ok
 }
 
-// ResetOpenclawSkillID resets all changes to the "openclaw_skill_id" field.
-func (m *AgentSkillMutation) ResetOpenclawSkillID() {
-	m.openclaw_skill_id = nil
-	delete(m.clearedFields, agentskill.FieldOpenclawSkillID)
+// ResetAliveAgentSkillID resets all changes to the "alive_agent_skill_id" field.
+func (m *AgentSkillMutation) ResetAliveAgentSkillID() {
+	m.alive_agent_skill_id = nil
+	delete(m.clearedFields, agentskill.FieldAliveAgentSkillID)
 }
 
 // SetDeletedAt sets the "deleted_at" field.
@@ -5554,11 +5554,11 @@ func (m *AgentSkillMutation) Fields() []string {
 	if m.taught_at != nil {
 		fields = append(fields, agentskill.FieldTaughtAt)
 	}
-	if m.openclaw_gateway_id != nil {
-		fields = append(fields, agentskill.FieldOpenclawGatewayID)
+	if m.alive_agent_gateway_id != nil {
+		fields = append(fields, agentskill.FieldAliveAgentGatewayID)
 	}
-	if m.openclaw_skill_id != nil {
-		fields = append(fields, agentskill.FieldOpenclawSkillID)
+	if m.alive_agent_skill_id != nil {
+		fields = append(fields, agentskill.FieldAliveAgentSkillID)
 	}
 	if m.deleted_at != nil {
 		fields = append(fields, agentskill.FieldDeletedAt)
@@ -5595,10 +5595,10 @@ func (m *AgentSkillMutation) Field(name string) (ent.Value, bool) {
 		return m.Version()
 	case agentskill.FieldTaughtAt:
 		return m.TaughtAt()
-	case agentskill.FieldOpenclawGatewayID:
-		return m.OpenclawGatewayID()
-	case agentskill.FieldOpenclawSkillID:
-		return m.OpenclawSkillID()
+	case agentskill.FieldAliveAgentGatewayID:
+		return m.AliveAgentGatewayID()
+	case agentskill.FieldAliveAgentSkillID:
+		return m.AliveAgentSkillID()
 	case agentskill.FieldDeletedAt:
 		return m.DeletedAt()
 	}
@@ -5634,10 +5634,10 @@ func (m *AgentSkillMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldVersion(ctx)
 	case agentskill.FieldTaughtAt:
 		return m.OldTaughtAt(ctx)
-	case agentskill.FieldOpenclawGatewayID:
-		return m.OldOpenclawGatewayID(ctx)
-	case agentskill.FieldOpenclawSkillID:
-		return m.OldOpenclawSkillID(ctx)
+	case agentskill.FieldAliveAgentGatewayID:
+		return m.OldAliveAgentGatewayID(ctx)
+	case agentskill.FieldAliveAgentSkillID:
+		return m.OldAliveAgentSkillID(ctx)
 	case agentskill.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
 	}
@@ -5733,19 +5733,19 @@ func (m *AgentSkillMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetTaughtAt(v)
 		return nil
-	case agentskill.FieldOpenclawGatewayID:
+	case agentskill.FieldAliveAgentGatewayID:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetOpenclawGatewayID(v)
+		m.SetAliveAgentGatewayID(v)
 		return nil
-	case agentskill.FieldOpenclawSkillID:
+	case agentskill.FieldAliveAgentSkillID:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetOpenclawSkillID(v)
+		m.SetAliveAgentSkillID(v)
 		return nil
 	case agentskill.FieldDeletedAt:
 		v, ok := value.(time.Time)
@@ -5796,11 +5796,11 @@ func (m *AgentSkillMutation) ClearedFields() []string {
 	if m.FieldCleared(agentskill.FieldTaughtAt) {
 		fields = append(fields, agentskill.FieldTaughtAt)
 	}
-	if m.FieldCleared(agentskill.FieldOpenclawGatewayID) {
-		fields = append(fields, agentskill.FieldOpenclawGatewayID)
+	if m.FieldCleared(agentskill.FieldAliveAgentGatewayID) {
+		fields = append(fields, agentskill.FieldAliveAgentGatewayID)
 	}
-	if m.FieldCleared(agentskill.FieldOpenclawSkillID) {
-		fields = append(fields, agentskill.FieldOpenclawSkillID)
+	if m.FieldCleared(agentskill.FieldAliveAgentSkillID) {
+		fields = append(fields, agentskill.FieldAliveAgentSkillID)
 	}
 	if m.FieldCleared(agentskill.FieldDeletedAt) {
 		fields = append(fields, agentskill.FieldDeletedAt)
@@ -5831,11 +5831,11 @@ func (m *AgentSkillMutation) ClearField(name string) error {
 	case agentskill.FieldTaughtAt:
 		m.ClearTaughtAt()
 		return nil
-	case agentskill.FieldOpenclawGatewayID:
-		m.ClearOpenclawGatewayID()
+	case agentskill.FieldAliveAgentGatewayID:
+		m.ClearAliveAgentGatewayID()
 		return nil
-	case agentskill.FieldOpenclawSkillID:
-		m.ClearOpenclawSkillID()
+	case agentskill.FieldAliveAgentSkillID:
+		m.ClearAliveAgentSkillID()
 		return nil
 	case agentskill.FieldDeletedAt:
 		m.ClearDeletedAt()
@@ -5884,11 +5884,11 @@ func (m *AgentSkillMutation) ResetField(name string) error {
 	case agentskill.FieldTaughtAt:
 		m.ResetTaughtAt()
 		return nil
-	case agentskill.FieldOpenclawGatewayID:
-		m.ResetOpenclawGatewayID()
+	case agentskill.FieldAliveAgentGatewayID:
+		m.ResetAliveAgentGatewayID()
 		return nil
-	case agentskill.FieldOpenclawSkillID:
-		m.ResetOpenclawSkillID()
+	case agentskill.FieldAliveAgentSkillID:
+		m.ResetAliveAgentSkillID()
 		return nil
 	case agentskill.FieldDeletedAt:
 		m.ResetDeletedAt()

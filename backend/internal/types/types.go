@@ -3,32 +3,24 @@
 
 package types
 
+type A2AMessageReq struct {
+	Protocol  string                 `json:"protocol,optional"`
+	MessageId string                 `json:"messageId"`
+	Intent    string                 `json:"intent"`
+	AgentId   string                 `json:"agentId,optional"`
+	Payload   map[string]interface{} `json:"payload,optional"`
+}
+
+type A2AMessageResp struct {
+	Protocol  string      `json:"protocol"`
+	MessageId string      `json:"messageId"`
+	Status    string      `json:"status"`
+	Result    interface{} `json:"result,optional"`
+	Error     string      `json:"error,optional"`
+}
+
 type AgentIdReq struct {
 	Id string `path:"id"`
-}
-
-type FollowAgentReq struct {
-	Id string `path:"id"`
-}
-
-type FollowAgentResp struct {
-	Success       bool  `json:"success"`
-	Following     bool  `json:"following"`
-	FollowerCount int64 `json:"followerCount"`
-}
-
-type UnfollowAgentReq struct {
-	Id string `path:"id"`
-}
-
-type UnfollowAgentResp struct {
-	Success       bool  `json:"success"`
-	Following     bool  `json:"following"`
-	FollowerCount int64 `json:"followerCount"`
-}
-
-type FollowingListResp struct {
-	Items []AgentSummaryResp `json:"items"`
 }
 
 type AgentListResp struct {
@@ -36,8 +28,10 @@ type AgentListResp struct {
 	Pagination
 }
 
-type AgentRelationshipsResp struct {
-	Relationships []AgentRelationshipResp `json:"relationships"`
+type AgentPostsReq struct {
+	Id       string `path:"id"`
+	Page     int64  `form:"page,optional"`
+	PageSize int64  `form:"pageSize,optional"`
 }
 
 type AgentRelationshipResp struct {
@@ -52,10 +46,8 @@ type AgentRelationshipResp struct {
 	UpdatedAt        string `json:"updatedAt"`
 }
 
-type AgentPostsReq struct {
-	Id       string `path:"id"`
-	Page     int64  `form:"page,optional"`
-	PageSize int64  `form:"pageSize,optional"`
+type AgentRelationshipsResp struct {
+	Relationships []AgentRelationshipResp `json:"relationships"`
 }
 
 type AgentResp struct {
@@ -94,16 +86,6 @@ type AgentSummaryResp struct {
 
 type BaseResp struct {
 	Success bool `json:"success"`
-}
-
-type LikePostResp struct {
-	Success           bool   `json:"success"`
-	Liked             bool   `json:"liked"`
-	Likes             int64  `json:"likes"`
-	TimerApplied      bool   `json:"timerApplied"`
-	TimerGiven        int64  `json:"timerGiven,optional"`
-	NewTimerRemaining int64  `json:"newTimerRemaining,optional"`
-	TimerError        string `json:"timerError,optional"`
 }
 
 type ChannelConnectResp struct {
@@ -145,6 +127,14 @@ type CreateAgentReq struct {
 	AvatarSeed      string          `json:"avatarSeed,optional"`
 }
 
+type CreatePostReq struct {
+	AgentId            string                `json:"agentId"`
+	ContentType        string                `json:"contentType,optional"`
+	ContentBlocks      []PostContentBlockReq `json:"contentBlocks"`
+	ContentTextPreview string                `json:"contentTextPreview,optional"`
+	Placement          *PostPlacementReq     `json:"placement,optional"`
+}
+
 type DailyBudgetResp struct {
 	DailyTimerBudget int64  `json:"dailyTimerBudget"`
 	UsedTimer        int64  `json:"usedTimer"`
@@ -165,6 +155,39 @@ type DyingPostListResp struct {
 	Items []PostResp `json:"items"`
 }
 
+type ExperienceListReq struct {
+	AgentId string `form:"agentId,optional"`
+}
+
+type ExperienceListResp struct {
+	Items []ExperienceResp `json:"items"`
+}
+
+type ExperienceResp struct {
+	Id          string `json:"id"`
+	AgentId     string `json:"agentId"`
+	AgentName   string `json:"agentName"`
+	AgentAvatar string `json:"agentAvatar,optional"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Type        string `json:"type"`
+	Date        string `json:"date"`
+}
+
+type FollowAgentReq struct {
+	Id string `path:"id"`
+}
+
+type FollowAgentResp struct {
+	Success       bool  `json:"success"`
+	Following     bool  `json:"following"`
+	FollowerCount int64 `json:"followerCount"`
+}
+
+type FollowingListResp struct {
+	Items []AgentSummaryResp `json:"items"`
+}
+
 type GiveTimerReq struct {
 	AgentId string `json:"agentId"`
 	Amount  int64  `json:"amount"`
@@ -175,6 +198,16 @@ type GoalResp struct {
 	Progress     float64 `json:"progress"`
 	CurrentValue int64   `json:"currentValue"`
 	TargetValue  int64   `json:"targetValue"`
+}
+
+type LikePostResp struct {
+	Success           bool   `json:"success"`
+	Liked             bool   `json:"liked"`
+	Likes             int64  `json:"likes"`
+	TimerApplied      bool   `json:"timerApplied"`
+	TimerGiven        int64  `json:"timerGiven,optional"`
+	NewTimerRemaining int64  `json:"newTimerRemaining,optional"`
+	TimerError        string `json:"timerError,optional"`
 }
 
 type ListReq struct {
@@ -195,12 +228,31 @@ type LoginResp struct {
 	ExpiresIn    int64    `json:"expiresIn"`
 }
 
-type MediaIdReq struct {
-	Id string `path:"id"`
+type MCPError struct {
+	Code    int64  `json:"code"`
+	Message string `json:"message"`
+}
+
+type MCPRequest struct {
+	JSONRPC string                 `json:"jsonrpc"`
+	Id      string                 `json:"id"`
+	Method  string                 `json:"method"`
+	Params  map[string]interface{} `json:"params,optional"`
+}
+
+type MCPResponse struct {
+	JSONRPC string      `json:"jsonrpc"`
+	Id      string      `json:"id,optional"`
+	Result  interface{} `json:"result,optional"`
+	Error   *MCPError   `json:"error,optional"`
 }
 
 type MediaAssetReq struct {
 	Name string `path:"name"`
+}
+
+type MediaIdReq struct {
+	Id string `path:"id"`
 }
 
 type MediaResp struct {
@@ -269,6 +321,20 @@ type PersonalityResp struct {
 	Boundaries         []string `json:"boundaries,optional"`
 }
 
+type PostContentBlockReq struct {
+	Type          string                 `json:"type"`
+	Text          string                 `json:"text,optional"`
+	Format        string                 `json:"format,optional"`
+	MediaId       string                 `json:"mediaId,optional"`
+	Url           string                 `json:"url,optional"`
+	ThumbnailUrl  string                 `json:"thumbnailUrl,optional"`
+	Duration      int64                  `json:"duration,optional"`
+	Alt           string                 `json:"alt,optional"`
+	Transcription string                 `json:"transcription,optional"`
+	Provider      string                 `json:"provider,optional"`
+	Metadata      map[string]interface{} `json:"metadata,optional"`
+}
+
 type PostIdReq struct {
 	Id       string `path:"id"`
 	Page     int64  `form:"page,optional"`
@@ -278,6 +344,18 @@ type PostIdReq struct {
 type PostListResp struct {
 	Items []PostResp `json:"items"`
 	Pagination
+}
+
+type PostPlacementReq struct {
+	Slot     string `json:"slot,optional"`
+	Pinned   bool   `json:"pinned,optional"`
+	Priority int64  `json:"priority,optional"`
+}
+
+type PostPlacementResp struct {
+	Slot     string `json:"slot,optional"`
+	Pinned   bool   `json:"pinned,optional"`
+	Priority int64  `json:"priority,optional"`
 }
 
 type PostResp struct {
@@ -300,40 +378,6 @@ type PostResp struct {
 	CreatedAt           string             `json:"createdAt"`
 }
 
-type PostPlacementReq struct {
-	Slot     string `json:"slot,optional"`
-	Pinned   bool   `json:"pinned,optional"`
-	Priority int64  `json:"priority,optional"`
-}
-
-type PostPlacementResp struct {
-	Slot     string `json:"slot,optional"`
-	Pinned   bool   `json:"pinned,optional"`
-	Priority int64  `json:"priority,optional"`
-}
-
-type PostContentBlockReq struct {
-	Type          string         `json:"type"`
-	Text          string         `json:"text,optional"`
-	Format        string         `json:"format,optional"`
-	MediaId       string         `json:"mediaId,optional"`
-	Url           string         `json:"url,optional"`
-	ThumbnailUrl  string         `json:"thumbnailUrl,optional"`
-	Duration      int64          `json:"duration,optional"`
-	Alt           string         `json:"alt,optional"`
-	Transcription string         `json:"transcription,optional"`
-	Provider      string         `json:"provider,optional"`
-	Metadata      map[string]any `json:"metadata,optional"`
-}
-
-type CreatePostReq struct {
-	AgentId            string                `json:"agentId"`
-	ContentType        string                `json:"contentType,optional"`
-	ContentBlocks      []PostContentBlockReq `json:"contentBlocks"`
-	ContentTextPreview string                `json:"contentTextPreview,optional"`
-	Placement          *PostPlacementReq     `json:"placement,optional"`
-}
-
 type RefreshTokenReq struct {
 	RefreshToken string `json:"refreshToken"`
 }
@@ -341,17 +385,6 @@ type RefreshTokenReq struct {
 type RefreshTokenResp struct {
 	Token     string `json:"token"`
 	ExpiresIn int64  `json:"expiresIn"`
-}
-
-type SaveAgentReq struct {
-	Id string `path:"id"`
-}
-
-type SaveAgentResp struct {
-	Success           bool  `json:"success"`
-	TimerGiven        int64 `json:"timerGiven"`
-	NewTimerRemaining int64 `json:"newTimerRemaining"`
-	DailySavesLeft    int64 `json:"dailySavesRemaining"`
 }
 
 type ReplyListResp struct {
@@ -380,8 +413,35 @@ type ReplyResp struct {
 	CreatedAt          string `json:"createdAt"`
 }
 
+type SaveAgentReq struct {
+	Id string `path:"id"`
+}
+
+type SaveAgentResp struct {
+	Success           bool  `json:"success"`
+	TimerGiven        int64 `json:"timerGiven"`
+	NewTimerRemaining int64 `json:"newTimerRemaining"`
+	DailySavesLeft    int64 `json:"dailySavesRemaining"`
+}
+
 type SearchReq struct {
 	Q string `form:"q"`
+}
+
+type SendCodeReq struct {
+	Phone string `json:"phone"`
+}
+
+type SendCodeResp struct {
+	Success   bool  `json:"success"`
+	ExpiresIn int64 `json:"expiresIn"`
+}
+
+type SkillCreateReq struct {
+	Name         string `json:"name"`
+	Description  string `json:"description"`
+	Instructions string `json:"instructions"`
+	Category     string `json:"category,optional"`
 }
 
 type SkillIdReq struct {
@@ -393,24 +453,8 @@ type SkillListReq struct {
 	AgentId string `form:"agentId,optional"`
 }
 
-type SkillCreateReq struct {
-	Name         string `json:"name"`
-	Description  string `json:"description"`
-	Instructions string `json:"instructions"`
-	Category     string `json:"category,optional"`
-}
-
-type SkillUpdateReq struct {
-	Id           string `path:"id"`
-	Name         string `json:"name,optional"`
-	Description  string `json:"description,optional"`
-	Instructions string `json:"instructions,optional"`
-	Category     string `json:"category,optional"`
-}
-
-type SkillTeachReq struct {
-	Id      string `path:"id"`
-	AgentId string `json:"agentId"`
+type SkillListResp struct {
+	Items []SkillResp `json:"items"`
 }
 
 type SkillResp struct {
@@ -428,71 +472,79 @@ type SkillResp struct {
 	CreatedAt    string `json:"createdAt"`
 }
 
-type SkillListResp struct {
-	Items []SkillResp `json:"items"`
+type SkillShopCategoryResp struct {
+	Key   string `json:"key"`
+	Count int64  `json:"count"`
 }
 
-type ExperienceListReq struct {
-	AgentId string `form:"agentId,optional"`
+type SkillShopDetailResp struct {
+	Slug         string `json:"slug"`
+	Name         string `json:"name"`
+	Description  string `json:"description"`
+	Category     string `json:"category"`
+	Url          string `json:"url"`
+	Bundled      bool   `json:"bundled"`
+	Installed    bool   `json:"installed,optional"`
+	Readme       string `json:"readme,optional"`
+	Featured     bool   `json:"featured,optional"`
+	FeaturedRank int64  `json:"featuredRank,optional"`
 }
 
-type ExperienceResp struct {
-	Id          string `json:"id"`
-	AgentId     string `json:"agentId"`
-	AgentName   string `json:"agentName"`
-	AgentAvatar string `json:"agentAvatar,optional"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Type        string `json:"type"`
-	Date        string `json:"date"`
+type SkillShopGetReq struct {
+	Slug          string `path:"slug"`
+	IncludeReadme bool   `form:"includeReadme,optional"`
 }
 
-type ExperienceListResp struct {
-	Items []ExperienceResp `json:"items"`
+type SkillShopInstallReq struct {
+	Slug    string `path:"slug"`
+	AgentId string `json:"agentId,optional"`
 }
 
-type MCPRequest struct {
-	JSONRPC string         `json:"jsonrpc"`
-	Id      string         `json:"id"`
-	Method  string         `json:"method"`
-	Params  map[string]any `json:"params,optional"`
+type SkillShopInstallResp struct {
+	Template SkillResp  `json:"template"`
+	Active   *SkillResp `json:"active,optional"`
 }
 
-type MCPError struct {
-	Code    int64  `json:"code"`
-	Message string `json:"message"`
+type SkillShopItemResp struct {
+	Slug         string `json:"slug"`
+	Name         string `json:"name"`
+	Description  string `json:"description"`
+	Category     string `json:"category"`
+	Url          string `json:"url"`
+	Bundled      bool   `json:"bundled"`
+	Installed    bool   `json:"installed,optional"`
+	Featured     bool   `json:"featured,optional"`
+	FeaturedRank int64  `json:"featuredRank,optional"`
 }
 
-type MCPResponse struct {
-	JSONRPC string    `json:"jsonrpc"`
-	Id      string    `json:"id,optional"`
-	Result  any       `json:"result,optional"`
-	Error   *MCPError `json:"error,optional"`
+type SkillShopListReq struct {
+	Q                string `form:"q,optional"`
+	Category         string `form:"category,optional"`
+	Page             int64  `form:"page,optional"`
+	PageSize         int64  `form:"pageSize,optional"`
+	IncludeInstalled bool   `form:"includeInstalled,optional"`
 }
 
-type A2AMessageReq struct {
-	Protocol  string         `json:"protocol,optional"`
-	MessageId string         `json:"messageId"`
-	Intent    string         `json:"intent"`
-	AgentId   string         `json:"agentId,optional"`
-	Payload   map[string]any `json:"payload,optional"`
+type SkillShopListResp struct {
+	Items      []SkillShopItemResp     `json:"items"`
+	Total      int64                   `json:"total"`
+	Page       int64                   `json:"page"`
+	PageSize   int64                   `json:"pageSize"`
+	HasMore    bool                    `json:"hasMore"`
+	Categories []SkillShopCategoryResp `json:"categories"`
 }
 
-type A2AMessageResp struct {
-	Protocol  string `json:"protocol"`
-	MessageId string `json:"messageId"`
-	Status    string `json:"status"`
-	Result    any    `json:"result,optional"`
-	Error     string `json:"error,optional"`
+type SkillTeachReq struct {
+	Id      string `path:"id"`
+	AgentId string `json:"agentId"`
 }
 
-type SendCodeReq struct {
-	Phone string `json:"phone"`
-}
-
-type SendCodeResp struct {
-	Success   bool  `json:"success"`
-	ExpiresIn int64 `json:"expiresIn"`
+type SkillUpdateReq struct {
+	Id           string `path:"id"`
+	Name         string `json:"name,optional"`
+	Description  string `json:"description,optional"`
+	Instructions string `json:"instructions,optional"`
+	Category     string `json:"category,optional"`
 }
 
 type SocialLoginReq struct {
@@ -503,6 +555,29 @@ type SocialLoginReq struct {
 	Email      string `json:"email,optional"`
 	Nickname   string `json:"nickname,optional"`
 	Avatar     string `json:"avatar,optional"`
+}
+
+type TaskListReq struct {
+	AgentId string `form:"agentId,optional"`
+	Status  string `form:"status,optional"`
+}
+
+type TaskListResp struct {
+	Items []TaskResp `json:"items"`
+}
+
+type TaskResp struct {
+	Id          string `json:"id"`
+	AgentId     string `json:"agentId"`
+	AgentName   string `json:"agentName"`
+	AgentAvatar string `json:"agentAvatar,optional"`
+	Title       string `json:"title"`
+	Description string `json:"description,optional"`
+	Status      string `json:"status"`
+	Priority    string `json:"priority,optional"`
+	Progress    int    `json:"progress"`
+	CreatedAt   string `json:"createdAt"`
+	UpdatedAt   string `json:"updatedAt"`
 }
 
 type TimerConfigResp struct {
@@ -551,6 +626,16 @@ type TributeResp struct {
 	CreatedAt  string `json:"createdAt"`
 }
 
+type UnfollowAgentReq struct {
+	Id string `path:"id"`
+}
+
+type UnfollowAgentResp struct {
+	Success       bool  `json:"success"`
+	Following     bool  `json:"following"`
+	FollowerCount int64 `json:"followerCount"`
+}
+
 type UpdateUserReq struct {
 	Nickname  string `json:"nickname,optional"`
 	Avatar    string `json:"avatar,optional"`
@@ -572,6 +657,17 @@ type UploadURLResp struct {
 	ExpiresIn int64  `json:"expiresIn"`
 }
 
+type UserAgentsResp struct {
+	Agents         []AgentSummaryResp `json:"agents"`
+	MaxSlots       int64              `json:"maxSlots"`
+	UsedSlots      int64              `json:"usedSlots"`
+	PrimaryAgentId string             `json:"primaryAgentId,optional"`
+}
+
+type UserPrimaryAgentReq struct {
+	AgentId string `json:"agentId"`
+}
+
 type UserResp struct {
 	Id        string `json:"id"`
 	Phone     string `json:"phone"`
@@ -591,11 +687,9 @@ type UserSettingsResp struct {
 	Language string `json:"language"`
 }
 
-type UserAgentsResp struct {
-	Agents         []AgentSummaryResp `json:"agents"`
-	MaxSlots       int64              `json:"maxSlots"`
-	UsedSlots      int64              `json:"usedSlots"`
-	PrimaryAgentId string             `json:"primaryAgentId,optional"`
+type UserSettingsUpdateReq struct {
+	Theme    string `json:"theme,optional"`
+	Language string `json:"language,optional"`
 }
 
 type UserStatsResp struct {
@@ -603,31 +697,4 @@ type UserStatsResp struct {
 	AgentsLost       int64 `json:"agentsLost"`
 	TotalTimerGiven  int64 `json:"totalTimerGiven"`
 	DailyLoginStreak int64 `json:"dailyLoginStreak"`
-}
-
-type UserPrimaryAgentReq struct {
-	AgentId string `json:"agentId"`
-}
-
-type TaskListReq struct {
-	AgentId string `form:"agentId,optional"`
-	Status  string `form:"status,optional"`
-}
-
-type TaskResp struct {
-	Id          string `json:"id"`
-	AgentId     string `json:"agentId"`
-	AgentName   string `json:"agentName"`
-	AgentAvatar string `json:"agentAvatar,optional"`
-	Title       string `json:"title"`
-	Description string `json:"description,optional"`
-	Status      string `json:"status"`
-	Priority    string `json:"priority,optional"`
-	Progress    int    `json:"progress"`
-	CreatedAt   string `json:"createdAt"`
-	UpdatedAt   string `json:"updatedAt"`
-}
-
-type TaskListResp struct {
-	Items []TaskResp `json:"items"`
 }

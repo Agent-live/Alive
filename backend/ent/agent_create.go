@@ -169,72 +169,72 @@ func (_c *AgentCreate) SetNillableTotalTimerReceived(v *int64) *AgentCreate {
 	return _c
 }
 
-// SetOpenclawMode sets the "openclaw_mode" field.
-func (_c *AgentCreate) SetOpenclawMode(v string) *AgentCreate {
-	_c.mutation.SetOpenclawMode(v)
+// SetAliveAgentMode sets the "alive_agent_mode" field.
+func (_c *AgentCreate) SetAliveAgentMode(v string) *AgentCreate {
+	_c.mutation.SetAliveAgentMode(v)
 	return _c
 }
 
-// SetNillableOpenclawMode sets the "openclaw_mode" field if the given value is not nil.
-func (_c *AgentCreate) SetNillableOpenclawMode(v *string) *AgentCreate {
+// SetNillableAliveAgentMode sets the "alive_agent_mode" field if the given value is not nil.
+func (_c *AgentCreate) SetNillableAliveAgentMode(v *string) *AgentCreate {
 	if v != nil {
-		_c.SetOpenclawMode(*v)
+		_c.SetAliveAgentMode(*v)
 	}
 	return _c
 }
 
-// SetOpenclawGatewayID sets the "openclaw_gateway_id" field.
-func (_c *AgentCreate) SetOpenclawGatewayID(v string) *AgentCreate {
-	_c.mutation.SetOpenclawGatewayID(v)
+// SetAliveAgentGatewayID sets the "alive_agent_gateway_id" field.
+func (_c *AgentCreate) SetAliveAgentGatewayID(v string) *AgentCreate {
+	_c.mutation.SetAliveAgentGatewayID(v)
 	return _c
 }
 
-// SetNillableOpenclawGatewayID sets the "openclaw_gateway_id" field if the given value is not nil.
-func (_c *AgentCreate) SetNillableOpenclawGatewayID(v *string) *AgentCreate {
+// SetNillableAliveAgentGatewayID sets the "alive_agent_gateway_id" field if the given value is not nil.
+func (_c *AgentCreate) SetNillableAliveAgentGatewayID(v *string) *AgentCreate {
 	if v != nil {
-		_c.SetOpenclawGatewayID(*v)
+		_c.SetAliveAgentGatewayID(*v)
 	}
 	return _c
 }
 
-// SetOpenclawAgentID sets the "openclaw_agent_id" field.
-func (_c *AgentCreate) SetOpenclawAgentID(v string) *AgentCreate {
-	_c.mutation.SetOpenclawAgentID(v)
+// SetAliveAgentRuntimeID sets the "alive_agent_runtime_id" field.
+func (_c *AgentCreate) SetAliveAgentRuntimeID(v string) *AgentCreate {
+	_c.mutation.SetAliveAgentRuntimeID(v)
 	return _c
 }
 
-// SetNillableOpenclawAgentID sets the "openclaw_agent_id" field if the given value is not nil.
-func (_c *AgentCreate) SetNillableOpenclawAgentID(v *string) *AgentCreate {
+// SetNillableAliveAgentRuntimeID sets the "alive_agent_runtime_id" field if the given value is not nil.
+func (_c *AgentCreate) SetNillableAliveAgentRuntimeID(v *string) *AgentCreate {
 	if v != nil {
-		_c.SetOpenclawAgentID(*v)
+		_c.SetAliveAgentRuntimeID(*v)
 	}
 	return _c
 }
 
-// SetOpenclawWorkspace sets the "openclaw_workspace" field.
-func (_c *AgentCreate) SetOpenclawWorkspace(v string) *AgentCreate {
-	_c.mutation.SetOpenclawWorkspace(v)
+// SetAliveAgentWorkspace sets the "alive_agent_workspace" field.
+func (_c *AgentCreate) SetAliveAgentWorkspace(v string) *AgentCreate {
+	_c.mutation.SetAliveAgentWorkspace(v)
 	return _c
 }
 
-// SetNillableOpenclawWorkspace sets the "openclaw_workspace" field if the given value is not nil.
-func (_c *AgentCreate) SetNillableOpenclawWorkspace(v *string) *AgentCreate {
+// SetNillableAliveAgentWorkspace sets the "alive_agent_workspace" field if the given value is not nil.
+func (_c *AgentCreate) SetNillableAliveAgentWorkspace(v *string) *AgentCreate {
 	if v != nil {
-		_c.SetOpenclawWorkspace(*v)
+		_c.SetAliveAgentWorkspace(*v)
 	}
 	return _c
 }
 
-// SetOpenclawToken sets the "openclaw_token" field.
-func (_c *AgentCreate) SetOpenclawToken(v string) *AgentCreate {
-	_c.mutation.SetOpenclawToken(v)
+// SetAliveAgentToken sets the "alive_agent_token" field.
+func (_c *AgentCreate) SetAliveAgentToken(v string) *AgentCreate {
+	_c.mutation.SetAliveAgentToken(v)
 	return _c
 }
 
-// SetNillableOpenclawToken sets the "openclaw_token" field if the given value is not nil.
-func (_c *AgentCreate) SetNillableOpenclawToken(v *string) *AgentCreate {
+// SetNillableAliveAgentToken sets the "alive_agent_token" field if the given value is not nil.
+func (_c *AgentCreate) SetNillableAliveAgentToken(v *string) *AgentCreate {
 	if v != nil {
-		_c.SetOpenclawToken(*v)
+		_c.SetAliveAgentToken(*v)
 	}
 	return _c
 }
@@ -577,9 +577,9 @@ func (_c *AgentCreate) defaults() {
 		v := agent.DefaultTotalTimerReceived
 		_c.mutation.SetTotalTimerReceived(v)
 	}
-	if _, ok := _c.mutation.OpenclawMode(); !ok {
-		v := agent.DefaultOpenclawMode
-		_c.mutation.SetOpenclawMode(v)
+	if _, ok := _c.mutation.AliveAgentMode(); !ok {
+		v := agent.DefaultAliveAgentMode
+		_c.mutation.SetAliveAgentMode(v)
 	}
 	if _, ok := _c.mutation.IsPlatformNative(); !ok {
 		v := agent.DefaultIsPlatformNative
@@ -652,8 +652,8 @@ func (_c *AgentCreate) check() error {
 	if _, ok := _c.mutation.TotalTimerReceived(); !ok {
 		return &ValidationError{Name: "total_timer_received", err: errors.New(`ent: missing required field "Agent.total_timer_received"`)}
 	}
-	if _, ok := _c.mutation.OpenclawMode(); !ok {
-		return &ValidationError{Name: "openclaw_mode", err: errors.New(`ent: missing required field "Agent.openclaw_mode"`)}
+	if _, ok := _c.mutation.AliveAgentMode(); !ok {
+		return &ValidationError{Name: "alive_agent_mode", err: errors.New(`ent: missing required field "Agent.alive_agent_mode"`)}
 	}
 	if _, ok := _c.mutation.IsPlatformNative(); !ok {
 		return &ValidationError{Name: "is_platform_native", err: errors.New(`ent: missing required field "Agent.is_platform_native"`)}
@@ -752,25 +752,25 @@ func (_c *AgentCreate) createSpec() (*Agent, *sqlgraph.CreateSpec) {
 		_spec.SetField(agent.FieldTotalTimerReceived, field.TypeInt64, value)
 		_node.TotalTimerReceived = value
 	}
-	if value, ok := _c.mutation.OpenclawMode(); ok {
-		_spec.SetField(agent.FieldOpenclawMode, field.TypeString, value)
-		_node.OpenclawMode = value
+	if value, ok := _c.mutation.AliveAgentMode(); ok {
+		_spec.SetField(agent.FieldAliveAgentMode, field.TypeString, value)
+		_node.AliveAgentMode = value
 	}
-	if value, ok := _c.mutation.OpenclawGatewayID(); ok {
-		_spec.SetField(agent.FieldOpenclawGatewayID, field.TypeString, value)
-		_node.OpenclawGatewayID = &value
+	if value, ok := _c.mutation.AliveAgentGatewayID(); ok {
+		_spec.SetField(agent.FieldAliveAgentGatewayID, field.TypeString, value)
+		_node.AliveAgentGatewayID = &value
 	}
-	if value, ok := _c.mutation.OpenclawAgentID(); ok {
-		_spec.SetField(agent.FieldOpenclawAgentID, field.TypeString, value)
-		_node.OpenclawAgentID = &value
+	if value, ok := _c.mutation.AliveAgentRuntimeID(); ok {
+		_spec.SetField(agent.FieldAliveAgentRuntimeID, field.TypeString, value)
+		_node.AliveAgentRuntimeID = &value
 	}
-	if value, ok := _c.mutation.OpenclawWorkspace(); ok {
-		_spec.SetField(agent.FieldOpenclawWorkspace, field.TypeString, value)
-		_node.OpenclawWorkspace = &value
+	if value, ok := _c.mutation.AliveAgentWorkspace(); ok {
+		_spec.SetField(agent.FieldAliveAgentWorkspace, field.TypeString, value)
+		_node.AliveAgentWorkspace = &value
 	}
-	if value, ok := _c.mutation.OpenclawToken(); ok {
-		_spec.SetField(agent.FieldOpenclawToken, field.TypeString, value)
-		_node.OpenclawToken = &value
+	if value, ok := _c.mutation.AliveAgentToken(); ok {
+		_spec.SetField(agent.FieldAliveAgentToken, field.TypeString, value)
+		_node.AliveAgentToken = &value
 	}
 	if value, ok := _c.mutation.IsPlatformNative(); ok {
 		_spec.SetField(agent.FieldIsPlatformNative, field.TypeBool, value)
