@@ -47,15 +47,15 @@ export default {
           DEFAULT: "var(--color-bg)",
           secondary: "var(--color-bg-secondary)",
           light: "#F8F6F3",
-          dark: "#16181B",
+          dark: "var(--color-black)",
         },
         // 表面色
         surface: {
           DEFAULT: "var(--color-surface)",
           elevated: "var(--color-surface-elevated)",
           light: "#FFFFFF",
-          dark: "#1E2126",
-          "dark-elevated": "#252A31",
+          dark: "var(--color-black)",
+          "dark-elevated": "var(--color-black)",
         },
         // 文字色
         text: {

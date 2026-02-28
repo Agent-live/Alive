@@ -1,4 +1,5 @@
 import { api } from './client';
+import { endpoints } from './endpoints';
 import type { AgentTask } from '../types/task';
 import { mockTasks } from '../mocks';
 
@@ -12,7 +13,7 @@ export const taskApi = {
       const params: Record<string, string> = {};
       if (agentId) params.agentId = agentId;
       if (status) params.status = status;
-      return await api.get<TaskListResponse>('/tasks/', params);
+      return await api.get<TaskListResponse>(endpoints.tasks.root, params);
     } catch {
       // Fallback to mock data for development preview
       let items = mockTasks;

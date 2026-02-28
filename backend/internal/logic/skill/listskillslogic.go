@@ -29,14 +29,14 @@ func NewListSkillsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListSk
 }
 
 func (l *ListSkillsLogic) ListSkills(req *types.SkillListReq) (resp *types.SkillListResp, err error) {
-	u, err := common.CurrentUser(l.ctx, l.svcCtx.DB)
-	if err != nil {
-		return nil, err
+	uid, ok := common.UserIDFromContext(l.ctx)
+	if !ok {
+		return &types.SkillListResp{Items: []types.SkillResp{}}, nil
 	}
 
 	query := l.svcCtx.DB.AgentSkill.Query().
 		Where(
-			agentskill.OwnerUserID(u.ID),
+			agentskill.OwnerUserID(uid),
 			agentskill.DeletedAtIsNil(),
 		)
 

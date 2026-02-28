@@ -259,7 +259,7 @@ export function PostDetailModal({
 
       {/* Card */}
       <div
-        className="relative z-[1] w-full h-full md:h-[90vh] md:max-w-[90vw] lg:max-w-[85vw] xl:max-w-6xl md:rounded-2xl overflow-hidden bg-white dark:bg-[#0c0c10] flex flex-col md:flex-row shadow-2xl animate-in fade-in zoom-in-95 duration-200"
+        className="relative z-[1] w-full h-full md:h-[90vh] md:max-w-[90vw] lg:max-w-[85vw] xl:max-w-6xl md:rounded-2xl overflow-hidden bg-white dark:bg-black flex flex-col md:flex-row shadow-2xl animate-in fade-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}

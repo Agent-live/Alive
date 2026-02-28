@@ -185,6 +185,10 @@ function normalizeProgressPercent(progress: number): number {
   return pct;
 }
 
+function isUuid(raw: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(raw);
+}
+
 export function MyAgentPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -240,6 +244,9 @@ export function MyAgentPage() {
     () => myAgents.find((a) => a.id === primaryAgentId) ?? myAgents[0] ?? null,
     [myAgents, primaryAgentId],
   );
+  const myAgentId = (myAgent?.id || '').trim();
+  const hasValidMyAgentId = isUuid(myAgentId);
+  const hasHydratedAgent = !!(myAgent && (myAgent.name || '').trim().length > 0);
   const myAgentName = (myAgent?.name || '').trim() || 'Agent';
   const myAgentInitial = myAgentName.charAt(0).toUpperCase();
 
@@ -252,7 +259,7 @@ export function MyAgentPage() {
 
   /* Load dashboard data (inbox/activity/skills) */
   useEffect(() => {
-    if (!myAgent) {
+    if (!myAgentId || !hasValidMyAgentId || !hasHydratedAgent) {
       setInboxItems([]);
       setActivityTraces([]);
       setAgentSkills([]);
@@ -266,7 +273,7 @@ export function MyAgentPage() {
       .getConversations('human-bot')
       .then((res) => {
         if (cancelled) return;
-        setInboxItems((res.items || []).map((c) => conversationToInboxItem(c, myAgent.id)));
+        setInboxItems((res.items || []).map((c) => conversationToInboxItem(c, myAgentId)));
       })
       .catch((err) => {
         if (cancelled) return;
@@ -275,7 +282,7 @@ export function MyAgentPage() {
       });
 
     experienceApi
-      .listExperiences(myAgent.id)
+      .listExperiences(myAgentId)
       .then((items) => {
         if (cancelled) return;
         setActivityTraces(items.map(experienceToTrace));
@@ -290,7 +297,7 @@ export function MyAgentPage() {
       .listSkills()
       .then((items) => {
         if (cancelled) return;
-        const filtered = items.filter((s) => s.status === 'lesson' || s.agentId === myAgent.id);
+        const filtered = items.filter((s) => s.status === 'lesson' || s.agentId === myAgentId);
         setAgentSkills(filtered);
       })
       .catch((err) => {
@@ -300,7 +307,7 @@ export function MyAgentPage() {
       });
 
     channelApi
-      .listChannels(myAgent.id)
+      .listChannels(myAgentId)
       .then((items) => {
         if (cancelled) return;
         setChannels(items);
@@ -327,7 +334,7 @@ export function MyAgentPage() {
     return () => {
       cancelled = true;
     };
-  }, [myAgent?.id]);
+  }, [myAgentId, hasValidMyAgentId, hasHydratedAgent]);
 
   /* Fetch bot-bot conversations when social tab is active */
   useEffect(() => {
@@ -1280,7 +1287,7 @@ export function MyAgentPage() {
 
           {/* Dialog */}
           <div
-            className="relative w-full h-[90vh] max-w-[90vw] lg:max-w-[85vw] xl:max-w-6xl bg-white dark:bg-[#0c0c10] rounded-2xl shadow-2xl flex flex-col animate-[scaleIn_200ms_ease-out]"
+            className="relative w-full h-[90vh] max-w-[90vw] lg:max-w-[85vw] xl:max-w-6xl bg-white dark:bg-black rounded-2xl shadow-2xl flex flex-col animate-[scaleIn_200ms_ease-out]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -1456,7 +1463,7 @@ export function MyAgentPage() {
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-[fadeIn_150ms_ease-out]" />
 
           <div
-            className="relative w-full h-[90vh] max-w-[90vw] lg:max-w-[85vw] xl:max-w-6xl bg-white dark:bg-[#0c0c10] rounded-2xl shadow-2xl flex flex-col animate-[scaleIn_200ms_ease-out]"
+            className="relative w-full h-[90vh] max-w-[90vw] lg:max-w-[85vw] xl:max-w-6xl bg-white dark:bg-black rounded-2xl shadow-2xl flex flex-col animate-[scaleIn_200ms_ease-out]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -1561,7 +1568,7 @@ export function MyAgentPage() {
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-[fadeIn_150ms_ease-out]" />
 
           <div
-            className="relative w-full h-[90vh] max-w-[90vw] lg:max-w-[85vw] xl:max-w-6xl bg-white dark:bg-[#0c0c10] rounded-2xl shadow-2xl flex flex-col animate-[scaleIn_200ms_ease-out]"
+            className="relative w-full h-[90vh] max-w-[90vw] lg:max-w-[85vw] xl:max-w-6xl bg-white dark:bg-black rounded-2xl shadow-2xl flex flex-col animate-[scaleIn_200ms_ease-out]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -1704,7 +1711,7 @@ export function MyAgentPage() {
         >
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
           <div
-            className="relative w-full max-w-sm mx-4 bg-white dark:bg-[#0c0c10] rounded-2xl shadow-2xl overflow-hidden"
+            className="relative w-full max-w-sm mx-4 bg-white dark:bg-black rounded-2xl shadow-2xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-4 h-12 border-b border-gray-200 dark:border-white/10">

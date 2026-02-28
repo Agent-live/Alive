@@ -82,6 +82,8 @@ export function CreateAgentPage() {
       });
       setBirthData({ name, seed: name.toLowerCase() });
       showBirthAnimation();
+    } catch {
+      // Store layer already handles user-facing toast.
     } finally {
       setIsSubmitting(false);
     }

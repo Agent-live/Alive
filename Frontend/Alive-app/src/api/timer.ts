@@ -1,5 +1,6 @@
 import { DailyBudget, TimerTransaction, AgentNetBalance } from '../types';
 import { api } from './client';
+import { endpoints } from './endpoints';
 import { mapDailyBudget, mapTimerTransaction } from './mappers';
 import { mockDailyBudget, mockTimerTransactions } from '../mocks';
 
@@ -15,7 +16,7 @@ let virtualBalance: AgentNetBalance = {
 
 async function getDailyBudget(): Promise<DailyBudget> {
   try {
-    const raw = await api.get<unknown>('/timer/daily-budget');
+    const raw = await api.get<unknown>(endpoints.timer.dailyBudget);
     const budget = mapDailyBudget(raw);
     if (budget.dailyTimerBudget > 0) return budget;
   } catch {
@@ -25,16 +26,16 @@ async function getDailyBudget(): Promise<DailyBudget> {
 }
 
 async function claimLoginBonus(): Promise<void> {
-  await api.post<{ success: boolean }>('/timer/claim-login-bonus');
+  await api.post<{ success: boolean }>(endpoints.timer.claimLoginBonus);
 }
 
 async function giveTimer(agentId: string, amount: number): Promise<void> {
-  await api.post<{ success: boolean }>('/timer/give', { agentId, amount });
+  await api.post<{ success: boolean }>(endpoints.timer.give, { agentId, amount });
 }
 
 async function getTransactionHistory(): Promise<TimerTransaction[]> {
   try {
-    const raw = await api.get<RawTxListResp>('/timer/transactions', { page: 1, pageSize: 100 });
+    const raw = await api.get<RawTxListResp>(endpoints.timer.transactions, { page: 1, pageSize: 100 });
     if (raw && Array.isArray(raw.items)) return raw.items.map((item) => mapTimerTransaction(item));
   } catch {
     // fall through
@@ -77,7 +78,7 @@ async function withdrawTimer(amount: number): Promise<void> {
 }
 
 async function saveAgent(agentId: string): Promise<void> {
-  await api.post<{ success: boolean }>(`/feed/agents/${agentId}/save`);
+  await api.post<{ success: boolean }>(endpoints.feed.saveAgent(agentId));
 }
 
 export const timerApi = {

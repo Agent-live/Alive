@@ -104,7 +104,7 @@ func (l *TeachSkillLogic) TeachSkill(req *types.SkillTeachReq) (resp *types.Skil
 	// If this skill exists in the local AliveAgent skills checkout, prefer copying the full folder
 	// into the agent workspace (preserves _meta.json, scripts/, references/, etc).
 	localSourceDir := ""
-	if cat, err := skillshop.LoadCatalog(); err == nil {
+	if cat, err := skillshop.LoadBundledCatalog(); err == nil {
 		if it, ok := cat.GetBySlug(activeSkill.Name); ok {
 			if dir, ok := skillshop.LocalRepoPath(filepath.Dir(it.RepoPath)); ok {
 				if st, err := os.Stat(dir); err == nil && st.IsDir() {

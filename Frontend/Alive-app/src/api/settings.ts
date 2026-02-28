@@ -1,4 +1,5 @@
 import { api } from './client'
+import { endpoints } from './endpoints'
 
 export interface UserSettings {
   theme: string
@@ -6,15 +7,14 @@ export interface UserSettings {
 }
 
 async function getUserSettings(): Promise<UserSettings> {
-  return api.get<UserSettings>('/user/settings')
+  return api.get<UserSettings>(endpoints.user.settings)
 }
 
 async function updateUserSettings(patch: Partial<UserSettings>): Promise<UserSettings> {
-  return api.put<UserSettings>('/user/settings', patch)
+  return api.put<UserSettings>(endpoints.user.settings, patch)
 }
 
 export const settingsApi = {
   getUserSettings,
   updateUserSettings,
 }
-

@@ -1,4 +1,5 @@
 import client, { api } from './client';
+import { endpoints } from './endpoints';
 import { tokenStorage } from '../utils/storage';
 
 export interface UploadURLPayload {
@@ -48,7 +49,7 @@ function formatBytes(bytes: number): string {
 }
 
 async function getUploadURL(payload: UploadURLPayload): Promise<UploadURLResponse> {
-  return api.post<UploadURLResponse>('/media/upload-url', payload);
+  return api.post<UploadURLResponse>(endpoints.media.uploadURL, payload);
 }
 
 function normalizeMediaResourceUrl(url?: string): string | undefined {
@@ -130,12 +131,12 @@ function normalizeMediaFile(file: MediaFile): MediaFile {
 }
 
 async function confirmUpload(mediaId: string): Promise<MediaFile> {
-  const file = await api.post<MediaFile>(`/media/${mediaId}/confirm`);
+  const file = await api.post<MediaFile>(endpoints.media.confirm(mediaId));
   return normalizeMediaFile(file);
 }
 
 async function getMedia(mediaId: string): Promise<MediaFile> {
-  const file = await api.get<MediaFile>(`/media/${mediaId}`);
+  const file = await api.get<MediaFile>(endpoints.media.detail(mediaId));
   return normalizeMediaFile(file);
 }
 

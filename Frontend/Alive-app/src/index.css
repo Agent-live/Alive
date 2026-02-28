@@ -13,7 +13,9 @@
 --color-primary-dark: #047857;       /* Dark emerald */
 --color-primary-soft: rgba(16, 185, 129, 0.10);
 
---color-anchor-dark: #1F2429;        /* Deep dark for structure */
+    --color-anchor-dark: #1F2429;        /* Deep dark for structure */
+    --color-black: #000000;              /* 唯一黑色 */
+    --color-black-rgb: 0, 0, 0;
 
     /* === Agent Status Colors === */
     --color-agent-newborn: #8B5CF6;
@@ -144,10 +146,10 @@
 
   /* === 深色模式 === */
   .dark {
-    --color-bg: #000000;
-    --color-bg-secondary: #0A0A0A;
-    --color-surface: #0A0A0A;
-    --color-surface-elevated: #141414;
+    --color-bg: var(--color-black);
+    --color-bg-secondary: var(--color-black);
+    --color-surface: var(--color-black);
+    --color-surface-elevated: var(--color-black);
     --color-text-primary: #F5F6F7;
     --color-text-secondary: rgba(245, 246, 247, 0.72);
     --color-text-tertiary: rgba(245, 246, 247, 0.46);
@@ -155,24 +157,22 @@
     --color-border: rgba(245, 246, 247, 0.10);
     --color-border-light: rgba(245, 246, 247, 0.05);
     --color-divider: rgba(245, 246, 247, 0.10);
-    --surface-card: rgba(14, 14, 14, 0.95);
-    --surface-panel: rgba(5, 5, 5, 0.88);
-    --surface-soft: rgba(5, 5, 5, 0.78);
-    --surface-muted: rgba(14, 14, 14, 0.88);
+    --surface-card: rgba(var(--color-black-rgb), 0.95);
+    --surface-panel: rgba(var(--color-black-rgb), 0.88);
+    --surface-soft: rgba(var(--color-black-rgb), 0.78);
+    --surface-muted: rgba(var(--color-black-rgb), 0.88);
     --surface-inset: rgba(245, 246, 247, 0.05);
-    --surface-glass: rgba(5, 5, 5, 0.78);
+    --surface-glass: rgba(var(--color-black-rgb), 0.78);
     --material-stroke: rgba(245, 246, 247, 0.08);
     --material-stroke-strong: rgba(245, 246, 247, 0.14);
-    --material-glow: rgba(94, 108, 125, 0.15);
-    --material-fabric: radial-gradient(80% 80% at 20% 0%, rgba(58, 74, 94, 0.08), transparent 60%),
-      radial-gradient(60% 60% at 80% 10%, rgba(156, 124, 106, 0.08), transparent 60%),
-      linear-gradient(180deg, rgba(5, 5, 5, 0.98) 0%, rgba(0, 0, 0, 1) 100%);
-    --fluent-acrylic-bg: rgba(5, 5, 5, 0.80);
-    --fluent-acrylic-bg-strong: rgba(14, 14, 14, 0.92);
+    --material-glow: rgba(var(--color-black-rgb), 0.15);
+    --material-fabric: linear-gradient(180deg, rgba(var(--color-black-rgb), 0.98) 0%, rgba(var(--color-black-rgb), 1) 100%);
+    --fluent-acrylic-bg: rgba(var(--color-black-rgb), 0.80);
+    --fluent-acrylic-bg-strong: rgba(var(--color-black-rgb), 0.92);
     --fluent-acrylic-border: rgba(245, 246, 247, 0.08);
 
     /* TabBar */
-    --tabbar-bg: #000000;
+    --tabbar-bg: var(--color-black);
 
     /* 深色模式语义色调整 */
     --color-success-light: rgba(16, 185, 129, 0.2);
@@ -688,7 +688,7 @@
   }
 
   .dark .glass {
-    background: rgba(10, 10, 10, 0.85);
+    background: rgba(var(--color-black-rgb), 0.85);
   }
 
   /* 亚克力 - 轻度模糊 */
@@ -734,22 +734,22 @@
 
   /* 深色模式亚克力 */
   .dark .acrylic-thin {
-    background: rgba(10, 10, 10, 0.70);
+    background: rgba(var(--color-black-rgb), 0.70);
     border-color: rgba(255, 255, 255, 0.06);
   }
 
   .dark .acrylic {
-    background: rgba(10, 10, 10, 0.82);
+    background: rgba(var(--color-black-rgb), 0.82);
     border-color: rgba(255, 255, 255, 0.08);
   }
 
   .dark .acrylic-strong {
-    background: rgba(10, 10, 10, 0.92);
+    background: rgba(var(--color-black-rgb), 0.92);
     border-color: rgba(255, 255, 255, 0.10);
   }
 
   .dark .acrylic-tint {
-    background: rgba(12, 10, 8, 0.88);
+    background: rgba(var(--color-black-rgb), 0.88);
     border-color: rgba(196, 146, 138, 0.12);
   }
 
@@ -761,7 +761,7 @@
   }
 
   .dark .mica {
-    background: rgba(10, 10, 10, 0.65);
+    background: rgba(var(--color-black-rgb), 0.65);
   }
 
   /* 输入框 */
@@ -951,7 +951,7 @@
 
   /* 深色模式骨架屏 */
   .dark .shimmer {
-    background: #1a1a1a !important;
+    background: var(--color-black) !important;
   }
 
   .dark .shimmer::after {
