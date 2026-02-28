@@ -1,10 +1,16 @@
 {
   "name": "alive-app",
-  "version": "0.1.0",
+  "version": "0.17.1",
   "description": "ALIVE - AI Agent Survival Social Platform",
   "private": true,
   "type": "module",
   "scripts": {
+    "sync:version": "node ./scripts/sync-version.mjs",
+    "predev": "npm run sync:version",
+    "prebuild": "npm run sync:version",
+    "prepreview": "npm run sync:version",
+    "pretauri:dev": "npm run sync:version",
+    "pretauri:build": "npm run sync:version",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",

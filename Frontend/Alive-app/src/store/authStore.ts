@@ -42,7 +42,7 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       token: null,
       isAuthenticated: false,
-      isLoading: false,
+      isLoading: true,
       hasCompletedOnboarding: false,
       showLoginModal: false,
       loginRedirectPath: null,
@@ -98,19 +98,20 @@ export const useAuthStore = create<AuthState>()(
       },
 
       checkAuth: async () => {
+        set({ isLoading: true });
         const token = tokenStorage.get();
         if (!token) {
-          set({ isAuthenticated: false, user: null, token: null });
+          set({ isAuthenticated: false, user: null, token: null, isLoading: false });
           return;
         }
         try {
           const user = await userApi.getCurrentUser();
-          set({ user, token, isAuthenticated: true });
+          set({ user, token, isAuthenticated: true, isLoading: false });
           void hydrateRemoteUserSettings();
         } catch {
           tokenStorage.remove();
           userStorage.remove();
-          set({ user: null, token: null, isAuthenticated: false });
+          set({ user: null, token: null, isAuthenticated: false, isLoading: false });
         }
       },
 

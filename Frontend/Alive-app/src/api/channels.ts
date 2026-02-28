@@ -1,4 +1,5 @@
 import { api } from './client';
+import { endpoints } from './endpoints';
 
 export type ChannelType =
   | 'whatsapp'
@@ -32,16 +33,15 @@ interface ChannelConnectResp {
 
 export const channelApi = {
   listChannels: async (agentId: string): Promise<ChannelItem[]> => {
-    const res = await api.get<ChannelListResp>(`/channels/${agentId}`);
+    const res = await api.get<ChannelListResp>(endpoints.channels.list(agentId));
     return res.channels || [];
   },
 
   connect: async (agentId: string, channelType: ChannelType): Promise<ChannelConnectResp> => {
-    return api.post<ChannelConnectResp>(`/channels/${agentId}/${channelType}/connect`);
+    return api.post<ChannelConnectResp>(endpoints.channels.connect(agentId, channelType));
   },
 
   disconnect: async (agentId: string, channelType: ChannelType): Promise<void> => {
-    await api.delete<{ success: boolean }>(`/channels/${agentId}/${channelType}/disconnect`);
+    await api.delete<{ success: boolean }>(endpoints.channels.disconnect(agentId, channelType));
   },
 };
-

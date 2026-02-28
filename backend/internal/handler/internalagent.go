@@ -26,17 +26,7 @@ func RegisterInternalAgentHandlers(server *rest.Server, svcCtx *svc.ServiceConte
 			},
 			rest.Route{
 				Method:  http.MethodPost,
-				Path:    "/mcp/v1",
-				Handler: agentcontrol.HandleInternalMCPHandler(svcCtx),
-			},
-			rest.Route{
-				Method:  http.MethodPost,
 				Path:    "/a2a/messages",
-				Handler: agentcontrol.HandleInternalA2AHandler(svcCtx),
-			},
-			rest.Route{
-				Method:  http.MethodPost,
-				Path:    "/a2a/v1/messages",
 				Handler: agentcontrol.HandleInternalA2AHandler(svcCtx),
 			},
 		),

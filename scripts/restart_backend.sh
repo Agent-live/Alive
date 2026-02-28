@@ -61,6 +61,12 @@ if [[ -z "$PORT" ]]; then
   PORT="8888"
 fi
 
+START_TIMEOUT="${ALIVE_API_START_TIMEOUT:-120}"
+if ! [[ "$START_TIMEOUT" =~ ^[0-9]+$ ]]; then
+  log "Invalid ALIVE_API_START_TIMEOUT=$START_TIMEOUT (must be integer seconds)."
+  exit 2
+fi
+
 is_pid_alive() {
   local pid="$1"
   [[ "$pid" =~ ^[0-9]+$ ]] || return 1
@@ -70,6 +76,12 @@ is_pid_alive() {
 port_pids() {
   # macOS-friendly: list PIDs listening on TCP:$PORT
   lsof -nP -iTCP:"$PORT" -sTCP:LISTEN -t 2>/dev/null || true
+}
+
+pid_listens_port() {
+  local pid="$1"
+  [[ "$pid" =~ ^[0-9]+$ ]] || return 1
+  lsof -nP -a -p "$pid" -iTCP:"$PORT" -sTCP:LISTEN >/dev/null 2>&1
 }
 
 wait_port_free() {
@@ -147,6 +159,14 @@ start_backend_background() {
     nohup "$BIN_FILE" -f "$CONFIG_FILE" >"$LOG_FILE" 2>&1 &
     echo "$!" >"$PID_FILE"
   )
+
+  local started_pid
+  started_pid="$(tr -d ' \t\r\n' < "$PID_FILE" || true)"
+  if ! is_pid_alive "$started_pid"; then
+    log "Backend process exited immediately after start (pid=${started_pid:-unknown})."
+    [[ -f "$LOG_FILE" ]] && tail -n 80 "$LOG_FILE" || true
+    exit 1
+  fi
 }
 
 start_backend_foreground() {
@@ -165,6 +185,22 @@ wait_listening() {
   local deadline=$((SECONDS + timeout_s))
   while [[ $SECONDS -lt $deadline ]]; do
     if lsof -nP -iTCP:"$PORT" -sTCP:LISTEN >/dev/null 2>&1; then
+      return 0
+    fi
+    sleep 0.2
+  done
+  return 1
+}
+
+wait_pid_listening() {
+  local pid="$1"
+  local timeout_s="${2:-20}"
+  local deadline=$((SECONDS + timeout_s))
+  while [[ $SECONDS -lt $deadline ]]; do
+    if ! is_pid_alive "$pid"; then
+      return 1
+    fi
+    if pid_listens_port "$pid"; then
       return 0
     fi
     sleep 0.2
@@ -192,11 +228,11 @@ if [[ "$FOREGROUND" -eq 1 ]]; then
   start_backend_foreground
 else
   start_backend_background
-  if wait_listening 20; then
-    local_pid="$(tr -d ' \t\r\n' < "$PID_FILE" || true)"
+  local_pid="$(tr -d ' \t\r\n' < "$PID_FILE" || true)"
+  if wait_pid_listening "$local_pid" "$START_TIMEOUT"; then
     log "Backend is up: http://localhost:$PORT (pid=${local_pid:-unknown})"
   else
-    log "Backend did not start listening on port $PORT within timeout."
+    log "Backend pid ${local_pid:-unknown} did not start listening on port $PORT within ${START_TIMEOUT}s timeout."
     if [[ -f "$LOG_FILE" ]]; then
       log "Last 80 log lines:"
       tail -n 80 "$LOG_FILE" || true
@@ -204,4 +240,3 @@ else
     exit 1
   fi
 fi
-

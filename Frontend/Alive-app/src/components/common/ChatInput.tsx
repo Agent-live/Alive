@@ -109,7 +109,7 @@ export function ChatInput({
   }
 
   return (
-    <div className={`bg-white dark:bg-[#16181B] border-t border-gray-100 dark:border-gray-800 ${className}`}>
+    <div className={`bg-white dark:bg-black border-t border-gray-100 dark:border-gray-800 ${className}`}>
       {/* 隐藏的文件输入 */}
       {showImageUpload && (
         <input

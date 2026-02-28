@@ -7,10 +7,8 @@ import (
 
 	"backend/ent"
 	"backend/ent/agentskill"
-	"backend/ent/user"
 	"backend/internal/logic/common"
 	skilllogic "backend/internal/logic/skill"
-	"backend/internal/skillshop"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -31,8 +29,6 @@ func NewInstallSkillShopLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 	}
 }
 
-const skillShopFeaturedUserEmail = "skillshop@alive.local"
-
 func (l *InstallSkillShopLogic) InstallSkillShop(req *types.SkillShopInstallReq) (*types.SkillShopInstallResp, error) {
 	if req == nil {
 		return nil, errors.New("request is required")
@@ -42,11 +38,10 @@ func (l *InstallSkillShopLogic) InstallSkillShop(req *types.SkillShopInstallReq)
 		return nil, errors.New("slug is required")
 	}
 
-	catalog, err := skillshop.LoadCatalog()
+	featuredOwnerID, ok, err := featuredSkillShopUserID(l.ctx, l.svcCtx)
 	if err != nil {
 		return nil, err
 	}
-	item, ok := catalog.GetBySlug(slug)
 	if !ok {
 		return nil, errors.New("skill not found")
 	}
@@ -61,7 +56,7 @@ func (l *InstallSkillShopLogic) InstallSkillShop(req *types.SkillShopInstallReq)
 		Where(
 			agentskill.OwnerUserID(u.ID),
 			agentskill.DeletedAtIsNil(),
-			agentskill.NameEQ(item.Slug),
+			agentskill.NameEQ(slug),
 			agentskill.StatusEQ("lesson"),
 		).
 		First(l.ctx)
@@ -70,49 +65,31 @@ func (l *InstallSkillShopLogic) InstallSkillShop(req *types.SkillShopInstallReq)
 	}
 
 	if template == nil {
-		// Prefer DB-backed featured templates when available (no network, deterministic content).
-		instructions := ""
-		if _, ok := skillshop.FeaturedRank(item.Slug); ok {
-			sysUser, err := l.svcCtx.DB.User.Query().Where(user.EmailEQ(skillShopFeaturedUserEmail)).Only(l.ctx)
-			if err != nil && !ent.IsNotFound(err) {
-				return nil, err
+		sourceTemplate, err := l.svcCtx.DB.AgentSkill.Query().
+			Where(
+				agentskill.OwnerUserID(featuredOwnerID),
+				agentskill.DeletedAtIsNil(),
+				agentskill.StatusEQ("lesson"),
+				agentskill.NameEQ(slug),
+			).
+			First(l.ctx)
+		if err != nil {
+			if ent.IsNotFound(err) {
+				return nil, errors.New("skill template not found in database")
 			}
-			if sysUser != nil {
-				sysSkill, err := l.svcCtx.DB.AgentSkill.Query().
-					Where(
-						agentskill.OwnerUserID(sysUser.ID),
-						agentskill.DeletedAtIsNil(),
-						agentskill.StatusEQ("lesson"),
-						agentskill.NameEQ(item.Slug),
-					).
-					First(l.ctx)
-				if err != nil && !ent.IsNotFound(err) {
-					return nil, err
-				}
-				if sysSkill != nil {
-					instructions = strings.TrimSpace(sysSkill.Instructions)
-				}
-			}
+			return nil, err
 		}
-
-		if instructions == "" {
-			md, err := skillshop.FetchSkillMarkdown(l.ctx, item)
-			if err != nil {
-				return nil, err
-			}
-			instructions = skillshop.StripFrontmatter(md)
-			if instructions == "" {
-				return nil, errors.New("skill content is empty")
-			}
+		if strings.TrimSpace(sourceTemplate.Instructions) == "" {
+			return nil, errors.New("skill content is empty")
 		}
 
 		template, err = l.svcCtx.DB.AgentSkill.Create().
 			SetOwnerUserID(u.ID).
-			SetName(item.Slug).
-			SetDescription(strings.TrimSpace(item.Description)).
-			SetInstructions(instructions).
+			SetName(sourceTemplate.Name).
+			SetDescription(sourceTemplate.Description).
+			SetInstructions(sourceTemplate.Instructions).
 			SetStatus("lesson").
-			SetCategory(skillshop.MapShopCategoryToInternal(item.Category)).
+			SetCategory(sourceTemplate.Category).
 			Save(l.ctx)
 		if err != nil {
 			return nil, err

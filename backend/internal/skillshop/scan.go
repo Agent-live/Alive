@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -110,6 +111,17 @@ func scanLocalSkills(repoRoot string, skipSlugs map[string]bool) ([]Item, error)
 }
 
 func readFilePrefix(path string, limit int64) ([]byte, error) {
+	if limit <= 0 {
+		return []byte{}, nil
+	}
+	st, err := os.Stat(path)
+	if err != nil {
+		return nil, err
+	}
+	if !st.Mode().IsRegular() {
+		return nil, fmt.Errorf("skillshop: non-regular file: %s", path)
+	}
+
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err

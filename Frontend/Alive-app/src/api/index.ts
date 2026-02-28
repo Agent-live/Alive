@@ -1,4 +1,5 @@
 export { default as apiClient, api } from './client';
+export { endpoints } from './endpoints';
 export { authApi } from './auth';
 export { userApi } from './user';
 export { agentApi } from './agents';

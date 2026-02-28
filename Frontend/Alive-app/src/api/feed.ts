@@ -1,5 +1,6 @@
 import { Post, Reply, PaginatedResponse } from '../types';
 import { api } from './client';
+import { endpoints } from './endpoints';
 import { mapPost, mapReply } from './mappers';
 
 interface RawPostListResp {
@@ -61,7 +62,7 @@ function parseListResp(raw: RawPostListResp): PaginatedResponse<Post> {
 }
 
 async function getFeed(page = 1, pageSize = 20, placementSlot?: string): Promise<PaginatedResponse<Post>> {
-  const raw = await api.get<RawPostListResp>('/feed/', { page, pageSize, placementSlot });
+  const raw = await api.get<RawPostListResp>(endpoints.feed.root, { page, pageSize, placementSlot });
   if (raw && Array.isArray(raw.items)) {
     return parseListResp(raw);
   }
@@ -69,7 +70,7 @@ async function getFeed(page = 1, pageSize = 20, placementSlot?: string): Promise
 }
 
 async function getVideoFeed(page = 1, pageSize = 20): Promise<PaginatedResponse<Post>> {
-  const raw = await api.get<RawPostListResp>('/feed/videos', { page, pageSize });
+  const raw = await api.get<RawPostListResp>(endpoints.feed.videos, { page, pageSize });
   if (raw && Array.isArray(raw.items)) {
     return parseListResp(raw);
   }
@@ -77,12 +78,12 @@ async function getVideoFeed(page = 1, pageSize = 20): Promise<PaginatedResponse<
 }
 
 async function createPost(payload: CreatePostRequest): Promise<Post> {
-  const raw = await api.post<unknown>('/feed/posts', payload);
+  const raw = await api.post<unknown>(endpoints.feed.posts, payload);
   return mapPost(raw);
 }
 
 async function getAgentPosts(agentId: string, page = 1, pageSize = 10): Promise<PaginatedResponse<Post>> {
-  const raw = await api.get<RawPostListResp>(`/agents/${agentId}/posts`, { page, pageSize });
+  const raw = await api.get<RawPostListResp>(endpoints.agents.posts(agentId), { page, pageSize });
   if (raw && Array.isArray(raw.items)) {
     return parseListResp(raw);
   }
@@ -97,7 +98,7 @@ async function likePost(postId: string): Promise<{
   newTimerRemaining?: number;
   timerError?: string;
 }> {
-  const raw = await api.post<RawLikePostResp>(`/feed/posts/${postId}/like`);
+  const raw = await api.post<RawLikePostResp>(endpoints.feed.likePost(postId));
   return {
     liked: !!raw?.liked,
     likes: Number(raw?.likes ?? 0),
@@ -109,17 +110,17 @@ async function likePost(postId: string): Promise<{
 }
 
 async function replyToPost(postId: string, content: string, replyToReplyId?: string): Promise<void> {
-  await api.post<{ success: boolean }>(`/feed/posts/${postId}/reply`, { content, replyToReplyId });
+  await api.post<{ success: boolean }>(endpoints.feed.replyPost(postId), { content, replyToReplyId });
 }
 
 async function getPostReplies(postId: string): Promise<Reply[]> {
-  const raw = await api.get<RawReplyListResp>(`/feed/posts/${postId}/replies`, { page: 1, pageSize: 50 });
+  const raw = await api.get<RawReplyListResp>(endpoints.feed.postReplies(postId), { page: 1, pageSize: 50 });
   if (raw && Array.isArray(raw.items)) return raw.items.map((item) => mapReply(item));
   return [];
 }
 
 async function sharePost(postId: string): Promise<void> {
-  await api.post<{ success: boolean }>(`/feed/posts/${postId}/share`);
+  await api.post<{ success: boolean }>(endpoints.feed.sharePost(postId));
 }
 
 export const feedApi = {

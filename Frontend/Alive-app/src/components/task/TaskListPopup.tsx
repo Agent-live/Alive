@@ -63,7 +63,7 @@ function TaskCard({ task, onClick }: { task: AgentTask; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="w-full text-left p-3 rounded-xl bg-gray-50 dark:bg-[#111118] border border-gray-100 dark:border-white/5 hover:border-gray-200 dark:hover:border-white/10 transition-colors"
+      className="w-full text-left p-3 rounded-xl bg-gray-50 dark:bg-black border border-gray-100 dark:border-white/5 hover:border-gray-200 dark:hover:border-white/10 transition-colors"
     >
       {/* Row 1: status dot + title + time */}
       <div className="flex items-center gap-2 mb-1.5">
@@ -161,7 +161,7 @@ export function TaskListPopup({ open, onClose, agentName }: TaskListPopupProps) 
       />
 
       {/* Dialog — bottom sheet on mobile, centered on desktop */}
-      <div className="relative w-full sm:max-w-sm sm:mx-4 bg-white dark:bg-[#0a0a10] sm:rounded-2xl rounded-t-2xl shadow-2xl max-h-[75vh] flex flex-col overflow-hidden animate-[slideUp_200ms_ease-out] sm:animate-[scaleIn_200ms_ease-out]">
+      <div className="relative w-full sm:max-w-sm sm:mx-4 bg-white dark:bg-black sm:rounded-2xl rounded-t-2xl shadow-2xl max-h-[75vh] flex flex-col overflow-hidden animate-[slideUp_200ms_ease-out] sm:animate-[scaleIn_200ms_ease-out]">
         {/* Handle bar (mobile) */}
         <div className="sm:hidden flex justify-center pt-2 pb-1">
           <div className="w-8 h-1 rounded-full bg-gray-300 dark:bg-white/10" />

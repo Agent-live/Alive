@@ -1,5 +1,6 @@
 import { Memorial, MemorialStats, Tribute } from '../types';
 import { api } from './client';
+import { endpoints } from './endpoints';
 import { mapMemorial, mapMemorialStats } from './mappers';
 import { mockMemorials, mockMemorialStats } from '../mocks';
 
@@ -25,7 +26,7 @@ function mapTribute(raw: unknown): Tribute {
 
 async function getMemorialWall(): Promise<Memorial[]> {
   try {
-    const raw = await api.get<RawMemorialListResp>('/memorial/', { page: 1, pageSize: 100 });
+    const raw = await api.get<RawMemorialListResp>(endpoints.memorial.root, { page: 1, pageSize: 100 });
     if (raw && Array.isArray(raw.items) && raw.items.length > 0) {
       return raw.items.map((item) => mapMemorial(item));
     }
@@ -37,7 +38,7 @@ async function getMemorialWall(): Promise<Memorial[]> {
 
 async function getMemorial(memorialId: string): Promise<Memorial> {
   try {
-    const raw = await api.get<unknown>(`/memorial/${memorialId}`);
+    const raw = await api.get<unknown>(endpoints.memorial.detail(memorialId));
     const memorial = mapMemorial(raw);
     if (memorial.id) return memorial;
   } catch {
@@ -49,13 +50,13 @@ async function getMemorial(memorialId: string): Promise<Memorial> {
 }
 
 async function addTribute(memorialId: string, message: string): Promise<Tribute> {
-  const raw = await api.post<unknown>(`/memorial/${memorialId}/tribute`, { message });
+  const raw = await api.post<unknown>(endpoints.memorial.tribute(memorialId), { message });
   return mapTribute(raw);
 }
 
 async function getMemorialStats(): Promise<MemorialStats> {
   try {
-    const raw = await api.get<unknown>('/memorial/stats');
+    const raw = await api.get<unknown>(endpoints.memorial.stats);
     const stats = mapMemorialStats(raw);
     if (stats.totalDeaths > 0) return stats;
   } catch {

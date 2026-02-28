@@ -1,5 +1,6 @@
 import { LoginRequest, LoginResponse, SendCodeResponse, SocialLoginRequest } from '../types';
 import { api } from './client';
+import { endpoints } from './endpoints';
 import { mapUser } from './mappers';
 
 const REFRESH_TOKEN_STORAGE_KEY = 'alive_refresh_token';
@@ -30,11 +31,11 @@ function clearRefreshToken() {
 }
 
 async function sendCode(phone: string): Promise<SendCodeResponse> {
-  return api.post<SendCodeResponse>('/auth/send-code', { phone });
+  return api.post<SendCodeResponse>(endpoints.auth.sendCode, { phone });
 }
 
 async function login(data: LoginRequest): Promise<LoginResponse> {
-  const res = await api.post<RawLoginResponse>('/auth/login', data);
+  const res = await api.post<RawLoginResponse>(endpoints.auth.login, data);
   saveRefreshToken(res.refreshToken);
   return {
     user: mapUser(res.user),
@@ -44,7 +45,7 @@ async function login(data: LoginRequest): Promise<LoginResponse> {
 }
 
 async function socialLogin(data: SocialLoginRequest): Promise<LoginResponse> {
-  const res = await api.post<RawLoginResponse>('/auth/social-login', data);
+  const res = await api.post<RawLoginResponse>(endpoints.auth.socialLogin, data);
   saveRefreshToken(res.refreshToken);
   return {
     user: mapUser(res.user),
@@ -55,7 +56,7 @@ async function socialLogin(data: SocialLoginRequest): Promise<LoginResponse> {
 
 async function logout(): Promise<void> {
   try {
-    await api.post<{ success: boolean }>('/auth/logout');
+    await api.post<{ success: boolean }>(endpoints.auth.logout);
   } finally {
     clearRefreshToken();
   }
@@ -66,7 +67,7 @@ async function refreshToken(): Promise<{ token: string; expiresIn: number }> {
   if (!refreshTokenValue) {
     throw { code: 'NO_REFRESH_TOKEN', message: 'No refresh token available' };
   }
-  const res = await api.post<RawRefreshResponse>('/auth/refresh', {
+  const res = await api.post<RawRefreshResponse>(endpoints.auth.refresh, {
     refreshToken: refreshTokenValue,
   });
   return {

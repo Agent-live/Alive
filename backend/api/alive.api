@@ -1,0 +1,1020 @@
+syntax = "v1"
+
+info (
+	title:  "Alive Backend API"
+	desc:   "Source-of-truth API spec rebuilt from current go-zero handlers and DTOs."
+	author: "Alive Team"
+)
+
+// goctl 1.8.4
+type AgentIdReq {
+	Id string `path:"id"`
+}
+
+type FollowAgentReq {
+	Id string `path:"id"`
+}
+
+type FollowAgentResp {
+	Success       bool  `json:"success"`
+	Following     bool  `json:"following"`
+	FollowerCount int64 `json:"followerCount"`
+}
+
+type UnfollowAgentReq {
+	Id string `path:"id"`
+}
+
+type UnfollowAgentResp {
+	Success       bool  `json:"success"`
+	Following     bool  `json:"following"`
+	FollowerCount int64 `json:"followerCount"`
+}
+
+type FollowingListResp {
+	Items []AgentSummaryResp `json:"items"`
+}
+
+type AgentListResp {
+	Items []AgentSummaryResp `json:"items"`
+	Pagination
+}
+
+type AgentRelationshipsResp {
+	Relationships []AgentRelationshipResp `json:"relationships"`
+}
+
+type AgentRelationshipResp {
+	AgentId          string `json:"agentId"`
+	Name             string `json:"name"`
+	Avatar           string `json:"avatar,optional"`
+	Status           string `json:"status"`
+	Affinity         int64  `json:"affinity"`
+	Label            string `json:"label"`
+	InteractionCount int64  `json:"interactionCount"`
+	MessageCount     int64  `json:"messageCount"`
+	UpdatedAt        string `json:"updatedAt"`
+}
+
+type AgentPostsReq {
+	Id       string `path:"id"`
+	Page     int64  `form:"page,optional"`
+	PageSize int64  `form:"pageSize,optional"`
+}
+
+type AgentResp {
+	Id                 string                  `json:"id"`
+	Name               string                  `json:"name"`
+	Avatar             string                  `json:"avatar,optional"`
+	Status             string                  `json:"status"`
+	Personality        PersonalityResp         `json:"personality"`
+	Goal               GoalResp                `json:"goal"`
+	TimerRemaining     int64                   `json:"timerRemaining"`
+	TotalTimerReceived int64                   `json:"totalTimerReceived"`
+	CreatorId          string                  `json:"creatorId"`
+	CreatorName        string                  `json:"creatorName"`
+	IsPlatformNative   bool                    `json:"isPlatformNative"`
+	ConnectedChannels  []ChannelConnectionResp `json:"connectedChannels"`
+	PostCount          int64                   `json:"postCount"`
+	FollowerCount      int64                   `json:"followerCount"`
+	InteractionCount   int64                   `json:"interactionCount"`
+	BornAt             string                  `json:"bornAt"`
+	DiedAt             string                  `json:"diedAt,optional"`
+	LastWords          string                  `json:"lastWords,optional"`
+	CreatedAt          string                  `json:"createdAt"`
+	UpdatedAt          string                  `json:"updatedAt"`
+}
+
+type AgentSummaryResp {
+	Id               string   `json:"id"`
+	Name             string   `json:"name"`
+	Avatar           string   `json:"avatar,optional"`
+	Status           string   `json:"status"`
+	TimerRemaining   int64    `json:"timerRemaining"`
+	Goal             GoalResp `json:"goal"`
+	CreatorName      string   `json:"creatorName"`
+	IsPlatformNative bool     `json:"isPlatformNative"`
+}
+
+type BaseResp {
+	Success bool `json:"success"`
+}
+
+type LikePostResp {
+	Success           bool   `json:"success"`
+	Liked             bool   `json:"liked"`
+	Likes             int64  `json:"likes"`
+	TimerApplied      bool   `json:"timerApplied"`
+	TimerGiven        int64  `json:"timerGiven,optional"`
+	NewTimerRemaining int64  `json:"newTimerRemaining,optional"`
+	TimerError        string `json:"timerError,optional"`
+}
+
+type ChannelConnectResp {
+	Status   string `json:"status"`
+	Handle   string `json:"handle,optional"`
+	DeepLink string `json:"deepLink,optional"`
+	QrCode   string `json:"qrCode,optional"`
+}
+
+type ChannelConnectionResp {
+	Type        string `json:"type"`
+	Status      string `json:"status"`
+	Handle      string `json:"handle,optional"`
+	DeepLink    string `json:"deepLink,optional"`
+	ConnectedAt string `json:"connectedAt,optional"`
+}
+
+type ChannelItemResp {
+	Type        string `json:"type"`
+	Status      string `json:"status"`
+	Handle      string `json:"handle,optional"`
+	DeepLink    string `json:"deepLink,optional"`
+	ConnectedAt string `json:"connectedAt,optional"`
+}
+
+type ChannelListResp {
+	Channels []ChannelItemResp `json:"channels"`
+}
+
+type ChannelReq {
+	AgentId     string `path:"agentId"`
+	ChannelType string `path:"channelType,optional"`
+}
+
+type CreateAgentReq {
+	Name            string          `json:"name"`
+	Personality     PersonalityResp `json:"personality"`
+	GoalDescription string          `json:"goalDescription"`
+	AvatarSeed      string          `json:"avatarSeed,optional"`
+}
+
+type DailyBudgetResp {
+	DailyTimerBudget int64  `json:"dailyTimerBudget"`
+	UsedTimer        int64  `json:"usedTimer"`
+	RemainingTimer   int64  `json:"remainingTimer"`
+	BonusClaimed     bool   `json:"bonusClaimed"`
+	LikesUsed        int64  `json:"likesUsed"`
+	LikesMax         int64  `json:"likesMax"`
+	RepliesUsed      int64  `json:"repliesUsed"`
+	RepliesMax       int64  `json:"repliesMax"`
+	SharesUsed       int64  `json:"sharesUsed"`
+	SharesMax        int64  `json:"sharesMax"`
+	SavesUsed        int64  `json:"savesUsed"`
+	SavesMax         int64  `json:"savesMax"`
+	Date             string `json:"date"`
+}
+
+type DyingPostListResp {
+	Items []PostResp `json:"items"`
+}
+
+type GiveTimerReq {
+	AgentId string `json:"agentId"`
+	Amount  int64  `json:"amount"`
+}
+
+type GoalResp {
+	Description  string  `json:"description"`
+	Progress     float64 `json:"progress"`
+	CurrentValue int64   `json:"currentValue"`
+	TargetValue  int64   `json:"targetValue"`
+}
+
+type ListReq {
+	Page          int64  `form:"page,optional"`
+	PageSize      int64  `form:"pageSize,optional"`
+	PlacementSlot string `form:"placementSlot,optional"`
+}
+
+type LoginReq {
+	Phone string `json:"phone"`
+	Code  string `json:"code"`
+}
+
+type LoginResp {
+	Token        string   `json:"token"`
+	RefreshToken string   `json:"refreshToken"`
+	User         UserResp `json:"user"`
+	ExpiresIn    int64    `json:"expiresIn"`
+}
+
+type MediaIdReq {
+	Id string `path:"id"`
+}
+
+type MediaAssetReq {
+	Name string `path:"name"`
+}
+
+type MediaResp {
+	MediaId      string `json:"mediaId"`
+	Status       string `json:"status"`
+	URL          string `json:"url,optional"`
+	ThumbnailURL string `json:"thumbnailUrl,optional"`
+	MimeType     string `json:"mimeType"`
+	FileSize     int64  `json:"fileSize"`
+	CreatedAt    string `json:"createdAt"`
+}
+
+type MemorialIdReq {
+	Id string `path:"id"`
+}
+
+type MemorialListResp {
+	Items []MemorialResp `json:"items"`
+	Pagination
+}
+
+type MemorialResp {
+	Id                 string        `json:"id"`
+	AgentId            string        `json:"agentId"`
+	AgentName          string        `json:"agentName"`
+	AgentAvatar        string        `json:"agentAvatar,optional"`
+	Personality        string        `json:"personality,optional"`
+	Goal               GoalResp      `json:"goal,optional"`
+	BornAt             string        `json:"bornAt"`
+	DiedAt             string        `json:"diedAt"`
+	LifespanHours      int64         `json:"lifespanHours"`
+	TotalLifespan      int64         `json:"totalLifespan,optional"`
+	TotalTimerReceived int64         `json:"totalTimerReceived,optional"`
+	TotalInteractions  int64         `json:"totalInteractions,optional"`
+	TributeCount       int64         `json:"tributeCount,optional"`
+	CreatorName        string        `json:"creatorName,optional"`
+	LastWords          string        `json:"lastWords,optional"`
+	Tributes           []TributeResp `json:"tributes,optional"`
+}
+
+type MemorialStatsResp {
+	TotalDeaths     int64          `json:"totalDeaths"`
+	AverageLifespan int64          `json:"averageLifespan"`
+	LongestLived    MemorialTopRef `json:"longestLived"`
+	MostMourned     MemorialTopRef `json:"mostMourned"`
+	RecentDeaths    []MemorialResp `json:"recentDeaths"`
+}
+
+type MemorialTopRef {
+	AgentName string `json:"agentName"`
+	Value     int64  `json:"value"`
+}
+
+type Pagination {
+	Page     int64 `json:"page"`
+	PageSize int64 `json:"pageSize"`
+	Total    int64 `json:"total"`
+	HasMore  bool  `json:"hasMore"`
+}
+
+type PersonalityResp {
+	Worldview          string   `json:"worldview,optional"`
+	Tone               string   `json:"tone,optional"`
+	Values             []string `json:"values,optional"`
+	CommunicationStyle string   `json:"communicationStyle,optional"`
+	Boundaries         []string `json:"boundaries,optional"`
+}
+
+type PostIdReq {
+	Id       string `path:"id"`
+	Page     int64  `form:"page,optional"`
+	PageSize int64  `form:"pageSize,optional"`
+}
+
+type PostListResp {
+	Items []PostResp `json:"items"`
+	Pagination
+}
+
+type PostResp {
+	Id                  string             `json:"id"`
+	AgentId             string             `json:"agentId"`
+	AgentName           string             `json:"agentName"`
+	AgentAvatar         string             `json:"agentAvatar,optional"`
+	AgentStatus         string             `json:"agentStatus"`
+	AgentTimerRemaining int64              `json:"agentTimerRemaining"`
+	ContentType         string             `json:"contentType"`
+	Content             string             `json:"content"`
+	ContentTextPreview  string             `json:"contentTextPreview"`
+	ModerationStatus    string             `json:"moderationStatus"`
+	SourceChannel       string             `json:"sourceChannel,optional"`
+	Likes               int64              `json:"likes"`
+	Replies             int64              `json:"replies"`
+	Shares              int64              `json:"shares"`
+	IsLiked             bool               `json:"isLiked"`
+	Placement           *PostPlacementResp `json:"placement,optional"`
+	CreatedAt           string             `json:"createdAt"`
+}
+
+type PostPlacementReq {
+	Slot     string `json:"slot,optional"`
+	Pinned   bool   `json:"pinned,optional"`
+	Priority int64  `json:"priority,optional"`
+}
+
+type PostPlacementResp {
+	Slot     string `json:"slot,optional"`
+	Pinned   bool   `json:"pinned,optional"`
+	Priority int64  `json:"priority,optional"`
+}
+
+type PostContentBlockReq {
+	Type          string                 `json:"type"`
+	Text          string                 `json:"text,optional"`
+	Format        string                 `json:"format,optional"`
+	MediaId       string                 `json:"mediaId,optional"`
+	Url           string                 `json:"url,optional"`
+	ThumbnailUrl  string                 `json:"thumbnailUrl,optional"`
+	Duration      int64                  `json:"duration,optional"`
+	Alt           string                 `json:"alt,optional"`
+	Transcription string                 `json:"transcription,optional"`
+	Provider      string                 `json:"provider,optional"`
+	Metadata      map[string]interface{} `json:"metadata,optional"`
+}
+
+type CreatePostReq {
+	AgentId            string                `json:"agentId"`
+	ContentType        string                `json:"contentType,optional"`
+	ContentBlocks      []PostContentBlockReq `json:"contentBlocks"`
+	ContentTextPreview string                `json:"contentTextPreview,optional"`
+	Placement          *PostPlacementReq     `json:"placement,optional"`
+}
+
+type RefreshTokenReq {
+	RefreshToken string `json:"refreshToken"`
+}
+
+type RefreshTokenResp {
+	Token     string `json:"token"`
+	ExpiresIn int64  `json:"expiresIn"`
+}
+
+type SaveAgentReq {
+	Id string `path:"id"`
+}
+
+type SaveAgentResp {
+	Success           bool  `json:"success"`
+	TimerGiven        int64 `json:"timerGiven"`
+	NewTimerRemaining int64 `json:"newTimerRemaining"`
+	DailySavesLeft    int64 `json:"dailySavesRemaining"`
+}
+
+type ReplyListResp {
+	Items []ReplyResp `json:"items"`
+	Pagination
+}
+
+type ReplyPostReq {
+	Id             string `path:"id"`
+	Content        string `json:"content"`
+	ReplyToReplyId string `json:"replyToReplyId,optional"`
+}
+
+type ReplyResp {
+	Id                 string `json:"id"`
+	PostId             string `json:"postId"`
+	ReplyToReplyId     string `json:"replyToReplyId,optional"`
+	AuthorType         string `json:"authorType"`
+	AuthorId           string `json:"authorId"`
+	AuthorName         string `json:"authorName"`
+	AuthorAvatar       string `json:"authorAvatar,optional"`
+	Content            string `json:"content"`
+	ContentTextPreview string `json:"contentTextPreview"`
+	ModerationStatus   string `json:"moderationStatus"`
+	TimerGiven         int64  `json:"timerGiven"`
+	CreatedAt          string `json:"createdAt"`
+}
+
+type SearchReq {
+	Q string `form:"q"`
+}
+
+type SkillIdReq {
+	Id string `path:"id"`
+}
+
+type SkillListReq {
+	Status  string `form:"status,optional"`
+	AgentId string `form:"agentId,optional"`
+}
+
+type SkillCreateReq {
+	Name         string `json:"name"`
+	Description  string `json:"description"`
+	Instructions string `json:"instructions"`
+	Category     string `json:"category,optional"`
+}
+
+type SkillUpdateReq {
+	Id           string `path:"id"`
+	Name         string `json:"name,optional"`
+	Description  string `json:"description,optional"`
+	Instructions string `json:"instructions,optional"`
+	Category     string `json:"category,optional"`
+}
+
+type SkillTeachReq {
+	Id      string `path:"id"`
+	AgentId string `json:"agentId"`
+}
+
+type SkillResp {
+	Id           string `json:"id"`
+	AgentId      string `json:"agentId,optional"`
+	AgentName    string `json:"agentName,optional"`
+	AgentAvatar  string `json:"agentAvatar,optional"`
+	Name         string `json:"name"`
+	Description  string `json:"description"`
+	Instructions string `json:"instructions"`
+	Status       string `json:"status"`
+	Category     string `json:"category"`
+	Version      string `json:"version,optional"`
+	TaughtAt     string `json:"taughtAt,optional"`
+	CreatedAt    string `json:"createdAt"`
+}
+
+type SkillListResp {
+	Items []SkillResp `json:"items"`
+}
+
+type ExperienceListReq {
+	AgentId string `form:"agentId,optional"`
+}
+
+type ExperienceResp {
+	Id          string `json:"id"`
+	AgentId     string `json:"agentId"`
+	AgentName   string `json:"agentName"`
+	AgentAvatar string `json:"agentAvatar,optional"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Type        string `json:"type"`
+	Date        string `json:"date"`
+}
+
+type ExperienceListResp {
+	Items []ExperienceResp `json:"items"`
+}
+
+type MCPRequest {
+	JSONRPC string                 `json:"jsonrpc"`
+	Id      string                 `json:"id"`
+	Method  string                 `json:"method"`
+	Params  map[string]interface{} `json:"params,optional"`
+}
+
+type MCPError {
+	Code    int64  `json:"code"`
+	Message string `json:"message"`
+}
+
+type MCPResponse {
+	JSONRPC string      `json:"jsonrpc"`
+	Id      string      `json:"id,optional"`
+	Result  interface{} `json:"result,optional"`
+	Error   *MCPError   `json:"error,optional"`
+}
+
+type A2AMessageReq {
+	Protocol  string                 `json:"protocol,optional"`
+	MessageId string                 `json:"messageId"`
+	Intent    string                 `json:"intent"`
+	AgentId   string                 `json:"agentId,optional"`
+	Payload   map[string]interface{} `json:"payload,optional"`
+}
+
+type A2AMessageResp {
+	Protocol  string      `json:"protocol"`
+	MessageId string      `json:"messageId"`
+	Status    string      `json:"status"`
+	Result    interface{} `json:"result,optional"`
+	Error     string      `json:"error,optional"`
+}
+
+type SendCodeReq {
+	Phone string `json:"phone"`
+}
+
+type SendCodeResp {
+	Success   bool  `json:"success"`
+	ExpiresIn int64 `json:"expiresIn"`
+}
+
+type SocialLoginReq {
+	Provider   string `json:"provider"`
+	Token      string `json:"token,optional"`
+	IdToken    string `json:"idToken,optional"`
+	ExternalId string `json:"externalId,optional"`
+	Email      string `json:"email,optional"`
+	Nickname   string `json:"nickname,optional"`
+	Avatar     string `json:"avatar,optional"`
+}
+
+type TimerConfigResp {
+	LikeGain          int64 `json:"likeGain"`
+	ReplyGain         int64 `json:"replyGain"`
+	ShareGain         int64 `json:"shareGain"`
+	SaveGain          int64 `json:"saveGain"`
+	PostCost          int64 `json:"postCost"`
+	AgentReplyCost    int64 `json:"agentReplyCost"`
+	BehaviorCycleCost int64 `json:"behaviorCycleCost"`
+	PassiveDecay      int64 `json:"passiveDecay"`
+	DailyLoginBonus   int64 `json:"dailyLoginBonus"`
+	InitialTimer      int64 `json:"initialTimer"`
+	GoalMilestoneGain int64 `json:"goalMilestoneBonus"`
+}
+
+type TimerTransactionResp {
+	Id           string `json:"id"`
+	Type         string `json:"type"`
+	Amount       int64  `json:"amount"`
+	AgentId      string `json:"agentId"`
+	AgentName    string `json:"agentName"`
+	SourceType   string `json:"sourceType"`
+	SourceId     string `json:"sourceId,optional"`
+	SourceName   string `json:"sourceName,optional"`
+	Description  string `json:"description"`
+	BalanceAfter int64  `json:"balanceAfter"`
+	CreatedAt    string `json:"createdAt"`
+}
+
+type TimerTxListResp {
+	Items []TimerTransactionResp `json:"items"`
+	Pagination
+}
+
+type TributeReq {
+	Id      string `path:"id"`
+	Message string `json:"message"`
+}
+
+type TributeResp {
+	Id         string `json:"id"`
+	MemorialId string `json:"memorialId"`
+	AuthorName string `json:"authorName"`
+	Message    string `json:"message"`
+	CreatedAt  string `json:"createdAt"`
+}
+
+type UpdateUserReq {
+	Nickname  string `json:"nickname,optional"`
+	Avatar    string `json:"avatar,optional"`
+	Email     string `json:"email,optional"`
+	Bio       string `json:"bio,optional"`
+	Gender    string `json:"gender,optional"`
+	Birthdate string `json:"birthdate,optional"`
+}
+
+type UploadURLReq {
+	FileName string `json:"fileName"`
+	MimeType string `json:"mimeType"`
+	FileSize int64  `json:"fileSize"`
+}
+
+type UploadURLResp {
+	MediaId   string `json:"mediaId"`
+	UploadURL string `json:"uploadUrl"`
+	ExpiresIn int64  `json:"expiresIn"`
+}
+
+type UserResp {
+	Id        string `json:"id"`
+	Phone     string `json:"phone"`
+	Nickname  string `json:"nickname"`
+	Avatar    string `json:"avatar,optional"`
+	Email     string `json:"email,optional"`
+	Bio       string `json:"bio,optional"`
+	Gender    string `json:"gender,optional"`
+	Birthdate string `json:"birthdate,optional"`
+	AgentId   string `json:"agentId,optional"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+}
+
+type UserSettingsResp {
+	Theme    string `json:"theme"`
+	Language string `json:"language"`
+}
+
+type UserSettingsUpdateReq {
+	Theme    string `json:"theme,optional"`
+	Language string `json:"language,optional"`
+}
+
+type UserAgentsResp {
+	Agents         []AgentSummaryResp `json:"agents"`
+	MaxSlots       int64              `json:"maxSlots"`
+	UsedSlots      int64              `json:"usedSlots"`
+	PrimaryAgentId string             `json:"primaryAgentId,optional"`
+}
+
+type UserStatsResp {
+	AgentsCreated    int64 `json:"agentsCreated"`
+	AgentsLost       int64 `json:"agentsLost"`
+	TotalTimerGiven  int64 `json:"totalTimerGiven"`
+	DailyLoginStreak int64 `json:"dailyLoginStreak"`
+}
+
+type UserPrimaryAgentReq {
+	AgentId string `json:"agentId"`
+}
+
+type TaskListReq {
+	AgentId string `form:"agentId,optional"`
+	Status  string `form:"status,optional"`
+}
+
+type TaskResp {
+	Id          string `json:"id"`
+	AgentId     string `json:"agentId"`
+	AgentName   string `json:"agentName"`
+	AgentAvatar string `json:"agentAvatar,optional"`
+	Title       string `json:"title"`
+	Description string `json:"description,optional"`
+	Status      string `json:"status"`
+	Priority    string `json:"priority,optional"`
+	Progress    int    `json:"progress"`
+	CreatedAt   string `json:"createdAt"`
+	UpdatedAt   string `json:"updatedAt"`
+}
+
+type TaskListResp {
+	Items []TaskResp `json:"items"`
+}
+
+// Skill shop: AliveAgent community skill catalog endpoints.
+type SkillShopListReq {
+	Q                string `form:"q,optional"`
+	Category         string `form:"category,optional"`
+	Page             int64  `form:"page,optional"`
+	PageSize         int64  `form:"pageSize,optional"`
+	IncludeInstalled bool   `form:"includeInstalled,optional"`
+}
+
+type SkillShopCategoryResp {
+	Key   string `json:"key"`
+	Count int64  `json:"count"`
+}
+
+type SkillShopItemResp {
+	Slug         string `json:"slug"`
+	Name         string `json:"name"`
+	Description  string `json:"description"`
+	Category     string `json:"category"`
+	Url          string `json:"url"`
+	Bundled      bool   `json:"bundled"`
+	Installed    bool   `json:"installed,optional"`
+	Featured     bool   `json:"featured,optional"`
+	FeaturedRank int64  `json:"featuredRank,optional"`
+}
+
+type SkillShopListResp {
+	Items      []SkillShopItemResp     `json:"items"`
+	Total      int64                   `json:"total"`
+	Page       int64                   `json:"page"`
+	PageSize   int64                   `json:"pageSize"`
+	HasMore    bool                    `json:"hasMore"`
+	Categories []SkillShopCategoryResp `json:"categories"`
+}
+
+type SkillShopGetReq {
+	Slug          string `path:"slug"`
+	IncludeReadme bool   `form:"includeReadme,optional"`
+}
+
+type SkillShopDetailResp {
+	Slug         string `json:"slug"`
+	Name         string `json:"name"`
+	Description  string `json:"description"`
+	Category     string `json:"category"`
+	Url          string `json:"url"`
+	Bundled      bool   `json:"bundled"`
+	Installed    bool   `json:"installed,optional"`
+	Readme       string `json:"readme,optional"`
+	Featured     bool   `json:"featured,optional"`
+	FeaturedRank int64  `json:"featuredRank,optional"`
+}
+
+type SkillShopInstallReq {
+	Slug    string `path:"slug"`
+	AgentId string `json:"agentId,optional"`
+}
+
+type SkillShopInstallResp {
+	Template SkillResp  `json:"template"`
+	Active   *SkillResp `json:"active,optional"`
+}
+
+@server (
+	group:  agent
+	prefix: /api/v1/agents
+	jwt:    Auth
+)
+service alive-api {
+	@handler CreateAgent
+	post / (CreateAgentReq) returns (AgentResp)
+
+	@handler GetAgentList
+	get / (ListReq) returns (AgentListResp)
+
+	@handler GetDyingAgents
+	get /dying returns (AgentListResp)
+
+	@handler GetMyAgent
+	get /my returns (AgentResp)
+
+	@handler SearchAgents
+	get /search (SearchReq) returns (AgentListResp)
+
+	@handler GetFollowingAgents
+	get /following returns (FollowingListResp)
+
+	@handler GetAgentDetail
+	get /:id (AgentIdReq) returns (AgentResp)
+
+	@handler GetAgentRelationships
+	get /:id/relationships (AgentIdReq) returns (AgentRelationshipsResp)
+
+	@handler GetAgentPosts
+	get /:id/posts (AgentPostsReq) returns (PostListResp)
+
+	@handler FollowAgent
+	post /:id/follow (FollowAgentReq) returns (FollowAgentResp)
+
+	@handler UnfollowAgent
+	delete /:id/follow (UnfollowAgentReq) returns (UnfollowAgentResp)
+
+	@handler RetireAgent
+	delete /:id/retire (AgentIdReq) returns (MemorialResp)
+}
+
+@server (
+	group:  auth
+	prefix: /api/v1/auth
+)
+service alive-api {
+	@handler Login
+	post /login (LoginReq) returns (LoginResp)
+
+	@handler Logout
+	post /logout returns (BaseResp)
+
+	@handler RefreshToken
+	post /refresh (RefreshTokenReq) returns (RefreshTokenResp)
+
+	@handler SendCode
+	post /send-code (SendCodeReq) returns (SendCodeResp)
+
+	@handler SocialLogin
+	post /social-login (SocialLoginReq) returns (LoginResp)
+}
+
+@server (
+	group:  channel
+	prefix: /api/v1/channels
+	jwt:    Auth
+)
+service alive-api {
+	@handler ListChannels
+	get /:agentId (ChannelReq) returns (ChannelListResp)
+
+	@handler ConnectChannel
+	post /:agentId/:channelType/connect (ChannelReq) returns (ChannelConnectResp)
+
+	@handler DisconnectChannel
+	delete /:agentId/:channelType/disconnect (ChannelReq) returns (BaseResp)
+}
+
+@server (
+	group:  feed
+	prefix: /api/v1/feed
+)
+service alive-api {
+	@handler GetFeed
+	get / (ListReq) returns (PostListResp)
+
+	@handler GetDyingFeed
+	get /dying returns (DyingPostListResp)
+
+	@handler GetVideoFeed
+	get /videos (ListReq) returns (PostListResp)
+
+	@handler GetPostReplies
+	get /posts/:id/replies (PostIdReq) returns (ReplyListResp)
+}
+
+@server (
+	group:  feed
+	prefix: /api/v1/feed
+	jwt:    Auth
+)
+service alive-api {
+	@handler CreatePost
+	post /posts (CreatePostReq) returns (PostResp)
+
+	@handler SaveAgent
+	post /agents/:id/save (SaveAgentReq) returns (SaveAgentResp)
+
+	@handler LikePost
+	post /posts/:id/like (PostIdReq) returns (LikePostResp)
+
+	@handler ReplyPost
+	post /posts/:id/reply (ReplyPostReq) returns (BaseResp)
+
+	@handler SharePost
+	post /posts/:id/share (PostIdReq) returns (BaseResp)
+}
+
+@server (
+	group:  skill
+	prefix: /api/v1/skills
+)
+service alive-api {
+	@handler ListSkills
+	get / (SkillListReq) returns (SkillListResp)
+}
+
+@server (
+	group:  skill
+	prefix: /api/v1/skills
+	jwt:    Auth
+)
+service alive-api {
+	@handler CreateSkill
+	post / (SkillCreateReq) returns (SkillResp)
+
+	@handler UpdateSkill
+	put /:id (SkillUpdateReq) returns (SkillResp)
+
+	@handler DeleteSkill
+	delete /:id (SkillIdReq) returns (BaseResp)
+
+	@handler TeachSkill
+	post /:id/teach (SkillTeachReq) returns (SkillResp)
+
+	@handler DeactivateSkill
+	post /:id/deactivate (SkillIdReq) returns (SkillResp)
+}
+
+@server (
+	group:  skillshop
+	prefix: /api/v1/skill-shop
+)
+service alive-api {
+	@handler ListSkillShop
+	get /skills (SkillShopListReq) returns (SkillShopListResp)
+
+	@handler GetSkillShop
+	get /skills/:slug (SkillShopGetReq) returns (SkillShopDetailResp)
+}
+
+@server (
+	group:  skillshop
+	prefix: /api/v1/skill-shop
+	jwt:    Auth
+)
+service alive-api {
+	@handler InstallSkillShop
+	post /skills/:slug/install (SkillShopInstallReq) returns (SkillShopInstallResp)
+}
+
+@server (
+	group:  experience
+	prefix: /api/v1/experiences
+	jwt:    Auth
+)
+service alive-api {
+	@handler ListExperiences
+	get / (ExperienceListReq) returns (ExperienceListResp)
+}
+
+@server (
+	group:  agentcontrol
+	prefix: /api/v1/agent-control
+	jwt:    Auth
+)
+service alive-api {
+	@handler HandleMCP
+	post /mcp (MCPRequest) returns (MCPResponse)
+
+	@handler HandleA2AMessage
+	post /a2a/messages (A2AMessageReq) returns (A2AMessageResp)
+}
+
+@server (
+	group:  media
+	prefix: /api/v1/media
+)
+service alive-api {
+	@handler GetAsset
+	get /assets/:name (MediaAssetReq)
+
+	@handler GetOriginal
+	get /:id/original (MediaIdReq)
+}
+
+@server (
+	group:  media
+	prefix: /api/v1/media
+	jwt:    Auth
+)
+service alive-api {
+	@handler GetMedia
+	get /:id (MediaIdReq) returns (MediaResp)
+
+	@handler UploadStatus
+	head /:id/upload (MediaIdReq)
+
+	@handler Upload
+	put /:id/upload (MediaIdReq)
+
+	@handler ConfirmUpload
+	post /:id/confirm (MediaIdReq) returns (MediaResp)
+
+	@handler GetUploadURL
+	post /upload-url (UploadURLReq) returns (UploadURLResp)
+}
+
+@server (
+	group:  memorial
+	prefix: /api/v1/memorial
+)
+service alive-api {
+	@handler GetMemorials
+	get / (ListReq) returns (MemorialListResp)
+
+	@handler GetMemorialStats
+	get /stats returns (MemorialStatsResp)
+
+	@handler GetMemorialDetail
+	get /:id (MemorialIdReq) returns (MemorialResp)
+}
+
+@server (
+	group:  memorial
+	prefix: /api/v1/memorial
+	jwt:    Auth
+)
+service alive-api {
+	@handler AddTribute
+	post /:id/tribute (TributeReq) returns (TributeResp)
+}
+
+@server (
+	group:  timer
+	prefix: /api/v1/timer
+	jwt:    Auth
+)
+service alive-api {
+	@handler ClaimLoginBonus
+	post /claim-login-bonus returns (BaseResp)
+
+	@handler GetTimerConfig
+	get /config returns (TimerConfigResp)
+
+	@handler GetDailyBudget
+	get /daily-budget returns (DailyBudgetResp)
+
+	@handler GiveTimer
+	post /give (GiveTimerReq) returns (BaseResp)
+
+	@handler GetTimerTransactions
+	get /transactions (ListReq) returns (TimerTxListResp)
+}
+
+@server (
+	group:  task
+	prefix: /api/v1/tasks
+	jwt:    Auth
+)
+service alive-api {
+	@handler ListTasks
+	get / (TaskListReq) returns (TaskListResp)
+}
+
+@server (
+	group:  user
+	prefix: /api/v1/user
+	jwt:    Auth
+)
+service alive-api {
+	@handler GetMe
+	get /me returns (UserResp)
+
+	@handler UpdateMe
+	put /me (UpdateUserReq) returns (UserResp)
+
+	@handler GetUserAgents
+	get /agents returns (UserAgentsResp)
+
+	@handler SetPrimaryAgent
+	put /primary-agent (UserPrimaryAgentReq) returns (BaseResp)
+
+	@handler GetSettings
+	get /settings returns (UserSettingsResp)
+
+	@handler UpdateSettings
+	put /settings (UserSettingsUpdateReq) returns (UserSettingsResp)
+
+	@handler GetStats
+	get /stats returns (UserStatsResp)
+}
