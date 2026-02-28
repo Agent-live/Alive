@@ -1,6 +1,6 @@
 {
   "name": "alive-app",
-  "version": "0.17.1",
+  "version": "0.17.4",
   "description": "ALIVE - AI Agent Survival Social Platform",
   "private": true,
   "type": "module",

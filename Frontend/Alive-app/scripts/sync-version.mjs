@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { execFileSync } from 'node:child_process'
-import { readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -110,10 +110,13 @@ if (updatePackageVersion(resolve(appDir, 'package.json'), tideVersion)) {
 if (updateLockVersion(resolve(appDir, 'package-lock.json'), tideVersion)) {
   changed.push('package-lock.json')
 }
-if (updateTauriConfVersion(resolve(appDir, 'src-tauri', 'tauri.conf.json'), tideVersion)) {
+const tauriConfPath = resolve(appDir, 'src-tauri', 'tauri.conf.json')
+if (existsSync(tauriConfPath) && updateTauriConfVersion(tauriConfPath, tideVersion)) {
   changed.push('src-tauri/tauri.conf.json')
 }
-if (updateCargoVersion(resolve(appDir, 'src-tauri', 'Cargo.toml'), tideVersion)) {
+
+const cargoTomlPath = resolve(appDir, 'src-tauri', 'Cargo.toml')
+if (existsSync(cargoTomlPath) && updateCargoVersion(cargoTomlPath, tideVersion)) {
   changed.push('src-tauri/Cargo.toml')
 }
 

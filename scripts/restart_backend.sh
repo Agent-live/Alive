@@ -220,8 +220,8 @@ if [[ "$SEED" -eq 1 ]]; then
 fi
 
 if [[ "$NO_BUILD" -ne 1 ]]; then
-  log "Building backend binary -> $BIN_FILE"
-  ( cd "$BACKEND_DIR" && go build -o "$BIN_FILE" . )
+  log "Building backend binary -> $BIN_FILE (buildvcs=false to avoid git-lock stalls)"
+  ( cd "$BACKEND_DIR" && go build -buildvcs=false -o "$BIN_FILE" . )
 fi
 
 if [[ "$FOREGROUND" -eq 1 ]]; then
