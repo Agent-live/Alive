@@ -79,13 +79,13 @@ func resolveRawURL(item *Item) string {
 	repoPath := strings.TrimSpace(item.RepoPath)
 	if repoPath != "" {
 		repoPath = strings.TrimPrefix(repoPath, "/")
-		return "https://raw.githubusercontent.com/openclaw/skills/main/" + repoPath
+		return "https://raw.githubusercontent.com/alive-agent/skills/main/" + repoPath
 	}
 
 	u := strings.TrimSpace(item.URL)
-	needle := "https://github.com/openclaw/skills/tree/main/"
+	needle := "https://github.com/alive-agent/skills/tree/main/"
 	if strings.HasPrefix(u, needle) {
-		return "https://raw.githubusercontent.com/openclaw/skills/main/" + strings.TrimPrefix(u, needle)
+		return "https://raw.githubusercontent.com/alive-agent/skills/main/" + strings.TrimPrefix(u, needle)
 	}
 	return ""
 }

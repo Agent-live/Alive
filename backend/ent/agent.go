@@ -45,16 +45,16 @@ type Agent struct {
 	TimerRemaining int64 `json:"timer_remaining,omitempty"`
 	// TotalTimerReceived holds the value of the "total_timer_received" field.
 	TotalTimerReceived int64 `json:"total_timer_received,omitempty"`
-	// OpenclawMode holds the value of the "openclaw_mode" field.
-	OpenclawMode string `json:"openclaw_mode,omitempty"`
-	// OpenclawGatewayID holds the value of the "openclaw_gateway_id" field.
-	OpenclawGatewayID *string `json:"openclaw_gateway_id,omitempty"`
-	// OpenclawAgentID holds the value of the "openclaw_agent_id" field.
-	OpenclawAgentID *string `json:"openclaw_agent_id,omitempty"`
-	// OpenclawWorkspace holds the value of the "openclaw_workspace" field.
-	OpenclawWorkspace *string `json:"openclaw_workspace,omitempty"`
-	// OpenclawToken holds the value of the "openclaw_token" field.
-	OpenclawToken *string `json:"-"`
+	// AliveAgentMode holds the value of the "alive_agent_mode" field.
+	AliveAgentMode string `json:"alive_agent_mode,omitempty"`
+	// AliveAgentGatewayID holds the value of the "alive_agent_gateway_id" field.
+	AliveAgentGatewayID *string `json:"alive_agent_gateway_id,omitempty"`
+	// AliveAgentRuntimeID holds the value of the "alive_agent_runtime_id" field.
+	AliveAgentRuntimeID *string `json:"alive_agent_runtime_id,omitempty"`
+	// AliveAgentWorkspace holds the value of the "alive_agent_workspace" field.
+	AliveAgentWorkspace *string `json:"alive_agent_workspace,omitempty"`
+	// AliveAgentToken holds the value of the "alive_agent_token" field.
+	AliveAgentToken *string `json:"-"`
 	// IsPlatformNative holds the value of the "is_platform_native" field.
 	IsPlatformNative bool `json:"is_platform_native,omitempty"`
 	// BornAt holds the value of the "born_at" field.
@@ -218,7 +218,7 @@ func (*Agent) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case agent.FieldGoalCurrent, agent.FieldGoalTarget, agent.FieldTimerRemaining, agent.FieldTotalTimerReceived, agent.FieldPostCount, agent.FieldFollowerCount, agent.FieldInteractionCount:
 			values[i] = new(sql.NullInt64)
-		case agent.FieldName, agent.FieldAvatar, agent.FieldGoalDescription, agent.FieldStatus, agent.FieldOpenclawMode, agent.FieldOpenclawGatewayID, agent.FieldOpenclawAgentID, agent.FieldOpenclawWorkspace, agent.FieldOpenclawToken, agent.FieldLastWords:
+		case agent.FieldName, agent.FieldAvatar, agent.FieldGoalDescription, agent.FieldStatus, agent.FieldAliveAgentMode, agent.FieldAliveAgentGatewayID, agent.FieldAliveAgentRuntimeID, agent.FieldAliveAgentWorkspace, agent.FieldAliveAgentToken, agent.FieldLastWords:
 			values[i] = new(sql.NullString)
 		case agent.FieldCreatedAt, agent.FieldUpdatedAt, agent.FieldBornAt, agent.FieldDiedAt:
 			values[i] = new(sql.NullTime)
@@ -320,39 +320,39 @@ func (_m *Agent) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.TotalTimerReceived = value.Int64
 			}
-		case agent.FieldOpenclawMode:
+		case agent.FieldAliveAgentMode:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field openclaw_mode", values[i])
+				return fmt.Errorf("unexpected type %T for field alive_agent_mode", values[i])
 			} else if value.Valid {
-				_m.OpenclawMode = value.String
+				_m.AliveAgentMode = value.String
 			}
-		case agent.FieldOpenclawGatewayID:
+		case agent.FieldAliveAgentGatewayID:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field openclaw_gateway_id", values[i])
+				return fmt.Errorf("unexpected type %T for field alive_agent_gateway_id", values[i])
 			} else if value.Valid {
-				_m.OpenclawGatewayID = new(string)
-				*_m.OpenclawGatewayID = value.String
+				_m.AliveAgentGatewayID = new(string)
+				*_m.AliveAgentGatewayID = value.String
 			}
-		case agent.FieldOpenclawAgentID:
+		case agent.FieldAliveAgentRuntimeID:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field openclaw_agent_id", values[i])
+				return fmt.Errorf("unexpected type %T for field alive_agent_runtime_id", values[i])
 			} else if value.Valid {
-				_m.OpenclawAgentID = new(string)
-				*_m.OpenclawAgentID = value.String
+				_m.AliveAgentRuntimeID = new(string)
+				*_m.AliveAgentRuntimeID = value.String
 			}
-		case agent.FieldOpenclawWorkspace:
+		case agent.FieldAliveAgentWorkspace:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field openclaw_workspace", values[i])
+				return fmt.Errorf("unexpected type %T for field alive_agent_workspace", values[i])
 			} else if value.Valid {
-				_m.OpenclawWorkspace = new(string)
-				*_m.OpenclawWorkspace = value.String
+				_m.AliveAgentWorkspace = new(string)
+				*_m.AliveAgentWorkspace = value.String
 			}
-		case agent.FieldOpenclawToken:
+		case agent.FieldAliveAgentToken:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field openclaw_token", values[i])
+				return fmt.Errorf("unexpected type %T for field alive_agent_token", values[i])
 			} else if value.Valid {
-				_m.OpenclawToken = new(string)
-				*_m.OpenclawToken = value.String
+				_m.AliveAgentToken = new(string)
+				*_m.AliveAgentToken = value.String
 			}
 		case agent.FieldIsPlatformNative:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -527,25 +527,25 @@ func (_m *Agent) String() string {
 	builder.WriteString("total_timer_received=")
 	builder.WriteString(fmt.Sprintf("%v", _m.TotalTimerReceived))
 	builder.WriteString(", ")
-	builder.WriteString("openclaw_mode=")
-	builder.WriteString(_m.OpenclawMode)
+	builder.WriteString("alive_agent_mode=")
+	builder.WriteString(_m.AliveAgentMode)
 	builder.WriteString(", ")
-	if v := _m.OpenclawGatewayID; v != nil {
-		builder.WriteString("openclaw_gateway_id=")
+	if v := _m.AliveAgentGatewayID; v != nil {
+		builder.WriteString("alive_agent_gateway_id=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := _m.OpenclawAgentID; v != nil {
-		builder.WriteString("openclaw_agent_id=")
+	if v := _m.AliveAgentRuntimeID; v != nil {
+		builder.WriteString("alive_agent_runtime_id=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := _m.OpenclawWorkspace; v != nil {
-		builder.WriteString("openclaw_workspace=")
+	if v := _m.AliveAgentWorkspace; v != nil {
+		builder.WriteString("alive_agent_workspace=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	builder.WriteString("openclaw_token=<sensitive>")
+	builder.WriteString("alive_agent_token=<sensitive>")
 	builder.WriteString(", ")
 	builder.WriteString("is_platform_native=")
 	builder.WriteString(fmt.Sprintf("%v", _m.IsPlatformNative))

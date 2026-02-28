@@ -5,13 +5,32 @@ function readLines(filePath) {
   return fs.readFileSync(filePath, 'utf8').split(/\r?\n/);
 }
 
-function listBundledSlugs(openclawSkillsDir) {
+function hasSkillMarkdown(dir) {
+  return fs.existsSync(path.join(dir, 'SKILL.md')) || fs.existsSync(path.join(dir, 'skill.md'));
+}
+
+function listBundledSlugs(aliveAgentSkillsDir) {
   const out = new Set();
-  for (const ent of fs.readdirSync(openclawSkillsDir, { withFileTypes: true })) {
+  for (const ent of fs.readdirSync(aliveAgentSkillsDir, { withFileTypes: true })) {
     if (!ent.isDirectory()) continue;
     // Skip hidden/system dirs.
     if (ent.name.startsWith('.')) continue;
-    out.add(ent.name);
+
+    const firstLevelDir = path.join(aliveAgentSkillsDir, ent.name);
+    if (hasSkillMarkdown(firstLevelDir)) {
+      out.add(ent.name);
+      continue;
+    }
+
+    // Support owner/slug repo shape: skills/<owner>/<slug>/SKILL.md
+    for (const nested of fs.readdirSync(firstLevelDir, { withFileTypes: true })) {
+      if (!nested.isDirectory()) continue;
+      if (nested.name.startsWith('.')) continue;
+      const slugDir = path.join(firstLevelDir, nested.name);
+      if (hasSkillMarkdown(slugDir)) {
+        out.add(nested.name);
+      }
+    }
   }
   return out;
 }
@@ -23,7 +42,7 @@ function parseCatalogFromReadme(lines, bundledSlugs) {
 
   const categoryRe = /<summary><h3[^>]*>([^<]+)<\/h3><\/summary>/;
   // Example:
-  // - [github](https://github.com/openclaw/skills/tree/main/skills/steipete/github/SKILL.md) - Interact with GitHub...
+  // - [github](https://github.com/alive-agent/skills/tree/main/skills/steipete/github/SKILL.md) - Interact with GitHub...
   // Some lines use an en dash (–) between the link and the description.
   const itemRe = /^- \[([^\]]+)\]\(([^)]+)\)\s*(?:-|–|—)\s*(.+)$/;
 
@@ -47,7 +66,7 @@ function parseCatalogFromReadme(lines, bundledSlugs) {
     seen.add(key);
 
     let repoPath = null;
-    const urlTree = url.match(/^https?:\/\/github\.com\/openclaw\/skills\/(?:tree|blob)\/main\/(.+)$/);
+    const urlTree = url.match(/^https?:\/\/github\.com\/alive-agent\/skills\/(?:tree|blob)\/main\/(.+)$/);
     if (urlTree) repoPath = urlTree[1].trim();
 
     items.push({
@@ -82,20 +101,20 @@ function parseCatalogFromReadme(lines, bundledSlugs) {
 
 function main() {
   const repoRoot = process.cwd();
-  const readmePath = path.join(repoRoot, 'openclaw-skills', 'README.md');
-  const openclawSkillsDir = path.join(repoRoot, 'openclaw', 'skills');
+  const readmePath = path.join(repoRoot, 'alive-agent-skills-2', 'README.md');
+  const aliveAgentSkillsDir = path.join(repoRoot, 'alive-agent-skills', 'skills');
   const outPath = path.join(repoRoot, 'backend', 'internal', 'skillshop', 'catalog.json');
 
   if (!fs.existsSync(readmePath)) {
     console.error(`Missing ${readmePath}`);
     process.exit(1);
   }
-  if (!fs.existsSync(openclawSkillsDir)) {
-    console.error(`Missing ${openclawSkillsDir}`);
+  if (!fs.existsSync(aliveAgentSkillsDir)) {
+    console.error(`Missing ${aliveAgentSkillsDir}`);
     process.exit(1);
   }
 
-  const bundledSlugs = listBundledSlugs(openclawSkillsDir);
+  const bundledSlugs = listBundledSlugs(aliveAgentSkillsDir);
   const lines = readLines(readmePath);
 
   const { items, categories } = parseCatalogFromReadme(lines, bundledSlugs);
@@ -103,8 +122,8 @@ function main() {
   const out = {
     generatedAt: new Date().toISOString(),
     source: {
-      readmePath: 'openclaw-skills/README.md',
-      openclawSkillsDir: 'openclaw/skills',
+      readmePath: 'alive-agent-skills-2/README.md',
+      aliveAgentSkillsDir: 'alive-agent-skills/skills',
     },
     totals: {
       skills: items.length,

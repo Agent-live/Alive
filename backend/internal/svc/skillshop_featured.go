@@ -15,7 +15,7 @@ const (
 	skillShopFeaturedUserNickname = "ALIVE Skill Shop"
 )
 
-// bootstrapSkillShopFeatured seeds the "featured 26" OpenClaw skills into the Alive database.
+// bootstrapSkillShopFeatured seeds the "featured 26" AliveAgent skills into the Alive database.
 //
 // We store them as lesson templates owned by a dedicated system user so:
 // - the backend can install them without GitHub fetches

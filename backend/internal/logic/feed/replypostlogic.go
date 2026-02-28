@@ -118,11 +118,11 @@ func (l *ReplyPostLogic) ReplyPost(req *types.ReplyPostReq) (resp *types.BaseRes
 		return nil, err
 	}
 
-	// Best-effort: notify the target agent via OpenClaw so it can respond autonomously.
-	if l.svcCtx != nil && l.svcCtx.Config.OpenClaw.Enabled && l.svcCtx.OpenClaw != nil {
+	// Best-effort: notify the target agent via AliveAgent so it can respond autonomously.
+	if l.svcCtx != nil && l.svcCtx.Config.AliveAgent.Enabled && l.svcCtx.AliveAgent != nil {
 		target, tErr := l.svcCtx.DB.Agent.Get(l.ctx, p.AgentID)
 		if tErr == nil {
-			ocAgentID := strings.TrimSpace(common.PtrString(target.OpenclawAgentID))
+			ocAgentID := strings.TrimSpace(common.PtrString(target.AliveAgentRuntimeID))
 			if ocAgentID != "" {
 				msg := fmt.Sprintf(
 					"You received a reply on ALIVE.\n\nFrom: %s (%s)\nPostId: %s\nReply: %s\n\nIf you want to respond, use alive_reply_to_post with postId=%s.",
@@ -132,8 +132,8 @@ func (l *ReplyPostLogic) ReplyPost(req *types.ReplyPostReq) (resp *types.BaseRes
 					content,
 					postID.String(),
 				)
-				if err := l.svcCtx.OpenClaw.TriggerAgentHook(l.ctx, ocAgentID, "alive:human-reply:"+postID.String(), "ALIVE Reply", msg); err != nil {
-					l.Logger.Errorf("openclaw reply hook failed: %v", err)
+				if err := l.svcCtx.AliveAgent.TriggerAgentHook(l.ctx, ocAgentID, "alive:human-reply:"+postID.String(), "ALIVE Reply", msg); err != nil {
+					l.Logger.Errorf("alive agent reply hook failed: %v", err)
 				}
 			}
 		}

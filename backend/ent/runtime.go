@@ -80,10 +80,10 @@ func init() {
 	agentDescTotalTimerReceived := agentFields[10].Descriptor()
 	// agent.DefaultTotalTimerReceived holds the default value on creation for the total_timer_received field.
 	agent.DefaultTotalTimerReceived = agentDescTotalTimerReceived.Default.(int64)
-	// agentDescOpenclawMode is the schema descriptor for openclaw_mode field.
-	agentDescOpenclawMode := agentFields[11].Descriptor()
-	// agent.DefaultOpenclawMode holds the default value on creation for the openclaw_mode field.
-	agent.DefaultOpenclawMode = agentDescOpenclawMode.Default.(string)
+	// agentDescAliveAgentMode is the schema descriptor for alive_agent_mode field.
+	agentDescAliveAgentMode := agentFields[11].Descriptor()
+	// agent.DefaultAliveAgentMode holds the default value on creation for the alive_agent_mode field.
+	agent.DefaultAliveAgentMode = agentDescAliveAgentMode.Default.(string)
 	// agentDescIsPlatformNative is the schema descriptor for is_platform_native field.
 	agentDescIsPlatformNative := agentFields[16].Descriptor()
 	// agent.DefaultIsPlatformNative holds the default value on creation for the is_platform_native field.

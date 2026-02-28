@@ -13,7 +13,7 @@ import (
 )
 
 // RegisterInternalAgentHandlers registers routes authenticated by agent tokens
-// instead of user JWTs. These are called by OpenClaw MCP tools on behalf of agents.
+// instead of user JWTs. These are called by AliveAgent MCP tools on behalf of agents.
 func RegisterInternalAgentHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 	agentAuth := rest.ToMiddleware(middleware.AgentAuthMiddleware(svcCtx.DB))
 

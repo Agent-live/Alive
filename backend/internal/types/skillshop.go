@@ -1,6 +1,6 @@
 package types
 
-// Skill shop: OpenClaw community skill catalog endpoints.
+// Skill shop: AliveAgent community skill catalog endpoints.
 
 type SkillShopListReq struct {
 	Q                string `form:"q,optional"`

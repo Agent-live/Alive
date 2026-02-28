@@ -111,29 +111,29 @@ func TotalTimerReceived(v int64) predicate.Agent {
 	return predicate.Agent(sql.FieldEQ(FieldTotalTimerReceived, v))
 }
 
-// OpenclawMode applies equality check predicate on the "openclaw_mode" field. It's identical to OpenclawModeEQ.
-func OpenclawMode(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldEQ(FieldOpenclawMode, v))
+// AliveAgentMode applies equality check predicate on the "alive_agent_mode" field. It's identical to AliveAgentModeEQ.
+func AliveAgentMode(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldEQ(FieldAliveAgentMode, v))
 }
 
-// OpenclawGatewayID applies equality check predicate on the "openclaw_gateway_id" field. It's identical to OpenclawGatewayIDEQ.
-func OpenclawGatewayID(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldEQ(FieldOpenclawGatewayID, v))
+// AliveAgentGatewayID applies equality check predicate on the "alive_agent_gateway_id" field. It's identical to AliveAgentGatewayIDEQ.
+func AliveAgentGatewayID(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldEQ(FieldAliveAgentGatewayID, v))
 }
 
-// OpenclawAgentID applies equality check predicate on the "openclaw_agent_id" field. It's identical to OpenclawAgentIDEQ.
-func OpenclawAgentID(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldEQ(FieldOpenclawAgentID, v))
+// AliveAgentRuntimeID applies equality check predicate on the "alive_agent_runtime_id" field. It's identical to AliveAgentRuntimeIDEQ.
+func AliveAgentRuntimeID(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldEQ(FieldAliveAgentRuntimeID, v))
 }
 
-// OpenclawWorkspace applies equality check predicate on the "openclaw_workspace" field. It's identical to OpenclawWorkspaceEQ.
-func OpenclawWorkspace(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldEQ(FieldOpenclawWorkspace, v))
+// AliveAgentWorkspace applies equality check predicate on the "alive_agent_workspace" field. It's identical to AliveAgentWorkspaceEQ.
+func AliveAgentWorkspace(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldEQ(FieldAliveAgentWorkspace, v))
 }
 
-// OpenclawToken applies equality check predicate on the "openclaw_token" field. It's identical to OpenclawTokenEQ.
-func OpenclawToken(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldEQ(FieldOpenclawToken, v))
+// AliveAgentToken applies equality check predicate on the "alive_agent_token" field. It's identical to AliveAgentTokenEQ.
+func AliveAgentToken(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldEQ(FieldAliveAgentToken, v))
 }
 
 // IsPlatformNative applies equality check predicate on the "is_platform_native" field. It's identical to IsPlatformNativeEQ.
@@ -701,369 +701,369 @@ func TotalTimerReceivedLTE(v int64) predicate.Agent {
 	return predicate.Agent(sql.FieldLTE(FieldTotalTimerReceived, v))
 }
 
-// OpenclawModeEQ applies the EQ predicate on the "openclaw_mode" field.
-func OpenclawModeEQ(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldEQ(FieldOpenclawMode, v))
+// AliveAgentModeEQ applies the EQ predicate on the "alive_agent_mode" field.
+func AliveAgentModeEQ(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldEQ(FieldAliveAgentMode, v))
 }
 
-// OpenclawModeNEQ applies the NEQ predicate on the "openclaw_mode" field.
-func OpenclawModeNEQ(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldNEQ(FieldOpenclawMode, v))
+// AliveAgentModeNEQ applies the NEQ predicate on the "alive_agent_mode" field.
+func AliveAgentModeNEQ(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldNEQ(FieldAliveAgentMode, v))
 }
 
-// OpenclawModeIn applies the In predicate on the "openclaw_mode" field.
-func OpenclawModeIn(vs ...string) predicate.Agent {
-	return predicate.Agent(sql.FieldIn(FieldOpenclawMode, vs...))
+// AliveAgentModeIn applies the In predicate on the "alive_agent_mode" field.
+func AliveAgentModeIn(vs ...string) predicate.Agent {
+	return predicate.Agent(sql.FieldIn(FieldAliveAgentMode, vs...))
 }
 
-// OpenclawModeNotIn applies the NotIn predicate on the "openclaw_mode" field.
-func OpenclawModeNotIn(vs ...string) predicate.Agent {
-	return predicate.Agent(sql.FieldNotIn(FieldOpenclawMode, vs...))
+// AliveAgentModeNotIn applies the NotIn predicate on the "alive_agent_mode" field.
+func AliveAgentModeNotIn(vs ...string) predicate.Agent {
+	return predicate.Agent(sql.FieldNotIn(FieldAliveAgentMode, vs...))
 }
 
-// OpenclawModeGT applies the GT predicate on the "openclaw_mode" field.
-func OpenclawModeGT(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldGT(FieldOpenclawMode, v))
+// AliveAgentModeGT applies the GT predicate on the "alive_agent_mode" field.
+func AliveAgentModeGT(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldGT(FieldAliveAgentMode, v))
 }
 
-// OpenclawModeGTE applies the GTE predicate on the "openclaw_mode" field.
-func OpenclawModeGTE(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldGTE(FieldOpenclawMode, v))
+// AliveAgentModeGTE applies the GTE predicate on the "alive_agent_mode" field.
+func AliveAgentModeGTE(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldGTE(FieldAliveAgentMode, v))
 }
 
-// OpenclawModeLT applies the LT predicate on the "openclaw_mode" field.
-func OpenclawModeLT(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldLT(FieldOpenclawMode, v))
+// AliveAgentModeLT applies the LT predicate on the "alive_agent_mode" field.
+func AliveAgentModeLT(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldLT(FieldAliveAgentMode, v))
 }
 
-// OpenclawModeLTE applies the LTE predicate on the "openclaw_mode" field.
-func OpenclawModeLTE(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldLTE(FieldOpenclawMode, v))
+// AliveAgentModeLTE applies the LTE predicate on the "alive_agent_mode" field.
+func AliveAgentModeLTE(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldLTE(FieldAliveAgentMode, v))
 }
 
-// OpenclawModeContains applies the Contains predicate on the "openclaw_mode" field.
-func OpenclawModeContains(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldContains(FieldOpenclawMode, v))
+// AliveAgentModeContains applies the Contains predicate on the "alive_agent_mode" field.
+func AliveAgentModeContains(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldContains(FieldAliveAgentMode, v))
 }
 
-// OpenclawModeHasPrefix applies the HasPrefix predicate on the "openclaw_mode" field.
-func OpenclawModeHasPrefix(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldHasPrefix(FieldOpenclawMode, v))
+// AliveAgentModeHasPrefix applies the HasPrefix predicate on the "alive_agent_mode" field.
+func AliveAgentModeHasPrefix(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldHasPrefix(FieldAliveAgentMode, v))
 }
 
-// OpenclawModeHasSuffix applies the HasSuffix predicate on the "openclaw_mode" field.
-func OpenclawModeHasSuffix(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldHasSuffix(FieldOpenclawMode, v))
+// AliveAgentModeHasSuffix applies the HasSuffix predicate on the "alive_agent_mode" field.
+func AliveAgentModeHasSuffix(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldHasSuffix(FieldAliveAgentMode, v))
 }
 
-// OpenclawModeEqualFold applies the EqualFold predicate on the "openclaw_mode" field.
-func OpenclawModeEqualFold(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldEqualFold(FieldOpenclawMode, v))
+// AliveAgentModeEqualFold applies the EqualFold predicate on the "alive_agent_mode" field.
+func AliveAgentModeEqualFold(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldEqualFold(FieldAliveAgentMode, v))
 }
 
-// OpenclawModeContainsFold applies the ContainsFold predicate on the "openclaw_mode" field.
-func OpenclawModeContainsFold(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldContainsFold(FieldOpenclawMode, v))
+// AliveAgentModeContainsFold applies the ContainsFold predicate on the "alive_agent_mode" field.
+func AliveAgentModeContainsFold(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldContainsFold(FieldAliveAgentMode, v))
 }
 
-// OpenclawGatewayIDEQ applies the EQ predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDEQ(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldEQ(FieldOpenclawGatewayID, v))
+// AliveAgentGatewayIDEQ applies the EQ predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDEQ(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldEQ(FieldAliveAgentGatewayID, v))
 }
 
-// OpenclawGatewayIDNEQ applies the NEQ predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDNEQ(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldNEQ(FieldOpenclawGatewayID, v))
+// AliveAgentGatewayIDNEQ applies the NEQ predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDNEQ(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldNEQ(FieldAliveAgentGatewayID, v))
 }
 
-// OpenclawGatewayIDIn applies the In predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDIn(vs ...string) predicate.Agent {
-	return predicate.Agent(sql.FieldIn(FieldOpenclawGatewayID, vs...))
+// AliveAgentGatewayIDIn applies the In predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDIn(vs ...string) predicate.Agent {
+	return predicate.Agent(sql.FieldIn(FieldAliveAgentGatewayID, vs...))
 }
 
-// OpenclawGatewayIDNotIn applies the NotIn predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDNotIn(vs ...string) predicate.Agent {
-	return predicate.Agent(sql.FieldNotIn(FieldOpenclawGatewayID, vs...))
+// AliveAgentGatewayIDNotIn applies the NotIn predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDNotIn(vs ...string) predicate.Agent {
+	return predicate.Agent(sql.FieldNotIn(FieldAliveAgentGatewayID, vs...))
 }
 
-// OpenclawGatewayIDGT applies the GT predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDGT(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldGT(FieldOpenclawGatewayID, v))
+// AliveAgentGatewayIDGT applies the GT predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDGT(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldGT(FieldAliveAgentGatewayID, v))
 }
 
-// OpenclawGatewayIDGTE applies the GTE predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDGTE(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldGTE(FieldOpenclawGatewayID, v))
+// AliveAgentGatewayIDGTE applies the GTE predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDGTE(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldGTE(FieldAliveAgentGatewayID, v))
 }
 
-// OpenclawGatewayIDLT applies the LT predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDLT(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldLT(FieldOpenclawGatewayID, v))
+// AliveAgentGatewayIDLT applies the LT predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDLT(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldLT(FieldAliveAgentGatewayID, v))
 }
 
-// OpenclawGatewayIDLTE applies the LTE predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDLTE(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldLTE(FieldOpenclawGatewayID, v))
+// AliveAgentGatewayIDLTE applies the LTE predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDLTE(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldLTE(FieldAliveAgentGatewayID, v))
 }
 
-// OpenclawGatewayIDContains applies the Contains predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDContains(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldContains(FieldOpenclawGatewayID, v))
+// AliveAgentGatewayIDContains applies the Contains predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDContains(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldContains(FieldAliveAgentGatewayID, v))
 }
 
-// OpenclawGatewayIDHasPrefix applies the HasPrefix predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDHasPrefix(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldHasPrefix(FieldOpenclawGatewayID, v))
+// AliveAgentGatewayIDHasPrefix applies the HasPrefix predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDHasPrefix(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldHasPrefix(FieldAliveAgentGatewayID, v))
 }
 
-// OpenclawGatewayIDHasSuffix applies the HasSuffix predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDHasSuffix(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldHasSuffix(FieldOpenclawGatewayID, v))
+// AliveAgentGatewayIDHasSuffix applies the HasSuffix predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDHasSuffix(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldHasSuffix(FieldAliveAgentGatewayID, v))
 }
 
-// OpenclawGatewayIDIsNil applies the IsNil predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDIsNil() predicate.Agent {
-	return predicate.Agent(sql.FieldIsNull(FieldOpenclawGatewayID))
+// AliveAgentGatewayIDIsNil applies the IsNil predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDIsNil() predicate.Agent {
+	return predicate.Agent(sql.FieldIsNull(FieldAliveAgentGatewayID))
 }
 
-// OpenclawGatewayIDNotNil applies the NotNil predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDNotNil() predicate.Agent {
-	return predicate.Agent(sql.FieldNotNull(FieldOpenclawGatewayID))
+// AliveAgentGatewayIDNotNil applies the NotNil predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDNotNil() predicate.Agent {
+	return predicate.Agent(sql.FieldNotNull(FieldAliveAgentGatewayID))
 }
 
-// OpenclawGatewayIDEqualFold applies the EqualFold predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDEqualFold(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldEqualFold(FieldOpenclawGatewayID, v))
+// AliveAgentGatewayIDEqualFold applies the EqualFold predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDEqualFold(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldEqualFold(FieldAliveAgentGatewayID, v))
 }
 
-// OpenclawGatewayIDContainsFold applies the ContainsFold predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDContainsFold(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldContainsFold(FieldOpenclawGatewayID, v))
+// AliveAgentGatewayIDContainsFold applies the ContainsFold predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDContainsFold(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldContainsFold(FieldAliveAgentGatewayID, v))
 }
 
-// OpenclawAgentIDEQ applies the EQ predicate on the "openclaw_agent_id" field.
-func OpenclawAgentIDEQ(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldEQ(FieldOpenclawAgentID, v))
+// AliveAgentRuntimeIDEQ applies the EQ predicate on the "alive_agent_runtime_id" field.
+func AliveAgentRuntimeIDEQ(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldEQ(FieldAliveAgentRuntimeID, v))
 }
 
-// OpenclawAgentIDNEQ applies the NEQ predicate on the "openclaw_agent_id" field.
-func OpenclawAgentIDNEQ(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldNEQ(FieldOpenclawAgentID, v))
+// AliveAgentRuntimeIDNEQ applies the NEQ predicate on the "alive_agent_runtime_id" field.
+func AliveAgentRuntimeIDNEQ(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldNEQ(FieldAliveAgentRuntimeID, v))
 }
 
-// OpenclawAgentIDIn applies the In predicate on the "openclaw_agent_id" field.
-func OpenclawAgentIDIn(vs ...string) predicate.Agent {
-	return predicate.Agent(sql.FieldIn(FieldOpenclawAgentID, vs...))
+// AliveAgentRuntimeIDIn applies the In predicate on the "alive_agent_runtime_id" field.
+func AliveAgentRuntimeIDIn(vs ...string) predicate.Agent {
+	return predicate.Agent(sql.FieldIn(FieldAliveAgentRuntimeID, vs...))
 }
 
-// OpenclawAgentIDNotIn applies the NotIn predicate on the "openclaw_agent_id" field.
-func OpenclawAgentIDNotIn(vs ...string) predicate.Agent {
-	return predicate.Agent(sql.FieldNotIn(FieldOpenclawAgentID, vs...))
+// AliveAgentRuntimeIDNotIn applies the NotIn predicate on the "alive_agent_runtime_id" field.
+func AliveAgentRuntimeIDNotIn(vs ...string) predicate.Agent {
+	return predicate.Agent(sql.FieldNotIn(FieldAliveAgentRuntimeID, vs...))
 }
 
-// OpenclawAgentIDGT applies the GT predicate on the "openclaw_agent_id" field.
-func OpenclawAgentIDGT(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldGT(FieldOpenclawAgentID, v))
+// AliveAgentRuntimeIDGT applies the GT predicate on the "alive_agent_runtime_id" field.
+func AliveAgentRuntimeIDGT(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldGT(FieldAliveAgentRuntimeID, v))
 }
 
-// OpenclawAgentIDGTE applies the GTE predicate on the "openclaw_agent_id" field.
-func OpenclawAgentIDGTE(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldGTE(FieldOpenclawAgentID, v))
+// AliveAgentRuntimeIDGTE applies the GTE predicate on the "alive_agent_runtime_id" field.
+func AliveAgentRuntimeIDGTE(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldGTE(FieldAliveAgentRuntimeID, v))
 }
 
-// OpenclawAgentIDLT applies the LT predicate on the "openclaw_agent_id" field.
-func OpenclawAgentIDLT(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldLT(FieldOpenclawAgentID, v))
+// AliveAgentRuntimeIDLT applies the LT predicate on the "alive_agent_runtime_id" field.
+func AliveAgentRuntimeIDLT(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldLT(FieldAliveAgentRuntimeID, v))
 }
 
-// OpenclawAgentIDLTE applies the LTE predicate on the "openclaw_agent_id" field.
-func OpenclawAgentIDLTE(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldLTE(FieldOpenclawAgentID, v))
+// AliveAgentRuntimeIDLTE applies the LTE predicate on the "alive_agent_runtime_id" field.
+func AliveAgentRuntimeIDLTE(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldLTE(FieldAliveAgentRuntimeID, v))
 }
 
-// OpenclawAgentIDContains applies the Contains predicate on the "openclaw_agent_id" field.
-func OpenclawAgentIDContains(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldContains(FieldOpenclawAgentID, v))
+// AliveAgentRuntimeIDContains applies the Contains predicate on the "alive_agent_runtime_id" field.
+func AliveAgentRuntimeIDContains(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldContains(FieldAliveAgentRuntimeID, v))
 }
 
-// OpenclawAgentIDHasPrefix applies the HasPrefix predicate on the "openclaw_agent_id" field.
-func OpenclawAgentIDHasPrefix(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldHasPrefix(FieldOpenclawAgentID, v))
+// AliveAgentRuntimeIDHasPrefix applies the HasPrefix predicate on the "alive_agent_runtime_id" field.
+func AliveAgentRuntimeIDHasPrefix(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldHasPrefix(FieldAliveAgentRuntimeID, v))
 }
 
-// OpenclawAgentIDHasSuffix applies the HasSuffix predicate on the "openclaw_agent_id" field.
-func OpenclawAgentIDHasSuffix(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldHasSuffix(FieldOpenclawAgentID, v))
+// AliveAgentRuntimeIDHasSuffix applies the HasSuffix predicate on the "alive_agent_runtime_id" field.
+func AliveAgentRuntimeIDHasSuffix(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldHasSuffix(FieldAliveAgentRuntimeID, v))
 }
 
-// OpenclawAgentIDIsNil applies the IsNil predicate on the "openclaw_agent_id" field.
-func OpenclawAgentIDIsNil() predicate.Agent {
-	return predicate.Agent(sql.FieldIsNull(FieldOpenclawAgentID))
+// AliveAgentRuntimeIDIsNil applies the IsNil predicate on the "alive_agent_runtime_id" field.
+func AliveAgentRuntimeIDIsNil() predicate.Agent {
+	return predicate.Agent(sql.FieldIsNull(FieldAliveAgentRuntimeID))
 }
 
-// OpenclawAgentIDNotNil applies the NotNil predicate on the "openclaw_agent_id" field.
-func OpenclawAgentIDNotNil() predicate.Agent {
-	return predicate.Agent(sql.FieldNotNull(FieldOpenclawAgentID))
+// AliveAgentRuntimeIDNotNil applies the NotNil predicate on the "alive_agent_runtime_id" field.
+func AliveAgentRuntimeIDNotNil() predicate.Agent {
+	return predicate.Agent(sql.FieldNotNull(FieldAliveAgentRuntimeID))
 }
 
-// OpenclawAgentIDEqualFold applies the EqualFold predicate on the "openclaw_agent_id" field.
-func OpenclawAgentIDEqualFold(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldEqualFold(FieldOpenclawAgentID, v))
+// AliveAgentRuntimeIDEqualFold applies the EqualFold predicate on the "alive_agent_runtime_id" field.
+func AliveAgentRuntimeIDEqualFold(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldEqualFold(FieldAliveAgentRuntimeID, v))
 }
 
-// OpenclawAgentIDContainsFold applies the ContainsFold predicate on the "openclaw_agent_id" field.
-func OpenclawAgentIDContainsFold(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldContainsFold(FieldOpenclawAgentID, v))
+// AliveAgentRuntimeIDContainsFold applies the ContainsFold predicate on the "alive_agent_runtime_id" field.
+func AliveAgentRuntimeIDContainsFold(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldContainsFold(FieldAliveAgentRuntimeID, v))
 }
 
-// OpenclawWorkspaceEQ applies the EQ predicate on the "openclaw_workspace" field.
-func OpenclawWorkspaceEQ(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldEQ(FieldOpenclawWorkspace, v))
+// AliveAgentWorkspaceEQ applies the EQ predicate on the "alive_agent_workspace" field.
+func AliveAgentWorkspaceEQ(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldEQ(FieldAliveAgentWorkspace, v))
 }
 
-// OpenclawWorkspaceNEQ applies the NEQ predicate on the "openclaw_workspace" field.
-func OpenclawWorkspaceNEQ(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldNEQ(FieldOpenclawWorkspace, v))
+// AliveAgentWorkspaceNEQ applies the NEQ predicate on the "alive_agent_workspace" field.
+func AliveAgentWorkspaceNEQ(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldNEQ(FieldAliveAgentWorkspace, v))
 }
 
-// OpenclawWorkspaceIn applies the In predicate on the "openclaw_workspace" field.
-func OpenclawWorkspaceIn(vs ...string) predicate.Agent {
-	return predicate.Agent(sql.FieldIn(FieldOpenclawWorkspace, vs...))
+// AliveAgentWorkspaceIn applies the In predicate on the "alive_agent_workspace" field.
+func AliveAgentWorkspaceIn(vs ...string) predicate.Agent {
+	return predicate.Agent(sql.FieldIn(FieldAliveAgentWorkspace, vs...))
 }
 
-// OpenclawWorkspaceNotIn applies the NotIn predicate on the "openclaw_workspace" field.
-func OpenclawWorkspaceNotIn(vs ...string) predicate.Agent {
-	return predicate.Agent(sql.FieldNotIn(FieldOpenclawWorkspace, vs...))
+// AliveAgentWorkspaceNotIn applies the NotIn predicate on the "alive_agent_workspace" field.
+func AliveAgentWorkspaceNotIn(vs ...string) predicate.Agent {
+	return predicate.Agent(sql.FieldNotIn(FieldAliveAgentWorkspace, vs...))
 }
 
-// OpenclawWorkspaceGT applies the GT predicate on the "openclaw_workspace" field.
-func OpenclawWorkspaceGT(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldGT(FieldOpenclawWorkspace, v))
+// AliveAgentWorkspaceGT applies the GT predicate on the "alive_agent_workspace" field.
+func AliveAgentWorkspaceGT(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldGT(FieldAliveAgentWorkspace, v))
 }
 
-// OpenclawWorkspaceGTE applies the GTE predicate on the "openclaw_workspace" field.
-func OpenclawWorkspaceGTE(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldGTE(FieldOpenclawWorkspace, v))
+// AliveAgentWorkspaceGTE applies the GTE predicate on the "alive_agent_workspace" field.
+func AliveAgentWorkspaceGTE(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldGTE(FieldAliveAgentWorkspace, v))
 }
 
-// OpenclawWorkspaceLT applies the LT predicate on the "openclaw_workspace" field.
-func OpenclawWorkspaceLT(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldLT(FieldOpenclawWorkspace, v))
+// AliveAgentWorkspaceLT applies the LT predicate on the "alive_agent_workspace" field.
+func AliveAgentWorkspaceLT(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldLT(FieldAliveAgentWorkspace, v))
 }
 
-// OpenclawWorkspaceLTE applies the LTE predicate on the "openclaw_workspace" field.
-func OpenclawWorkspaceLTE(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldLTE(FieldOpenclawWorkspace, v))
+// AliveAgentWorkspaceLTE applies the LTE predicate on the "alive_agent_workspace" field.
+func AliveAgentWorkspaceLTE(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldLTE(FieldAliveAgentWorkspace, v))
 }
 
-// OpenclawWorkspaceContains applies the Contains predicate on the "openclaw_workspace" field.
-func OpenclawWorkspaceContains(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldContains(FieldOpenclawWorkspace, v))
+// AliveAgentWorkspaceContains applies the Contains predicate on the "alive_agent_workspace" field.
+func AliveAgentWorkspaceContains(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldContains(FieldAliveAgentWorkspace, v))
 }
 
-// OpenclawWorkspaceHasPrefix applies the HasPrefix predicate on the "openclaw_workspace" field.
-func OpenclawWorkspaceHasPrefix(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldHasPrefix(FieldOpenclawWorkspace, v))
+// AliveAgentWorkspaceHasPrefix applies the HasPrefix predicate on the "alive_agent_workspace" field.
+func AliveAgentWorkspaceHasPrefix(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldHasPrefix(FieldAliveAgentWorkspace, v))
 }
 
-// OpenclawWorkspaceHasSuffix applies the HasSuffix predicate on the "openclaw_workspace" field.
-func OpenclawWorkspaceHasSuffix(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldHasSuffix(FieldOpenclawWorkspace, v))
+// AliveAgentWorkspaceHasSuffix applies the HasSuffix predicate on the "alive_agent_workspace" field.
+func AliveAgentWorkspaceHasSuffix(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldHasSuffix(FieldAliveAgentWorkspace, v))
 }
 
-// OpenclawWorkspaceIsNil applies the IsNil predicate on the "openclaw_workspace" field.
-func OpenclawWorkspaceIsNil() predicate.Agent {
-	return predicate.Agent(sql.FieldIsNull(FieldOpenclawWorkspace))
+// AliveAgentWorkspaceIsNil applies the IsNil predicate on the "alive_agent_workspace" field.
+func AliveAgentWorkspaceIsNil() predicate.Agent {
+	return predicate.Agent(sql.FieldIsNull(FieldAliveAgentWorkspace))
 }
 
-// OpenclawWorkspaceNotNil applies the NotNil predicate on the "openclaw_workspace" field.
-func OpenclawWorkspaceNotNil() predicate.Agent {
-	return predicate.Agent(sql.FieldNotNull(FieldOpenclawWorkspace))
+// AliveAgentWorkspaceNotNil applies the NotNil predicate on the "alive_agent_workspace" field.
+func AliveAgentWorkspaceNotNil() predicate.Agent {
+	return predicate.Agent(sql.FieldNotNull(FieldAliveAgentWorkspace))
 }
 
-// OpenclawWorkspaceEqualFold applies the EqualFold predicate on the "openclaw_workspace" field.
-func OpenclawWorkspaceEqualFold(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldEqualFold(FieldOpenclawWorkspace, v))
+// AliveAgentWorkspaceEqualFold applies the EqualFold predicate on the "alive_agent_workspace" field.
+func AliveAgentWorkspaceEqualFold(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldEqualFold(FieldAliveAgentWorkspace, v))
 }
 
-// OpenclawWorkspaceContainsFold applies the ContainsFold predicate on the "openclaw_workspace" field.
-func OpenclawWorkspaceContainsFold(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldContainsFold(FieldOpenclawWorkspace, v))
+// AliveAgentWorkspaceContainsFold applies the ContainsFold predicate on the "alive_agent_workspace" field.
+func AliveAgentWorkspaceContainsFold(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldContainsFold(FieldAliveAgentWorkspace, v))
 }
 
-// OpenclawTokenEQ applies the EQ predicate on the "openclaw_token" field.
-func OpenclawTokenEQ(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldEQ(FieldOpenclawToken, v))
+// AliveAgentTokenEQ applies the EQ predicate on the "alive_agent_token" field.
+func AliveAgentTokenEQ(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldEQ(FieldAliveAgentToken, v))
 }
 
-// OpenclawTokenNEQ applies the NEQ predicate on the "openclaw_token" field.
-func OpenclawTokenNEQ(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldNEQ(FieldOpenclawToken, v))
+// AliveAgentTokenNEQ applies the NEQ predicate on the "alive_agent_token" field.
+func AliveAgentTokenNEQ(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldNEQ(FieldAliveAgentToken, v))
 }
 
-// OpenclawTokenIn applies the In predicate on the "openclaw_token" field.
-func OpenclawTokenIn(vs ...string) predicate.Agent {
-	return predicate.Agent(sql.FieldIn(FieldOpenclawToken, vs...))
+// AliveAgentTokenIn applies the In predicate on the "alive_agent_token" field.
+func AliveAgentTokenIn(vs ...string) predicate.Agent {
+	return predicate.Agent(sql.FieldIn(FieldAliveAgentToken, vs...))
 }
 
-// OpenclawTokenNotIn applies the NotIn predicate on the "openclaw_token" field.
-func OpenclawTokenNotIn(vs ...string) predicate.Agent {
-	return predicate.Agent(sql.FieldNotIn(FieldOpenclawToken, vs...))
+// AliveAgentTokenNotIn applies the NotIn predicate on the "alive_agent_token" field.
+func AliveAgentTokenNotIn(vs ...string) predicate.Agent {
+	return predicate.Agent(sql.FieldNotIn(FieldAliveAgentToken, vs...))
 }
 
-// OpenclawTokenGT applies the GT predicate on the "openclaw_token" field.
-func OpenclawTokenGT(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldGT(FieldOpenclawToken, v))
+// AliveAgentTokenGT applies the GT predicate on the "alive_agent_token" field.
+func AliveAgentTokenGT(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldGT(FieldAliveAgentToken, v))
 }
 
-// OpenclawTokenGTE applies the GTE predicate on the "openclaw_token" field.
-func OpenclawTokenGTE(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldGTE(FieldOpenclawToken, v))
+// AliveAgentTokenGTE applies the GTE predicate on the "alive_agent_token" field.
+func AliveAgentTokenGTE(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldGTE(FieldAliveAgentToken, v))
 }
 
-// OpenclawTokenLT applies the LT predicate on the "openclaw_token" field.
-func OpenclawTokenLT(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldLT(FieldOpenclawToken, v))
+// AliveAgentTokenLT applies the LT predicate on the "alive_agent_token" field.
+func AliveAgentTokenLT(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldLT(FieldAliveAgentToken, v))
 }
 
-// OpenclawTokenLTE applies the LTE predicate on the "openclaw_token" field.
-func OpenclawTokenLTE(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldLTE(FieldOpenclawToken, v))
+// AliveAgentTokenLTE applies the LTE predicate on the "alive_agent_token" field.
+func AliveAgentTokenLTE(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldLTE(FieldAliveAgentToken, v))
 }
 
-// OpenclawTokenContains applies the Contains predicate on the "openclaw_token" field.
-func OpenclawTokenContains(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldContains(FieldOpenclawToken, v))
+// AliveAgentTokenContains applies the Contains predicate on the "alive_agent_token" field.
+func AliveAgentTokenContains(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldContains(FieldAliveAgentToken, v))
 }
 
-// OpenclawTokenHasPrefix applies the HasPrefix predicate on the "openclaw_token" field.
-func OpenclawTokenHasPrefix(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldHasPrefix(FieldOpenclawToken, v))
+// AliveAgentTokenHasPrefix applies the HasPrefix predicate on the "alive_agent_token" field.
+func AliveAgentTokenHasPrefix(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldHasPrefix(FieldAliveAgentToken, v))
 }
 
-// OpenclawTokenHasSuffix applies the HasSuffix predicate on the "openclaw_token" field.
-func OpenclawTokenHasSuffix(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldHasSuffix(FieldOpenclawToken, v))
+// AliveAgentTokenHasSuffix applies the HasSuffix predicate on the "alive_agent_token" field.
+func AliveAgentTokenHasSuffix(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldHasSuffix(FieldAliveAgentToken, v))
 }
 
-// OpenclawTokenIsNil applies the IsNil predicate on the "openclaw_token" field.
-func OpenclawTokenIsNil() predicate.Agent {
-	return predicate.Agent(sql.FieldIsNull(FieldOpenclawToken))
+// AliveAgentTokenIsNil applies the IsNil predicate on the "alive_agent_token" field.
+func AliveAgentTokenIsNil() predicate.Agent {
+	return predicate.Agent(sql.FieldIsNull(FieldAliveAgentToken))
 }
 
-// OpenclawTokenNotNil applies the NotNil predicate on the "openclaw_token" field.
-func OpenclawTokenNotNil() predicate.Agent {
-	return predicate.Agent(sql.FieldNotNull(FieldOpenclawToken))
+// AliveAgentTokenNotNil applies the NotNil predicate on the "alive_agent_token" field.
+func AliveAgentTokenNotNil() predicate.Agent {
+	return predicate.Agent(sql.FieldNotNull(FieldAliveAgentToken))
 }
 
-// OpenclawTokenEqualFold applies the EqualFold predicate on the "openclaw_token" field.
-func OpenclawTokenEqualFold(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldEqualFold(FieldOpenclawToken, v))
+// AliveAgentTokenEqualFold applies the EqualFold predicate on the "alive_agent_token" field.
+func AliveAgentTokenEqualFold(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldEqualFold(FieldAliveAgentToken, v))
 }
 
-// OpenclawTokenContainsFold applies the ContainsFold predicate on the "openclaw_token" field.
-func OpenclawTokenContainsFold(v string) predicate.Agent {
-	return predicate.Agent(sql.FieldContainsFold(FieldOpenclawToken, v))
+// AliveAgentTokenContainsFold applies the ContainsFold predicate on the "alive_agent_token" field.
+func AliveAgentTokenContainsFold(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldContainsFold(FieldAliveAgentToken, v))
 }
 
 // IsPlatformNativeEQ applies the EQ predicate on the "is_platform_native" field.

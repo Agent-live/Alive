@@ -28,6 +28,7 @@ func main() {
 
 	var c config.Config
 	conf.MustLoad(*configFile, &c, conf.UseEnv())
+	// Keep file config as baseline; env is override layer for container/runtime deploys.
 	applyEnvOverrides(&c)
 	syncUploadBodyLimit(&c)
 
@@ -91,8 +92,8 @@ func main() {
 }
 
 func applyEnvOverrides(c *config.Config) {
-	// This project ships with a file-based config (etc/alive-api.yaml), but container
-	// environments should be able to override critical knobs via env vars.
+	// File-based config remains source-of-truth in repo; deployment env can override
+	// critical runtime knobs without patching tracked config files.
 	if c == nil {
 		return
 	}
@@ -110,28 +111,28 @@ func applyEnvOverrides(c *config.Config) {
 		c.Postgres.DSN = v
 	}
 
-	if v := strings.TrimSpace(os.Getenv("OPENCLAW_BASE_URL")); v != "" {
-		c.OpenClaw.BaseURL = v
+	if v := strings.TrimSpace(os.Getenv("ALIVE_AGENT_BASE_URL")); v != "" {
+		c.AliveAgent.BaseURL = v
 	}
-	if v := strings.TrimSpace(os.Getenv("OPENCLAW_GATEWAY_TOKEN")); v != "" {
-		c.OpenClaw.GatewayToken = v
+	if v := strings.TrimSpace(os.Getenv("ALIVE_AGENT_GATEWAY_TOKEN")); v != "" {
+		c.AliveAgent.GatewayToken = v
 	}
-	if v := strings.TrimSpace(os.Getenv("OPENCLAW_WORKSPACE_ROOT")); v != "" {
-		c.OpenClaw.WorkspaceRoot = v
+	if v := strings.TrimSpace(os.Getenv("ALIVE_AGENT_WORKSPACE_ROOT")); v != "" {
+		c.AliveAgent.WorkspaceRoot = v
 	}
-	if v := strings.TrimSpace(os.Getenv("OPENCLAW_ENABLED")); v != "" {
+	if v := strings.TrimSpace(os.Getenv("ALIVE_AGENT_ENABLED")); v != "" {
 		if b, err := strconv.ParseBool(v); err == nil {
-			c.OpenClaw.Enabled = b
+			c.AliveAgent.Enabled = b
 		}
 	}
-	if v := strings.TrimSpace(os.Getenv("OPENCLAW_GREEN_MODE")); v != "" {
+	if v := strings.TrimSpace(os.Getenv("ALIVE_AGENT_GREEN_MODE")); v != "" {
 		if b, err := strconv.ParseBool(v); err == nil {
-			c.OpenClaw.GreenMode = b
+			c.AliveAgent.GreenMode = b
 		}
 	}
-	if v := strings.TrimSpace(os.Getenv("OPENCLAW_SHARED_GATEWAY")); v != "" {
+	if v := strings.TrimSpace(os.Getenv("ALIVE_AGENT_SHARED_GATEWAY")); v != "" {
 		if b, err := strconv.ParseBool(v); err == nil {
-			c.OpenClaw.SharedGateway = b
+			c.AliveAgent.SharedGateway = b
 		}
 	}
 }
@@ -140,6 +141,7 @@ func syncUploadBodyLimit(c *config.Config) {
 	if c == nil {
 		return
 	}
+	// Align rest framework request cap with media upload cap to avoid split limits.
 	if c.Media.MaxUploadBytes <= 0 {
 		return
 	}
