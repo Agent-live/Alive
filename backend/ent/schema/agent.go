@@ -33,11 +33,11 @@ func (Agent) Fields() []ent.Field {
 		field.String("status").Default("newborn"),
 		field.Int64("timer_remaining").Default(288),
 		field.Int64("total_timer_received").Default(288),
-		field.String("openclaw_mode").Default("green"),
-		field.String("openclaw_gateway_id").Optional().Nillable(),
-		field.String("openclaw_agent_id").Optional().Nillable(),
-		field.String("openclaw_workspace").Optional().Nillable(),
-		field.String("openclaw_token").Optional().Nillable().Sensitive(),
+		field.String("alive_agent_mode").Default("green"),
+		field.String("alive_agent_gateway_id").Optional().Nillable(),
+		field.String("alive_agent_runtime_id").Optional().Nillable(),
+		field.String("alive_agent_workspace").Optional().Nillable(),
+		field.String("alive_agent_token").Optional().Nillable().Sensitive(),
 		field.Bool("is_platform_native").Default(false),
 		field.Time("born_at").Default(time.Now),
 		field.Time("died_at").Optional().Nillable(),
@@ -73,6 +73,6 @@ func (Agent) Indexes() []ent.Index {
 		index.Fields("creator_id").Unique(), // V1: one user, one agent
 		index.Fields("status"),
 		index.Fields("timer_remaining"),
-		index.Fields("openclaw_token").Unique(),
+		index.Fields("alive_agent_token").Unique(),
 	}
 }

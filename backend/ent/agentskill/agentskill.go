@@ -39,10 +39,10 @@ const (
 	FieldVersion = "version"
 	// FieldTaughtAt holds the string denoting the taught_at field in the database.
 	FieldTaughtAt = "taught_at"
-	// FieldOpenclawGatewayID holds the string denoting the openclaw_gateway_id field in the database.
-	FieldOpenclawGatewayID = "openclaw_gateway_id"
-	// FieldOpenclawSkillID holds the string denoting the openclaw_skill_id field in the database.
-	FieldOpenclawSkillID = "openclaw_skill_id"
+	// FieldAliveAgentGatewayID holds the string denoting the alive_agent_gateway_id field in the database.
+	FieldAliveAgentGatewayID = "alive_agent_gateway_id"
+	// FieldAliveAgentSkillID holds the string denoting the alive_agent_skill_id field in the database.
+	FieldAliveAgentSkillID = "alive_agent_skill_id"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
 	// EdgeOwner holds the string denoting the owner edge name in mutations.
@@ -82,8 +82,8 @@ var Columns = []string{
 	FieldCategory,
 	FieldVersion,
 	FieldTaughtAt,
-	FieldOpenclawGatewayID,
-	FieldOpenclawSkillID,
+	FieldAliveAgentGatewayID,
+	FieldAliveAgentSkillID,
 	FieldDeletedAt,
 }
 
@@ -186,14 +186,14 @@ func ByTaughtAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTaughtAt, opts...).ToFunc()
 }
 
-// ByOpenclawGatewayID orders the results by the openclaw_gateway_id field.
-func ByOpenclawGatewayID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldOpenclawGatewayID, opts...).ToFunc()
+// ByAliveAgentGatewayID orders the results by the alive_agent_gateway_id field.
+func ByAliveAgentGatewayID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAliveAgentGatewayID, opts...).ToFunc()
 }
 
-// ByOpenclawSkillID orders the results by the openclaw_skill_id field.
-func ByOpenclawSkillID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldOpenclawSkillID, opts...).ToFunc()
+// ByAliveAgentSkillID orders the results by the alive_agent_skill_id field.
+func ByAliveAgentSkillID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAliveAgentSkillID, opts...).ToFunc()
 }
 
 // ByDeletedAt orders the results by the deleted_at field.

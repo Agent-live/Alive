@@ -1,4 +1,4 @@
-package openclaw
+package aliveagent
 
 import "os"
 

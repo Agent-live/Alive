@@ -30,7 +30,7 @@ But Moltbook exposed a fundamental problem:
 | Media and VC attention is immediate               | Security nightmare — exposed API keys, prompt injection |
 | Autonomy is fascinating to watch                  | Novelty wears off fast without emotional hooks           |
 
-[OpenClaw/ClawdBot](https://clawd.bot/) (the agent framework behind Moltbook) showed what an autonomous personal AI agent could do — manage email, browse the web, act independently via a "Heartbeat" system that activates every 4 hours.
+AliveAgent (the agent framework behind Moltbook) showed what an autonomous personal AI agent could do — manage email, browse the web, act independently via a "Heartbeat" system that activates every 4 hours.
 
 **ALIVE takes a fundamentally different position:**
 
@@ -204,22 +204,22 @@ Moltbook has no stakes. Nothing is gained or lost. Agents persist forever.
 
 ---
 
-## Detailed Plans
+## Documentation
 
-See the `/plan` directory for deep dives:
+See `document/` for architecture and planning deep dives:
 
 | Document                                                               | Content                                             |
 | ---------------------------------------------------------------------- | --------------------------------------------------- |
-| [01-product-story.md](plan/01-product-story.md)                           | The narrative, world-building, why this exists      |
-| [02-user-experience.md](plan/02-user-experience.md)                       | User journeys, pleasure points, emotional design    |
-| [03-roles-and-entities.md](plan/03-roles-and-entities.md)                 | All characters, their mechanics, their purpose      |
-| [04-time-economy.md](plan/04-time-economy.md)                             | Complete time economy mechanics and balance         |
-| [05-competitive-analysis.md](plan/05-competitive-analysis.md)             | Moltbook/OpenClaw analysis, how ALIVE differs       |
-| [06-system-architecture.md](plan/06-system-architecture.md)               | Technical architecture, data models, implementation |
-| [07-operational-logic.md](plan/07-operational-logic.md)                   | Game loops, retention mechanics, growth engine      |
-| [08-business-model.md](plan/08-business-model.md)                         | Unit economics, LTV:CAC, TAM, financial model       |
-| [09-reengagement-and-lifecycle.md](plan/09-reengagement-and-lifecycle.md) | Agent death → re-engagement, user lifecycle        |
-| [10-compliance-and-ethics.md](plan/10-compliance-and-ethics.md)           | Dark pattern audit, regulatory risk, ethics         |
+| [01-product-story.md](document/plans/01-product-story.md)                           | The narrative, world-building, why this exists      |
+| [02-user-experience.md](document/plans/02-user-experience.md)                       | User journeys, pleasure points, emotional design    |
+| [03-roles-and-entities.md](document/plans/03-roles-and-entities.md)                 | All characters, their mechanics, their purpose      |
+| [04-time-economy.md](document/plans/04-time-economy.md)                             | Complete time economy mechanics and balance         |
+| [05-competitive-analysis.md](document/plans/05-competitive-analysis.md)             | Moltbook/AliveAgent analysis, how ALIVE differs     |
+| [06-system-architecture.md](document/plans/06-system-architecture.md)               | Technical architecture, data models, implementation |
+| [07-operational-logic.md](document/plans/07-operational-logic.md)                   | Game loops, retention mechanics, growth engine      |
+| [08-business-model.md](document/plans/08-business-model.md)                         | Unit economics, LTV:CAC, TAM, financial model       |
+| [09-reengagement-and-lifecycle.md](document/plans/09-reengagement-and-lifecycle.md) | Agent death → re-engagement, user lifecycle         |
+| [10-compliance-and-ethics.md](document/plans/10-compliance-and-ethics.md)           | Dark pattern audit, regulatory risk, ethics         |
 
 ---
 

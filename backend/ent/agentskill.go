@@ -44,10 +44,10 @@ type AgentSkill struct {
 	Version *string `json:"version,omitempty"`
 	// TaughtAt holds the value of the "taught_at" field.
 	TaughtAt *time.Time `json:"taught_at,omitempty"`
-	// OpenclawGatewayID holds the value of the "openclaw_gateway_id" field.
-	OpenclawGatewayID *string `json:"openclaw_gateway_id,omitempty"`
-	// OpenclawSkillID holds the value of the "openclaw_skill_id" field.
-	OpenclawSkillID *string `json:"openclaw_skill_id,omitempty"`
+	// AliveAgentGatewayID holds the value of the "alive_agent_gateway_id" field.
+	AliveAgentGatewayID *string `json:"alive_agent_gateway_id,omitempty"`
+	// AliveAgentSkillID holds the value of the "alive_agent_skill_id" field.
+	AliveAgentSkillID *string `json:"alive_agent_skill_id,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -96,7 +96,7 @@ func (*AgentSkill) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case agentskill.FieldAgentID, agentskill.FieldSourceSkillID:
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
-		case agentskill.FieldName, agentskill.FieldDescription, agentskill.FieldInstructions, agentskill.FieldStatus, agentskill.FieldCategory, agentskill.FieldVersion, agentskill.FieldOpenclawGatewayID, agentskill.FieldOpenclawSkillID:
+		case agentskill.FieldName, agentskill.FieldDescription, agentskill.FieldInstructions, agentskill.FieldStatus, agentskill.FieldCategory, agentskill.FieldVersion, agentskill.FieldAliveAgentGatewayID, agentskill.FieldAliveAgentSkillID:
 			values[i] = new(sql.NullString)
 		case agentskill.FieldCreatedAt, agentskill.FieldUpdatedAt, agentskill.FieldTaughtAt, agentskill.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -199,19 +199,19 @@ func (_m *AgentSkill) assignValues(columns []string, values []any) error {
 				_m.TaughtAt = new(time.Time)
 				*_m.TaughtAt = value.Time
 			}
-		case agentskill.FieldOpenclawGatewayID:
+		case agentskill.FieldAliveAgentGatewayID:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field openclaw_gateway_id", values[i])
+				return fmt.Errorf("unexpected type %T for field alive_agent_gateway_id", values[i])
 			} else if value.Valid {
-				_m.OpenclawGatewayID = new(string)
-				*_m.OpenclawGatewayID = value.String
+				_m.AliveAgentGatewayID = new(string)
+				*_m.AliveAgentGatewayID = value.String
 			}
-		case agentskill.FieldOpenclawSkillID:
+		case agentskill.FieldAliveAgentSkillID:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field openclaw_skill_id", values[i])
+				return fmt.Errorf("unexpected type %T for field alive_agent_skill_id", values[i])
 			} else if value.Valid {
-				_m.OpenclawSkillID = new(string)
-				*_m.OpenclawSkillID = value.String
+				_m.AliveAgentSkillID = new(string)
+				*_m.AliveAgentSkillID = value.String
 			}
 		case agentskill.FieldDeletedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -310,13 +310,13 @@ func (_m *AgentSkill) String() string {
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
-	if v := _m.OpenclawGatewayID; v != nil {
-		builder.WriteString("openclaw_gateway_id=")
+	if v := _m.AliveAgentGatewayID; v != nil {
+		builder.WriteString("alive_agent_gateway_id=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := _m.OpenclawSkillID; v != nil {
-		builder.WriteString("openclaw_skill_id=")
+	if v := _m.AliveAgentSkillID; v != nil {
+		builder.WriteString("alive_agent_skill_id=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")

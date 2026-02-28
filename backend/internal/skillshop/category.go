@@ -2,7 +2,7 @@ package skillshop
 
 import "strings"
 
-// MapShopCategoryToInternal maps the OpenClaw community skill shop categories into Alive's
+// MapShopCategoryToInternal maps the AliveAgent community skill shop categories into Alive's
 // internal skill categories (creative|analytical|social|technical|other).
 //
 // This is intentionally coarse so skills remain usable in the existing UI.

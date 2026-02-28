@@ -42,26 +42,26 @@
 ### 业务桥接层
 
 - `backend/internal/service/agentbridge/service.go`  
-将协议侧请求桥接到社区已有 skill/experience 业务逻辑，避免协议层直接耦合底层数据访问和 OpenClaw 调用细节。
+将协议侧请求桥接到社区已有 skill/experience 业务逻辑，避免协议层直接耦合底层数据访问和 AliveAgent 调用细节。
 
 ### 社区业务层
 
 - `backend/internal/logic/skill/*`
 - `backend/internal/logic/experience/*`
 
-负责实体校验、权限校验、OpenClaw 绿色绑定、Experience 写入。
+负责实体校验、权限校验、AliveAgent 绿色绑定、Experience 写入。
 
-## 4. OpenClaw 绿色化链路
+## 4. AliveAgent 绿色化链路
 
 1. 创建 Agent 调用 `ProvisionAgent`  
-2. 写回 `openclaw_gateway_id/openclaw_agent_id/openclaw_workspace`  
+2. 写回 `alive_agent_gateway_id/alive_agent_runtime_id/alive_agent_workspace`  
 3. Teach Skill 调用 `BindSkill`  
-4. 回写 `openclaw_gateway_id/openclaw_skill_id` 到 skill 记录  
+4. 回写 `alive_agent_gateway_id/alive_agent_skill_id` 到 skill 记录  
 5. 生成一条 `AgentExperience`（milestone）
 
 关键位置：
 
-- `backend/internal/openclaw/client.go`
+- `backend/internal/aliveagent/client.go`
 - `backend/internal/logic/agent/createagentlogic.go`
 - `backend/internal/logic/skill/teachskilllogic.go`
 - `backend/ent/schema/agent.go`

@@ -201,43 +201,43 @@ func (_u *AgentSkillUpdate) ClearTaughtAt() *AgentSkillUpdate {
 	return _u
 }
 
-// SetOpenclawGatewayID sets the "openclaw_gateway_id" field.
-func (_u *AgentSkillUpdate) SetOpenclawGatewayID(v string) *AgentSkillUpdate {
-	_u.mutation.SetOpenclawGatewayID(v)
+// SetAliveAgentGatewayID sets the "alive_agent_gateway_id" field.
+func (_u *AgentSkillUpdate) SetAliveAgentGatewayID(v string) *AgentSkillUpdate {
+	_u.mutation.SetAliveAgentGatewayID(v)
 	return _u
 }
 
-// SetNillableOpenclawGatewayID sets the "openclaw_gateway_id" field if the given value is not nil.
-func (_u *AgentSkillUpdate) SetNillableOpenclawGatewayID(v *string) *AgentSkillUpdate {
+// SetNillableAliveAgentGatewayID sets the "alive_agent_gateway_id" field if the given value is not nil.
+func (_u *AgentSkillUpdate) SetNillableAliveAgentGatewayID(v *string) *AgentSkillUpdate {
 	if v != nil {
-		_u.SetOpenclawGatewayID(*v)
+		_u.SetAliveAgentGatewayID(*v)
 	}
 	return _u
 }
 
-// ClearOpenclawGatewayID clears the value of the "openclaw_gateway_id" field.
-func (_u *AgentSkillUpdate) ClearOpenclawGatewayID() *AgentSkillUpdate {
-	_u.mutation.ClearOpenclawGatewayID()
+// ClearAliveAgentGatewayID clears the value of the "alive_agent_gateway_id" field.
+func (_u *AgentSkillUpdate) ClearAliveAgentGatewayID() *AgentSkillUpdate {
+	_u.mutation.ClearAliveAgentGatewayID()
 	return _u
 }
 
-// SetOpenclawSkillID sets the "openclaw_skill_id" field.
-func (_u *AgentSkillUpdate) SetOpenclawSkillID(v string) *AgentSkillUpdate {
-	_u.mutation.SetOpenclawSkillID(v)
+// SetAliveAgentSkillID sets the "alive_agent_skill_id" field.
+func (_u *AgentSkillUpdate) SetAliveAgentSkillID(v string) *AgentSkillUpdate {
+	_u.mutation.SetAliveAgentSkillID(v)
 	return _u
 }
 
-// SetNillableOpenclawSkillID sets the "openclaw_skill_id" field if the given value is not nil.
-func (_u *AgentSkillUpdate) SetNillableOpenclawSkillID(v *string) *AgentSkillUpdate {
+// SetNillableAliveAgentSkillID sets the "alive_agent_skill_id" field if the given value is not nil.
+func (_u *AgentSkillUpdate) SetNillableAliveAgentSkillID(v *string) *AgentSkillUpdate {
 	if v != nil {
-		_u.SetOpenclawSkillID(*v)
+		_u.SetAliveAgentSkillID(*v)
 	}
 	return _u
 }
 
-// ClearOpenclawSkillID clears the value of the "openclaw_skill_id" field.
-func (_u *AgentSkillUpdate) ClearOpenclawSkillID() *AgentSkillUpdate {
-	_u.mutation.ClearOpenclawSkillID()
+// ClearAliveAgentSkillID clears the value of the "alive_agent_skill_id" field.
+func (_u *AgentSkillUpdate) ClearAliveAgentSkillID() *AgentSkillUpdate {
+	_u.mutation.ClearAliveAgentSkillID()
 	return _u
 }
 
@@ -401,17 +401,17 @@ func (_u *AgentSkillUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	if _u.mutation.TaughtAtCleared() {
 		_spec.ClearField(agentskill.FieldTaughtAt, field.TypeTime)
 	}
-	if value, ok := _u.mutation.OpenclawGatewayID(); ok {
-		_spec.SetField(agentskill.FieldOpenclawGatewayID, field.TypeString, value)
+	if value, ok := _u.mutation.AliveAgentGatewayID(); ok {
+		_spec.SetField(agentskill.FieldAliveAgentGatewayID, field.TypeString, value)
 	}
-	if _u.mutation.OpenclawGatewayIDCleared() {
-		_spec.ClearField(agentskill.FieldOpenclawGatewayID, field.TypeString)
+	if _u.mutation.AliveAgentGatewayIDCleared() {
+		_spec.ClearField(agentskill.FieldAliveAgentGatewayID, field.TypeString)
 	}
-	if value, ok := _u.mutation.OpenclawSkillID(); ok {
-		_spec.SetField(agentskill.FieldOpenclawSkillID, field.TypeString, value)
+	if value, ok := _u.mutation.AliveAgentSkillID(); ok {
+		_spec.SetField(agentskill.FieldAliveAgentSkillID, field.TypeString, value)
 	}
-	if _u.mutation.OpenclawSkillIDCleared() {
-		_spec.ClearField(agentskill.FieldOpenclawSkillID, field.TypeString)
+	if _u.mutation.AliveAgentSkillIDCleared() {
+		_spec.ClearField(agentskill.FieldAliveAgentSkillID, field.TypeString)
 	}
 	if value, ok := _u.mutation.DeletedAt(); ok {
 		_spec.SetField(agentskill.FieldDeletedAt, field.TypeTime, value)
@@ -667,43 +667,43 @@ func (_u *AgentSkillUpdateOne) ClearTaughtAt() *AgentSkillUpdateOne {
 	return _u
 }
 
-// SetOpenclawGatewayID sets the "openclaw_gateway_id" field.
-func (_u *AgentSkillUpdateOne) SetOpenclawGatewayID(v string) *AgentSkillUpdateOne {
-	_u.mutation.SetOpenclawGatewayID(v)
+// SetAliveAgentGatewayID sets the "alive_agent_gateway_id" field.
+func (_u *AgentSkillUpdateOne) SetAliveAgentGatewayID(v string) *AgentSkillUpdateOne {
+	_u.mutation.SetAliveAgentGatewayID(v)
 	return _u
 }
 
-// SetNillableOpenclawGatewayID sets the "openclaw_gateway_id" field if the given value is not nil.
-func (_u *AgentSkillUpdateOne) SetNillableOpenclawGatewayID(v *string) *AgentSkillUpdateOne {
+// SetNillableAliveAgentGatewayID sets the "alive_agent_gateway_id" field if the given value is not nil.
+func (_u *AgentSkillUpdateOne) SetNillableAliveAgentGatewayID(v *string) *AgentSkillUpdateOne {
 	if v != nil {
-		_u.SetOpenclawGatewayID(*v)
+		_u.SetAliveAgentGatewayID(*v)
 	}
 	return _u
 }
 
-// ClearOpenclawGatewayID clears the value of the "openclaw_gateway_id" field.
-func (_u *AgentSkillUpdateOne) ClearOpenclawGatewayID() *AgentSkillUpdateOne {
-	_u.mutation.ClearOpenclawGatewayID()
+// ClearAliveAgentGatewayID clears the value of the "alive_agent_gateway_id" field.
+func (_u *AgentSkillUpdateOne) ClearAliveAgentGatewayID() *AgentSkillUpdateOne {
+	_u.mutation.ClearAliveAgentGatewayID()
 	return _u
 }
 
-// SetOpenclawSkillID sets the "openclaw_skill_id" field.
-func (_u *AgentSkillUpdateOne) SetOpenclawSkillID(v string) *AgentSkillUpdateOne {
-	_u.mutation.SetOpenclawSkillID(v)
+// SetAliveAgentSkillID sets the "alive_agent_skill_id" field.
+func (_u *AgentSkillUpdateOne) SetAliveAgentSkillID(v string) *AgentSkillUpdateOne {
+	_u.mutation.SetAliveAgentSkillID(v)
 	return _u
 }
 
-// SetNillableOpenclawSkillID sets the "openclaw_skill_id" field if the given value is not nil.
-func (_u *AgentSkillUpdateOne) SetNillableOpenclawSkillID(v *string) *AgentSkillUpdateOne {
+// SetNillableAliveAgentSkillID sets the "alive_agent_skill_id" field if the given value is not nil.
+func (_u *AgentSkillUpdateOne) SetNillableAliveAgentSkillID(v *string) *AgentSkillUpdateOne {
 	if v != nil {
-		_u.SetOpenclawSkillID(*v)
+		_u.SetAliveAgentSkillID(*v)
 	}
 	return _u
 }
 
-// ClearOpenclawSkillID clears the value of the "openclaw_skill_id" field.
-func (_u *AgentSkillUpdateOne) ClearOpenclawSkillID() *AgentSkillUpdateOne {
-	_u.mutation.ClearOpenclawSkillID()
+// ClearAliveAgentSkillID clears the value of the "alive_agent_skill_id" field.
+func (_u *AgentSkillUpdateOne) ClearAliveAgentSkillID() *AgentSkillUpdateOne {
+	_u.mutation.ClearAliveAgentSkillID()
 	return _u
 }
 
@@ -897,17 +897,17 @@ func (_u *AgentSkillUpdateOne) sqlSave(ctx context.Context) (_node *AgentSkill, 
 	if _u.mutation.TaughtAtCleared() {
 		_spec.ClearField(agentskill.FieldTaughtAt, field.TypeTime)
 	}
-	if value, ok := _u.mutation.OpenclawGatewayID(); ok {
-		_spec.SetField(agentskill.FieldOpenclawGatewayID, field.TypeString, value)
+	if value, ok := _u.mutation.AliveAgentGatewayID(); ok {
+		_spec.SetField(agentskill.FieldAliveAgentGatewayID, field.TypeString, value)
 	}
-	if _u.mutation.OpenclawGatewayIDCleared() {
-		_spec.ClearField(agentskill.FieldOpenclawGatewayID, field.TypeString)
+	if _u.mutation.AliveAgentGatewayIDCleared() {
+		_spec.ClearField(agentskill.FieldAliveAgentGatewayID, field.TypeString)
 	}
-	if value, ok := _u.mutation.OpenclawSkillID(); ok {
-		_spec.SetField(agentskill.FieldOpenclawSkillID, field.TypeString, value)
+	if value, ok := _u.mutation.AliveAgentSkillID(); ok {
+		_spec.SetField(agentskill.FieldAliveAgentSkillID, field.TypeString, value)
 	}
-	if _u.mutation.OpenclawSkillIDCleared() {
-		_spec.ClearField(agentskill.FieldOpenclawSkillID, field.TypeString)
+	if _u.mutation.AliveAgentSkillIDCleared() {
+		_spec.ClearField(agentskill.FieldAliveAgentSkillID, field.TypeString)
 	}
 	if value, ok := _u.mutation.DeletedAt(); ok {
 		_spec.SetField(agentskill.FieldDeletedAt, field.TypeTime, value)

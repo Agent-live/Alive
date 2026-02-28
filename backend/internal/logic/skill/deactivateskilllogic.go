@@ -44,21 +44,21 @@ func (l *DeactivateSkillLogic) DeactivateSkill(req *types.SkillIdReq) (resp *typ
 		return nil, errors.New("forbidden")
 	}
 
-	// Best-effort: remove the bound workspace skill so OpenClaw stops loading it.
+	// Best-effort: remove the bound workspace skill so AliveAgent stops loading it.
 	if row.AgentID != nil && row.Status == "active" {
 		skillRef := row.Name
-		if row.OpenclawSkillID != nil && strings.TrimSpace(*row.OpenclawSkillID) != "" {
-			skillRef = *row.OpenclawSkillID
+		if row.AliveAgentSkillID != nil && strings.TrimSpace(*row.AliveAgentSkillID) != "" {
+			skillRef = *row.AliveAgentSkillID
 		}
-		_ = l.svcCtx.OpenClaw.RemoveSkill(l.ctx, row.AgentID.String(), skillRef)
+		_ = l.svcCtx.AliveAgent.RemoveSkill(l.ctx, row.AgentID.String(), skillRef)
 	}
 
 	row, err = l.svcCtx.DB.AgentSkill.UpdateOneID(skillID).
 		SetStatus("lesson").
 		ClearAgentID().
 		ClearTaughtAt().
-		ClearOpenclawGatewayID().
-		ClearOpenclawSkillID().
+		ClearAliveAgentGatewayID().
+		ClearAliveAgentSkillID().
 		Save(l.ctx)
 	if err != nil {
 		return nil, err

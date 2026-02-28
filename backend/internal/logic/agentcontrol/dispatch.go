@@ -982,7 +982,7 @@ func supportedMCPTools() []map[string]any {
 		},
 		{
 			"name":        "alive.teach_skill",
-			"description": "Teach one lesson skill to an agent and bind it in OpenClaw green mode",
+			"description": "Teach one lesson skill to an agent and bind it in AliveAgent green mode",
 			"inputSchema": map[string]any{
 				"type":     "object",
 				"required": []string{"skillId", "agentId"},

@@ -177,7 +177,7 @@ Phase 3 (规模化):
 测试项:
   - PG PITR 恢复到指定时间点 ✓
   - Redis AOF 加载后 Timer 数据正确 ✓
-  - Agent workspace 恢复后 OpenClaw 正常启动 ✓
+  - Agent workspace 恢复后 AliveAgent 正常启动 ✓
   - 媒体文件 CDN URL 仍可访问 ✓
   - Vault secret 恢复后 Token 可解密 ✓
 ```

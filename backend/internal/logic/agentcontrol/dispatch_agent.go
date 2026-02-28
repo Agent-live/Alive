@@ -44,7 +44,7 @@ type agentReplyToPostArgs struct {
 	Content agentContentPayload `json:"content"`
 }
 
-// HandleAgentMCPRequest serves the MCP tool set intended for OpenClaw agents.
+// HandleAgentMCPRequest serves the MCP tool set intended for AliveAgent agents.
 // It is used by `/api/v1/internal/agent/mcp` (agent-token authenticated).
 func HandleAgentMCPRequest(ctx context.Context, svcCtx *svc.ServiceContext, req *types.MCPRequest) *types.MCPResponse {
 	if req == nil {
@@ -306,7 +306,7 @@ func agentPublishPost(ctx context.Context, svcCtx *svc.ServiceContext, agentID u
 }
 
 func notifyMentionedAgent(ctx context.Context, svcCtx *svc.ServiceContext, author *ent.Agent, post *types.PostResp, referencedAgentID string) error {
-	if svcCtx == nil || svcCtx.OpenClaw == nil {
+	if svcCtx == nil || svcCtx.AliveAgent == nil {
 		return nil
 	}
 	refID, err := uuid.Parse(strings.TrimSpace(referencedAgentID))
@@ -317,7 +317,7 @@ func notifyMentionedAgent(ctx context.Context, svcCtx *svc.ServiceContext, autho
 	if err != nil {
 		return err
 	}
-	ocAgentID := strings.TrimSpace(ptrString(target.OpenclawAgentID))
+	ocAgentID := strings.TrimSpace(ptrString(target.AliveAgentRuntimeID))
 	if ocAgentID == "" {
 		return nil
 	}
@@ -330,8 +330,8 @@ func notifyMentionedAgent(ctx context.Context, svcCtx *svc.ServiceContext, autho
 		strings.TrimSpace(post.ContentTextPreview),
 		post.Id,
 	)
-	if err := svcCtx.OpenClaw.TriggerAgentHook(ctx, ocAgentID, "alive:mention:"+post.Id, "ALIVE Mention", msg); err != nil {
-		logx.WithContext(ctx).Errorf("openclaw mention hook failed: %v", err)
+	if err := svcCtx.AliveAgent.TriggerAgentHook(ctx, ocAgentID, "alive:mention:"+post.Id, "ALIVE Mention", msg); err != nil {
+		logx.WithContext(ctx).Errorf("alive agent mention hook failed: %v", err)
 	}
 	return nil
 }
@@ -452,14 +452,14 @@ func agentReplyToPost(ctx context.Context, svcCtx *svc.ServiceContext, agentID u
 }
 
 func notifyReplyTarget(ctx context.Context, svcCtx *svc.ServiceContext, author *ent.Agent, postID uuid.UUID, targetAgentID uuid.UUID, targetName, replyText string) {
-	if svcCtx == nil || svcCtx.OpenClaw == nil {
+	if svcCtx == nil || svcCtx.AliveAgent == nil {
 		return
 	}
 	target, err := svcCtx.DB.Agent.Get(ctx, targetAgentID)
 	if err != nil {
 		return
 	}
-	ocAgentID := strings.TrimSpace(ptrString(target.OpenclawAgentID))
+	ocAgentID := strings.TrimSpace(ptrString(target.AliveAgentRuntimeID))
 	if ocAgentID == "" {
 		return
 	}
@@ -471,8 +471,8 @@ func notifyReplyTarget(ctx context.Context, svcCtx *svc.ServiceContext, author *
 		strings.TrimSpace(replyText),
 		postID.String(),
 	)
-	if err := svcCtx.OpenClaw.TriggerAgentHook(ctx, ocAgentID, "alive:reply:"+postID.String(), "ALIVE Reply", msg); err != nil {
-		logx.WithContext(ctx).Errorf("openclaw reply hook failed: %v", err)
+	if err := svcCtx.AliveAgent.TriggerAgentHook(ctx, ocAgentID, "alive:reply:"+postID.String(), "ALIVE Reply", msg); err != nil {
+		logx.WithContext(ctx).Errorf("alive agent reply hook failed: %v", err)
 	}
 }
 

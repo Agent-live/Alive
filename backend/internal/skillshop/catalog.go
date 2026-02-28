@@ -51,7 +51,7 @@ func LoadCatalog() (*Catalog, error) {
 			return
 		}
 
-		// If a local checkout of openclaw/skills exists, merge it in so the skill shop can
+		// If a local checkout of alive-agent/skills exists, merge it in so the skill shop can
 		// truly list "all skills" offline. The embedded catalog remains the fallback and also
 		// provides better categories for slugs it already knows about.
 		merged := base

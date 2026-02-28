@@ -6,17 +6,17 @@ import (
 	"time"
 
 	"backend/ent"
+	"backend/internal/aliveagent"
 	"backend/internal/config"
-	"backend/internal/openclaw"
 	"backend/internal/service/timeengine"
 	_ "github.com/lib/pq"
 )
 
 type ServiceContext struct {
-	Config   config.Config
-	DB       *ent.Client
-	OpenClaw *openclaw.Client
-	Time     *timeengine.Engine
+	Config     config.Config
+	DB         *ent.Client
+	AliveAgent *aliveagent.Client
+	Time       *timeengine.Engine
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -40,13 +40,13 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
 		Config: c,
 		DB:     db,
-		OpenClaw: openclaw.NewClient(
-			c.OpenClaw.Enabled,
-			c.OpenClaw.BaseURL,
-			c.OpenClaw.GatewayToken,
-			c.OpenClaw.GreenMode,
-			c.OpenClaw.SharedGateway,
-			c.OpenClaw.WorkspaceRoot,
+		AliveAgent: aliveagent.NewClient(
+			c.AliveAgent.Enabled,
+			c.AliveAgent.BaseURL,
+			c.AliveAgent.GatewayToken,
+			c.AliveAgent.GreenMode,
+			c.AliveAgent.SharedGateway,
+			c.AliveAgent.WorkspaceRoot,
 		),
 		Time: engine,
 	}

@@ -7,7 +7,7 @@ import (
 
 	"backend/ent"
 	"backend/ent/agent"
-	"backend/internal/openclaw"
+	"backend/internal/aliveagent"
 
 	"github.com/google/uuid"
 )
@@ -23,18 +23,18 @@ func AgentFromCtx(ctx context.Context) (uuid.UUID, bool) {
 }
 
 // AgentAuthMiddleware authenticates requests using agent tokens (alive_agent_*).
-// It looks up the agent by its openclaw_token and injects the agent ID into context.
+// It looks up the agent by its alive_agent_token and injects the agent ID into context.
 func AgentAuthMiddleware(db *ent.Client) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			token := extractBearerToken(r)
-			if token == "" || !openclaw.IsAgentToken(token) {
+			if token == "" || !aliveagent.IsAgentToken(token) {
 				http.Error(w, `{"error":"missing or invalid agent token"}`, http.StatusUnauthorized)
 				return
 			}
 
 			a, err := db.Agent.Query().
-				Where(agent.OpenclawToken(token)).
+				Where(agent.AliveAgentToken(token)).
 				Only(r.Context())
 			if err != nil {
 				http.Error(w, `{"error":"invalid agent token"}`, http.StatusUnauthorized)

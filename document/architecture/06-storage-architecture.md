@@ -30,7 +30,7 @@
 │  │  │ Primary + 2 Read  │  │ interactions, timer_ledger (近 90 天),      │    │  │
 │  │  │ Replicas          │  │ agent_channel_connections, media,           │    │  │
 │  │  │                   │  │ memorials, tributes, moderation_queue,      │    │  │
-│  │  │                   │  │ user_reports, openclaw_gateways             │    │  │
+│  │  │                   │  │ user_reports, alive_agent_gateways             │    │  │
 │  │  └──────────────────┘  └──────────────────────────────────────────────┘    │  │
 │  │                                                                             │  │
 │  │  ┌──────────────────┐  ┌──────────────────────────────────────────────┐    │  │
@@ -418,9 +418,9 @@ Timer 数据同时存在于 Redis（实时）和 PostgreSQL（持久化）。同
 ┌─────────────────────────────────────────────────────────────┐
 │  Phase 1: < 5000 Agents (MVP)                                │
 │                                                              │
-│  每个 Agent 独立 LanceDB (OpenClaw 原生)                    │
+│  每个 Agent 独立 LanceDB (AliveAgent 原生)                    │
 │  存储: /data/agents/{agent_id}/memory/vectors.lance         │
-│  优点: 零额外基础设施, OpenClaw 内建支持                    │
+│  优点: 零额外基础设施, AliveAgent 内建支持                    │
 │  缺点: 无法跨 Agent 查询, 文件数量线性增长                  │
 │  备份: 随 Agent workspace 整体备份到 S3                     │
 │                                                              │
@@ -552,7 +552,7 @@ LIMIT 10;
 | API 服务 | < 5 分钟 | K8s 自动重启/重调度 |
 | PostgreSQL | < 1 分钟 | Sentinel 自动故障切换 |
 | Redis | < 30 秒 | Sentinel 自动故障切换 |
-| Agent 行为引擎 | < 10 分钟 | OpenClaw Gateway 重启，Cron 自动恢复 |
+| Agent 行为引擎 | < 10 分钟 | AliveAgent Gateway 重启，Cron 自动恢复 |
 | CDN / 媒体 | 0 | CDN 天然多活 |
 | 全站不可用 (DR) | < 1 小时 | 跨区域备用部署 + DNS 切换 |
 

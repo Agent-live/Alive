@@ -1,10 +1,10 @@
-# Alive OpenClaw Skills Support List
+# ALIVE AliveAgent Skills Support List
 
 Generated: 2026-02-14T20:13:24.101921Z
 
-Support tiers (current dockerized OpenClaw gateway):
+Support tiers (current dockerized AliveAgent gateway):
 - A: Prompt-only (no extra binaries detected in SKILL.md frontmatter)
-- B: Likely needs additional binaries / env / API keys inside the OpenClaw container
+- B: Likely needs additional binaries / env / API keys inside the AliveAgent container
 - C: Likely not supported in Linux container (macOS-only integrations)
 
 Total bundled skills scanned: 52
@@ -15,13 +15,13 @@ Total bundled skills scanned: 52
 | `bluebubbles` | Use when you need to send or manage iMessages via BlueBubbles (recommended iMessage integration). Calls go through the generic message to... |  |
 | `canvas` |  |  |
 | `coding-agent` | Run Codex CLI, Claude Code, OpenCode, or Pi Coding Agent via background process for programmatic control. |  |
-| `discord` | Use when you need to control Discord from OpenClaw via the discord tool: send messages, react, post or upload stickers, upload emojis, ru... |  |
-| `healthcheck` | Host security hardening and risk-tolerance configuration for OpenClaw deployments. Use when a user asks for security audits, firewall/SSH... |  |
+| `discord` | Use when you need to control Discord from AliveAgent via the discord tool: send messages, react, post or upload stickers, upload emojis, ru... |  |
+| `healthcheck` | Host security hardening and risk-tolerance configuration for AliveAgent deployments. Use when a user asks for security audits, firewall/SSH... |  |
 | `notion` | Notion API for creating and managing pages, databases, and blocks. |  |
 | `sherpa-onnx-tts` | Local text-to-speech via sherpa-onnx (offline, no cloud) |  |
 | `skill-creator` | Create or update AgentSkills. Use when designing, structuring, or packaging skills with scripts, references, and assets. |  |
-| `slack` | Use when you need to control Slack from OpenClaw via the slack tool, including reacting to messages or pinning/unpinning items in Slack c... |  |
-| `voice-call` | Start voice calls via the OpenClaw voice-call plugin. |  |
+| `slack` | Use when you need to control Slack from AliveAgent via the slack tool, including reacting to messages or pinning/unpinning items in Slack c... |  |
+| `voice-call` | Start voice calls via the AliveAgent voice-call plugin. |  |
 
 ## Tier B (37)
 | slug | description | notes |
@@ -67,9 +67,8 @@ Total bundled skills scanned: 52
 ## Tier C (5)
 | slug | description | notes |
 |---|---|---|
-| `apple-notes` | Manage Apple Notes via the `memo` CLI on macOS (create, view, edit, delete, search, move, and export notes). Use when a user asks OpenCla... | macOS only |
+| `apple-notes` | Manage Apple Notes via the `memo` CLI on macOS (create, view, edit, delete, search, move, and export notes). Use when a user asks AliveAgent... | macOS only |
 | `apple-reminders` | Manage Apple Reminders via the `remindctl` CLI on macOS (list, add, edit, complete, delete). Supports lists, date filters, and JSON/plain... | macOS only |
 | `bear-notes` | Create, search, and manage Bear notes via grizzly CLI. | macOS only |
 | `imsg` | iMessage/SMS CLI for listing chats, history, watch, and sending. | macOS only |
 | `things-mac` | Manage Things 3 via the `things` CLI on macOS (add/update projects+todos via URL scheme; read/search/list from the local Things database)... | macOS only |
-

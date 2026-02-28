@@ -68,7 +68,7 @@ func WebSocketHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		defer conn.Close()
 
 		sessionID := uuid.NewString()[:8]
-		openclawAgentID := common.PtrString(ag.OpenclawAgentID)
+		aliveAgentRuntimeID := common.PtrString(ag.AliveAgentRuntimeID)
 
 		// Send connection established message
 		_ = conn.WriteJSON(chatMessage{
@@ -136,16 +136,16 @@ func WebSocketHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 				promptText = buildChatPrompt(userText, attachments)
 			}
 
-			// Call OpenClaw for agent response
-			response, err := svcCtx.OpenClaw.ChatCompletion(
+			// Call AliveAgent for agent response
+			response, err := svcCtx.AliveAgent.ChatCompletion(
 				r.Context(),
-				openclawAgentID,
+				aliveAgentRuntimeID,
 				sessionID,
 				u.ID.String(),
 				promptText,
 			)
 			if err != nil {
-				logx.Errorf("openclaw chat error: %v", err)
+				logx.Errorf("alive agent chat error: %v", err)
 				_ = conn.WriteJSON(chatMessage{
 					Type:      "error",
 					Content:   "Agent is unable to respond right now",

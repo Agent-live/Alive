@@ -55,7 +55,7 @@
 | POST | `/skills/` | 创建 lesson skill |
 | PUT | `/skills/:id` | 更新 skill |
 | DELETE | `/skills/:id` | 软删除 skill |
-| POST | `/skills/:id/teach` | 教学并绑定 OpenClaw |
+| POST | `/skills/:id/teach` | 教学并绑定 AliveAgent |
 | POST | `/skills/:id/deactivate` | 反激活 skill |
 
 ## 6. Experiences（需 JWT）

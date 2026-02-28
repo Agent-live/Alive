@@ -103,17 +103,17 @@ func SendChatHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			promptText = buildChatPrompt(userText, attachments)
 		}
 
-		openclawAgentID := common.PtrString(ag.OpenclawAgentID)
-		assistantText, err := svcCtx.OpenClaw.ChatCompletion(
+		aliveAgentRuntimeID := common.PtrString(ag.AliveAgentRuntimeID)
+		assistantText, err := svcCtx.AliveAgent.ChatCompletion(
 			r.Context(),
-			openclawAgentID,
+			aliveAgentRuntimeID,
 			sessionID,
 			u.ID.String(),
 			promptText,
 		)
 		if err != nil {
 			// Best-effort fallback: return a clear message and still persist it.
-			assistantText = "OpenClaw is unavailable right now. Please try again later."
+			assistantText = "AliveAgent is unavailable right now. Please try again later."
 		}
 
 		assistantNow := time.Now().UTC()

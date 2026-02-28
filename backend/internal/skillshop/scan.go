@@ -15,7 +15,7 @@ type localMeta struct {
 	DisplayName string `json:"displayName"`
 }
 
-// scanLocalSkills scans a local checkout of openclaw/skills for skill entries.
+// scanLocalSkills scans a local checkout of alive-agent/skills for skill entries.
 //
 // It returns minimal catalog items for skill directories shaped like:
 //
@@ -93,7 +93,7 @@ func scanLocalSkills(repoRoot string, skipSlugs map[string]bool) ([]Item, error)
 				desc = parseFrontmatterValue(b, "description")
 			}
 
-			url := "https://github.com/openclaw/skills/tree/main/" + repoPath
+			url := "https://github.com/alive-agent/skills/tree/main/" + repoPath
 			items = append(items, Item{
 				Slug:        slug,
 				Name:        name,

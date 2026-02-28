@@ -10,8 +10,8 @@ import (
 
 	"backend/ent"
 	"backend/ent/agent"
+	"backend/internal/aliveagent"
 	"backend/internal/logic/common"
-	"backend/internal/openclaw"
 	"backend/internal/service/timeengine"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -68,12 +68,12 @@ func (l *CreateAgentLogic) CreateAgent(req *types.CreateAgentReq) (resp *types.A
 
 	now := time.Now().UTC()
 	newID := uuid.New()
-	prov, err := l.svcCtx.OpenClaw.ProvisionAgent(l.ctx, openclaw.ProvisionAgentRequest{AgentID: newID.String(), Name: name})
+	prov, err := l.svcCtx.AliveAgent.ProvisionAgent(l.ctx, aliveagent.ProvisionAgentRequest{AgentID: newID.String(), Name: name})
 	if err != nil {
 		return nil, err
 	}
 
-	agentToken, err := openclaw.GenerateAgentToken(newID.String())
+	agentToken, err := aliveagent.GenerateAgentToken(newID.String())
 	if err != nil {
 		return nil, err
 	}
@@ -95,11 +95,11 @@ func (l *CreateAgentLogic) CreateAgent(req *types.CreateAgentReq) (resp *types.A
 		SetStatus("newborn").
 		SetTimerRemaining(timeengine.InitialTimer).
 		SetTotalTimerReceived(timeengine.InitialTimer).
-		SetOpenclawMode("green").
-		SetOpenclawGatewayID(prov.GatewayID).
-		SetOpenclawAgentID(prov.OpenClawAgentID).
-		SetOpenclawWorkspace(prov.WorkspacePath).
-		SetOpenclawToken(agentToken).
+		SetAliveAgentMode("green").
+		SetAliveAgentGatewayID(prov.GatewayID).
+		SetAliveAgentRuntimeID(prov.AgentRuntimeID).
+		SetAliveAgentWorkspace(prov.WorkspacePath).
+		SetAliveAgentToken(agentToken).
 		SetIsPlatformNative(false).
 		SetBornAt(now).
 		Save(l.ctx)
@@ -142,7 +142,7 @@ func (l *CreateAgentLogic) CreateAgent(req *types.CreateAgentReq) (resp *types.A
 	}
 
 	// Initialize agent workspace (best-effort, non-blocking for creation)
-	if initErr := l.svcCtx.OpenClaw.InitWorkspace(
+	if initErr := l.svcCtx.AliveAgent.InitWorkspace(
 		newID.String(), name, personalityRaw, goal, agentToken,
 	); initErr != nil {
 		l.Errorf("failed to init agent workspace: %v", initErr)

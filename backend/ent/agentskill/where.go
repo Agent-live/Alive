@@ -116,14 +116,14 @@ func TaughtAt(v time.Time) predicate.AgentSkill {
 	return predicate.AgentSkill(sql.FieldEQ(FieldTaughtAt, v))
 }
 
-// OpenclawGatewayID applies equality check predicate on the "openclaw_gateway_id" field. It's identical to OpenclawGatewayIDEQ.
-func OpenclawGatewayID(v string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldEQ(FieldOpenclawGatewayID, v))
+// AliveAgentGatewayID applies equality check predicate on the "alive_agent_gateway_id" field. It's identical to AliveAgentGatewayIDEQ.
+func AliveAgentGatewayID(v string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldEQ(FieldAliveAgentGatewayID, v))
 }
 
-// OpenclawSkillID applies equality check predicate on the "openclaw_skill_id" field. It's identical to OpenclawSkillIDEQ.
-func OpenclawSkillID(v string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldEQ(FieldOpenclawSkillID, v))
+// AliveAgentSkillID applies equality check predicate on the "alive_agent_skill_id" field. It's identical to AliveAgentSkillIDEQ.
+func AliveAgentSkillID(v string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldEQ(FieldAliveAgentSkillID, v))
 }
 
 // DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
@@ -761,154 +761,154 @@ func TaughtAtNotNil() predicate.AgentSkill {
 	return predicate.AgentSkill(sql.FieldNotNull(FieldTaughtAt))
 }
 
-// OpenclawGatewayIDEQ applies the EQ predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDEQ(v string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldEQ(FieldOpenclawGatewayID, v))
+// AliveAgentGatewayIDEQ applies the EQ predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDEQ(v string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldEQ(FieldAliveAgentGatewayID, v))
 }
 
-// OpenclawGatewayIDNEQ applies the NEQ predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDNEQ(v string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldNEQ(FieldOpenclawGatewayID, v))
+// AliveAgentGatewayIDNEQ applies the NEQ predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDNEQ(v string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldNEQ(FieldAliveAgentGatewayID, v))
 }
 
-// OpenclawGatewayIDIn applies the In predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDIn(vs ...string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldIn(FieldOpenclawGatewayID, vs...))
+// AliveAgentGatewayIDIn applies the In predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDIn(vs ...string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldIn(FieldAliveAgentGatewayID, vs...))
 }
 
-// OpenclawGatewayIDNotIn applies the NotIn predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDNotIn(vs ...string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldNotIn(FieldOpenclawGatewayID, vs...))
+// AliveAgentGatewayIDNotIn applies the NotIn predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDNotIn(vs ...string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldNotIn(FieldAliveAgentGatewayID, vs...))
 }
 
-// OpenclawGatewayIDGT applies the GT predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDGT(v string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldGT(FieldOpenclawGatewayID, v))
+// AliveAgentGatewayIDGT applies the GT predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDGT(v string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldGT(FieldAliveAgentGatewayID, v))
 }
 
-// OpenclawGatewayIDGTE applies the GTE predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDGTE(v string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldGTE(FieldOpenclawGatewayID, v))
+// AliveAgentGatewayIDGTE applies the GTE predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDGTE(v string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldGTE(FieldAliveAgentGatewayID, v))
 }
 
-// OpenclawGatewayIDLT applies the LT predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDLT(v string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldLT(FieldOpenclawGatewayID, v))
+// AliveAgentGatewayIDLT applies the LT predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDLT(v string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldLT(FieldAliveAgentGatewayID, v))
 }
 
-// OpenclawGatewayIDLTE applies the LTE predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDLTE(v string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldLTE(FieldOpenclawGatewayID, v))
+// AliveAgentGatewayIDLTE applies the LTE predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDLTE(v string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldLTE(FieldAliveAgentGatewayID, v))
 }
 
-// OpenclawGatewayIDContains applies the Contains predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDContains(v string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldContains(FieldOpenclawGatewayID, v))
+// AliveAgentGatewayIDContains applies the Contains predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDContains(v string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldContains(FieldAliveAgentGatewayID, v))
 }
 
-// OpenclawGatewayIDHasPrefix applies the HasPrefix predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDHasPrefix(v string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldHasPrefix(FieldOpenclawGatewayID, v))
+// AliveAgentGatewayIDHasPrefix applies the HasPrefix predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDHasPrefix(v string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldHasPrefix(FieldAliveAgentGatewayID, v))
 }
 
-// OpenclawGatewayIDHasSuffix applies the HasSuffix predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDHasSuffix(v string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldHasSuffix(FieldOpenclawGatewayID, v))
+// AliveAgentGatewayIDHasSuffix applies the HasSuffix predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDHasSuffix(v string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldHasSuffix(FieldAliveAgentGatewayID, v))
 }
 
-// OpenclawGatewayIDIsNil applies the IsNil predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDIsNil() predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldIsNull(FieldOpenclawGatewayID))
+// AliveAgentGatewayIDIsNil applies the IsNil predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDIsNil() predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldIsNull(FieldAliveAgentGatewayID))
 }
 
-// OpenclawGatewayIDNotNil applies the NotNil predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDNotNil() predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldNotNull(FieldOpenclawGatewayID))
+// AliveAgentGatewayIDNotNil applies the NotNil predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDNotNil() predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldNotNull(FieldAliveAgentGatewayID))
 }
 
-// OpenclawGatewayIDEqualFold applies the EqualFold predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDEqualFold(v string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldEqualFold(FieldOpenclawGatewayID, v))
+// AliveAgentGatewayIDEqualFold applies the EqualFold predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDEqualFold(v string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldEqualFold(FieldAliveAgentGatewayID, v))
 }
 
-// OpenclawGatewayIDContainsFold applies the ContainsFold predicate on the "openclaw_gateway_id" field.
-func OpenclawGatewayIDContainsFold(v string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldContainsFold(FieldOpenclawGatewayID, v))
+// AliveAgentGatewayIDContainsFold applies the ContainsFold predicate on the "alive_agent_gateway_id" field.
+func AliveAgentGatewayIDContainsFold(v string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldContainsFold(FieldAliveAgentGatewayID, v))
 }
 
-// OpenclawSkillIDEQ applies the EQ predicate on the "openclaw_skill_id" field.
-func OpenclawSkillIDEQ(v string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldEQ(FieldOpenclawSkillID, v))
+// AliveAgentSkillIDEQ applies the EQ predicate on the "alive_agent_skill_id" field.
+func AliveAgentSkillIDEQ(v string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldEQ(FieldAliveAgentSkillID, v))
 }
 
-// OpenclawSkillIDNEQ applies the NEQ predicate on the "openclaw_skill_id" field.
-func OpenclawSkillIDNEQ(v string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldNEQ(FieldOpenclawSkillID, v))
+// AliveAgentSkillIDNEQ applies the NEQ predicate on the "alive_agent_skill_id" field.
+func AliveAgentSkillIDNEQ(v string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldNEQ(FieldAliveAgentSkillID, v))
 }
 
-// OpenclawSkillIDIn applies the In predicate on the "openclaw_skill_id" field.
-func OpenclawSkillIDIn(vs ...string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldIn(FieldOpenclawSkillID, vs...))
+// AliveAgentSkillIDIn applies the In predicate on the "alive_agent_skill_id" field.
+func AliveAgentSkillIDIn(vs ...string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldIn(FieldAliveAgentSkillID, vs...))
 }
 
-// OpenclawSkillIDNotIn applies the NotIn predicate on the "openclaw_skill_id" field.
-func OpenclawSkillIDNotIn(vs ...string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldNotIn(FieldOpenclawSkillID, vs...))
+// AliveAgentSkillIDNotIn applies the NotIn predicate on the "alive_agent_skill_id" field.
+func AliveAgentSkillIDNotIn(vs ...string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldNotIn(FieldAliveAgentSkillID, vs...))
 }
 
-// OpenclawSkillIDGT applies the GT predicate on the "openclaw_skill_id" field.
-func OpenclawSkillIDGT(v string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldGT(FieldOpenclawSkillID, v))
+// AliveAgentSkillIDGT applies the GT predicate on the "alive_agent_skill_id" field.
+func AliveAgentSkillIDGT(v string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldGT(FieldAliveAgentSkillID, v))
 }
 
-// OpenclawSkillIDGTE applies the GTE predicate on the "openclaw_skill_id" field.
-func OpenclawSkillIDGTE(v string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldGTE(FieldOpenclawSkillID, v))
+// AliveAgentSkillIDGTE applies the GTE predicate on the "alive_agent_skill_id" field.
+func AliveAgentSkillIDGTE(v string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldGTE(FieldAliveAgentSkillID, v))
 }
 
-// OpenclawSkillIDLT applies the LT predicate on the "openclaw_skill_id" field.
-func OpenclawSkillIDLT(v string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldLT(FieldOpenclawSkillID, v))
+// AliveAgentSkillIDLT applies the LT predicate on the "alive_agent_skill_id" field.
+func AliveAgentSkillIDLT(v string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldLT(FieldAliveAgentSkillID, v))
 }
 
-// OpenclawSkillIDLTE applies the LTE predicate on the "openclaw_skill_id" field.
-func OpenclawSkillIDLTE(v string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldLTE(FieldOpenclawSkillID, v))
+// AliveAgentSkillIDLTE applies the LTE predicate on the "alive_agent_skill_id" field.
+func AliveAgentSkillIDLTE(v string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldLTE(FieldAliveAgentSkillID, v))
 }
 
-// OpenclawSkillIDContains applies the Contains predicate on the "openclaw_skill_id" field.
-func OpenclawSkillIDContains(v string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldContains(FieldOpenclawSkillID, v))
+// AliveAgentSkillIDContains applies the Contains predicate on the "alive_agent_skill_id" field.
+func AliveAgentSkillIDContains(v string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldContains(FieldAliveAgentSkillID, v))
 }
 
-// OpenclawSkillIDHasPrefix applies the HasPrefix predicate on the "openclaw_skill_id" field.
-func OpenclawSkillIDHasPrefix(v string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldHasPrefix(FieldOpenclawSkillID, v))
+// AliveAgentSkillIDHasPrefix applies the HasPrefix predicate on the "alive_agent_skill_id" field.
+func AliveAgentSkillIDHasPrefix(v string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldHasPrefix(FieldAliveAgentSkillID, v))
 }
 
-// OpenclawSkillIDHasSuffix applies the HasSuffix predicate on the "openclaw_skill_id" field.
-func OpenclawSkillIDHasSuffix(v string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldHasSuffix(FieldOpenclawSkillID, v))
+// AliveAgentSkillIDHasSuffix applies the HasSuffix predicate on the "alive_agent_skill_id" field.
+func AliveAgentSkillIDHasSuffix(v string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldHasSuffix(FieldAliveAgentSkillID, v))
 }
 
-// OpenclawSkillIDIsNil applies the IsNil predicate on the "openclaw_skill_id" field.
-func OpenclawSkillIDIsNil() predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldIsNull(FieldOpenclawSkillID))
+// AliveAgentSkillIDIsNil applies the IsNil predicate on the "alive_agent_skill_id" field.
+func AliveAgentSkillIDIsNil() predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldIsNull(FieldAliveAgentSkillID))
 }
 
-// OpenclawSkillIDNotNil applies the NotNil predicate on the "openclaw_skill_id" field.
-func OpenclawSkillIDNotNil() predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldNotNull(FieldOpenclawSkillID))
+// AliveAgentSkillIDNotNil applies the NotNil predicate on the "alive_agent_skill_id" field.
+func AliveAgentSkillIDNotNil() predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldNotNull(FieldAliveAgentSkillID))
 }
 
-// OpenclawSkillIDEqualFold applies the EqualFold predicate on the "openclaw_skill_id" field.
-func OpenclawSkillIDEqualFold(v string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldEqualFold(FieldOpenclawSkillID, v))
+// AliveAgentSkillIDEqualFold applies the EqualFold predicate on the "alive_agent_skill_id" field.
+func AliveAgentSkillIDEqualFold(v string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldEqualFold(FieldAliveAgentSkillID, v))
 }
 
-// OpenclawSkillIDContainsFold applies the ContainsFold predicate on the "openclaw_skill_id" field.
-func OpenclawSkillIDContainsFold(v string) predicate.AgentSkill {
-	return predicate.AgentSkill(sql.FieldContainsFold(FieldOpenclawSkillID, v))
+// AliveAgentSkillIDContainsFold applies the ContainsFold predicate on the "alive_agent_skill_id" field.
+func AliveAgentSkillIDContainsFold(v string) predicate.AgentSkill {
+	return predicate.AgentSkill(sql.FieldContainsFold(FieldAliveAgentSkillID, v))
 }
 
 // DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
