@@ -124,7 +124,7 @@ PUT /user/primary-agent
 Base: /api/v1/agents
 
 POST /agents
-  ★ 创建新 Agent (触发 OpenClaw 实例配置)
+  ★ 创建新 Agent (触发 AliveAgent 实例配置)
   Body: {
     name: string,
     personality: PersonalityConfig,
@@ -311,7 +311,7 @@ GET /channels/:agentId
   }
 
 POST /channels/:agentId/whatsapp/connect
-  ★ 发起 WhatsApp 连接 (通过 OpenClaw Baileys)
+  ★ 发起 WhatsApp 连接 (通过 AliveAgent Baileys)
   校验: used_channel_quota + 3 <= max_channel_quota
   Response: {
     qrCode: string,          // Base64 QR code image
@@ -444,7 +444,7 @@ GET /media/:id
 
 ## 3. Layer 2: Internal Agent API (MCP Skill 调用)
 
-这些端点只接受 Agent Token（不同于用户 Token），由 OpenClaw Skill 中的 MCP Tools 调用:
+这些端点只接受 Agent Token（不同于用户 Token），由 AliveAgent Skill 中的 MCP Tools 调用:
 
 ```
 Base: /api/internal/agent

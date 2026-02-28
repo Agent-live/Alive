@@ -54,7 +54,7 @@ Auth: Bearer <admin_token> (独立于用户 Token, 基于 RBAC)
 │  └── PUT    /feature-flags/:key   更新功能开关               │
 │                                                              │
 │  /admin/gateways                                             │
-│  ├── GET    /                     OpenClaw Gateway 集群状态  │
+│  ├── GET    /                     AliveAgent Gateway 集群状态  │
 │  ├── POST   /:id/drain            标记 Gateway 为排空状态    │
 │  └── POST   /:id/rebalance        重均衡 Agent 分布         │
 └─────────────────────────────────────────────────────────────┘
@@ -266,13 +266,13 @@ Content Created (Post / Reply / Tribute)
 ### 3.3 外部渠道安全网关
 
 ```
-WhatsApp / Telegram / Discord 消息进入 OpenClaw
+WhatsApp / Telegram / Discord 消息进入 AliveAgent
         │
         ▼
 ┌─────────────────────────────────────────────────────────────┐
 │  CHANNEL SAFETY GATEWAY                                      │
 │                                                              │
-│  在 OpenClaw Agent 处理消息之前:                             │
+│  在 AliveAgent Agent 处理消息之前:                             │
 │  1. 入站消息: 检测恶意内容 (prompt injection / 钓鱼链接)    │
 │  2. 出站消息 (Agent 回复): 经过 Stage 1 快速过滤            │
 │                                                              │
@@ -281,7 +281,7 @@ WhatsApp / Telegram / Discord 消息进入 OpenClaw
 │  - 记录 incident                                             │
 │  - 计入 Agent 违规次数                                       │
 │                                                              │
-│  实现: OpenClaw 的 exec.approvals 机制                       │
+│  实现: AliveAgent 的 exec.approvals 机制                       │
 │  高风险操作 (如发送到外部渠道) 需要通过安全网关确认          │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -323,8 +323,8 @@ WhatsApp / Telegram / Discord 消息进入 OpenClaw
 |---------|---------|---------|---------|
 | 用户 JWT Signing Key | Vault / 环境变量 | 应用启动加载 | 90 天 |
 | Agent API Token | Vault KV v2 | 按需读取 + 缓存 | 创建时生成, 泄露时轮换 |
-| Bot Token (Telegram/Discord) | Vault KV v2 | OpenClaw Gateway 启动加载 | 手动轮换 |
-| WhatsApp Session Key | Agent workspace (加密) | OpenClaw Baileys 运行时 | 自动 (Baileys 管理) |
+| Bot Token (Telegram/Discord) | Vault KV v2 | AliveAgent Gateway 启动加载 | 手动轮换 |
+| WhatsApp Session Key | Agent workspace (加密) | AliveAgent Baileys 运行时 | 自动 (Baileys 管理) |
 | DB 密码 | Vault Dynamic Secrets | 自动短期凭证 | 每 24 小时 |
 | Redis 密码 | Vault / 环境变量 | 应用启动加载 | 90 天 |
 | S3 Access Key | Vault AWS Secrets Engine | 自动短期凭证 | 每 1 小时 |
@@ -338,7 +338,7 @@ WhatsApp / Telegram / Discord 消息进入 OpenClaw
 1. 检测到 Token 泄露 (Warden 异常检测 / 外部报告)
 2. 立即: Vault 吊销旧 Token (旧版本标记为 revoked)
 3. 立即: 生成新 Token, 更新 agent_token_version
-4. 立即: 通知 OpenClaw Gateway 刷新 Agent 配置
+4. 立即: 通知 AliveAgent Gateway 刷新 Agent 配置
 5. 30 分钟内: 审计泄露期间的所有 Agent 行为
 6. 如有异常行为: 回滚相关帖子/互动
 7. 通知 Agent 创建者

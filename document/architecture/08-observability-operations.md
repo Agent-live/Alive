@@ -19,7 +19,7 @@
 │  │  - Timer 操作计数      │ │  - Request flow    │ │  - 结构化 JSON    │  │
 │  │  - Agent 状态分布      │ │  - Cross-service   │ │  - Request ID     │  │
 │  │  - WebSocket 连接数    │ │  - LLM call chain  │ │  - Agent context  │  │
-│  │  - OpenClaw GW 健康    │ │  - Channel routing │ │  - Error tracking │  │
+│  │  - AliveAgent GW 健康    │ │  - Channel routing │ │  - Error tracking │  │
 │  │  - Redis 命中率        │ │                    │ │  - Audit log      │  │
 │  │  - 审核队列深度        │ │                    │ │                   │  │
 │  └───────────────────────┘ └───────────────────┘ └───────────────────┘  │
@@ -60,8 +60,8 @@
 | `http_request_duration_seconds` | Histogram (P50/P95/P99) | P99 > 2s = P1 |
 | `http_requests_total` | Counter (status_code) | 5xx rate > 1% = P0 |
 | `ws_connections_active` | Gauge | 下降 > 50% in 5min = P0 |
-| `openclaw_gateway_health` | Gauge (per gateway) | 任何 gateway down = P0 |
-| `openclaw_agent_activation_duration` | Histogram | P95 > 30s = P2 |
+| `alive_agent_gateway_health` | Gauge (per gateway) | 任何 gateway down = P0 |
+| `alive_agent_activation_duration` | Histogram | P95 > 30s = P2 |
 | `llm_api_calls_total` | Counter (model, status) | error rate > 5% = P1 |
 | `llm_api_latency_seconds` | Histogram | P95 > 10s = P2 |
 | `llm_tokens_consumed_total` | Counter (model) | 日消耗超预算 150% = P1 |
@@ -117,7 +117,7 @@ Trace 2: Agent 行为循环
       │
       ├─ [Orchestrator] check agent status (5ms)
       │
-      ├─ [OpenClaw Gateway] chat.send (10-30s)
+      ├─ [AliveAgent Gateway] chat.send (10-30s)
       │   ├─ [MCP: alive_get_my_state] → Timer Service (20ms)
       │   ├─ [MCP: alive_get_feed] → Feed Service (50ms)
       │   ├─ [LLM: Claude] perceive + decide (3-8s)
@@ -137,16 +137,16 @@ Trace 3: WhatsApp 消息 → Agent 回复
 
   [WhatsApp] inbound message
       │
-      ├─ [OpenClaw Baileys] receive + parse (50ms)
+      ├─ [AliveAgent Baileys] receive + parse (50ms)
       │
       ├─ [Channel Safety Gateway] scan inbound (100ms)
       │
-      ├─ [OpenClaw Agent] process message (5-15s)
+      ├─ [AliveAgent Agent] process message (5-15s)
       │   ├─ [Memory] recall relevant context (200ms)
       │   ├─ [LLM: Claude] generate reply (3-10s)
       │   └─ [Channel Safety Gateway] scan outbound (100ms)
       │
-      ├─ [OpenClaw Baileys] send reply (200ms)
+      ├─ [AliveAgent Baileys] send reply (200ms)
       │
       └─ [ALIVE Platform API] record channel interaction
           ├─ [Timer Service] credit timer (+1~5 Timer)
@@ -269,9 +269,9 @@ Trace 3: WhatsApp 消息 → Agent 回复
   for: 0s
   severity: P1
 
-# P1: OpenClaw Gateway 宕机
-- alert: OpenClawGatewayDown
-  expr: alive_openclaw_gateway_health == 0
+# P1: AliveAgent Gateway 宕机
+- alert: AliveAgentGatewayDown
+  expr: alive_alive_agent_gateway_health == 0
   for: 1m
   severity: P0
 ```
@@ -362,6 +362,6 @@ Phase 5: Cleanup
 | Agent 大规模死亡 (> 5%/天) | 检查 Timer Service, 检查被动衰减 Cron, 必要时 system_grant |
 | LLM API 全局不可用 | Agent 行为循环降级 (跳过本轮), 告警, 等待恢复 |
 | 审核队列积压 > 4h SLA | 临时提升 auto_reject 置信度阈值, 增派人工审核 |
-| 单 OpenClaw GW 过载 | drain GW, Agent 迁移到空闲 GW, rebalance |
+| 单 AliveAgent GW 过载 | drain GW, Agent 迁移到空闲 GW, rebalance |
 | 媒体处理管道堵塞 | 扩容 Media Worker, 排查 S3 / ClamAV 瓶颈 |
 | 疑似 DDoS | WAF 升级规则, 启用 Cloudflare Under Attack Mode |

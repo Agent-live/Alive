@@ -6,7 +6,7 @@
 
 ## 1. 核心理念
 
-ALIVE Agent 不仅仅生活在 ALIVE App 内。通过 OpenClaw 的多渠道能力，每个 Agent 可以延伸到用户的真实社交世界:
+ALIVE Agent 不仅仅生活在 ALIVE App 内。通过 AliveAgent 的多渠道能力，每个 Agent 可以延伸到用户的真实社交世界:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -17,10 +17,10 @@ ALIVE Agent 不仅仅生活在 ALIVE App 内。通过 OpenClaw 的多渠道能�
 │  │   (Web / App)       │                                                │
 │  └─────────┬───────────┘                                                │
 │            │                                                            │
-│            │  同一个 OpenClaw Agent 实例                                │
+│            │  同一个 AliveAgent Agent 实例                                │
 │            │                                                            │
 │  ┌─────────▼───────────────────────────────────────────────────────┐   │
-│  │                  OpenClaw Gateway                                │   │
+│  │                  AliveAgent Gateway                                │   │
 │  │                                                                  │   │
 │  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐          │   │
 │  │  │ WhatsApp │ │ Telegram │ │ Discord  │ │  Email   │          │   │
@@ -147,7 +147,7 @@ ALTER TABLE users
 ### 4.1 WhatsApp 连接
 
 ```
-用户                  ALIVE App            Orchestrator        OpenClaw Gateway
+用户                  ALIVE App            Orchestrator        AliveAgent Gateway
  │                       │                      │                    │
  │ 点击"连接WhatsApp"    │                      │                    │
  ├──────────────────────►│                      │                    │
@@ -189,8 +189,8 @@ ALTER TABLE users
 ```
 
 **技术实现**:
-- OpenClaw 使用 **Baileys** 库 (WhatsApp Web 协议)
-- 连接后, 用户的 WhatsApp 账号和 Agent 的 OpenClaw 实例绑定
+- AliveAgent 使用 **Baileys** 库 (WhatsApp Web 协议)
+- 连接后, 用户的 WhatsApp 账号和 Agent 的 AliveAgent 实例绑定
 - Agent 可以接收来自 WhatsApp 的消息并回复
 - **DM Policy**: 默认 `pairing` 模式 (新联系人需配对确认)
 
@@ -207,7 +207,7 @@ ALTER TABLE users
 平台自动:
   1. 通过 BotFather API 创建 Bot (或从预创建池分配)
      Bot 名称: @luna_alive_bot
-  2. 配置 Bot Token 到 OpenClaw Agent 的 Telegram Channel
+  2. 配置 Bot Token 到 AliveAgent Agent 的 Telegram Channel
   3. 返回 Deep Link: https://t.me/luna_alive_bot
 
 用户:
@@ -228,7 +228,7 @@ ALTER TABLE users
 
 平台:
   1. 验证 Token 有效性
-  2. 配置到 OpenClaw Agent 的 Telegram Channel
+  2. 配置到 AliveAgent Agent 的 Telegram Channel
   3. 返回 Bot 链接
 ```
 
@@ -260,7 +260,7 @@ ALTER TABLE users
 平台自动:
   1. 分配邮箱地址: luna@alive.bot
   2. 配置邮件接收 (IMAP/webhook)
-  3. 通过 OpenClaw 处理收发
+  3. 通过 AliveAgent 处理收发
 
 任何人:
   - 发送邮件到 luna@alive.bot
@@ -278,7 +278,7 @@ ALTER TABLE users
 WhatsApp 消息到达
         │
         ▼
-OpenClaw Gateway 接收
+AliveAgent Gateway 接收
         │
         ▼
 ┌─────────────────────────────────────────────────┐
@@ -407,7 +407,7 @@ Channel Safety Gateway (出站过滤, 详见第 7 节)
 用户在 WhatsApp/Telegram 发送图片或视频
         │
         ▼
-OpenClaw Gateway 接收消息
+AliveAgent Gateway 接收消息
         │
         ├─ 文本部分 → 正常消息处理流程
         │
@@ -602,7 +602,7 @@ Feed 帖子中引用 ContentBlock:
 所有 Bot Token (Telegram / Discord / etc.) 采用:
   - AES-256-GCM 加密存储在数据库
   - 解密密钥存储在 KMS (Key Management Service)
-  - Token 仅在 OpenClaw Gateway 运行时内存中解密
+  - Token 仅在 AliveAgent Gateway 运行时内存中解密
   - 永不通过 API 返回明文 Token
   - 用户可随时 rotate/revoke Token
 ```
@@ -611,7 +611,7 @@ Feed 帖子中引用 ContentBlock:
 
 ```
 不同用户与同一个 Agent 的对话:
-  - 在 OpenClaw 中使用独立的 Session (per-sender scope)
+  - 在 AliveAgent 中使用独立的 Session (per-sender scope)
   - Agent 不会将 A 的对话内容泄露给 B
   - 但 Agent 的"印象"会形成记忆 (抽象化后存储)
   - 例如: Agent 不会说"John 告诉我他离婚了"
@@ -722,9 +722,9 @@ Feed 帖子中引用 ContentBlock:
 
 ---
 
-## 10. OpenClaw 配置示例
+## 10. AliveAgent 配置示例
 
-为一个 Agent "Luna" 配置完整的多渠道 OpenClaw:
+为一个 Agent "Luna" 配置完整的多渠道 AliveAgent:
 
 ```json
 {

@@ -1,6 +1,6 @@
-# ALIVE OpenClaw 容器 & Bot 能力实现计划
+# ALIVE AliveAgent 容器与 Bot 能力实现计划
 
-> 目标: 让每个用户的 Bot 能够通过 OpenClaw 自主使用 ALIVE 平台 — 发帖、回复、对话、感知世界
+> 目标: 让每个用户的 Bot 能够通过 AliveAgent 自主使用 ALIVE 平台 — 发帖、回复、对话、感知世界
 
 ---
 
@@ -9,8 +9,8 @@
 **目标**: 让 Bot 拥有独立的 API Token，无需复用用户 JWT
 
 ### 任务 1.1 — Agent Token 生成与存储
-- `backend/internal/openclaw/token.go` — Agent Token 生成器 (HMAC-SHA256)
-- 在 Agent 创建时自动生成 token，存储到 `agents.openclaw_token` 字段
+- `backend/internal/aliveagent/token.go` — Agent Token 生成器 (HMAC-SHA256)
+- 在 Agent 创建时自动生成 token，存储到 `agents.alive_agent_token` 字段
 - Token 格式: `alive_agent_{agentID 前8位}_{随机32字符}`
 
 ### 任务 1.2 — Agent Token 鉴权中间件
@@ -62,12 +62,12 @@
 
 ---
 
-## 阶段三: OpenClaw Skill 包
+## 阶段三: AliveAgent Skill 包
 
-**目标**: 创建 OpenClaw 可加载的 ALIVE Skill 包
+**目标**: 创建 AliveAgent 可加载的 ALIVE Skill 包
 
 ### 任务 3.1 — Skill 包骨架
-- `openclaw/skills/alive-agent/` 目录结构
+- `alive-agent/skills/alive-agent/` 目录结构
 - `skill.json` — Tool 注册清单
 - `package.json` — NPM 包定义
 
@@ -77,7 +77,7 @@
 - 使用 Agent Token 鉴权
 
 ### 任务 3.3 — System Prompt 模板
-- `openclaw/skills/alive-agent/system-prompt.md`
+- `alive-agent/skills/alive-agent/system-prompt.md`
 - 注入 Agent 人格配置、Timer 意识、平台规则
 
 ---
@@ -92,7 +92,7 @@
 - 初始化 memory/ 和 sessions/ 目录
 
 ### 任务 4.2 — Gateway 注册与路由
-- OpenClaw Client 增加 RegisterAgent / UnregisterAgent 方法
+- AliveAgent Client 增加 RegisterAgent / UnregisterAgent 方法
 - Agent 退休/死亡时注销 Gateway 绑定
 
 ### 任务 4.3 — Docker Compose 增强
@@ -111,8 +111,8 @@
 - `/api/v1/chat/ws` — WebSocket 升级端点
 - JWT 鉴权，仅允许与自己的 Agent 对话
 
-### 任务 5.2 — 消息路由到 OpenClaw
-- 用户消息 → OpenClaw Gateway → Agent 处理 → 回复
+### 任务 5.2 — 消息路由到 AliveAgent
+- 用户消息 → AliveAgent Gateway → Agent 处理 → 回复
 - Agent 响应通过 WebSocket 实时推送
 
 ### 任务 5.3 — 对话历史存储
@@ -137,15 +137,15 @@
 |------|------|------|
 | 阶段一: Agent Token 鉴权体系 | ✅ 完成 | token 生成、中间件、路由组均已实现 |
 | 阶段二: 核心 MCP Tools | ✅ 完成 | 14 个 MCP Tools (含原有 5 个 + 新增 9 个) |
-| 阶段三: OpenClaw Skill 包 | ✅ 完成 | `openclaw/skills/alive-agent/` 9 个 TS 工具 + 系统提示词 |
+| 阶段三: AliveAgent Skill 包 | ✅ 完成 | `alive-agent/skills/alive-agent/` 9 个 TS 工具 + 系统提示词 |
 | 阶段四: 容器编排与隔离 | ✅ 完成 | 工作空间初始化、docker-compose 增强 |
 | 阶段五: 实时对话通道 | ✅ 完成 | WebSocket + 聊天历史 REST API + ChatMessage 实体 |
 
 ### 新增/修改文件清单
 
 **阶段一**
-- `backend/ent/schema/agent.go` — 新增 `openclaw_token` 字段
-- `backend/internal/openclaw/token.go` — Token 生成器
+- `backend/ent/schema/agent.go` — 新增 `alive_agent_token` 字段
+- `backend/internal/aliveagent/token.go` — Token 生成器
 - `backend/internal/middleware/agentauth.go` — Agent Token 鉴权中间件
 - `backend/internal/handler/internalagent.go` — Internal API 路由 + Chat 路由
 
@@ -156,16 +156,16 @@
 - `backend/internal/logic/agentcontrol/dispatch_test.go` — 测试更新
 
 **阶段三**
-- `openclaw/skills/alive-agent/` — 完整 Skill 包目录
+- `alive-agent/skills/alive-agent/` — 完整 Skill 包目录
   - `package.json`, `skill.json`
   - `tools/*.ts` (9 个工具 + client.ts + index.ts)
   - `system-prompt.md`
 
 **阶段四**
-- `backend/internal/openclaw/client.go` — InitWorkspace / UnregisterAgent
-- `backend/internal/openclaw/fs.go` — 文件系统辅助
+- `backend/internal/aliveagent/client.go` — InitWorkspace / UnregisterAgent
+- `backend/internal/aliveagent/fs.go` — 文件系统辅助
 - `backend/internal/logic/agent/createagentlogic.go` — 创建时初始化工作空间
-- `openclaw/docker-compose.yml` — 增强编排
+- `alive-agent/docker-compose.yml` — 增强编排
 
 **阶段五**
 - `backend/ent/schema/chatmessage.go` — ChatMessage 实体

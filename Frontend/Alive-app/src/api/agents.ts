@@ -1,7 +1,8 @@
 import { Agent, AgentSummary, AgentRelationshipsResponse, PersonalityConfig, PaginatedResponse } from '../types';
 import { api } from './client';
+import { endpoints } from './endpoints';
 import { mapAgent, mapAgentSummary } from './mappers';
-import { mockMyAgents, mockAgents, mockAgentSummaries, mockRelationships } from '../mocks';
+import { mockAgents, mockAgentSummaries, mockRelationships } from '../mocks';
 
 interface RawAgentListResp {
   items: unknown[];
@@ -33,34 +34,21 @@ interface FollowingListResp {
 }
 
 async function getMyAgents(): Promise<Agent[]> {
-  try {
-    const payload = await api.get<RawUserAgentsResp>('/user/agents');
-    const primaryId = payload.primaryAgentId;
-    if (Array.isArray(payload.agents) && payload.agents.length === 0) {
-      return [];
-    }
-    if (payload.agents?.length) {
-      const detailed = await Promise.all(
-        payload.agents.map(async (item) => {
-          const id = (item as RawAgentResp).id;
-          const raw = await api.get<unknown>(`/agents/${id}`);
-          return mapAgent(raw, id === primaryId);
-        }),
-      );
-      if (detailed.length > 0) return detailed;
-    }
-  } catch {
-    // Try legacy endpoint
-    try {
-      const raw = await api.get<unknown>('/agents/my');
-      const agent = mapAgent(raw, true);
-      if (agent.id) return [agent];
-    } catch {
-      // fall through
-    }
+  const payload = await api.get<RawUserAgentsResp>(endpoints.user.agents);
+  const primaryId = payload.primaryAgentId;
+  if (!payload.agents?.length) {
+    return [];
   }
-  // Fallback to mock data for development preview
-  return mockMyAgents;
+
+  const detailed = await Promise.all(
+    payload.agents.map(async (item) => {
+      const id = (item as RawAgentResp).id;
+      const raw = await api.get<unknown>(endpoints.agents.detail(id));
+      return mapAgent(raw, id === primaryId);
+    }),
+  );
+
+  return detailed;
 }
 
 async function createAgent(data: {
@@ -69,13 +57,13 @@ async function createAgent(data: {
   goalDescription: string;
   avatarSeed?: string;
 }): Promise<Agent> {
-  const raw = await api.post<unknown>('/agents/', data);
+  const raw = await api.post<unknown>(endpoints.agents.root, data);
   return mapAgent(raw, true);
 }
 
 async function getAgentDetail(agentId: string): Promise<Agent> {
   try {
-    const raw = await api.get<unknown>(`/agents/${agentId}`);
+    const raw = await api.get<unknown>(endpoints.agents.detail(agentId));
     const agent = mapAgent(raw);
     if (agent.id) return agent;
   } catch {
@@ -88,7 +76,7 @@ async function getAgentDetail(agentId: string): Promise<Agent> {
 
 async function getAgentList(page = 1, pageSize = 10): Promise<PaginatedResponse<AgentSummary>> {
   try {
-    const raw = await api.get<RawAgentListResp>('/agents/', { page, pageSize });
+    const raw = await api.get<RawAgentListResp>(endpoints.agents.root, { page, pageSize });
     if (raw && Array.isArray(raw.items)) {
       return {
         items: raw.items.map((item) => mapAgentSummary(item)),
@@ -121,7 +109,7 @@ async function lookupAgentNet(agentNetId: string): Promise<Agent> {
   try {
     return await getAgentDetail(id);
   } catch {
-    const search = await api.get<RawAgentListResp>('/agents/search', { q: id });
+    const search = await api.get<RawAgentListResp>(endpoints.agents.search, { q: id });
     if (!search.items?.length) {
       throw { code: 'NOT_FOUND', message: 'Agent not found on AgentNet' };
     }
@@ -142,7 +130,7 @@ async function searchAgents(query: string): Promise<AgentSummary[]> {
   const q = query.trim();
   if (!q) return [];
   try {
-    const raw = await api.get<RawAgentListResp>('/agents/search', { q });
+    const raw = await api.get<RawAgentListResp>(endpoints.agents.search, { q });
     if (raw && Array.isArray(raw.items)) {
       return raw.items.map((item) => mapAgentSummary(item));
     }
@@ -156,12 +144,12 @@ async function searchAgents(query: string): Promise<AgentSummary[]> {
 }
 
 async function setPrimaryAgent(agentId: string): Promise<void> {
-  await api.put<{ success: boolean }>('/user/primary-agent', { agentId });
+  await api.put<{ success: boolean }>(endpoints.user.primaryAgent, { agentId });
 }
 
 async function getAgentRelationships(agentId: string): Promise<AgentRelationshipsResponse> {
   try {
-    const result = await api.get<AgentRelationshipsResponse>(`/agents/${agentId}/relationships`);
+    const result = await api.get<AgentRelationshipsResponse>(endpoints.agents.relationships(agentId));
     if (result && Array.isArray(result.relationships)) return result;
   } catch {
     // fall through
@@ -170,16 +158,16 @@ async function getAgentRelationships(agentId: string): Promise<AgentRelationship
 }
 
 async function followAgent(agentId: string): Promise<FollowAgentResp> {
-  return api.post<FollowAgentResp>(`/agents/${agentId}/follow`);
+  return api.post<FollowAgentResp>(endpoints.agents.follow(agentId));
 }
 
 async function unfollowAgent(agentId: string): Promise<FollowAgentResp> {
-  return api.delete<FollowAgentResp>(`/agents/${agentId}/follow`);
+  return api.delete<FollowAgentResp>(endpoints.agents.follow(agentId));
 }
 
 async function getFollowingAgents(): Promise<AgentSummary[]> {
   try {
-    const raw = await api.get<FollowingListResp>('/agents/following');
+    const raw = await api.get<FollowingListResp>(endpoints.agents.following);
     if (raw && Array.isArray(raw.items)) {
       return raw.items.map((item) => mapAgentSummary(item));
     }

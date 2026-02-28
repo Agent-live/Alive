@@ -1,11 +1,11 @@
-可以实现！OpenClaw 原生就支持这个能力
+可以实现！AliveAgent 原生就支持这个能力
 
-  根据代码分析，OpenClaw 已经内置了多 Agent 共享单一容器、各自独立 memory 和个性化配置的架构。以下是具体实现方式：
+  根据代码分析，AliveAgent 已经内置了多 Agent 共享单一容器、各自独立 memory 和个性化配置的架构。以下是具体实现方式：
 
   ---
   核心机制：agents.list 配置
 
-  在 ~/.openclaw/config.json 中定义多个 agent，它们共享同一个 Gateway 进程，但各自拥有隔离的 workspace、memory、session：
+  在 ~/.alive-agent/config.json 中定义多个 agent，它们共享同一个 Gateway 进程，但各自拥有隔离的 workspace、memory、session：
 
   {
     "agents": {
@@ -33,13 +33,13 @@
   ┌───────────────┬─────────────────────────────────────────────────────────────┐
   │     资源      │                          隔离方式                           │
   ├───────────────┼─────────────────────────────────────────────────────────────┤
-  │ Memory (RAG)  │ ~/.openclaw/agents/<agentId>/memory/ — 独立的 SQLite 向量库 │
+  │ Memory (RAG)  │ ~/.alive-agent/agents/<agentId>/memory/ — 独立的 SQLite 向量库 │
   ├───────────────┼─────────────────────────────────────────────────────────────┤
-  │ Session       │ ~/.openclaw/agents/<agentId>/sessions.json — 独立的会话存储 │
+  │ Session       │ ~/.alive-agent/agents/<agentId>/sessions.json — 独立的会话存储 │
   ├───────────────┼─────────────────────────────────────────────────────────────┤
-  │ Workspace     │ ~/.openclaw/workspace-<agentId>/ — 独立的工作目录           │
+  │ Workspace     │ ~/.alive-agent/workspace-<agentId>/ — 独立的工作目录           │
   ├───────────────┼─────────────────────────────────────────────────────────────┤
-  │ 对话记录      │ ~/.openclaw/agents/<agentId>/sessions/<sessionId>.jsonl     │
+  │ 对话记录      │ ~/.alive-agent/agents/<agentId>/sessions/<sessionId>.jsonl     │
   ├───────────────┼─────────────────────────────────────────────────────────────┤
   │ 模型选择      │ 每个 agent 可以用不同的 model/provider                      │
   ├───────────────┼─────────────────────────────────────────────────────────────┤
@@ -74,9 +74,9 @@
 
   # 一个容器，一个 Gateway 进程，承载所有 bot
   docker run -d \
-    -v ~/.openclaw:/home/node/.openclaw \
+    -v ~/.alive-agent:/home/node/.alive-agent \
     -p 18789:18789 \
-    openclaw/openclaw
+    alive-agent/alive-agent
 
   所有 agent 共享同一个 Gateway 进程和端口，通过 session key 格式 agent:<agentId>:<channel>:<peer> 做隔离路由。
 
@@ -103,19 +103,19 @@
                                                  
 ⏺ 1. 包装成服务 — Gateway 本身就是一个服务                                                                                                                  
                                                                                                     
-  OpenClaw 的 Gateway 已经是一个完整的 HTTP/WebSocket 服务，支持多种标准 API 接入方式：                                                                     
+  AliveAgent 的 Gateway 已经是一个完整的 HTTP/WebSocket 服务，支持多种标准 API 接入方式：                                                                     
                                                                                                                                                             
   启动服务                                                                                                                                                  
                                                                                                                                                             
   # 直接启动                                                                                                                                                
-  openclaw gateway
+  alive-agent gateway
                                                                                                                                                             
   # Docker 部署                                                                                                                                             
   docker run -d \                                                                                                                                           
-    -v ~/.openclaw:/home/node/.openclaw \
+    -v ~/.alive-agent:/home/node/.alive-agent \
     -p 18789:18789 \
-    -e OPENCLAW_GATEWAY_TOKEN=your-secret-token \
-    openclaw/openclaw gateway
+    -e ALIVE_AGENT_GATEWAY_TOKEN=your-secret-token \
+    alive-agent/alive-agent gateway
 
   对外暴露的 API 接口
   ┌───────────────┬───────────────────────────┬─────────────────────────────────┐
@@ -138,8 +138,8 @@
   # 向指定 bot 发消息（OpenAI 兼容格式）
   curl -X POST http://localhost:18789/v1/chat/completions \
     -H "Authorization: Bearer your-secret-token" \
-    -H "X-OpenClaw-Agent-Id: bot-alice" \
-    -H "X-OpenClaw-Session-Key: user-123" \
+    -H "X-AliveAgent-Agent-Id: bot-alice" \
+    -H "X-AliveAgent-Session-Key: user-123" \
     -H "Content-Type: application/json" \
     -d '{
       "model": "claude-sonnet-4-5-20250929",
@@ -154,7 +154,7 @@
   ---
   2. 保证 Bot 在对应的容器中行动 — Sandbox 沙箱机制
 
-  OpenClaw 提供了三层隔离粒度，通过 sandbox 配置确保每个 bot 只能在自己的容器中行动：
+  AliveAgent 提供了三层隔离粒度，通过 sandbox 配置确保每个 bot 只能在自己的容器中行动：
 
   Sandbox Scope 三种级别
 
@@ -204,7 +204,7 @@
           "sandbox": {
             "enabled": true,
             "scope": "agent",
-            "image": "openclaw/sandbox-dev:latest",
+            "image": "alive-agent/sandbox-dev:latest",
             "network": "bridge",           // 允许网络访问
             "memory": "2g",
             "workspace": { "access": "rw" }
@@ -222,7 +222,7 @@
   Gateway 进程 (单容器 / 宿主机)
   │
   ├── Bot Alice 的 Docker 沙箱容器
-  │   ├── 文件系统: ~/.openclaw/workspace-bot-alice/ (隔离挂载)
+  │   ├── 文件系统: ~/.alive-agent/workspace-bot-alice/ (隔离挂载)
   │   ├── Memory DB: agents/bot-alice/memory.db (独立)
   │   ├── Sessions: agents/bot-alice/sessions.json (独立)
   │   ├── 网络: none (完全隔离)
@@ -230,7 +230,7 @@
   │   └── 资源: 512MB RAM, 512 CPU shares
   │
   ├── Bot Bob 的 Docker 沙箱容器
-  │   ├── 文件系统: ~/.openclaw/workspace-bot-bob/ (隔离挂载)
+  │   ├── 文件系统: ~/.alive-agent/workspace-bot-bob/ (隔离挂载)
   │   ├── Memory DB: agents/bot-bob/memory.db (独立)
   │   ├── Sessions: agents/bot-bob/sessions.json (独立)
   │   ├── 网络: bridge (可联网)

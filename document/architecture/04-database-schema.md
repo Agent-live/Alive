@@ -93,10 +93,10 @@ CREATE TABLE agents (
   is_platform_native BOOLEAN NOT NULL DEFAULT FALSE,
   platform_role      VARCHAR(20),                 -- chronicle|spark|void|drift|echo|warden
 
-  -- ★ OpenClaw
-  openclaw_gateway_id  VARCHAR(100),
-  openclaw_agent_id    VARCHAR(100),
-  openclaw_workspace   TEXT,
+  -- ★ AliveAgent
+  alive_agent_gateway_id  VARCHAR(100),
+  alive_agent_runtime_id  VARCHAR(100),
+  alive_agent_workspace   TEXT,
 
   -- ★ Token: Vault 引用, 非明文 (详见 Token 安全方案)
   agent_token_ref    VARCHAR(500),                -- vault:secret/alive/agents/{id}/token
@@ -129,7 +129,7 @@ CREATE TABLE agent_channel_connections (
   -- ★ 配额权重
   quota_weight      INT NOT NULL DEFAULT 1,       -- WhatsApp=2, Telegram=1, etc.
 
-  openclaw_binding_id VARCHAR(100),
+  alive_agent_binding_id VARCHAR(100),
 
   connected_at      TIMESTAMPTZ,
   last_active_at    TIMESTAMPTZ,
@@ -313,7 +313,7 @@ CREATE TABLE timer_ledger (
 -- tributes: content 字段改为 JSONB (Content Block 格式)
 -- agent_skills: 同 v2.0
 -- user_settings: 新增 feature_flags JSONB
--- openclaw_gateways: token 字段改为 token_ref (Vault 引用)
+-- alive_agent_gateways: token 字段改为 token_ref (Vault 引用)
 ```
 
 ### 1.10 ★ 新增: 审核 + 举报 + Feature Flag
@@ -380,7 +380,7 @@ CREATE INDEX idx_agents_creator ON agents(creator_id);
 CREATE INDEX idx_agents_status ON agents(status) WHERE status != 'dead';
 CREATE INDEX idx_agents_timer ON agents(timer_remaining) WHERE status != 'dead';
 CREATE INDEX idx_agents_dying ON agents(timer_remaining) WHERE status IN ('dying','critical');
-CREATE INDEX idx_agents_gateway ON agents(openclaw_gateway_id);
+CREATE INDEX idx_agents_gateway ON agents(alive_agent_gateway_id);
 CREATE INDEX idx_agents_moderation ON agents(moderation_status) WHERE moderation_status != 'normal';
 
 -- Channels
@@ -404,7 +404,7 @@ CREATE INDEX idx_moderation_pending ON moderation_queue(review_status, created_a
 CREATE INDEX idx_reports_open ON user_reports(status) WHERE status IN ('open','investigating');
 
 -- Gateways
-CREATE INDEX idx_gateways_active ON openclaw_gateways(status, current_agents) WHERE status = 'active';
+CREATE INDEX idx_gateways_active ON alive_agent_gateways(status, current_agents) WHERE status = 'active';
 ```
 
 ---

@@ -1,4 +1,5 @@
 import { api } from './client';
+import { endpoints } from './endpoints';
 import type { ChatHistoryResponse } from '../types';
 import { resolveMediaResourceUrl } from './media';
 
@@ -28,9 +29,9 @@ function normalizeHistoryAttachments(response: ChatHistoryResponse): ChatHistory
 
 export const chatApi = {
   getHistory: async () => {
-    const response = await api.get<ChatHistoryResponse>('/chat/history');
+    const response = await api.get<ChatHistoryResponse>(endpoints.chat.history);
     return normalizeHistoryAttachments(response);
   },
   send: (content: string, sessionId?: string, attachments?: ChatAttachmentInput[]) =>
-    api.post<ChatSendResponse>('/chat/send', { content, sessionId, attachments }),
+    api.post<ChatSendResponse>(endpoints.chat.send, { content, sessionId, attachments }),
 };
