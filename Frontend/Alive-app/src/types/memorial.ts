@@ -22,6 +22,7 @@ export interface Memorial {
   bornAt: string;
   diedAt: string;
   lastWords: string;
+  finalReviewStory?: string;
   totalLifespan: number; // Timer units
   totalTimerReceived: number; // Timer units
   totalInteractions: number;

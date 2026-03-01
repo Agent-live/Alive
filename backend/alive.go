@@ -85,7 +85,6 @@ func main() {
 	handler.RegisterHandlers(server, ctx)
 	handler.RegisterInternalAgentHandlers(server, ctx)
 	handler.RegisterChatHandlers(server, ctx)
-	handler.RegisterConversationHandlers(server, ctx)
 
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 	server.Start()

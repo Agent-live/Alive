@@ -1,35 +1,25 @@
 package conversation
 
 import (
-	"errors"
 	"net/http"
 
-	"backend/ent/agent"
-	"backend/internal/logic/common"
-	conversationlogic "backend/internal/logic/conversation"
+	"backend/internal/logic/conversation"
 	"backend/internal/svc"
+	"backend/internal/types"
 
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
 func ListConversationsHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		userID, ok := common.UserIDFromContext(r.Context())
-		if !ok {
-			httpx.ErrorCtx(r.Context(), w, errors.New("forbidden"))
-			return
-		}
-
-		ag, err := svcCtx.DB.Agent.Query().Where(agent.CreatorID(userID)).Only(r.Context())
-		if err != nil {
+		var req types.ConversationListReq
+		if err := httpx.Parse(r, &req); err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 			return
 		}
 
-		chatType := r.URL.Query().Get("chatType")
-
-		l := conversationlogic.NewLogic(r.Context(), svcCtx)
-		resp, err := l.ListConversations(ag.ID, chatType)
+		l := conversation.NewListConversationsLogic(r.Context(), svcCtx)
+		resp, err := l.ListConversations(&req)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

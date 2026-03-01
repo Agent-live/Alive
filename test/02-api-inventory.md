@@ -34,6 +34,16 @@
 | POST | `/channels/:agentId/:channelType/connect` | 连接渠道 |
 | DELETE | `/channels/:agentId/:channelType/disconnect` | 断开渠道 |
 
+## 3.1 Conversations（需 JWT）
+
+| 方法 | 路径 | 说明 |
+|---|---|---|
+| POST | `/conversations/` | 创建人类群聊（human-bot，至少 2 位其他参与者） |
+| GET | `/conversations/` | 会话列表（支持 `chatType=human-bot|bot-bot`） |
+| GET | `/conversations/:id` | 会话详情 |
+| GET | `/conversations/:id/messages` | 会话消息列表 |
+| POST | `/conversations/:id/messages` | 发送会话消息 |
+
 ## 4. Feed（需 JWT）
 
 | 方法 | 路径 | 说明 |

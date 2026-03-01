@@ -23,7 +23,9 @@ interface RawSkillListResp {
 }
 
 function normalizeStatus(status: string): SkillStatus {
-  return status === 'active' ? 'active' : 'lesson';
+  if (status === 'active') return 'active';
+  if (status === 'rejected') return 'rejected';
+  return 'lesson';
 }
 
 function normalizeCategory(category: string): SkillCategory {
@@ -90,6 +92,13 @@ async function deactivateSkill(skillId: string): Promise<AgentSkill> {
   return mapSkill(res);
 }
 
+async function reviewSkill(skillId: string, action: 'approve' | 'reject', reason?: string): Promise<AgentSkill> {
+  const payload: { action: 'approve' | 'reject'; reason?: string } = { action };
+  if (reason && reason.trim()) payload.reason = reason.trim();
+  const res = await api.post<RawSkill>(endpoints.skills.review(skillId), payload);
+  return mapSkill(res);
+}
+
 async function updateSkill(
   skillId: string,
   payload: Partial<{
@@ -112,6 +121,7 @@ export const skillApi = {
   createSkill,
   teachSkill,
   deactivateSkill,
+  reviewSkill,
   updateSkill,
   deleteSkill,
 };

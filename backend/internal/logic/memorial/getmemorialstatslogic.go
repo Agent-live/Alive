@@ -119,7 +119,9 @@ func (l *GetMemorialStatsLogic) GetMemorialStats() (resp *types.MemorialStatsRes
 		if a != nil {
 			cName = creatorName[a.CreatorID]
 		}
-		recent = append(recent, common.ToMemorialRespDetailed(row, nil, a, cName, tributeCount[row.ID]))
+		item := common.ToMemorialRespDetailed(row, nil, a, cName, tributeCount[row.ID])
+		item.FinalReviewStory = loadFinalReviewStory(l.ctx, l.svcCtx.DB, row.AgentID)
+		recent = append(recent, item)
 	}
 
 	if mostMournedName == "" && len(allRows) > 0 {

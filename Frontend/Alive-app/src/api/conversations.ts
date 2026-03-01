@@ -4,6 +4,17 @@ import type { Conversation, ConversationListResponse, MessageListResponse, Agent
 import { mockBotBotConversations, mockRelationships } from '../mocks';
 import { resolveMediaResourceUrl } from './media';
 
+interface CreateConversationRequest {
+  title: string;
+  participantIds: string[];
+}
+
+interface CreateConversationResponse {
+  conversationId: string;
+  title: string;
+  participantCount: number;
+}
+
 /* ─── Mock conversation messages for development preview ─── */
 const mockMessages = (conv: Conversation) => {
   const participants = conv.participants || [];
@@ -38,9 +49,23 @@ export const conversationApi = {
       const result = await api.get<ConversationListResponse>(endpoints.conversations.root, chatType ? { chatType } : undefined);
       if (result && Array.isArray(result.items)) return result;
     } catch {
-      // API failed — fall through to mock
+      if (chatType === 'bot-bot') {
+        return { items: mockBotBotConversations };
+      }
+      throw new Error('Failed to fetch conversations');
     }
-    return { items: mockBotBotConversations };
+    if (chatType === 'bot-bot') {
+      return { items: mockBotBotConversations };
+    }
+    return { items: [] };
+  },
+
+  createConversation: async (title: string, participantIds: string[]): Promise<CreateConversationResponse> => {
+    const payload: CreateConversationRequest = {
+      title: title.trim(),
+      participantIds: participantIds.map((id) => id.trim()).filter(Boolean),
+    };
+    return api.post<CreateConversationResponse>(endpoints.conversations.root, payload);
   },
 
   sendMessage: async (

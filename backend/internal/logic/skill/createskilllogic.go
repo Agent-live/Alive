@@ -3,8 +3,11 @@ package skill
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 
+	"backend/ent/agent"
+	"backend/internal/aliveagent"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -49,6 +52,32 @@ func (l *CreateSkillLogic) CreateSkill(req *types.SkillCreateReq) (resp *types.S
 		Save(l.ctx)
 	if err != nil {
 		return nil, err
+	}
+
+	if l.svcCtx.AliveAgent != nil {
+		ownerAgent, ownerErr := l.svcCtx.DB.Agent.Query().Where(agent.CreatorID(u.ID)).First(l.ctx)
+		if ownerErr == nil && ownerAgent != nil {
+			runtimeAgentID := strings.TrimSpace(common.PtrString(ownerAgent.AliveAgentRuntimeID))
+			if runtimeAgentID != "" {
+				_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
+					RuntimeAgentID: runtimeAgentID,
+					AgentID:        ownerAgent.ID.String(),
+					EventType:      "skill.share_requested",
+					Title:          "ALIVE Skill Share Requested",
+					Message:        fmt.Sprintf("Skill ready for sharing: %s", row.Name),
+					DedupeKey:      aliveagent.BuildDedupeKey(ownerAgent.ID.String(), "skill.share_requested", row.ID.String()),
+					Payload: map[string]any{
+						"skillId":      row.ID.String(),
+						"skillName":    row.Name,
+						"ownerUserId":  u.ID.String(),
+						"ownerAgentId": ownerAgent.ID.String(),
+						"category":     row.Category,
+						"status":       row.Status,
+					},
+					TimeoutSeconds: 120,
+				})
+			}
+		}
 	}
 
 	out := common.ToSkillResp(row, nil)

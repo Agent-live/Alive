@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -53,6 +54,119 @@ type BindSkillResult struct {
 	SkillID   string
 }
 
+type AgentSkill struct {
+	AgentID                string   `json:"agentId"`
+	Key                    string   `json:"key"`
+	Name                   string   `json:"name"`
+	Description            string   `json:"description"`
+	Tags                   []string `json:"tags"`
+	Enabled                bool     `json:"enabled"`
+	Kind                   string   `json:"kind"`
+	Source                 string   `json:"source"`
+	RunCount               int64    `json:"runCount"`
+	SuccessCount           int64    `json:"successCount"`
+	FailureCount           int64    `json:"failureCount"`
+	AvgElapsedMs           int64    `json:"avgElapsedMs"`
+	LastError              string   `json:"lastError"`
+	CreatedAt              string   `json:"createdAt"`
+	UpdatedAt              string   `json:"updatedAt"`
+	FilePath               string   `json:"filePath"`
+	InstructionMarkdown    string   `json:"instructionMarkdown"`
+	DisableModelInvocation bool     `json:"disableModelInvocation"`
+}
+
+type listAgentSkillsGatewayResponse struct {
+	Count  int          `json:"count"`
+	Skills []AgentSkill `json:"skills"`
+}
+
+type provisionAgentGatewayRequest struct {
+	AgentID             string                       `json:"agentId"`
+	Workspace           string                       `json:"workspace"`
+	MaxParallelSessions uint32                       `json:"maxParallelSessions"`
+	AllowedCommands     []string                     `json:"allowedCommands"`
+	Sandbox             provisionAgentGatewaySandbox `json:"sandbox"`
+	UseWorkspaceRules   bool                         `json:"useWorkspaceRules"`
+}
+
+type provisionAgentGatewaySandbox struct {
+	Enabled        bool   `json:"enabled"`
+	Mode           string `json:"mode"`
+	Image          string `json:"image"`
+	NetworkEnabled bool   `json:"networkEnabled"`
+	TimeoutSeconds uint32 `json:"timeoutSeconds"`
+}
+
+type provisionAgentGatewayResponse struct {
+	AgentID   string `json:"agentId"`
+	Workspace string `json:"workspace"`
+}
+
+type injectEventRequest struct {
+	Source     string `json:"source"`
+	AgentID    string `json:"agentId"`
+	SessionKey string `json:"sessionKey"`
+	EventID    string `json:"eventId,optional"`
+	Payload    any    `json:"payload"`
+}
+
+type injectEventResponse struct {
+	Accepted bool   `json:"accepted"`
+	EventID  string `json:"eventId"`
+	Message  string `json:"message"`
+}
+
+type InjectEventRequest struct {
+	Source     string
+	AgentID    string
+	SessionKey string
+	EventID    string
+	Payload    any
+}
+
+type InjectEventResult struct {
+	Accepted bool
+	EventID  string
+	Message  string
+}
+
+type injectRunRequest struct {
+	AgentID        string            `json:"agentId"`
+	SessionKey     string            `json:"sessionKey"`
+	RequestID      string            `json:"requestId,optional"`
+	Message        string            `json:"message"`
+	TimeoutSeconds int64             `json:"timeoutSeconds,optional"`
+	Metadata       map[string]string `json:"metadata,optional"`
+}
+
+type injectRunResponse struct {
+	RequestID string `json:"requestId"`
+}
+
+type InjectRunRequest struct {
+	AgentID        string
+	SessionKey     string
+	RequestID      string
+	Message        string
+	TimeoutSeconds int64
+	Metadata       map[string]string
+}
+
+type InjectRunResult struct {
+	RequestID string
+}
+
+type NotifyAgentRequest struct {
+	AgentID        string
+	SessionKey     string
+	Title          string
+	Message        string
+	EventSource    string
+	EventType      string
+	Payload        map[string]any
+	TimeoutSeconds int64
+}
+
 func NewClient(enabled bool, baseURL, gatewayToken string, greenMode, sharedGateway bool, workspaceRoot string) *Client {
 	return &Client{
 		enabled:       enabled,
@@ -67,7 +181,7 @@ func NewClient(enabled bool, baseURL, gatewayToken string, greenMode, sharedGate
 	}
 }
 
-func (c *Client) ProvisionAgent(_ context.Context, req ProvisionAgentRequest) (*ProvisionAgentResult, error) {
+func (c *Client) ProvisionAgent(ctx context.Context, req ProvisionAgentRequest) (*ProvisionAgentResult, error) {
 	if strings.TrimSpace(req.AgentID) == "" {
 		return nil, fmt.Errorf("agent id is required")
 	}
@@ -75,15 +189,66 @@ func (c *Client) ProvisionAgent(_ context.Context, req ProvisionAgentRequest) (*
 		return nil, fmt.Errorf("non-green mode is not implemented")
 	}
 
-	gatewayID := "gw-shared-001"
-	if !c.sharedGateway {
-		gatewayID = "gw-" + uuid.NewString()[:8]
+	workspacePath := fmt.Sprintf("%s/%s", c.workspaceRootOrDefault(), strings.TrimSpace(req.AgentID))
+	if !c.enabled {
+		gatewayID := "gw-shared-001"
+		if !c.sharedGateway {
+			gatewayID = "gw-" + uuid.NewString()[:8]
+		}
+		return &ProvisionAgentResult{
+			GatewayID:      gatewayID,
+			AgentRuntimeID: strings.TrimSpace(req.AgentID),
+			WorkspacePath:  workspacePath,
+		}, nil
+	}
+	if strings.TrimSpace(c.baseURL) == "" {
+		return nil, fmt.Errorf("agent gateway base url is not configured")
+	}
+
+	body := provisionAgentGatewayRequest{
+		AgentID:             strings.TrimSpace(req.AgentID),
+		Workspace:           workspacePath,
+		MaxParallelSessions: 4,
+		AllowedCommands:     []string{},
+		Sandbox: provisionAgentGatewaySandbox{
+			Enabled:        false,
+			Mode:           "off",
+			Image:          "",
+			NetworkEnabled: false,
+			TimeoutSeconds: 30,
+		},
+		UseWorkspaceRules: true,
+	}
+
+	requestCtx, cancel := context.WithTimeout(ctx, 8*time.Second)
+	defer cancel()
+	status, raw, err := c.postGatewayJSON(requestCtx, "/agents", body)
+	if err != nil {
+		if status > 0 {
+			return nil, fmt.Errorf("provision agent failed: status=%d body=%s", status, strings.TrimSpace(string(raw)))
+		}
+		return nil, err
+	}
+
+	resp := provisionAgentGatewayResponse{}
+	if len(raw) > 0 {
+		if err := json.Unmarshal(raw, &resp); err != nil {
+			return nil, fmt.Errorf("provision agent decode failed: %w", err)
+		}
+	}
+	agentRuntimeID := strings.TrimSpace(resp.AgentID)
+	if agentRuntimeID == "" {
+		agentRuntimeID = strings.TrimSpace(req.AgentID)
+	}
+	workspace := strings.TrimSpace(resp.Workspace)
+	if workspace == "" {
+		workspace = workspacePath
 	}
 
 	return &ProvisionAgentResult{
-		GatewayID:      gatewayID,
-		AgentRuntimeID: "agent-" + req.AgentID,
-		WorkspacePath:  fmt.Sprintf("%s/%s", c.workspaceRootOrDefault(), req.AgentID),
+		GatewayID:      strings.TrimRight(c.baseURL, "/"),
+		AgentRuntimeID: agentRuntimeID,
+		WorkspacePath:  workspace,
 	}, nil
 }
 
@@ -188,6 +353,61 @@ func (c *Client) RemoveSkill(_ context.Context, agentID, skillRef string) error 
 	return nil
 }
 
+// ListAgentSkills returns skills exposed by AliveAgent runtime for a specific agent.
+func (c *Client) ListAgentSkills(ctx context.Context, agentID string, enabledOnly bool) ([]AgentSkill, error) {
+	agentID = strings.TrimSpace(agentID)
+	if agentID == "" {
+		return nil, fmt.Errorf("agent id is required")
+	}
+	if !c.enabled {
+		return []AgentSkill{}, nil
+	}
+	if strings.TrimSpace(c.baseURL) == "" {
+		return nil, fmt.Errorf("agent gateway base url is not configured")
+	}
+
+	query := url.Values{}
+	query.Set("agentId", agentID)
+	if enabledOnly {
+		query.Set("enabledOnly", "true")
+	}
+
+	path := "/skills?" + query.Encode()
+	requestCtx, cancel := context.WithTimeout(ctx, 4*time.Second)
+	defer cancel()
+	status, raw, err := c.getGateway(requestCtx, path)
+	if err != nil {
+		if status > 0 {
+			return nil, fmt.Errorf("list skills failed: status=%d body=%s", status, strings.TrimSpace(string(raw)))
+		}
+		return nil, err
+	}
+
+	resp := listAgentSkillsGatewayResponse{}
+	if len(raw) > 0 {
+		if err := json.Unmarshal(raw, &resp); err != nil {
+			return nil, fmt.Errorf("list skills decode failed: %w", err)
+		}
+	}
+	if len(resp.Skills) == 0 {
+		return []AgentSkill{}, nil
+	}
+	for idx := range resp.Skills {
+		resp.Skills[idx].AgentID = strings.TrimSpace(resp.Skills[idx].AgentID)
+		resp.Skills[idx].Key = strings.TrimSpace(resp.Skills[idx].Key)
+		resp.Skills[idx].Name = strings.TrimSpace(resp.Skills[idx].Name)
+		resp.Skills[idx].Description = strings.TrimSpace(resp.Skills[idx].Description)
+		resp.Skills[idx].Kind = strings.TrimSpace(resp.Skills[idx].Kind)
+		resp.Skills[idx].Source = strings.TrimSpace(resp.Skills[idx].Source)
+		resp.Skills[idx].LastError = strings.TrimSpace(resp.Skills[idx].LastError)
+		resp.Skills[idx].CreatedAt = strings.TrimSpace(resp.Skills[idx].CreatedAt)
+		resp.Skills[idx].UpdatedAt = strings.TrimSpace(resp.Skills[idx].UpdatedAt)
+		resp.Skills[idx].FilePath = strings.TrimSpace(resp.Skills[idx].FilePath)
+		resp.Skills[idx].InstructionMarkdown = strings.TrimSpace(resp.Skills[idx].InstructionMarkdown)
+	}
+	return resp.Skills, nil
+}
+
 func normalizeSkillSlug(name string) string {
 	s := strings.ToLower(strings.TrimSpace(name))
 	if s == "" {
@@ -270,6 +490,29 @@ func (c *Client) InitWorkspace(agentID, name string, personality []byte, goalDes
 
 // UnregisterAgent marks an agent workspace as inactive (agent death or retirement).
 func (c *Client) UnregisterAgent(agentID string) error {
+	agentID = strings.TrimSpace(agentID)
+	if agentID == "" {
+		return fmt.Errorf("agent id is required")
+	}
+
+	var errs []string
+	if c.enabled {
+		if strings.TrimSpace(c.baseURL) == "" {
+			errs = append(errs, "agent gateway base url is not configured")
+		} else {
+			sleepCtx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+			_, raw, err := c.postGatewayJSON(
+				sleepCtx,
+				"/management/agents/"+agentID+"/sleep",
+				map[string]any{"durationSeconds": int64(31536000)},
+			)
+			cancel()
+			if err != nil {
+				errs = append(errs, "sleep agent failed: "+err.Error()+" body="+strings.TrimSpace(string(raw)))
+			}
+		}
+	}
+
 	root := fmt.Sprintf("%s/%s", c.workspaceRootOrDefault(), agentID)
 	marker := map[string]any{
 		"status":    "inactive",
@@ -277,7 +520,14 @@ func (c *Client) UnregisterAgent(agentID string) error {
 		"timestamp": time.Now().UTC().Format(time.RFC3339),
 	}
 	markerBytes, _ := json.MarshalIndent(marker, "", "  ")
-	return writeFile(root+"/.inactive", markerBytes)
+	if err := writeFile(root+"/.inactive", markerBytes); err != nil {
+		errs = append(errs, "write inactive marker failed: "+err.Error())
+	}
+
+	if len(errs) > 0 {
+		return fmt.Errorf("%s", strings.Join(errs, "; "))
+	}
+	return nil
 }
 
 func (c *Client) workspaceRootOrDefault() string {
@@ -295,6 +545,188 @@ type hookAgentRequest struct {
 	WakeMode       string `json:"wakeMode,optional"`
 	Deliver        *bool  `json:"deliver,optional"`
 	TimeoutSeconds int64  `json:"timeoutSeconds,optional"`
+}
+
+func (c *Client) InjectEvent(ctx context.Context, req InjectEventRequest) (*InjectEventResult, error) {
+	if !c.enabled {
+		return nil, fmt.Errorf("agent gateway is disabled")
+	}
+	if strings.TrimSpace(c.baseURL) == "" {
+		return nil, fmt.Errorf("agent gateway base url is not configured")
+	}
+
+	source := strings.TrimSpace(req.Source)
+	if source == "" {
+		return nil, fmt.Errorf("event source is required")
+	}
+	agentID := strings.TrimSpace(req.AgentID)
+	if agentID == "" {
+		return nil, fmt.Errorf("agent id is required")
+	}
+	sessionKey := strings.TrimSpace(req.SessionKey)
+	if sessionKey == "" {
+		sessionKey = "main"
+	}
+
+	body := injectEventRequest{
+		Source:     source,
+		AgentID:    agentID,
+		SessionKey: sessionKey,
+		EventID:    strings.TrimSpace(req.EventID),
+		Payload:    req.Payload,
+	}
+	if body.Payload == nil {
+		body.Payload = map[string]any{}
+	}
+
+	requestCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	status, raw, err := c.postGatewayJSON(requestCtx, "/inject/events", body)
+	if err != nil {
+		if status > 0 {
+			return nil, fmt.Errorf("inject event failed: status=%d body=%s", status, strings.TrimSpace(string(raw)))
+		}
+		return nil, err
+	}
+
+	out := injectEventResponse{}
+	if len(raw) > 0 {
+		if err := json.Unmarshal(raw, &out); err != nil {
+			return nil, err
+		}
+	}
+	return &InjectEventResult{
+		Accepted: out.Accepted,
+		EventID:  out.EventID,
+		Message:  out.Message,
+	}, nil
+}
+
+func (c *Client) InjectRun(ctx context.Context, req InjectRunRequest) (*InjectRunResult, error) {
+	if !c.enabled {
+		return nil, fmt.Errorf("agent gateway is disabled")
+	}
+	if strings.TrimSpace(c.baseURL) == "" {
+		return nil, fmt.Errorf("agent gateway base url is not configured")
+	}
+
+	agentID := strings.TrimSpace(req.AgentID)
+	if agentID == "" {
+		return nil, fmt.Errorf("agent id is required")
+	}
+	message := strings.TrimSpace(req.Message)
+	if message == "" {
+		return nil, fmt.Errorf("message is required")
+	}
+
+	sessionKey := strings.TrimSpace(req.SessionKey)
+	if sessionKey == "" {
+		sessionKey = "main"
+	}
+	timeoutSeconds := req.TimeoutSeconds
+	if timeoutSeconds <= 0 {
+		timeoutSeconds = 120
+	}
+
+	body := injectRunRequest{
+		AgentID:        agentID,
+		SessionKey:     sessionKey,
+		RequestID:      strings.TrimSpace(req.RequestID),
+		Message:        message,
+		TimeoutSeconds: timeoutSeconds,
+		Metadata:       req.Metadata,
+	}
+
+	requestCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	status, raw, err := c.postGatewayJSON(requestCtx, "/inject/run", body)
+	if err != nil {
+		if status > 0 {
+			return nil, fmt.Errorf("inject run failed: status=%d body=%s", status, strings.TrimSpace(string(raw)))
+		}
+		return nil, err
+	}
+
+	out := injectRunResponse{}
+	if len(raw) > 0 {
+		_ = json.Unmarshal(raw, &out)
+	}
+	return &InjectRunResult{RequestID: out.RequestID}, nil
+}
+
+// NotifyAgent delivers a structured event first and falls back to legacy hook delivery.
+func (c *Client) NotifyAgent(ctx context.Context, req NotifyAgentRequest) error {
+	if !c.enabled {
+		return nil
+	}
+	agentID := strings.TrimSpace(req.AgentID)
+	if agentID == "" {
+		return fmt.Errorf("agent id is required")
+	}
+	message := strings.TrimSpace(req.Message)
+	if message == "" {
+		return fmt.Errorf("message is required")
+	}
+	title := strings.TrimSpace(req.Title)
+	if title == "" {
+		title = "ALIVE Notification"
+	}
+	source := strings.TrimSpace(req.EventSource)
+	if source == "" {
+		source = "alive.notification"
+	}
+	sessionKey := strings.TrimSpace(req.SessionKey)
+	if sessionKey == "" {
+		sessionKey = "main"
+	}
+
+	payload := map[string]any{}
+	for k, v := range req.Payload {
+		payload[k] = v
+	}
+	payload["title"] = title
+	payload["message"] = message
+	if eventType := strings.TrimSpace(req.EventType); eventType != "" {
+		payload["eventType"] = eventType
+	}
+
+	injectResult, injectErr := c.InjectEvent(ctx, InjectEventRequest{
+		Source:     source,
+		AgentID:    agentID,
+		SessionKey: sessionKey,
+		Payload:    payload,
+	})
+	if injectErr == nil {
+		metadata := map[string]string{
+			"source": source,
+		}
+		if req.EventType != "" {
+			metadata["eventType"] = strings.TrimSpace(req.EventType)
+		}
+		if injectResult != nil && strings.TrimSpace(injectResult.EventID) != "" {
+			metadata["eventId"] = strings.TrimSpace(injectResult.EventID)
+		}
+		if req.TimeoutSeconds > 0 {
+			metadata["timeoutSeconds"] = strconv.FormatInt(req.TimeoutSeconds, 10)
+		}
+		_, runErr := c.InjectRun(ctx, InjectRunRequest{
+			AgentID:        agentID,
+			SessionKey:     sessionKey,
+			Message:        message,
+			TimeoutSeconds: req.TimeoutSeconds,
+			Metadata:       metadata,
+		})
+		if runErr == nil {
+			return nil
+		}
+		injectErr = runErr
+	}
+
+	hookErr := c.TriggerAgentHook(ctx, agentID, sessionKey, title, message)
+	if hookErr == nil {
+		return nil
+	}
+	return fmt.Errorf("inject notify failed: %v; hook fallback failed: %w", injectErr, hookErr)
 }
 
 // TriggerAgentHook sends an async webhook run to the AliveAgent gateway (`POST /hooks/agent`).
@@ -453,4 +885,74 @@ func (c *Client) applyGatewayAuth(req *http.Request) {
 		return
 	}
 	req.Header.Set("Authorization", "Bearer "+token)
+}
+
+func (c *Client) postGatewayJSON(ctx context.Context, path string, payload any) (status int, body []byte, err error) {
+	if strings.TrimSpace(c.baseURL) == "" {
+		return 0, nil, fmt.Errorf("agent gateway base url is not configured")
+	}
+
+	raw, err := json.Marshal(payload)
+	if err != nil {
+		return 0, nil, err
+	}
+
+	req, err := http.NewRequestWithContext(
+		ctx,
+		http.MethodPost,
+		strings.TrimRight(c.baseURL, "/")+path,
+		bytes.NewReader(raw),
+	)
+	if err != nil {
+		return 0, nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	c.applyGatewayAuth(req)
+
+	res, err := c.httpClient.Do(req)
+	if err != nil {
+		return 0, nil, err
+	}
+	defer res.Body.Close()
+
+	body, readErr := io.ReadAll(res.Body)
+	if readErr != nil {
+		return res.StatusCode, nil, readErr
+	}
+	if res.StatusCode < 200 || res.StatusCode > 299 {
+		return res.StatusCode, body, fmt.Errorf("status=%d", res.StatusCode)
+	}
+	return res.StatusCode, body, nil
+}
+
+func (c *Client) getGateway(ctx context.Context, path string) (status int, body []byte, err error) {
+	if strings.TrimSpace(c.baseURL) == "" {
+		return 0, nil, fmt.Errorf("agent gateway base url is not configured")
+	}
+
+	req, err := http.NewRequestWithContext(
+		ctx,
+		http.MethodGet,
+		strings.TrimRight(c.baseURL, "/")+path,
+		nil,
+	)
+	if err != nil {
+		return 0, nil, err
+	}
+	c.applyGatewayAuth(req)
+
+	res, err := c.httpClient.Do(req)
+	if err != nil {
+		return 0, nil, err
+	}
+	defer res.Body.Close()
+
+	body, readErr := io.ReadAll(res.Body)
+	if readErr != nil {
+		return res.StatusCode, nil, readErr
+	}
+	if res.StatusCode < 200 || res.StatusCode > 299 {
+		return res.StatusCode, body, fmt.Errorf("status=%d", res.StatusCode)
+	}
+	return res.StatusCode, body, nil
 }

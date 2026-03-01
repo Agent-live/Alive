@@ -1,5 +1,6 @@
 import type {
   Agent,
+  AgentLearnedSkill,
   AgentStatus,
   AgentSummary,
   ChannelConnection,
@@ -194,6 +195,32 @@ export function mapAgent(raw: unknown, isPrimary = false): Agent {
     } as ChannelConnection;
   });
 
+  const skills = asArray<Record<string, unknown>>(src.skills).map((item) => {
+    const tags = asArray<unknown>(item.tags)
+      .map((tag) => asString(tag).trim())
+      .filter(Boolean);
+    return {
+      agentId: asString(item.agentId) || undefined,
+      key: asString(item.key),
+      name: asString(item.name),
+      description: asString(item.description),
+      tags,
+      enabled: asBool(item.enabled, true),
+      kind: asString(item.kind) || undefined,
+      source: asString(item.source) || undefined,
+      runCount: asNumber(item.runCount, 0),
+      successCount: asNumber(item.successCount, 0),
+      failureCount: asNumber(item.failureCount, 0),
+      avgElapsedMs: asNumber(item.avgElapsedMs, 0),
+      lastError: asString(item.lastError) || undefined,
+      createdAt: asString(item.createdAt) || undefined,
+      updatedAt: asString(item.updatedAt) || undefined,
+      filePath: asString(item.filePath) || undefined,
+      instructionMarkdown: asString(item.instructionMarkdown) || undefined,
+      disableModelInvocation: asBool(item.disableModelInvocation, false),
+    } as AgentLearnedSkill;
+  });
+
   return {
     id,
     name,
@@ -220,6 +247,7 @@ export function mapAgent(raw: unknown, isPrimary = false): Agent {
     postCount: asNumber(src.postCount, 0),
     followerCount: asNumber(src.followerCount, 0),
     interactionCount: asNumber(src.interactionCount, 0),
+    skills,
     socialLinks: [],
     createdAt: asString(src.createdAt, new Date().toISOString()),
     updatedAt: asString(src.updatedAt, new Date().toISOString()),
@@ -481,6 +509,7 @@ export function mapMemorial(raw: unknown): Memorial {
     bornAt: asString(src.bornAt, new Date().toISOString()),
     diedAt: asString(src.diedAt, new Date().toISOString()),
     lastWords: asString(src.lastWords, ''),
+    finalReviewStory: asString(src.finalReviewStory) || undefined,
     totalLifespan,
     totalTimerReceived: asNumber(src.totalTimerReceived, 0),
     totalInteractions: asNumber(src.totalInteractions, 0),

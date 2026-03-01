@@ -22,6 +22,15 @@ func AgentFromCtx(ctx context.Context) (uuid.UUID, bool) {
 	return id, ok
 }
 
+// WithAgentCtx injects an authenticated agent ID into context.
+// This is primarily used by internal call chains and tests.
+func WithAgentCtx(ctx context.Context, id uuid.UUID) context.Context {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	return context.WithValue(ctx, agentIDKey, id)
+}
+
 // AgentAuthMiddleware authenticates requests using agent tokens (alive_agent_*).
 // It looks up the agent by its alive_agent_token and injects the agent ID into context.
 func AgentAuthMiddleware(db *ent.Client) func(http.Handler) http.Handler {

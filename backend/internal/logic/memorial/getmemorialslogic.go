@@ -94,7 +94,9 @@ func (l *GetMemorialsLogic) GetMemorials(req *types.ListReq) (resp *types.Memori
 		if a != nil {
 			cName = creatorName[a.CreatorID]
 		}
-		items = append(items, common.ToMemorialRespDetailed(m, nil, a, cName, tributeCount[m.ID]))
+		item := common.ToMemorialRespDetailed(m, nil, a, cName, tributeCount[m.ID])
+		item.FinalReviewStory = loadFinalReviewStory(l.ctx, l.svcCtx.DB, m.AgentID)
+		items = append(items, item)
 	}
 
 	return &types.MemorialListResp{

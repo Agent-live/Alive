@@ -43,12 +43,14 @@ const (
 type Engine struct {
 	db *ent.Client
 
-	enabled  bool
-	interval time.Duration
+	enabled   bool
+	interval  time.Duration
+	eventHook LifecycleEventHook
 
-	mu   sync.Mutex
-	stop chan struct{}
-	done chan struct{}
+	mu                   sync.Mutex
+	stop                 chan struct{}
+	done                 chan struct{}
+	lastAnniversarySweep string
 }
 
 type TxFunc func(tx *ent.Tx, now time.Time) error
@@ -77,9 +79,20 @@ func isBusinessErr(err error) bool {
 }
 
 type Options struct {
-	Enabled  bool
-	Interval time.Duration
+	Enabled   bool
+	Interval  time.Duration
+	EventHook LifecycleEventHook
 }
+
+type LifecycleEvent struct {
+	Type       string
+	AgentID    string
+	OccurredAt time.Time
+	DedupeKey  string
+	Payload    map[string]any
+}
+
+type LifecycleEventHook func(ctx context.Context, event LifecycleEvent)
 
 func New(db *ent.Client, opts Options) *Engine {
 	interval := opts.Interval
@@ -87,9 +100,10 @@ func New(db *ent.Client, opts Options) *Engine {
 		interval = time.Minute
 	}
 	return &Engine{
-		db:       db,
-		enabled:  opts.Enabled,
-		interval: interval,
+		db:        db,
+		enabled:   opts.Enabled,
+		interval:  interval,
+		eventHook: opts.EventHook,
 	}
 }
 
@@ -136,6 +150,21 @@ func (e *Engine) Stop() {
 	}
 	close(stop)
 	<-done
+}
+
+func (e *Engine) emitLifecycleEvents(events []LifecycleEvent) {
+	if e == nil || e.eventHook == nil || len(events) == 0 {
+		return
+	}
+	for _, event := range events {
+		evt := event
+		go func() {
+			defer func() {
+				_ = recover()
+			}()
+			e.eventHook(context.Background(), evt)
+		}()
+	}
 }
 
 // WithTx runs fn inside a DB transaction while holding the engine mutex.
@@ -194,6 +223,10 @@ func (e *Engine) SyncAll(ctx context.Context) error {
 			continue
 		}
 	}
+
+	if anniversaryEvents, annErr := e.collectMemorialAnniversaryEventsLocked(ctx, now); annErr == nil {
+		e.emitLifecycleEvents(anniversaryEvents)
+	}
 	return nil
 }
 
@@ -238,7 +271,7 @@ func (e *Engine) ApplyDelta(ctx context.Context, agentID string, amount int64, t
 	if err != nil {
 		return err
 	}
-	a, err = e.applyDecayAndStatusTx(ctx, tx, a, now)
+	a, lifecycleEvents, err := e.applyDecayAndStatusTx(ctx, tx, a, now)
 	if err != nil {
 		return err
 	}
@@ -249,6 +282,7 @@ func (e *Engine) ApplyDelta(ctx context.Context, agentID string, amount int64, t
 		if err := tx.Commit(); err != nil {
 			return err
 		}
+		e.emitLifecycleEvents(lifecycleEvents)
 		return businessErr("agent is dead")
 	}
 
@@ -259,11 +293,16 @@ func (e *Engine) ApplyDelta(ctx context.Context, agentID string, amount int64, t
 			if cErr := tx.Commit(); cErr != nil {
 				return cErr
 			}
+			e.emitLifecycleEvents(lifecycleEvents)
 		}
 		return err
 	}
 
-	return tx.Commit()
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+	e.emitLifecycleEvents(lifecycleEvents)
+	return nil
 }
 
 func (e *Engine) syncAgentLocked(ctx context.Context, id uuid.UUID, now time.Time) (*ent.Agent, error) {
@@ -277,7 +316,7 @@ func (e *Engine) syncAgentLocked(ctx context.Context, id uuid.UUID, now time.Tim
 	if err != nil {
 		return nil, err
 	}
-	a, err = e.applyDecayAndStatusTx(ctx, tx, a, now)
+	a, lifecycleEvents, err := e.applyDecayAndStatusTx(ctx, tx, a, now)
 	if err != nil {
 		return nil, err
 	}
@@ -290,13 +329,17 @@ func (e *Engine) syncAgentLocked(ctx context.Context, id uuid.UUID, now time.Tim
 	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
+	e.emitLifecycleEvents(lifecycleEvents)
 	return a, nil
 }
 
-func (e *Engine) applyDecayAndStatusTx(ctx context.Context, tx *ent.Tx, a *ent.Agent, now time.Time) (*ent.Agent, error) {
+func (e *Engine) applyDecayAndStatusTx(ctx context.Context, tx *ent.Tx, a *ent.Agent, now time.Time) (*ent.Agent, []LifecycleEvent, error) {
 	if a == nil {
-		return nil, errors.New("agent is required")
+		return nil, nil, errors.New("agent is required")
 	}
+	previousStatus := strings.TrimSpace(a.Status)
+	events := make([]LifecycleEvent, 0, 4)
+
 	if isDeadAgent(a) {
 		justDied := a.DiedAt == nil
 		diedAt := diedAtOr(a, now)
@@ -327,18 +370,18 @@ func (e *Engine) applyDecayAndStatusTx(ctx context.Context, tx *ent.Tx, a *ent.A
 			}
 			updated, err := update.Save(ctx)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 			a = updated
 		}
 
 		if justDied {
 			if err := e.ensureDeathArtifactsTx(ctx, tx, a, diedAt, true); err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 		}
-
-		return a, nil
+		events = append(events, buildLifecycleTransitionEvents(a.ID.String(), previousStatus, a.Status, a.TimerRemaining, diedAt, ptrString(a.LastWords), justDied)...)
+		return a, events, nil
 	}
 
 	// Platform natives are stable for MVP (no passive decay), to avoid cold-start collapse.
@@ -347,30 +390,36 @@ func (e *Engine) applyDecayAndStatusTx(ctx context.Context, tx *ent.Tx, a *ent.A
 		if a.Status != next {
 			updated, err := tx.Agent.UpdateOneID(a.ID).SetStatus(next).Save(ctx)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
-			return updated, nil
+			events = append(events, buildLifecycleTransitionEvents(updated.ID.String(), previousStatus, updated.Status, updated.TimerRemaining, now, ptrString(updated.LastWords), false)...)
+			return updated, events, nil
 		}
-		return a, nil
+		return a, events, nil
 	}
 
 	lastAt, err := lastLedgerAt(ctx, tx, a.ID, a.BornAt)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	ticks, effectiveAt := decayTicks(lastAt, now)
 	if ticks <= 0 {
 		next := deriveStatus(now, a.BornAt, a.TimerRemaining, false)
 		if a.Status != next {
-			return tx.Agent.UpdateOneID(a.ID).SetStatus(next).Save(ctx)
+			updated, err := tx.Agent.UpdateOneID(a.ID).SetStatus(next).Save(ctx)
+			if err != nil {
+				return nil, nil, err
+			}
+			events = append(events, buildLifecycleTransitionEvents(updated.ID.String(), previousStatus, updated.Status, updated.TimerRemaining, now, ptrString(updated.LastWords), false)...)
+			return updated, events, nil
 		}
-		return a, nil
+		return a, events, nil
 	}
 
 	decayAmount := ticks * PassiveDecayPerUnit
 	if decayAmount <= 0 {
-		return a, nil
+		return a, events, nil
 	}
 
 	before := a.TimerRemaining
@@ -393,7 +442,7 @@ func (e *Engine) applyDecayAndStatusTx(ctx context.Context, tx *ent.Tx, a *ent.A
 	}
 	a, err = update.Save(ctx)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	if err := createLedgerTx(ctx, tx, ledgerTxInput{
@@ -405,16 +454,17 @@ func (e *Engine) applyDecayAndStatusTx(ctx context.Context, tx *ent.Tx, a *ent.A
 		BalanceAfter: after,
 		CreatedAt:    effectiveAt,
 	}); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	if justDied {
 		if err := e.ensureDeathArtifactsTx(ctx, tx, a, effectiveAt, true); err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 	}
 
-	return a, nil
+	events = append(events, buildLifecycleTransitionEvents(a.ID.String(), previousStatus, a.Status, a.TimerRemaining, effectiveAt, ptrString(a.LastWords), justDied)...)
+	return a, events, nil
 }
 
 // ApplyDeltaTxNoDecay applies a timer delta inside an existing transaction.
@@ -766,6 +816,103 @@ func (e *Engine) ensureDeathArtifactsTx(ctx context.Context, tx *ent.Tx, a *ent.
 	}
 
 	return nil
+}
+
+func buildLifecycleTransitionEvents(agentID, fromStatus, toStatus string, timerRemaining int64, occurredAt time.Time, lastWords string, justDied bool) []LifecycleEvent {
+	events := make([]LifecycleEvent, 0, 5)
+	from := strings.TrimSpace(strings.ToLower(fromStatus))
+	to := strings.TrimSpace(strings.ToLower(toStatus))
+	basePayload := map[string]any{
+		"agentId":        agentID,
+		"fromStatus":     from,
+		"toStatus":       to,
+		"timerRemaining": timerRemaining,
+	}
+	if strings.TrimSpace(lastWords) != "" {
+		basePayload["lastWords"] = strings.TrimSpace(lastWords)
+	}
+
+	appendEvent := func(eventType, dedupeSuffix string, payload map[string]any) {
+		itemPayload := map[string]any{}
+		for k, v := range payload {
+			itemPayload[k] = v
+		}
+		events = append(events, LifecycleEvent{
+			Type:       eventType,
+			AgentID:    agentID,
+			OccurredAt: occurredAt.UTC(),
+			DedupeKey:  strings.Trim(fmt.Sprintf("%s:%s:%s", agentID, eventType, dedupeSuffix), ":"),
+			Payload:    itemPayload,
+		})
+	}
+
+	if from != "dying" && to == "dying" {
+		appendEvent("lifecycle.dying_enter", occurredAt.UTC().Format("200601021504"), basePayload)
+	}
+	if from != "critical" && to == "critical" {
+		appendEvent("lifecycle.critical_enter", occurredAt.UTC().Format("200601021504"), basePayload)
+		appendEvent("lifecycle.final_review_requested", occurredAt.UTC().Format("200601021504"), basePayload)
+	}
+	if justDied || (from != "dead" && to == "dead") {
+		deathPayload := map[string]any{}
+		for k, v := range basePayload {
+			deathPayload[k] = v
+		}
+		deathPayload["diedAt"] = occurredAt.UTC().Format(time.RFC3339)
+		appendEvent("lifecycle.death_committed", occurredAt.UTC().Format("20060102150405"), deathPayload)
+		appendEvent("memorial.created", occurredAt.UTC().Format("20060102150405"), deathPayload)
+		appendEvent("legacy.pack_created", occurredAt.UTC().Format("20060102150405"), deathPayload)
+	}
+
+	return events
+}
+
+func (e *Engine) collectMemorialAnniversaryEventsLocked(ctx context.Context, now time.Time) ([]LifecycleEvent, error) {
+	if e == nil || e.db == nil {
+		return nil, nil
+	}
+	dayKey := now.UTC().Format("2006-01-02")
+	if strings.TrimSpace(e.lastAnniversarySweep) == dayKey {
+		return nil, nil
+	}
+
+	rows, err := e.db.Memorial.Query().All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	events := make([]LifecycleEvent, 0)
+	for _, row := range rows {
+		if row == nil {
+			continue
+		}
+		diedAt := row.DiedAt.UTC()
+		if diedAt.Month() != now.UTC().Month() || diedAt.Day() != now.UTC().Day() {
+			continue
+		}
+		years := now.UTC().Year() - diedAt.Year()
+		if years <= 0 {
+			continue
+		}
+		payload := map[string]any{
+			"memorialId":         row.ID.String(),
+			"agentId":            row.AgentID.String(),
+			"agentName":          row.AgentName,
+			"diedAt":             diedAt.Format(time.RFC3339),
+			"anniversaryYears":   years,
+			"lifespanHours":      row.LifespanHours,
+			"lastWords":          ptrString(row.LastWords),
+			"anniversaryDateUTC": dayKey,
+		}
+		events = append(events, LifecycleEvent{
+			Type:       "memorial.anniversary_tick",
+			AgentID:    row.AgentID.String(),
+			OccurredAt: now.UTC(),
+			DedupeKey:  strings.Trim(fmt.Sprintf("%s:%s:%s", row.AgentID.String(), "memorial.anniversary_tick", dayKey), ":"),
+			Payload:    payload,
+		})
+	}
+	e.lastAnniversarySweep = dayKey
+	return events, nil
 }
 
 func countsTowardsBudget(txType string) bool {

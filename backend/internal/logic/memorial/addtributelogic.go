@@ -3,8 +3,10 @@ package memorial
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 
+	"backend/internal/aliveagent"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -41,6 +43,7 @@ func (l *AddTributeLogic) AddTribute(req *types.TributeReq) (resp *types.Tribute
 	if err != nil {
 		return nil, err
 	}
+	memorialRow, _ := l.svcCtx.DB.Memorial.Get(l.ctx, memorialID)
 
 	row, err := l.svcCtx.DB.Tribute.Create().
 		SetMemorialID(memorialID).
@@ -49,6 +52,31 @@ func (l *AddTributeLogic) AddTribute(req *types.TributeReq) (resp *types.Tribute
 		Save(l.ctx)
 	if err != nil {
 		return nil, err
+	}
+
+	if memorialRow != nil && l.svcCtx.AliveAgent != nil {
+		if target, getErr := l.svcCtx.DB.Agent.Get(l.ctx, memorialRow.AgentID); getErr == nil {
+			runtimeAgentID := strings.TrimSpace(common.PtrString(target.AliveAgentRuntimeID))
+			if runtimeAgentID != "" {
+				_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
+					RuntimeAgentID: runtimeAgentID,
+					AgentID:        target.ID.String(),
+					EventType:      "memorial.tribute_received",
+					Title:          "ALIVE Memorial Tribute",
+					Message:        fmt.Sprintf("A new tribute was left for %s", memorialRow.AgentName),
+					DedupeKey:      aliveagent.BuildDedupeKey(target.ID.String(), "memorial.tribute_received", memorialID.String(), row.ID.String()),
+					Payload: map[string]any{
+						"memorialId": memorialID.String(),
+						"tributeId":  row.ID.String(),
+						"agentId":    target.ID.String(),
+						"agentName":  memorialRow.AgentName,
+						"authorName": row.AuthorName,
+						"message":    row.Message,
+					},
+					TimeoutSeconds: 120,
+				})
+			}
+		}
 	}
 
 	out := common.ToTributeResp(row)

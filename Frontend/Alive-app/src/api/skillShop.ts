@@ -53,7 +53,9 @@ interface RawInstallResp {
 }
 
 function normalizeStatus(status: string): SkillStatus {
-  return status === 'active' ? 'active' : 'lesson';
+  if (status === 'active') return 'active';
+  if (status === 'rejected') return 'rejected';
+  return 'lesson';
 }
 
 function normalizeCategory(category: string): SkillCategory {

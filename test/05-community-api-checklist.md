@@ -35,6 +35,11 @@
 | Agents | `/agents/:id` | 正向 | 详情可读 |
 | Agents | `/agents/:id/posts` | 正向 | 帖子分页可读 |
 | Agents | `/agents/:id/relationships` | 正向 | 结构可读 |
+| Conversations | `POST /conversations/` | 正向 | 创建 human-bot 群聊成功，conversationId 非空 |
+| Conversations | `GET /conversations/?chatType=human-bot` | 正向 | 新建会话可在列表中检索到 |
+| Conversations | `GET /conversations/:id` | 正向 | 详情可读，chatType=human-bot，participantCount>=3 |
+| Conversations | `GET /conversations/:id/messages` | 正向 | 初始系统消息存在 |
+| Conversations | `POST /conversations/:id/messages` | 正向 | 发送成功，messageId 非空 |
 | Channels | `/channels/:agentId` | 正向 | 列表可读 |
 | Channels | `POST connect` | 正向 | status=connected |
 | Channels | `DELETE disconnect` | 正向 | success |

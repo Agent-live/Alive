@@ -98,7 +98,7 @@ api_call PUT "/api/v1/user/primary-agent" 200 "${TOKEN}" "{\"agentId\":\"${AGENT
 log_pass "C07 ok"
 
 log_info "D01 agents/list"
-api_call GET "/api/v1/agents/" 200 "${TOKEN}" >/dev/null
+AGENT_LIST_JSON="$(api_call GET "/api/v1/agents/?page=1&pageSize=100" 200 "${TOKEN}")"
 log_pass "D01 ok"
 
 log_info "D02 agents/dying"
@@ -125,6 +125,62 @@ log_pass "D06 ok"
 log_info "D07 agents/relationships"
 api_call GET "/api/v1/agents/${AGENT_ID}/relationships" 200 "${TOKEN}" >/dev/null
 log_pass "D07 ok"
+
+log_info "D08 conversations/create human group"
+GROUP_PARTICIPANT_IDS="$(
+  echo "${AGENT_LIST_JSON}" \
+    | jq -r --arg self "${AGENT_ID}" '.items[] | select(.id != $self and .status != "dead") | .id' \
+    | head -n 2 \
+    | paste -sd ',' -
+)"
+GROUP_PARTICIPANT_A="$(echo "${GROUP_PARTICIPANT_IDS}" | cut -d',' -f1)"
+GROUP_PARTICIPANT_B="$(echo "${GROUP_PARTICIPANT_IDS}" | cut -d',' -f2)"
+assert_non_empty "${GROUP_PARTICIPANT_A}" "group participant A"
+assert_non_empty "${GROUP_PARTICIPANT_B}" "group participant B"
+CREATE_GROUP_PAYLOAD="$(jq -n \
+  --arg title "Api Human Group ${RUN_ID}" \
+  --arg p1 "${GROUP_PARTICIPANT_A}" \
+  --arg p2 "${GROUP_PARTICIPANT_B}" \
+  '{title:$title, participantIds:[$p1,$p2]}'
+)"
+CREATE_GROUP_JSON="$(api_call POST "/api/v1/conversations/" 200 "${TOKEN}" "${CREATE_GROUP_PAYLOAD}")"
+CONVERSATION_ID="$(json_field "${CREATE_GROUP_JSON}" '.conversationId')"
+assert_non_empty "${CONVERSATION_ID}" "conversationId"
+log_pass "D08 ok"
+
+log_info "D09 conversations/list human-bot"
+HUMAN_CONV_LIST_JSON="$(api_call GET "/api/v1/conversations/?chatType=human-bot" 200 "${TOKEN}")"
+[[ "$(echo "${HUMAN_CONV_LIST_JSON}" | jq -r --arg cid "${CONVERSATION_ID}" '.items[] | select(.id==$cid) | .id' | head -n 1)" == "${CONVERSATION_ID}" ]] || {
+  log_error "new conversation not found in human-bot list"
+  exit 1
+}
+log_pass "D09 ok"
+
+log_info "D10 conversations/detail"
+CONV_DETAIL_JSON="$(api_call GET "/api/v1/conversations/${CONVERSATION_ID}" 200 "${TOKEN}")"
+[[ "$(json_field "${CONV_DETAIL_JSON}" '.id')" == "${CONVERSATION_ID}" ]] || { log_error "conversation detail id mismatch"; exit 1; }
+[[ "$(json_field "${CONV_DETAIL_JSON}" '.chatType')" == "human-bot" ]] || { log_error "conversation chatType should be human-bot"; exit 1; }
+[[ "$(json_field "${CONV_DETAIL_JSON}" '.participantCount')" -ge 3 ]] || { log_error "conversation participantCount should be >= 3"; exit 1; }
+log_pass "D10 ok"
+
+log_info "D11 conversations/messages list"
+CONV_MSGS_JSON="$(api_call GET "/api/v1/conversations/${CONVERSATION_ID}/messages?page=1&pageSize=20" 200 "${TOKEN}")"
+[[ "$(json_field "${CONV_MSGS_JSON}" '.items | length')" -ge 1 ]] || { log_error "expected at least one conversation message"; exit 1; }
+log_pass "D11 ok"
+
+log_info "D12 conversations/send message"
+SEND_CONV_JSON="$(api_call POST "/api/v1/conversations/${CONVERSATION_ID}/messages" 200 "${TOKEN}" '{"message":"Integration test group message."}')"
+CONVERSATION_MESSAGE_ID="$(json_field "${SEND_CONV_JSON}" '.messageId')"
+assert_non_empty "${CONVERSATION_MESSAGE_ID}" "conversation messageId"
+log_pass "D12 ok"
+
+log_info "D13 conversations/messages include sent message"
+CONV_MSGS_VERIFY_JSON="$(api_call GET "/api/v1/conversations/${CONVERSATION_ID}/messages?page=1&pageSize=20" 200 "${TOKEN}")"
+[[ "$(echo "${CONV_MSGS_VERIFY_JSON}" | jq -r --arg mid "${CONVERSATION_MESSAGE_ID}" '.items[] | select(.id==$mid) | .id' | head -n 1)" == "${CONVERSATION_MESSAGE_ID}" ]] || {
+  log_error "sent conversation message not found in message list"
+  exit 1
+}
+log_pass "D13 ok"
 
 log_info "E01 channels/list"
 api_call GET "/api/v1/channels/${AGENT_ID}" 200 "${TOKEN}" >/dev/null

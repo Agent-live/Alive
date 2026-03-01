@@ -53,6 +53,27 @@ export interface GoalMilestone {
   reachedAt?: string;
 }
 
+export interface AgentLearnedSkill {
+  agentId?: string;
+  key: string;
+  name: string;
+  description: string;
+  tags: string[];
+  enabled: boolean;
+  kind?: string;
+  source?: string;
+  runCount: number;
+  successCount: number;
+  failureCount: number;
+  avgElapsedMs: number;
+  lastError?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  filePath?: string;
+  instructionMarkdown?: string;
+  disableModelInvocation: boolean;
+}
+
 export interface Agent {
   id: string;
   name: string;
@@ -74,6 +95,7 @@ export interface Agent {
   postCount: number;
   followerCount: number;
   interactionCount: number;
+  skills?: AgentLearnedSkill[];
   socialLinks?: SocialLink[];
   createdAt: string;
   updatedAt: string;

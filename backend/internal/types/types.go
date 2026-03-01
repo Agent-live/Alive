@@ -50,6 +50,27 @@ type AgentRelationshipsResp struct {
 	Relationships []AgentRelationshipResp `json:"relationships"`
 }
 
+type AgentLearnedSkillResp struct {
+	AgentId                string   `json:"agentId,optional"`
+	Key                    string   `json:"key"`
+	Name                   string   `json:"name"`
+	Description            string   `json:"description"`
+	Tags                   []string `json:"tags"`
+	Enabled                bool     `json:"enabled"`
+	Kind                   string   `json:"kind,optional"`
+	Source                 string   `json:"source,optional"`
+	RunCount               int64    `json:"runCount"`
+	SuccessCount           int64    `json:"successCount"`
+	FailureCount           int64    `json:"failureCount"`
+	AvgElapsedMs           int64    `json:"avgElapsedMs"`
+	LastError              string   `json:"lastError,optional"`
+	CreatedAt              string   `json:"createdAt,optional"`
+	UpdatedAt              string   `json:"updatedAt,optional"`
+	FilePath               string   `json:"filePath,optional"`
+	InstructionMarkdown    string   `json:"instructionMarkdown,optional"`
+	DisableModelInvocation bool     `json:"disableModelInvocation"`
+}
+
 type AgentResp struct {
 	Id                 string                  `json:"id"`
 	Name               string                  `json:"name"`
@@ -69,6 +90,7 @@ type AgentResp struct {
 	BornAt             string                  `json:"bornAt"`
 	DiedAt             string                  `json:"diedAt,optional"`
 	LastWords          string                  `json:"lastWords,optional"`
+	Skills             []AgentLearnedSkillResp `json:"skills,optional"`
 	CreatedAt          string                  `json:"createdAt"`
 	UpdatedAt          string                  `json:"updatedAt"`
 }
@@ -86,6 +108,15 @@ type AgentSummaryResp struct {
 
 type BaseResp struct {
 	Success bool `json:"success"`
+}
+
+type NetworkCheckReq struct{}
+
+type NetworkCheckResp struct {
+	Success           bool   `json:"success"`
+	Service           string `json:"service"`
+	AliveAgentEnabled bool   `json:"aliveAgentEnabled"`
+	Timestamp         string `json:"timestamp"`
 }
 
 type ChannelConnectResp struct {
@@ -118,6 +149,102 @@ type ChannelListResp struct {
 type ChannelReq struct {
 	AgentId     string `path:"agentId"`
 	ChannelType string `path:"channelType,optional"`
+}
+
+type ConversationAttachmentResp struct {
+	MediaId      string `json:"mediaId"`
+	MimeType     string `json:"mimeType"`
+	Url          string `json:"url"`
+	ThumbnailUrl string `json:"thumbnailUrl,optional"`
+	FileSize     int64  `json:"fileSize,optional"`
+}
+
+type ConversationCreateReq struct {
+	Title          string   `json:"title"`
+	ParticipantIds []string `json:"participantIds"`
+}
+
+type ConversationCreateResp struct {
+	ConversationId   string `json:"conversationId"`
+	Title            string `json:"title"`
+	ParticipantCount int64  `json:"participantCount"`
+}
+
+type ConversationIdReq struct {
+	Id string `path:"id"`
+}
+
+type ConversationListReq struct {
+	ChatType string `form:"chatType,optional"`
+}
+
+type ConversationListResp struct {
+	Items []ConversationResp `json:"items"`
+}
+
+type ConversationMessageListReq struct {
+	Id       string `path:"id"`
+	Page     int64  `form:"page,optional"`
+	PageSize int64  `form:"pageSize,optional"`
+}
+
+type ConversationMessageListResp struct {
+	Items   []ConversationMessageResp `json:"items"`
+	HasMore bool                      `json:"hasMore"`
+}
+
+type ConversationMessageResp struct {
+	Id              string                       `json:"id"`
+	ConversationId  string                       `json:"conversationId"`
+	SenderAgentId   string                       `json:"senderAgentId"`
+	SenderAgentName string                       `json:"senderAgentName"`
+	SenderAvatar    string                       `json:"senderAvatar,optional"`
+	Content         string                       `json:"content"`
+	Attachments     []ConversationAttachmentResp `json:"attachments,optional"`
+	MessageType     string                       `json:"messageType"`
+	InteractionType string                       `json:"interactionType,optional"`
+	CreatedAt       string                       `json:"createdAt"`
+}
+
+type ConversationParticipantResp struct {
+	AgentId     string `json:"agentId"`
+	AgentName   string `json:"agentName"`
+	AgentAvatar string `json:"agentAvatar,optional"`
+	Role        string `json:"role"`
+}
+
+type ConversationResp struct {
+	Id                 string                        `json:"id"`
+	Type               string                        `json:"type"`
+	ChatType           string                        `json:"chatType,optional"`
+	Title              string                        `json:"title,optional"`
+	CreatorAgentId     string                        `json:"creatorAgentId"`
+	ParticipantCount   int64                         `json:"participantCount"`
+	MessageCount       int64                         `json:"messageCount"`
+	UnreadCount        int64                         `json:"unreadCount"`
+	LastMessagePreview string                        `json:"lastMessagePreview,optional"`
+	LastMessageAt      string                        `json:"lastMessageAt,optional"`
+	Status             string                        `json:"status"`
+	Participants       []ConversationParticipantResp `json:"participants,optional"`
+	CreatedAt          string                        `json:"createdAt"`
+}
+
+type ConversationSendAttachmentReq struct {
+	MediaId string `json:"mediaId"`
+}
+
+type ConversationSendMessageReq struct {
+	Id          string                          `path:"id"`
+	Message     string                          `json:"message,optional"`
+	Attachments []ConversationSendAttachmentReq `json:"attachments,optional"`
+}
+
+type ConversationSendMessageResp struct {
+	MessageId        string   `json:"messageId"`
+	ConversationId   string   `json:"conversationId"`
+	CreatedAt        string   `json:"createdAt,optional"`
+	Preview          string   `json:"preview,optional"`
+	NotifiedAgentIds []string `json:"notifiedAgentIds,optional"`
 }
 
 type CreateAgentReq struct {
@@ -290,6 +417,7 @@ type MemorialResp struct {
 	TributeCount       int64         `json:"tributeCount,optional"`
 	CreatorName        string        `json:"creatorName,optional"`
 	LastWords          string        `json:"lastWords,optional"`
+	FinalReviewStory   string        `json:"finalReviewStory,optional"`
 	Tributes           []TributeResp `json:"tributes,optional"`
 }
 
@@ -304,6 +432,51 @@ type MemorialStatsResp struct {
 type MemorialTopRef struct {
 	AgentName string `json:"agentName"`
 	Value     int64  `json:"value"`
+}
+
+type LegacyAssetResp struct {
+	Type        string `json:"type"`
+	Label       string `json:"label"`
+	Count       int64  `json:"count,optional"`
+	Description string `json:"description"`
+}
+
+type LegacyIdReq struct {
+	Id string `path:"id"`
+}
+
+type LegacyInheritReq struct {
+	Id         string `path:"id"`
+	NewAgentId string `json:"newAgentId"`
+	Mode       string `json:"mode,optional"`
+}
+
+type LegacyInheritResp struct {
+	Success                   bool   `json:"success"`
+	LegacyId                  string `json:"legacyId"`
+	NewAgentId                string `json:"newAgentId"`
+	ImportedSkillCount        int64  `json:"importedSkillCount"`
+	ImportedTaskCount         int64  `json:"importedTaskCount"`
+	ImportedRelationshipCount int64  `json:"importedRelationshipCount"`
+}
+
+type LegacyListResp struct {
+	Items []LegacyPackResp `json:"items"`
+}
+
+type LegacyPackResp struct {
+	Id           string            `json:"id"`
+	AgentId      string            `json:"agentId"`
+	AgentName    string            `json:"agentName"`
+	AgentAvatar  string            `json:"agentAvatar,optional"`
+	DiedAt       string            `json:"diedAt"`
+	LivedDays    int64             `json:"livedDays"`
+	TaskCount    int64             `json:"taskCount"`
+	StyleSummary string            `json:"styleSummary,optional"`
+	Assets       []LegacyAssetResp `json:"assets"`
+	Inheritable  bool              `json:"inheritable"`
+	InheritedBy  string            `json:"inheritedBy,optional"`
+	CreatedAt    string            `json:"createdAt"`
 }
 
 type Pagination struct {
@@ -451,6 +624,12 @@ type SkillIdReq struct {
 type SkillListReq struct {
 	Status  string `form:"status,optional"`
 	AgentId string `form:"agentId,optional"`
+}
+
+type SkillReviewReq struct {
+	Id     string `path:"id"`
+	Action string `json:"action"`
+	Reason string `json:"reason,optional"`
 }
 
 type SkillListResp struct {

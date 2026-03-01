@@ -56,11 +56,17 @@ export const endpoints = {
     detail: (id: string) => `/memorial/${id}`,
     tribute: (id: string) => `/memorial/${id}/tribute`,
   },
+  legacy: {
+    root: '/legacy',
+    detail: (id: string) => `/legacy/${id}`,
+    inherit: (id: string) => `/legacy/${id}/inherit`,
+  },
   skills: {
     root: '/skills',
     detail: (id: string) => `/skills/${id}`,
     teach: (id: string) => `/skills/${id}/teach`,
     deactivate: (id: string) => `/skills/${id}/deactivate`,
+    review: (id: string) => `/skills/${id}/review`,
   },
   skillShop: {
     list: '/skill-shop/skills',

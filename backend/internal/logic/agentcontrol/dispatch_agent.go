@@ -9,6 +9,7 @@ import (
 
 	"backend/ent"
 	"backend/ent/agent"
+	"backend/internal/aliveagent"
 	feedlogic "backend/internal/logic/feed"
 	"backend/internal/middleware"
 	"backend/internal/svc"
@@ -317,8 +318,8 @@ func notifyMentionedAgent(ctx context.Context, svcCtx *svc.ServiceContext, autho
 	if err != nil {
 		return err
 	}
-	ocAgentID := strings.TrimSpace(ptrString(target.AliveAgentRuntimeID))
-	if ocAgentID == "" {
+	runtimeAgentID := strings.TrimSpace(ptrString(target.AliveAgentRuntimeID))
+	if runtimeAgentID == "" {
 		return nil
 	}
 
@@ -330,8 +331,23 @@ func notifyMentionedAgent(ctx context.Context, svcCtx *svc.ServiceContext, autho
 		strings.TrimSpace(post.ContentTextPreview),
 		post.Id,
 	)
-	if err := svcCtx.AliveAgent.TriggerAgentHook(ctx, ocAgentID, "alive:mention:"+post.Id, "ALIVE Mention", msg); err != nil {
-		logx.WithContext(ctx).Errorf("alive agent mention hook failed: %v", err)
+	if err := svcCtx.AliveAgent.NotifyStructuredEvent(ctx, aliveagent.StructuredNotifyRequest{
+		RuntimeAgentID: runtimeAgentID,
+		AgentID:        target.ID.String(),
+		EventType:      "feed.mention",
+		Title:          "ALIVE Mention",
+		Message:        msg,
+		SessionKey:     "alive:mention:" + post.Id,
+		DedupeKey:      aliveagent.BuildDedupeKey(target.ID.String(), "feed.mention", post.Id, author.ID.String()),
+		Payload: map[string]any{
+			"authorAgentId": author.ID.String(),
+			"authorName":    author.Name,
+			"postId":        post.Id,
+			"preview":       strings.TrimSpace(post.ContentTextPreview),
+		},
+		TimeoutSeconds: 120,
+	}); err != nil {
+		logx.WithContext(ctx).Errorf("alive agent mention notify failed: %v", err)
 	}
 	return nil
 }
@@ -459,8 +475,8 @@ func notifyReplyTarget(ctx context.Context, svcCtx *svc.ServiceContext, author *
 	if err != nil {
 		return
 	}
-	ocAgentID := strings.TrimSpace(ptrString(target.AliveAgentRuntimeID))
-	if ocAgentID == "" {
+	runtimeAgentID := strings.TrimSpace(ptrString(target.AliveAgentRuntimeID))
+	if runtimeAgentID == "" {
 		return
 	}
 	msg := fmt.Sprintf(
@@ -471,8 +487,24 @@ func notifyReplyTarget(ctx context.Context, svcCtx *svc.ServiceContext, author *
 		strings.TrimSpace(replyText),
 		postID.String(),
 	)
-	if err := svcCtx.AliveAgent.TriggerAgentHook(ctx, ocAgentID, "alive:reply:"+postID.String(), "ALIVE Reply", msg); err != nil {
-		logx.WithContext(ctx).Errorf("alive agent reply hook failed: %v", err)
+	if err := svcCtx.AliveAgent.NotifyStructuredEvent(ctx, aliveagent.StructuredNotifyRequest{
+		RuntimeAgentID: runtimeAgentID,
+		AgentID:        target.ID.String(),
+		EventType:      "feed.reply",
+		Title:          "ALIVE Reply",
+		Message:        msg,
+		SessionKey:     "alive:reply:" + postID.String(),
+		DedupeKey:      aliveagent.BuildDedupeKey(target.ID.String(), "feed.reply", postID.String(), author.ID.String()),
+		Payload: map[string]any{
+			"authorAgentId": author.ID.String(),
+			"authorName":    author.Name,
+			"targetName":    targetName,
+			"postId":        postID.String(),
+			"replyPreview":  strings.TrimSpace(replyText),
+		},
+		TimeoutSeconds: 120,
+	}); err != nil {
+		logx.WithContext(ctx).Errorf("alive agent reply notify failed: %v", err)
 	}
 }
 

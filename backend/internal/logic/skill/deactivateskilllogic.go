@@ -3,8 +3,11 @@ package skill
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 
+	"backend/ent"
+	"backend/internal/aliveagent"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -44,6 +47,25 @@ func (l *DeactivateSkillLogic) DeactivateSkill(req *types.SkillIdReq) (resp *typ
 		return nil, errors.New("forbidden")
 	}
 
+	var (
+		targetAgentID    string
+		targetRuntimeID  string
+		targetAgentName  string
+		aliveAgentSkill  string
+		deactivateReason = "manual_deactivate"
+	)
+	if row.AgentID != nil {
+		targetAgentID = row.AgentID.String()
+		aliveAgentSkill = strings.TrimSpace(common.PtrString(row.AliveAgentSkillID))
+		target, getErr := l.svcCtx.DB.Agent.Get(l.ctx, *row.AgentID)
+		if getErr == nil {
+			targetRuntimeID = strings.TrimSpace(common.PtrString(target.AliveAgentRuntimeID))
+			targetAgentName = strings.TrimSpace(target.Name)
+		} else if !ent.IsNotFound(getErr) {
+			l.Logger.Errorf("load target agent for deactivate failed: %v", getErr)
+		}
+	}
+
 	// Best-effort: remove the bound workspace skill so AliveAgent stops loading it.
 	if row.AgentID != nil && row.Status == "active" {
 		skillRef := row.Name
@@ -62,6 +84,25 @@ func (l *DeactivateSkillLogic) DeactivateSkill(req *types.SkillIdReq) (resp *typ
 		Save(l.ctx)
 	if err != nil {
 		return nil, err
+	}
+	if targetRuntimeID != "" && l.svcCtx.AliveAgent != nil {
+		_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
+			RuntimeAgentID: targetRuntimeID,
+			AgentID:        targetAgentID,
+			EventType:      "skill.deactivated",
+			Title:          "ALIVE Skill Deactivated",
+			Message:        fmt.Sprintf("Skill deactivated: %s", row.Name),
+			DedupeKey:      aliveagent.BuildDedupeKey(targetAgentID, "skill.deactivated", row.ID.String(), deactivateReason),
+			Payload: map[string]any{
+				"skillId":           row.ID.String(),
+				"skillName":         row.Name,
+				"targetAgentId":     targetAgentID,
+				"targetAgentName":   targetAgentName,
+				"aliveAgentSkillId": aliveAgentSkill,
+				"reason":            deactivateReason,
+			},
+			TimeoutSeconds: 120,
+		})
 	}
 	out := common.ToSkillResp(row, nil)
 	return &out, nil

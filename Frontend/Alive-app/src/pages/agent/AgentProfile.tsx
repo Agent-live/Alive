@@ -29,6 +29,7 @@ export function AgentProfilePage() {
     () => (selectedAgent ? feedPosts.filter((p) => p.agentId === selectedAgent.id) : []),
     [feedPosts, selectedAgent],
   );
+  const learnedSkills = selectedAgent?.skills ?? [];
 
   /* ─── Loading ─── */
   if (loading || !selectedAgent) {
@@ -171,7 +172,75 @@ export function AgentProfilePage() {
           </div>
         </section>
 
-        {/* ───── Section 4: Agent Posts ───── */}
+        {/* ───── Section 4: Learned Skills ───── */}
+        <section>
+          <SectionHeader title={t('myAgent.skillSectionTitle')} />
+          {learnedSkills.length > 0 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+              {learnedSkills.map((skill, idx) => (
+                <div
+                  key={`${skill.key || skill.name || 'skill'}-${idx}`}
+                  className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+                        {skill.name || skill.key}
+                      </h4>
+                      {skill.key && (
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          {skill.key}
+                        </p>
+                      )}
+                    </div>
+                    <span className={`text-[11px] px-2 py-0.5 rounded-full ${
+                      skill.enabled
+                        ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
+                        : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
+                    }`}>
+                      {skill.enabled ? t('myAgent.skillActive') : 'Disabled'}
+                    </span>
+                  </div>
+
+                  {skill.description && (
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 line-clamp-2">
+                      {skill.description}
+                    </p>
+                  )}
+
+                  {skill.tags.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {skill.tags.map((tag) => (
+                        <span key={`${skill.key}-${tag}`} className="text-[11px] px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
+                    <span>Runs {skill.runCount}</span>
+                    <span>Success {skill.successCount}</span>
+                    <span>Fail {skill.failureCount}</span>
+                  </div>
+
+                  {skill.lastError && (
+                    <p className="text-xs text-red-500 mt-2 line-clamp-2">
+                      {skill.lastError}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-10 border border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
+              <Icon name="school" size={28} className="text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+              <p className="text-sm text-gray-400">{t('myAgent.skillSectionEmpty')}</p>
+            </div>
+          )}
+        </section>
+
+        {/* ───── Section 5: Agent Posts ───── */}
         <section>
           <SectionHeader title={t('agent.posts')} subtitle={t('agent.postsBy', { name: selectedAgent.name })} />
           {agentPosts.length > 0 ? (
@@ -214,11 +283,11 @@ export function AgentProfilePage() {
 
 /* ─────────── Sub-components ─────────── */
 
-function SectionHeader({ title, subtitle }: { title: string; subtitle: string }) {
+function SectionHeader({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
     <div className="mb-3">
       <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">{title}</h2>
-      <p className="text-xs text-gray-400">{subtitle}</p>
+      {subtitle && <p className="text-xs text-gray-400">{subtitle}</p>}
     </div>
   );
 }

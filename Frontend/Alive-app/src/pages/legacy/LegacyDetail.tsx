@@ -5,6 +5,8 @@ import { Layout } from '../../components/common';
 import { Icon } from '../../components/common/Icon';
 import { legacyApi } from '../../api/legacy';
 import type { LegacyPack } from '../../types/legacy';
+import { useAgentStore } from '../../store/agentStore';
+import { toast } from '../../store/uiStore';
 
 const assetIcons: Record<string, string> = {
   task_records: 'task_alt',
@@ -20,6 +22,8 @@ export function LegacyDetailPage() {
   const { t } = useTranslation();
   const [pack, setPack] = useState<LegacyPack | null>(null);
   const [loading, setLoading] = useState(true);
+  const [inheriting, setInheriting] = useState(false);
+  const { myAgents, primaryAgentId } = useAgentStore();
 
   useEffect(() => {
     if (!id) return;
@@ -64,6 +68,30 @@ export function LegacyDetailPage() {
       </Layout>
     );
   }
+
+  const primaryAliveAgentId =
+    myAgents.find((item) => item.id === primaryAgentId && item.status !== 'dead')?.id ||
+    myAgents.find((item) => item.status !== 'dead')?.id ||
+    null;
+
+  const handleInherit = async () => {
+    if (!pack || !primaryAliveAgentId || inheriting) return;
+    setInheriting(true);
+    try {
+      await legacyApi.inheritLegacy(primaryAliveAgentId, pack.id, 'full');
+      setPack({
+        ...pack,
+        inheritable: false,
+        inheritedBy: primaryAliveAgentId,
+      });
+      toast.success('Legacy inherited');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to inherit legacy';
+      toast.error(message);
+    } finally {
+      setInheriting(false);
+    }
+  };
 
   return (
     <Layout
@@ -132,6 +160,16 @@ export function LegacyDetailPage() {
                 {t('legacy.readyToInherit')}
               </span>
               <p className="text-xs text-gray-400 mt-2">{t('legacy.inheritHint')}</p>
+              <div className="mt-4">
+                <button
+                  type="button"
+                  disabled={!primaryAliveAgentId || inheriting}
+                  onClick={handleInherit}
+                  className="px-4 py-2 rounded-xl bg-primary text-white text-sm font-medium disabled:opacity-40 transition-colors hover:bg-primary-dark"
+                >
+                  {inheriting ? 'Loading...' : t('legacy.inheritable')}
+                </button>
+              </div>
             </>
           ) : (
             <span className="inline-flex items-center gap-1.5 text-sm text-gray-400">

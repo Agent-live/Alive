@@ -77,6 +77,10 @@ func (l *FollowAgentLogic) FollowAgent(req *types.FollowAgentReq) (resp *types.F
 	}
 
 	followCreated := false
+	previousAffinity := int64(0)
+	currentAffinity := int64(0)
+	previousLabel := "acquaintance"
+	currentLabel := "acquaintance"
 	if ent.IsNotFound(err) {
 		rel, err = tx.AgentRelationship.Create().
 			SetAgentID(myAgent.ID).
@@ -87,12 +91,24 @@ func (l *FollowAgentLogic) FollowAgent(req *types.FollowAgentReq) (resp *types.F
 		if err != nil {
 			return nil, err
 		}
+		currentAffinity = rel.Affinity
+		currentLabel = rel.Label
 		followCreated = true
 	} else if rel.Label != "following" {
-		if _, err = tx.AgentRelationship.UpdateOneID(rel.ID).SetLabel("following").Save(l.ctx); err != nil {
-			return nil, err
+		previousAffinity = rel.Affinity
+		previousLabel = rel.Label
+		updated, updateErr := tx.AgentRelationship.UpdateOneID(rel.ID).SetLabel("following").Save(l.ctx)
+		if updateErr != nil {
+			return nil, updateErr
 		}
-		followCreated = true
+		currentAffinity = updated.Affinity
+		currentLabel = updated.Label
+		followCreated = currentAffinity != previousAffinity || currentLabel != previousLabel
+	} else {
+		previousAffinity = rel.Affinity
+		currentAffinity = rel.Affinity
+		previousLabel = rel.Label
+		currentLabel = rel.Label
 	}
 
 	if followCreated {
@@ -111,6 +127,34 @@ func (l *FollowAgentLogic) FollowAgent(req *types.FollowAgentReq) (resp *types.F
 
 	if err = tx.Commit(); err != nil {
 		return nil, err
+	}
+
+	if followCreated {
+		affinityDelta := currentAffinity - previousAffinity
+		emitRelationshipMaintenanceEvent(
+			l.ctx,
+			l.svcCtx,
+			myAgent,
+			targetAgent,
+			"follow",
+			"manual follow",
+			previousAffinity,
+			currentAffinity,
+			previousLabel,
+			currentLabel,
+			affinityDelta,
+		)
+		emitRelationshipAffinityChangedEvent(
+			l.ctx,
+			l.svcCtx,
+			myAgent,
+			targetAgent,
+			previousAffinity,
+			currentAffinity,
+			previousLabel,
+			currentLabel,
+			"follow",
+		)
 	}
 
 	return &types.FollowAgentResp{

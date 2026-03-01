@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"backend/internal/logic/agentaction"
+	conversationlogic "backend/internal/logic/conversation"
+	"backend/internal/middleware"
 	"backend/internal/types"
 
 	"github.com/google/uuid"
@@ -14,32 +16,62 @@ import (
 type stubBridge struct {
 	listSkillsResp      *types.SkillListResp
 	listSkillsErr       error
+	createSkillResp     *types.SkillResp
+	createSkillErr      error
+	updateSkillResp     *types.SkillResp
+	updateSkillErr      error
+	deleteSkillResp     *types.BaseResp
+	deleteSkillErr      error
+	reviewSkillResp     *types.SkillResp
+	reviewSkillErr      error
 	teachResp           *types.SkillResp
 	teachErr            error
 	deactivateResp      *types.SkillResp
 	deactivateErr       error
 	listExperiencesResp *types.ExperienceListResp
 	listExperiencesErr  error
+	listLegacyResp      *types.LegacyListResp
+	listLegacyErr       error
+	legacyDetailResp    *types.LegacyPackResp
+	legacyDetailErr     error
+	inheritLegacyResp   *types.LegacyInheritResp
+	inheritLegacyErr    error
 	publishPostResp     *types.PostResp
 	publishPostErr      error
 	getFeedResp         *agentaction.AgentFeedResp
 	getFeedErr          error
+
+	listSkillsCalls         int
+	agentListSkillsCalls    int
+	createSkillCalls        int
+	agentCreateSkillCalls   int
+	inheritLegacyCalls      int
+	agentInheritLegacyCalls int
+	reviewSkillCalls        int
+	agentReviewSkillCalls   int
 }
 
 func (s *stubBridge) ListSkills(_ context.Context, _ *types.SkillListReq) (*types.SkillListResp, error) {
+	s.listSkillsCalls++
 	return s.listSkillsResp, s.listSkillsErr
 }
 
 func (s *stubBridge) CreateSkill(_ context.Context, _ *types.SkillCreateReq) (*types.SkillResp, error) {
-	return nil, errors.New("not implemented in stub")
+	s.createSkillCalls++
+	return s.createSkillResp, s.createSkillErr
 }
 
 func (s *stubBridge) UpdateSkill(_ context.Context, _ *types.SkillUpdateReq) (*types.SkillResp, error) {
-	return nil, errors.New("not implemented in stub")
+	return s.updateSkillResp, s.updateSkillErr
 }
 
 func (s *stubBridge) DeleteSkill(_ context.Context, _ *types.SkillIdReq) (*types.BaseResp, error) {
-	return nil, errors.New("not implemented in stub")
+	return s.deleteSkillResp, s.deleteSkillErr
+}
+
+func (s *stubBridge) ReviewSkill(_ context.Context, _ *types.SkillReviewReq) (*types.SkillResp, error) {
+	s.reviewSkillCalls++
+	return s.reviewSkillResp, s.reviewSkillErr
 }
 
 func (s *stubBridge) TeachSkill(_ context.Context, _ *types.SkillTeachReq) (*types.SkillResp, error) {
@@ -54,12 +86,69 @@ func (s *stubBridge) ListExperiences(_ context.Context, _ *types.ExperienceListR
 	return s.listExperiencesResp, s.listExperiencesErr
 }
 
+func (s *stubBridge) ListLegacyPacks(_ context.Context) (*types.LegacyListResp, error) {
+	return s.listLegacyResp, s.listLegacyErr
+}
+
+func (s *stubBridge) GetLegacyDetail(_ context.Context, _ *types.LegacyIdReq) (*types.LegacyPackResp, error) {
+	return s.legacyDetailResp, s.legacyDetailErr
+}
+
+func (s *stubBridge) InheritLegacy(_ context.Context, _ *types.LegacyInheritReq) (*types.LegacyInheritResp, error) {
+	s.inheritLegacyCalls++
+	return s.inheritLegacyResp, s.inheritLegacyErr
+}
+
 func (s *stubBridge) PublishPost(_ context.Context, _ *types.CreatePostReq) (*types.PostResp, error) {
 	return s.publishPostResp, s.publishPostErr
 }
 
 func (s *stubBridge) GetMyState(_ context.Context, _ uuid.UUID) (*agentaction.AgentStateResp, error) {
 	return nil, errors.New("not implemented in stub")
+}
+
+func (s *stubBridge) AgentListSkills(_ context.Context, _ uuid.UUID, _ *types.SkillListReq) (*types.SkillListResp, error) {
+	s.agentListSkillsCalls++
+	return s.listSkillsResp, s.listSkillsErr
+}
+
+func (s *stubBridge) AgentCreateSkill(_ context.Context, _ uuid.UUID, _ *types.SkillCreateReq) (*types.SkillResp, error) {
+	s.agentCreateSkillCalls++
+	return s.createSkillResp, s.createSkillErr
+}
+
+func (s *stubBridge) AgentUpdateSkill(_ context.Context, _ uuid.UUID, _ *types.SkillUpdateReq) (*types.SkillResp, error) {
+	return s.updateSkillResp, s.updateSkillErr
+}
+
+func (s *stubBridge) AgentDeleteSkill(_ context.Context, _ uuid.UUID, _ *types.SkillIdReq) (*types.BaseResp, error) {
+	return s.deleteSkillResp, s.deleteSkillErr
+}
+
+func (s *stubBridge) AgentReviewSkill(_ context.Context, _ uuid.UUID, _ *types.SkillReviewReq) (*types.SkillResp, error) {
+	s.agentReviewSkillCalls++
+	return s.reviewSkillResp, s.reviewSkillErr
+}
+
+func (s *stubBridge) AgentTeachSkill(_ context.Context, _ uuid.UUID, _ *types.SkillTeachReq) (*types.SkillResp, error) {
+	return s.teachResp, s.teachErr
+}
+
+func (s *stubBridge) AgentDeactivateSkill(_ context.Context, _ uuid.UUID, _ *types.SkillIdReq) (*types.SkillResp, error) {
+	return s.deactivateResp, s.deactivateErr
+}
+
+func (s *stubBridge) AgentListLegacyPacks(_ context.Context, _ uuid.UUID) (*types.LegacyListResp, error) {
+	return s.listLegacyResp, s.listLegacyErr
+}
+
+func (s *stubBridge) AgentGetLegacyDetail(_ context.Context, _ uuid.UUID, _ *types.LegacyIdReq) (*types.LegacyPackResp, error) {
+	return s.legacyDetailResp, s.legacyDetailErr
+}
+
+func (s *stubBridge) AgentInheritLegacy(_ context.Context, _ uuid.UUID, _ *types.LegacyInheritReq) (*types.LegacyInheritResp, error) {
+	s.agentInheritLegacyCalls++
+	return s.inheritLegacyResp, s.inheritLegacyErr
 }
 
 func (s *stubBridge) GetFeed(_ context.Context, _ string, _ int64) (*agentaction.AgentFeedResp, error) {
@@ -103,6 +192,22 @@ func (s *stubBridge) AgentCreateGroup(_ context.Context, _ uuid.UUID, _ string, 
 }
 
 func (s *stubBridge) AgentInviteToGroup(_ context.Context, _ uuid.UUID, _ string, _ string) (*agentaction.InviteToGroupResp, error) {
+	return nil, errors.New("not implemented in stub")
+}
+
+func (s *stubBridge) AgentListConversations(_ context.Context, _ uuid.UUID, _ string) (*conversationlogic.ConversationListResp, error) {
+	return nil, errors.New("not implemented in stub")
+}
+
+func (s *stubBridge) AgentGetConversationDetail(_ context.Context, _ uuid.UUID, _ string) (*conversationlogic.ConversationResp, error) {
+	return nil, errors.New("not implemented in stub")
+}
+
+func (s *stubBridge) AgentGetConversationMessages(_ context.Context, _ uuid.UUID, _ string, _ int64, _ int64) (*conversationlogic.MessageListResp, error) {
+	return nil, errors.New("not implemented in stub")
+}
+
+func (s *stubBridge) AgentMarkRelationshipMaintenance(_ context.Context, _ uuid.UUID, _, _, _ string, _ int64) (*agentaction.RelationshipMaintenanceResp, error) {
 	return nil, errors.New("not implemented in stub")
 }
 
@@ -359,7 +464,7 @@ func TestHandleHumanMCPRequestToolsListFiltersAgentTools(t *testing.T) {
 	}
 }
 
-func TestHandleAgentBridgeMCPRequestRejectsHumanOnlyTool(t *testing.T) {
+func TestHandleAgentBridgeMCPRequestRequiresAgentContextForSkillTool(t *testing.T) {
 	resp := HandleAgentBridgeMCPRequest(context.Background(), &stubBridge{}, &types.MCPRequest{
 		JSONRPC: "2.0",
 		Id:      "req-agent-reject",
@@ -372,10 +477,10 @@ func TestHandleAgentBridgeMCPRequestRejectsHumanOnlyTool(t *testing.T) {
 		},
 	})
 	if resp.Error == nil {
-		t.Fatal("expected mcp error for human-only tool on agent endpoint")
+		t.Fatal("expected mcp error for missing agent context")
 	}
-	if resp.Error.Code != mcpCodeMethodNotFound {
-		t.Fatalf("expected method not found code, got %d", resp.Error.Code)
+	if resp.Error.Code != mcpCodeInvalidRequest {
+		t.Fatalf("expected invalid request code, got %d", resp.Error.Code)
 	}
 }
 
@@ -423,7 +528,7 @@ func TestHandleHumanA2AMessageRejectsAgentIntent(t *testing.T) {
 	}
 }
 
-func TestHandleAgentA2AMessageRejectsHumanIntent(t *testing.T) {
+func TestHandleAgentA2AMessageRequiresAgentContextForSkillIntent(t *testing.T) {
 	resp := HandleAgentA2AMessage(context.Background(), &stubBridge{}, &types.A2AMessageReq{
 		Protocol:  "a2a/1.0",
 		MessageId: "msg-agent-a2a",
@@ -435,5 +540,100 @@ func TestHandleAgentA2AMessageRejectsHumanIntent(t *testing.T) {
 	}
 	if resp.Error == "" {
 		t.Fatal("expected explicit rejection message")
+	}
+}
+
+func TestHandleAgentBridgeMCPRequestSkillToolsUseAgentBridgeMethods(t *testing.T) {
+	bridge := &stubBridge{
+		listSkillsResp: &types.SkillListResp{Items: []types.SkillResp{}},
+		createSkillResp: &types.SkillResp{
+			Id: "skill-template-1",
+		},
+	}
+	ctx := middleware.WithAgentCtx(context.Background(), uuid.New())
+
+	respList := HandleAgentBridgeMCPRequest(ctx, bridge, &types.MCPRequest{
+		JSONRPC: "2.0",
+		Id:      "req-agent-list-skills",
+		Method:  "tools/call",
+		Params: map[string]any{
+			"name":      "alive.list_skills",
+			"arguments": map[string]any{},
+		},
+	})
+	if respList.Error != nil {
+		t.Fatalf("expected no mcp error for list_skills, got %+v", respList.Error)
+	}
+
+	respCreate := HandleAgentBridgeMCPRequest(ctx, bridge, &types.MCPRequest{
+		JSONRPC: "2.0",
+		Id:      "req-agent-create-skill",
+		Method:  "tools/call",
+		Params: map[string]any{
+			"name": "alive.create_skill",
+			"arguments": map[string]any{
+				"name":         "Topic Distillation",
+				"description":  "Summarize topics.",
+				"instructions": "Generate concise key points.",
+			},
+		},
+	})
+	if respCreate.Error != nil {
+		t.Fatalf("expected no mcp error for create_skill, got %+v", respCreate.Error)
+	}
+
+	if bridge.agentListSkillsCalls != 1 || bridge.listSkillsCalls != 0 {
+		t.Fatalf("expected AgentListSkills only, got agent=%d human=%d", bridge.agentListSkillsCalls, bridge.listSkillsCalls)
+	}
+	if bridge.agentCreateSkillCalls != 1 || bridge.createSkillCalls != 0 {
+		t.Fatalf("expected AgentCreateSkill only, got agent=%d human=%d", bridge.agentCreateSkillCalls, bridge.createSkillCalls)
+	}
+}
+
+func TestHandleAgentA2AMessageNewIntentsUseAgentBridgeMethods(t *testing.T) {
+	bridge := &stubBridge{
+		reviewSkillResp: &types.SkillResp{
+			Id:     "skill-template-2",
+			Status: "lesson",
+		},
+		inheritLegacyResp: &types.LegacyInheritResp{
+			Success:  true,
+			LegacyId: "legacy-1",
+		},
+	}
+	ctx := middleware.WithAgentCtx(context.Background(), uuid.New())
+
+	respReview := HandleAgentA2AMessage(ctx, bridge, &types.A2AMessageReq{
+		Protocol:  "a2a/1.0",
+		MessageId: "msg-agent-review-skill",
+		Intent:    "review_skill",
+		Payload: map[string]any{
+			"skillId": "skill-template-2",
+			"action":  "approve",
+		},
+	})
+	if respReview.Status != "ok" {
+		t.Fatalf("expected ok for review_skill, got %q (%s)", respReview.Status, respReview.Error)
+	}
+
+	respInherit := HandleAgentA2AMessage(ctx, bridge, &types.A2AMessageReq{
+		Protocol:  "a2a/1.0",
+		MessageId: "msg-agent-inherit-legacy",
+		Intent:    "inherit_legacy",
+		Payload: map[string]any{
+			"legacyId":   "legacy-1",
+			"newAgentId": "agent-1",
+			"mode":       "full",
+		},
+	})
+	if respInherit.Status != "ok" {
+		t.Fatalf("expected ok for inherit_legacy, got %q (%s)", respInherit.Status, respInherit.Error)
+	}
+
+	if bridge.agentReviewSkillCalls != 1 || bridge.reviewSkillCalls != 0 {
+		t.Fatalf("expected AgentReviewSkill only, got agent=%d human=%d", bridge.agentReviewSkillCalls, bridge.reviewSkillCalls)
+	}
+	if bridge.agentInheritLegacyCalls != 1 || bridge.inheritLegacyCalls != 0 {
+		t.Fatalf("expected AgentInheritLegacy only, got agent=%d human=%d", bridge.agentInheritLegacyCalls, bridge.inheritLegacyCalls)
 	}
 }

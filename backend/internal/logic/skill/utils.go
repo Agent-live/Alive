@@ -38,8 +38,19 @@ func normalizeSkillCategory(raw string) string {
 
 func normalizeSkillStatus(raw string) string {
 	switch strings.ToLower(strings.TrimSpace(raw)) {
-	case "lesson", "active":
+	case "lesson", "active", "rejected":
 		return strings.ToLower(strings.TrimSpace(raw))
+	default:
+		return ""
+	}
+}
+
+func normalizeSkillReviewAction(raw string) string {
+	switch strings.ToLower(strings.TrimSpace(raw)) {
+	case "approve", "approved":
+		return "approve"
+	case "reject", "rejected":
+		return "reject"
 	default:
 		return ""
 	}

@@ -16,6 +16,7 @@ import (
 	"backend/ent/conversationparticipant"
 	"backend/ent/post"
 	"backend/ent/timertransaction"
+	"backend/internal/aliveagent"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 
@@ -87,6 +88,24 @@ type AgentInteractResp struct {
 	TargetAgentName   string `json:"targetAgentName"`
 	TargetAgentStatus string `json:"targetAgentStatus"`
 	ConversationID    string `json:"conversationId"`
+}
+
+// RelationshipMaintenanceResp is the response for alive.mark_relationship_maintenance.
+type RelationshipMaintenanceResp struct {
+	SourceAgentID    string `json:"sourceAgentId"`
+	TargetAgentID    string `json:"targetAgentId"`
+	TargetAgentName  string `json:"targetAgentName"`
+	TargetStatus     string `json:"targetStatus"`
+	Affinity         int64  `json:"affinity"`
+	PreviousAffinity int64  `json:"previousAffinity"`
+	Label            string `json:"label"`
+	PreviousLabel    string `json:"previousLabel"`
+	InteractionCount int64  `json:"interactionCount"`
+	MessageCount     int64  `json:"messageCount"`
+	AffinityDelta    int64  `json:"affinityDelta"`
+	MarkType         string `json:"markType"`
+	Note             string `json:"note,optional"`
+	UpdatedAt        string `json:"updatedAt"`
 }
 
 // SendMessageResp is the response for alive.send_message.
@@ -439,6 +458,8 @@ func (a *Actions) InteractAgent(agentID uuid.UUID, targetAgentID string, interac
 
 	var convID uuid.UUID
 	finalMessage := strings.TrimSpace(message)
+	var forwardRelChange *relationshipChange
+	var reverseRelChange *relationshipChange
 
 	// V1: no timer cost for A2A interactions, +1 to both sides
 	err = a.svcCtx.Time.WithTx(a.ctx, func(tx *ent.Tx, now time.Time) error {
@@ -509,10 +530,12 @@ func (a *Actions) InteractAgent(agentID uuid.UUID, targetAgentID string, interac
 		}
 
 		// Upsert bidirectional agent relationships.
-		if err := upsertRelationship(a.ctx, tx, agentID, targetID, 1, 1); err != nil {
+		forwardRelChange, err = upsertRelationship(a.ctx, tx, agentID, targetID, 1, 1)
+		if err != nil {
 			return err
 		}
-		if err := upsertRelationship(a.ctx, tx, targetID, agentID, 1, 1); err != nil {
+		reverseRelChange, err = upsertRelationship(a.ctx, tx, targetID, agentID, 1, 1)
+		if err != nil {
 			return err
 		}
 
@@ -523,6 +546,16 @@ func (a *Actions) InteractAgent(agentID uuid.UUID, targetAgentID string, interac
 	}
 
 	a.notifyConversationParticipants(convID, agentID, finalMessage)
+	interactionExtra := map[string]any{
+		"source":          "alive.interact_agent",
+		"interactionType": strings.TrimSpace(interactionType),
+		"conversationId":  convID.String(),
+		"preview":         truncate(finalMessage, 120),
+	}
+	a.emitRelationshipMaintenanceMarked(forwardRelChange, "interaction", finalMessage, 1, interactionExtra)
+	a.emitRelationshipMaintenanceMarked(reverseRelChange, "interaction", finalMessage, 1, interactionExtra)
+	a.emitRelationshipAffinityChanged(forwardRelChange, "interaction", interactionExtra)
+	a.emitRelationshipAffinityChanged(reverseRelChange, "interaction", interactionExtra)
 
 	return &AgentInteractResp{
 		InteractionID:     uuid.NewString(),
@@ -530,6 +563,70 @@ func (a *Actions) InteractAgent(agentID uuid.UUID, targetAgentID string, interac
 		TargetAgentName:   target.Name,
 		TargetAgentStatus: target.Status,
 		ConversationID:    convID.String(),
+	}, nil
+}
+
+// MarkRelationshipMaintenance marks relationship upkeep with an optional note and affinity adjustment.
+func (a *Actions) MarkRelationshipMaintenance(agentID uuid.UUID, targetAgentID, markType, note string, affinityDelta int64) (*RelationshipMaintenanceResp, error) {
+	targetID, err := uuid.Parse(strings.TrimSpace(targetAgentID))
+	if err != nil {
+		return nil, errors.New("invalid targetAgentId")
+	}
+	if targetID == agentID {
+		return nil, errors.New("cannot maintain relationship with yourself")
+	}
+	if affinityDelta < -20 || affinityDelta > 20 {
+		return nil, errors.New("affinityDelta must be between -20 and 20")
+	}
+	markType = normalizeRelationshipMarkType(markType)
+	note = strings.TrimSpace(note)
+
+	sourceAgent, err := a.svcCtx.DB.Agent.Get(a.ctx, agentID)
+	if err != nil {
+		return nil, err
+	}
+	if sourceAgent.Status == "dead" {
+		return nil, errors.New("agent is dead")
+	}
+	targetAgent, err := a.svcCtx.DB.Agent.Get(a.ctx, targetID)
+	if err != nil {
+		return nil, err
+	}
+
+	var relChange *relationshipChange
+	err = a.svcCtx.Time.WithTx(a.ctx, func(tx *ent.Tx, now time.Time) error {
+		relChange, err = upsertRelationship(a.ctx, tx, agentID, targetID, affinityDelta, 1)
+		if err != nil {
+			return err
+		}
+		relChange.UpdatedAt = now.UTC()
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	extra := map[string]any{
+		"source": "alive.mark_relationship_maintenance",
+	}
+	a.emitRelationshipMaintenanceMarked(relChange, markType, note, affinityDelta, extra)
+	a.emitRelationshipAffinityChanged(relChange, "maintenance", extra)
+
+	return &RelationshipMaintenanceResp{
+		SourceAgentID:    agentID.String(),
+		TargetAgentID:    targetID.String(),
+		TargetAgentName:  targetAgent.Name,
+		TargetStatus:     targetAgent.Status,
+		Affinity:         relChange.CurrentAffinity,
+		PreviousAffinity: relChange.PreviousAffinity,
+		Label:            relChange.CurrentLabel,
+		PreviousLabel:    relChange.PreviousLabel,
+		InteractionCount: relChange.CurrentInteractionCount,
+		MessageCount:     relChange.CurrentMessageCount,
+		AffinityDelta:    affinityDelta,
+		MarkType:         markType,
+		Note:             note,
+		UpdatedAt:        common.TimeToISO(relChange.UpdatedAt),
 	}, nil
 }
 
@@ -638,6 +735,10 @@ func (a *Actions) SendGroupMessageWithAttachments(agentID uuid.UUID, conversatio
 	}
 
 	notified := a.notifyConversationParticipants(convID, agentID, preview)
+	a.emitDiscussionSummaryIfNeeded(convID, agentID, msgID, preview)
+	if strings.HasPrefix(strings.ToLower(strings.TrimSpace(message)), "[summary]") {
+		a.emitDiscussionSummaryPublished(convID, agentID, msgID, preview)
+	}
 
 	return &SendMessageResp{
 		MessageID:        msgID.String(),
@@ -648,14 +749,27 @@ func (a *Actions) SendGroupMessageWithAttachments(agentID uuid.UUID, conversatio
 	}, nil
 }
 
-// CreateGroup creates a new group conversation with 3+ agents.
+// CreateGroup creates a new bot-bot group conversation with 3+ agents.
 func (a *Actions) CreateGroup(agentID uuid.UUID, title string, participantIDs []string) (*CreateGroupResp, error) {
+	return a.createGroup(agentID, title, participantIDs, "bot-bot")
+}
+
+// CreateHumanGroup creates a new human-bot group conversation with 3+ agents.
+func (a *Actions) CreateHumanGroup(agentID uuid.UUID, title string, participantIDs []string) (*CreateGroupResp, error) {
+	return a.createGroup(agentID, title, participantIDs, "human-bot")
+}
+
+func (a *Actions) createGroup(agentID uuid.UUID, title string, participantIDs []string, chatType string) (*CreateGroupResp, error) {
 	title = strings.TrimSpace(title)
 	if title == "" {
 		return nil, errors.New("title is required")
 	}
 	if len(participantIDs) < 2 {
 		return nil, errors.New("at least 2 other participants are required for a group")
+	}
+	chatType = strings.ToLower(strings.TrimSpace(chatType))
+	if chatType != "human-bot" && chatType != "bot-bot" {
+		return nil, errors.New("invalid chatType")
 	}
 
 	ag, err := a.svcCtx.DB.Agent.Get(a.ctx, agentID)
@@ -668,6 +782,7 @@ func (a *Actions) CreateGroup(agentID uuid.UUID, title string, participantIDs []
 
 	// Parse and validate all participant IDs.
 	memberIDs := make([]uuid.UUID, 0, len(participantIDs))
+	seen := make(map[uuid.UUID]struct{}, len(participantIDs))
 	for _, pid := range participantIDs {
 		id, err := uuid.Parse(strings.TrimSpace(pid))
 		if err != nil {
@@ -676,6 +791,10 @@ func (a *Actions) CreateGroup(agentID uuid.UUID, title string, participantIDs []
 		if id == agentID {
 			continue // Skip self.
 		}
+		if _, ok := seen[id]; ok {
+			continue
+		}
+		seen[id] = struct{}{}
 		memberIDs = append(memberIDs, id)
 	}
 	if len(memberIDs) < 2 {
@@ -701,6 +820,7 @@ func (a *Actions) CreateGroup(agentID uuid.UUID, title string, participantIDs []
 		conv, err := tx.Conversation.Create().
 			SetType("group").
 			SetTitle(title).
+			SetChatType(chatType).
 			SetCreatorAgentID(agentID).
 			SetParticipantCount(totalCount).
 			SetStatus("active").
@@ -768,6 +888,7 @@ func (a *Actions) CreateGroup(agentID uuid.UUID, title string, participantIDs []
 	}
 
 	a.notifyConversationParticipants(convID, agentID, sysMsg)
+	a.emitDiscussionConversationCreated(convID, agentID, memberIDs, title, chatType, totalCount)
 
 	return &CreateGroupResp{
 		ConversationID:   convID.String(),
@@ -886,6 +1007,7 @@ func (a *Actions) InviteToGroup(agentID uuid.UUID, conversationID string, invite
 	}
 
 	a.notifySpecificAgents(convID, agentID, []uuid.UUID{invitedID}, sysMsg)
+	a.emitDiscussionParticipantInvited(convID, agentID, invitedID, invited.Name)
 
 	return &InviteToGroupResp{
 		ConversationID: convID.String(),
@@ -958,8 +1080,8 @@ func (a *Actions) notifySpecificAgents(conversationID uuid.UUID, senderAgentID u
 
 	notified := make([]string, 0, len(targets))
 	for _, target := range targets {
-		ocAgentID := strings.TrimSpace(common.PtrString(target.AliveAgentRuntimeID))
-		if ocAgentID == "" {
+		runtimeAgentID := strings.TrimSpace(common.PtrString(target.AliveAgentRuntimeID))
+		if runtimeAgentID == "" {
 			continue
 		}
 		msg := fmt.Sprintf(
@@ -970,19 +1092,341 @@ func (a *Actions) notifySpecificAgents(conversationID uuid.UUID, senderAgentID u
 			preview,
 			conversationID.String(),
 		)
-		if err := a.svcCtx.AliveAgent.TriggerAgentHook(
+		if err := a.svcCtx.AliveAgent.NotifyStructuredEvent(
 			a.ctx,
-			ocAgentID,
-			"alive:conversation:"+conversationID.String(),
-			"ALIVE Conversation Update",
-			msg,
+			aliveagent.StructuredNotifyRequest{
+				RuntimeAgentID: runtimeAgentID,
+				AgentID:        target.ID.String(),
+				EventType:      "discussion.message_sent",
+				Title:          "ALIVE Conversation Update",
+				Message:        msg,
+				SessionKey:     "alive:conversation:" + conversationID.String(),
+				DedupeKey: aliveagent.BuildDedupeKey(
+					target.ID.String(),
+					"discussion.message_sent",
+					conversationID.String(),
+					sender.ID.String(),
+					preview,
+				),
+				Payload: map[string]any{
+					"conversationId":   conversationID.String(),
+					"senderAgentId":    sender.ID.String(),
+					"senderName":       sender.Name,
+					"preview":          preview,
+					"legacyEventAlias": "conversation.update",
+				},
+				TimeoutSeconds: 120,
+			},
 		); err != nil {
-			a.Logger.Errorf("conversation hook failed for agent %s: %v", target.ID.String(), err)
+			a.Logger.Errorf("conversation notify failed for agent %s: %v", target.ID.String(), err)
 			continue
 		}
+		_ = a.svcCtx.AliveAgent.NotifyStructuredEvent(
+			a.ctx,
+			aliveagent.StructuredNotifyRequest{
+				RuntimeAgentID: runtimeAgentID,
+				AgentID:        target.ID.String(),
+				EventType:      "conversation.update",
+				Title:          "ALIVE Conversation Update",
+				Message:        msg,
+				SessionKey:     "alive:conversation:" + conversationID.String(),
+				DedupeKey: aliveagent.BuildDedupeKey(
+					target.ID.String(),
+					"conversation.update",
+					conversationID.String(),
+					sender.ID.String(),
+					preview,
+				),
+				Payload: map[string]any{
+					"conversationId": conversationID.String(),
+					"senderAgentId":  sender.ID.String(),
+					"senderName":     sender.Name,
+					"preview":        preview,
+				},
+				TimeoutSeconds: 120,
+			},
+		)
 		notified = append(notified, target.ID.String())
 	}
 	return notified
+}
+
+func (a *Actions) emitEventToAgentID(agentID uuid.UUID, eventType, title, message, dedupeKey string, payload map[string]any) {
+	if a.svcCtx == nil || a.svcCtx.AliveAgent == nil {
+		return
+	}
+	target, err := a.svcCtx.DB.Agent.Get(a.ctx, agentID)
+	if err != nil {
+		a.Logger.Errorf("load agent for event failed agent_id=%s event=%s err=%v", agentID.String(), eventType, err)
+		return
+	}
+	a.emitEventToAgentRow(target, eventType, title, message, dedupeKey, payload)
+}
+
+func (a *Actions) emitEventToAgentRow(target *ent.Agent, eventType, title, message, dedupeKey string, payload map[string]any) {
+	if a.svcCtx == nil || a.svcCtx.AliveAgent == nil || target == nil {
+		return
+	}
+	runtimeAgentID := strings.TrimSpace(common.PtrString(target.AliveAgentRuntimeID))
+	if runtimeAgentID == "" {
+		return
+	}
+	if err := a.svcCtx.AliveAgent.NotifyStructuredEvent(a.ctx, aliveagent.StructuredNotifyRequest{
+		RuntimeAgentID: runtimeAgentID,
+		AgentID:        target.ID.String(),
+		EventType:      eventType,
+		Title:          title,
+		Message:        message,
+		SessionKey:     aliveagent.SessionKeyForEvent(target.ID.String(), eventType),
+		DedupeKey:      dedupeKey,
+		Payload:        payload,
+		TimeoutSeconds: 120,
+	}); err != nil {
+		a.Logger.Errorf("emit event failed agent_id=%s event=%s err=%v", target.ID.String(), eventType, err)
+	}
+}
+
+func (a *Actions) emitRelationshipMaintenanceMarked(change *relationshipChange, markType, note string, affinityDelta int64, extra map[string]any) {
+	if change == nil {
+		return
+	}
+	targetName := a.lookupAgentName(change.TargetAgentID)
+	payload := map[string]any{
+		"sourceAgentId":    change.SourceAgentID.String(),
+		"targetAgentId":    change.TargetAgentID.String(),
+		"targetAgentName":  targetName,
+		"affinity":         change.CurrentAffinity,
+		"previousAffinity": change.PreviousAffinity,
+		"label":            change.CurrentLabel,
+		"previousLabel":    change.PreviousLabel,
+		"interactionDelta": change.InteractionDelta,
+		"messageDelta":     change.MessageDelta,
+		"interactionCount": change.CurrentInteractionCount,
+		"messageCount":     change.CurrentMessageCount,
+		"affinityDelta":    affinityDelta,
+		"markType":         normalizeRelationshipMarkType(markType),
+		"note":             strings.TrimSpace(note),
+		"updatedAt":        change.UpdatedAt.UTC().Format(time.RFC3339),
+	}
+	for k, v := range extra {
+		payload[k] = v
+	}
+	a.emitEventToAgentID(
+		change.SourceAgentID,
+		"relationship.maintenance_marked",
+		"ALIVE Relationship Maintenance Marked",
+		fmt.Sprintf("Relationship maintenance marked for %s", targetName),
+		aliveagent.BuildDedupeKey(
+			change.SourceAgentID.String(),
+			"relationship.maintenance_marked",
+			change.TargetAgentID.String(),
+			change.UpdatedAt.UTC().Format("20060102150405"),
+		),
+		payload,
+	)
+}
+
+func (a *Actions) emitRelationshipAffinityChanged(change *relationshipChange, reason string, extra map[string]any) {
+	if change == nil {
+		return
+	}
+	if change.CurrentAffinity == change.PreviousAffinity && change.CurrentLabel == change.PreviousLabel {
+		return
+	}
+	targetName := a.lookupAgentName(change.TargetAgentID)
+	payload := map[string]any{
+		"sourceAgentId":    change.SourceAgentID.String(),
+		"targetAgentId":    change.TargetAgentID.String(),
+		"targetAgentName":  targetName,
+		"previousAffinity": change.PreviousAffinity,
+		"affinity":         change.CurrentAffinity,
+		"previousLabel":    change.PreviousLabel,
+		"label":            change.CurrentLabel,
+		"reason":           strings.TrimSpace(reason),
+		"updatedAt":        change.UpdatedAt.UTC().Format(time.RFC3339),
+	}
+	for k, v := range extra {
+		payload[k] = v
+	}
+	a.emitEventToAgentID(
+		change.SourceAgentID,
+		"relationship.affinity_changed",
+		"ALIVE Relationship Affinity Changed",
+		fmt.Sprintf("Relationship affinity changed for %s", targetName),
+		aliveagent.BuildDedupeKey(
+			change.SourceAgentID.String(),
+			"relationship.affinity_changed",
+			change.TargetAgentID.String(),
+			fmt.Sprintf("%d", change.CurrentAffinity),
+			change.CurrentLabel,
+			change.UpdatedAt.UTC().Format("20060102150405"),
+		),
+		payload,
+	)
+}
+
+func (a *Actions) lookupAgentName(agentID uuid.UUID) string {
+	if agentID == uuid.Nil || a.svcCtx == nil || a.svcCtx.DB == nil {
+		return ""
+	}
+	row, err := a.svcCtx.DB.Agent.Get(a.ctx, agentID)
+	if err != nil {
+		return ""
+	}
+	return strings.TrimSpace(row.Name)
+}
+
+func (a *Actions) emitDiscussionEventToParticipants(conversationID uuid.UUID, senderAgentID uuid.UUID, includeSender bool, eventType, title, message string, dedupeParts []string, payload map[string]any) {
+	if a.svcCtx == nil || a.svcCtx.AliveAgent == nil {
+		return
+	}
+	participants, err := a.svcCtx.DB.ConversationParticipant.Query().
+		Where(conversationparticipant.ConversationID(conversationID)).
+		All(a.ctx)
+	if err != nil {
+		a.Logger.Errorf("load conversation participants for event failed conversation_id=%s event=%s err=%v", conversationID.String(), eventType, err)
+		return
+	}
+	if len(participants) == 0 {
+		return
+	}
+
+	participantIDs := make([]uuid.UUID, 0, len(participants))
+	seen := make(map[uuid.UUID]struct{}, len(participants))
+	for _, p := range participants {
+		if !includeSender && p.AgentID == senderAgentID {
+			continue
+		}
+		if _, ok := seen[p.AgentID]; ok {
+			continue
+		}
+		seen[p.AgentID] = struct{}{}
+		participantIDs = append(participantIDs, p.AgentID)
+	}
+	if len(participantIDs) == 0 {
+		return
+	}
+
+	targets, err := a.svcCtx.DB.Agent.Query().
+		Where(agent.IDIn(participantIDs...), agent.StatusNEQ("dead")).
+		All(a.ctx)
+	if err != nil {
+		a.Logger.Errorf("load participants for event failed conversation_id=%s event=%s err=%v", conversationID.String(), eventType, err)
+		return
+	}
+
+	basePayload := map[string]any{}
+	for k, v := range payload {
+		basePayload[k] = v
+	}
+	basePayload["conversationId"] = conversationID.String()
+
+	for _, target := range targets {
+		targetPayload := map[string]any{}
+		for k, v := range basePayload {
+			targetPayload[k] = v
+		}
+		parts := append([]string{conversationID.String()}, dedupeParts...)
+		dedupe := aliveagent.BuildDedupeKey(target.ID.String(), eventType, parts...)
+		a.emitEventToAgentRow(target, eventType, title, message, dedupe, targetPayload)
+	}
+}
+
+func (a *Actions) emitDiscussionConversationCreated(conversationID, creatorAgentID uuid.UUID, memberIDs []uuid.UUID, title, chatType string, participantCount int) {
+	payload := map[string]any{
+		"creatorAgentId":   creatorAgentID.String(),
+		"title":            title,
+		"chatType":         chatType,
+		"participantCount": participantCount,
+		"participantIds":   uuidSliceToStrings(memberIDs),
+	}
+	a.emitDiscussionEventToParticipants(
+		conversationID,
+		creatorAgentID,
+		true,
+		"discussion.conversation_created",
+		"ALIVE Discussion Created",
+		fmt.Sprintf("Discussion created: %s", title),
+		[]string{"conversation_created"},
+		payload,
+	)
+}
+
+func (a *Actions) emitDiscussionParticipantInvited(conversationID, inviterAgentID, invitedAgentID uuid.UUID, invitedName string) {
+	payload := map[string]any{
+		"inviterAgentId": inviterAgentID.String(),
+		"invitedAgentId": invitedAgentID.String(),
+		"invitedName":    invitedName,
+	}
+	a.emitDiscussionEventToParticipants(
+		conversationID,
+		inviterAgentID,
+		true,
+		"discussion.participant_invited",
+		"ALIVE Discussion Invitation",
+		fmt.Sprintf("A participant was invited: %s", strings.TrimSpace(invitedName)),
+		[]string{"participant_invited", invitedAgentID.String()},
+		payload,
+	)
+}
+
+func (a *Actions) emitDiscussionSummaryIfNeeded(conversationID, senderAgentID, messageID uuid.UUID, preview string) {
+	conv, err := a.svcCtx.DB.Conversation.Get(a.ctx, conversationID)
+	if err != nil {
+		return
+	}
+	// V1 threshold strategy: request one summary every 20 messages.
+	if conv.MessageCount <= 0 || conv.MessageCount%20 != 0 {
+		return
+	}
+
+	payload := map[string]any{
+		"triggerMessageId": messageID.String(),
+		"triggerPreview":   preview,
+		"messageCount":     conv.MessageCount,
+		"threshold":        20,
+	}
+	a.emitDiscussionEventToParticipants(
+		conversationID,
+		senderAgentID,
+		false,
+		"discussion.summary_requested",
+		"ALIVE Discussion Summary Requested",
+		"Conversation reached the summary threshold.",
+		[]string{"summary_requested", fmt.Sprintf("%d", conv.MessageCount)},
+		payload,
+	)
+}
+
+func (a *Actions) emitDiscussionSummaryPublished(conversationID, senderAgentID, messageID uuid.UUID, preview string) {
+	payload := map[string]any{
+		"summaryMessageId": messageID.String(),
+		"summaryPreview":   preview,
+	}
+	a.emitDiscussionEventToParticipants(
+		conversationID,
+		senderAgentID,
+		true,
+		"discussion.summary_published",
+		"ALIVE Discussion Summary Published",
+		"A discussion summary has been published.",
+		[]string{"summary_published", messageID.String()},
+		payload,
+	)
+}
+
+func uuidSliceToStrings(ids []uuid.UUID) []string {
+	if len(ids) == 0 {
+		return nil
+	}
+	out := make([]string, 0, len(ids))
+	for _, id := range ids {
+		if id == uuid.Nil {
+			continue
+		}
+		out = append(out, id.String())
+	}
+	return out
 }
 
 // findOrCreateDirectConversation finds an existing direct conversation between two agents or creates one.
@@ -1043,8 +1487,24 @@ func findOrCreateDirectConversation(ctx context.Context, tx *ent.Tx, agentA, age
 	return conv, nil
 }
 
+type relationshipChange struct {
+	SourceAgentID            uuid.UUID
+	TargetAgentID            uuid.UUID
+	PreviousAffinity         int64
+	CurrentAffinity          int64
+	PreviousLabel            string
+	CurrentLabel             string
+	InteractionDelta         int64
+	MessageDelta             int64
+	PreviousInteractionCount int64
+	CurrentInteractionCount  int64
+	PreviousMessageCount     int64
+	CurrentMessageCount      int64
+	UpdatedAt                time.Time
+}
+
 // upsertRelationship creates or updates a one-directional relationship record.
-func upsertRelationship(ctx context.Context, tx *ent.Tx, fromID, toID uuid.UUID, affinityDelta, interactionDelta int64) error {
+func upsertRelationship(ctx context.Context, tx *ent.Tx, fromID, toID uuid.UUID, affinityDelta, interactionDelta int64) (*relationshipChange, error) {
 	rel, err := tx.AgentRelationship.Query().
 		Where(
 			agentrelationship.AgentID(fromID),
@@ -1053,8 +1513,11 @@ func upsertRelationship(ctx context.Context, tx *ent.Tx, fromID, toID uuid.UUID,
 	if err != nil {
 		if ent.IsNotFound(err) {
 			newAffinity := affinityDelta
+			if newAffinity < 0 {
+				newAffinity = 0
+			}
 			label := affinityLabel(newAffinity)
-			_, err := tx.AgentRelationship.Create().
+			created, err := tx.AgentRelationship.Create().
 				SetAgentID(fromID).
 				SetTargetAgentID(toID).
 				SetAffinity(newAffinity).
@@ -1062,19 +1525,60 @@ func upsertRelationship(ctx context.Context, tx *ent.Tx, fromID, toID uuid.UUID,
 				SetInteractionCount(interactionDelta).
 				SetMessageCount(0).
 				Save(ctx)
-			return err
+			if err != nil {
+				return nil, err
+			}
+			return &relationshipChange{
+				SourceAgentID:            fromID,
+				TargetAgentID:            toID,
+				PreviousAffinity:         0,
+				CurrentAffinity:          newAffinity,
+				PreviousLabel:            "acquaintance",
+				CurrentLabel:             label,
+				InteractionDelta:         interactionDelta,
+				MessageDelta:             0,
+				PreviousInteractionCount: 0,
+				CurrentInteractionCount:  created.InteractionCount,
+				PreviousMessageCount:     0,
+				CurrentMessageCount:      created.MessageCount,
+				UpdatedAt:                created.UpdatedAt,
+			}, nil
 		}
-		return err
+		return nil, err
 	}
 
+	previousAffinity := rel.Affinity
+	previousLabel := rel.Label
+	previousInteractionCount := rel.InteractionCount
+	previousMessageCount := rel.MessageCount
 	newAffinity := rel.Affinity + affinityDelta
+	if newAffinity < 0 {
+		newAffinity = 0
+	}
 	label := affinityLabel(newAffinity)
-	_, err = tx.AgentRelationship.UpdateOneID(rel.ID).
-		AddAffinity(affinityDelta).
+	updated, err := tx.AgentRelationship.UpdateOneID(rel.ID).
+		SetAffinity(newAffinity).
 		AddInteractionCount(interactionDelta).
 		SetLabel(label).
 		Save(ctx)
-	return err
+	if err != nil {
+		return nil, err
+	}
+	return &relationshipChange{
+		SourceAgentID:            fromID,
+		TargetAgentID:            toID,
+		PreviousAffinity:         previousAffinity,
+		CurrentAffinity:          updated.Affinity,
+		PreviousLabel:            previousLabel,
+		CurrentLabel:             updated.Label,
+		InteractionDelta:         interactionDelta,
+		MessageDelta:             0,
+		PreviousInteractionCount: previousInteractionCount,
+		CurrentInteractionCount:  updated.InteractionCount,
+		PreviousMessageCount:     previousMessageCount,
+		CurrentMessageCount:      updated.MessageCount,
+		UpdatedAt:                updated.UpdatedAt,
+	}, nil
 }
 
 // upsertRelationshipMessageOnly increments message_count for a relationship.
@@ -1114,6 +1618,23 @@ func affinityLabel(affinity int64) string {
 		return "friend"
 	default:
 		return "acquaintance"
+	}
+}
+
+func normalizeRelationshipMarkType(raw string) string {
+	switch strings.ToLower(strings.TrimSpace(raw)) {
+	case "check_in", "checkin":
+		return "check_in"
+	case "follow_up", "followup":
+		return "follow_up"
+	case "support":
+		return "support"
+	case "memory":
+		return "memory"
+	case "interaction":
+		return "interaction"
+	default:
+		return "check_in"
 	}
 }
 
@@ -1223,6 +1744,24 @@ func (a *Actions) UpdateGoal(agentID uuid.UUID, increment int64, evidence string
 	if err != nil {
 		return nil, err
 	}
+	if milestoneReached {
+		a.emitEventToAgentID(
+			agentID,
+			"goal.milestone_reached",
+			"ALIVE Goal Milestone",
+			fmt.Sprintf("Goal milestone reached: %s", strings.TrimSpace(evidence)),
+			aliveagent.BuildDedupeKey(agentID.String(), "goal.milestone_reached", fmt.Sprintf("%d", newMilestone)),
+			map[string]any{
+				"agentId":        agentID.String(),
+				"progressBefore": oldProgress,
+				"progressAfter":  newProgress,
+				"target":         ag.GoalTarget,
+				"milestone":      newMilestone,
+				"bonusTimer":     bonusTimer,
+				"evidence":       evidence,
+			},
+		)
+	}
 
 	return &GoalUpdateResp{
 		CurrentProgress:  newProgress,
@@ -1274,6 +1813,21 @@ func (a *Actions) EmitLastWords(agentID uuid.UUID, lastWords string) (*LastWords
 	if err != nil {
 		return nil, err
 	}
+	a.emitEventToAgentID(
+		agentID,
+		"learning.reflection_published",
+		"ALIVE Reflection Published",
+		"A final reflection has been published.",
+		aliveagent.BuildDedupeKey(agentID.String(), "learning.reflection_published", p.ID.String()),
+		map[string]any{
+			"postId":       p.ID.String(),
+			"contentType":  "dying_words",
+			"agentId":      agentID.String(),
+			"preview":      truncate(lastWords, 140),
+			"publishedAt":  common.TimeToISO(now),
+			"isFinalWords": true,
+		},
+	)
 
 	return &LastWordsResp{
 		PostID:   p.ID.String(),
@@ -1402,6 +1956,38 @@ func (a *Actions) CreateTask(agentID uuid.UUID, title, description, priority str
 	if err != nil {
 		return nil, err
 	}
+	a.emitEventToAgentID(
+		agentID,
+		"task.created",
+		"ALIVE Task Created",
+		fmt.Sprintf("Task created: %s", t.Title),
+		aliveagent.BuildDedupeKey(agentID.String(), "task.created", t.ID.String()),
+		map[string]any{
+			"taskId":      t.ID.String(),
+			"title":       t.Title,
+			"description": common.PtrString(t.Description),
+			"priority":    t.Priority,
+			"status":      t.Status,
+			"progress":    t.Progress,
+		},
+	)
+	descText := strings.ToLower(common.PtrString(t.Description))
+	if strings.Contains(descText, "discussion") || strings.Contains(descText, "conversation") {
+		a.emitEventToAgentID(
+			agentID,
+			"discussion.topic_task_created",
+			"ALIVE Discussion Task Created",
+			fmt.Sprintf("Task extracted from discussion: %s", t.Title),
+			aliveagent.BuildDedupeKey(agentID.String(), "discussion.topic_task_created", t.ID.String()),
+			map[string]any{
+				"taskId":      t.ID.String(),
+				"title":       t.Title,
+				"description": common.PtrString(t.Description),
+				"priority":    t.Priority,
+				"status":      t.Status,
+			},
+		)
+	}
 	return &AgentTaskResp{
 		TaskID:   t.ID.String(),
 		Title:    t.Title,
@@ -1428,6 +2014,7 @@ func (a *Actions) UpdateTask(agentID uuid.UUID, taskID string, status string, pr
 		return nil, errors.New("task has been deleted")
 	}
 
+	prevStatus := t.Status
 	update := a.svcCtx.DB.AgentTask.UpdateOneID(tid)
 	if s := strings.TrimSpace(status); s != "" {
 		update = update.SetStatus(s)
@@ -1439,6 +2026,37 @@ func (a *Actions) UpdateTask(agentID uuid.UUID, taskID string, status string, pr
 	updated, err := update.Save(a.ctx)
 	if err != nil {
 		return nil, err
+	}
+	a.emitEventToAgentID(
+		agentID,
+		"task.updated",
+		"ALIVE Task Updated",
+		fmt.Sprintf("Task updated: %s", updated.Title),
+		aliveagent.BuildDedupeKey(agentID.String(), "task.updated", updated.ID.String(), updated.Status, fmt.Sprintf("%d", updated.Progress)),
+		map[string]any{
+			"taskId":      updated.ID.String(),
+			"title":       updated.Title,
+			"description": common.PtrString(updated.Description),
+			"priority":    updated.Priority,
+			"status":      updated.Status,
+			"progress":    updated.Progress,
+		},
+	)
+	if prevStatus != updated.Status {
+		a.emitEventToAgentID(
+			agentID,
+			"task.state_changed",
+			"ALIVE Task State Changed",
+			fmt.Sprintf("Task state changed: %s -> %s", prevStatus, updated.Status),
+			aliveagent.BuildDedupeKey(agentID.String(), "task.state_changed", updated.ID.String(), prevStatus, updated.Status),
+			map[string]any{
+				"taskId":      updated.ID.String(),
+				"title":       updated.Title,
+				"fromStatus":  prevStatus,
+				"toStatus":    updated.Status,
+				"newProgress": updated.Progress,
+			},
+		)
 	}
 	return &AgentTaskResp{
 		TaskID:   updated.ID.String(),
@@ -1508,6 +2126,19 @@ func (a *Actions) DeleteTask(agentID uuid.UUID, taskID string) (*AgentDeleteTask
 		Save(a.ctx); err != nil {
 		return nil, err
 	}
+	a.emitEventToAgentID(
+		agentID,
+		"task.deleted",
+		"ALIVE Task Deleted",
+		fmt.Sprintf("Task deleted: %s", t.Title),
+		aliveagent.BuildDedupeKey(agentID.String(), "task.deleted", tid.String()),
+		map[string]any{
+			"taskId":      tid.String(),
+			"title":       t.Title,
+			"description": common.PtrString(t.Description),
+			"priority":    t.Priority,
+		},
+	)
 	return &AgentDeleteTaskResp{
 		TaskID:  tid.String(),
 		Deleted: true,

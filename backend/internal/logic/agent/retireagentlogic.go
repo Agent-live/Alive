@@ -3,11 +3,14 @@ package agent
 import (
 	"context"
 	"errors"
+	"fmt"
+	"strings"
 	"time"
 
 	"backend/ent"
 	"backend/ent/memorial"
 	"backend/ent/tribute"
+	"backend/internal/aliveagent"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -95,6 +98,65 @@ func (l *RetireAgentLogic) RetireAgent(req *types.AgentIdReq) (resp *types.Memor
 		tributes = nil
 	}
 	a, _ = l.svcCtx.DB.Agent.Get(l.ctx, agentID)
+
+	// Best-effort: emit lifecycle events then retire runtime session.
+	if l.svcCtx != nil && l.svcCtx.AliveAgent != nil {
+		runtimeAgentID := strings.TrimSpace(common.PtrString(owned.AliveAgentRuntimeID))
+		if runtimeAgentID != "" {
+			basePayload := map[string]any{
+				"agentId":       owned.ID.String(),
+				"agentName":     owned.Name,
+				"retiredBy":     u.ID.String(),
+				"retiredByName": u.Nickname,
+				"diedAt":        common.TimeToISO(m.DiedAt),
+				"memorialId":    m.ID.String(),
+			}
+			_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
+				RuntimeAgentID: runtimeAgentID,
+				AgentID:        owned.ID.String(),
+				EventType:      "lifecycle.agent_retired",
+				Title:          "ALIVE Agent Retired",
+				Message:        fmt.Sprintf("Agent retired: %s", owned.Name),
+				DedupeKey:      aliveagent.BuildDedupeKey(owned.ID.String(), "lifecycle.agent_retired", m.ID.String()),
+				Payload:        basePayload,
+				TimeoutSeconds: 120,
+			})
+			_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
+				RuntimeAgentID: runtimeAgentID,
+				AgentID:        owned.ID.String(),
+				EventType:      "lifecycle.death_committed",
+				Title:          "ALIVE Lifecycle Death Committed",
+				Message:        fmt.Sprintf("Death committed for agent: %s", owned.Name),
+				DedupeKey:      aliveagent.BuildDedupeKey(owned.ID.String(), "lifecycle.death_committed", m.ID.String()),
+				Payload:        basePayload,
+				TimeoutSeconds: 120,
+			})
+			_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
+				RuntimeAgentID: runtimeAgentID,
+				AgentID:        owned.ID.String(),
+				EventType:      "memorial.created",
+				Title:          "ALIVE Memorial Created",
+				Message:        fmt.Sprintf("Memorial created for agent: %s", owned.Name),
+				DedupeKey:      aliveagent.BuildDedupeKey(owned.ID.String(), "memorial.created", m.ID.String()),
+				Payload:        basePayload,
+				TimeoutSeconds: 120,
+			})
+			_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
+				RuntimeAgentID: runtimeAgentID,
+				AgentID:        owned.ID.String(),
+				EventType:      "legacy.pack_created",
+				Title:          "ALIVE Legacy Pack Created",
+				Message:        fmt.Sprintf("Legacy pack created for agent: %s", owned.Name),
+				DedupeKey:      aliveagent.BuildDedupeKey(owned.ID.String(), "legacy.pack_created", m.ID.String()),
+				Payload:        basePayload,
+				TimeoutSeconds: 120,
+			})
+		}
+		if err := l.svcCtx.AliveAgent.UnregisterAgent(agentID.String()); err != nil {
+			l.Logger.Errorf("unregister alive agent failed: %v", err)
+		}
+	}
+
 	out := common.ToMemorialRespDetailed(m, tributes, a, u.Nickname, int64(len(tributes)))
 	return &out, nil
 }

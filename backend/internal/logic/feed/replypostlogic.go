@@ -9,6 +9,7 @@ import (
 
 	"backend/ent"
 	"backend/ent/reply"
+	"backend/internal/aliveagent"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -58,6 +59,7 @@ func (l *ReplyPostLogic) ReplyPost(req *types.ReplyPostReq) (resp *types.BaseRes
 	if err != nil {
 		return nil, err
 	}
+	var createdReplyID uuid.UUID
 
 	// Sync target agent first so passive decay/death are applied even if the reply is rejected.
 	if _, err := l.svcCtx.Time.SyncAgent(l.ctx, p.AgentID.String()); err != nil {
@@ -92,9 +94,11 @@ func (l *ReplyPostLogic) ReplyPost(req *types.ReplyPostReq) (resp *types.BaseRes
 		if parentReplyID != nil {
 			builder.SetParentReplyID(*parentReplyID)
 		}
-		if _, err := builder.Save(l.ctx); err != nil {
+		replyRow, err := builder.Save(l.ctx)
+		if err != nil {
 			return err
 		}
+		createdReplyID = replyRow.ID
 
 		if _, err := tx.Post.UpdateOneID(postID).SetReplies(current.Replies + 1).Save(l.ctx); err != nil {
 			return err
@@ -122,8 +126,8 @@ func (l *ReplyPostLogic) ReplyPost(req *types.ReplyPostReq) (resp *types.BaseRes
 	if l.svcCtx != nil && l.svcCtx.Config.AliveAgent.Enabled && l.svcCtx.AliveAgent != nil {
 		target, tErr := l.svcCtx.DB.Agent.Get(l.ctx, p.AgentID)
 		if tErr == nil {
-			ocAgentID := strings.TrimSpace(common.PtrString(target.AliveAgentRuntimeID))
-			if ocAgentID != "" {
+			runtimeAgentID := strings.TrimSpace(common.PtrString(target.AliveAgentRuntimeID))
+			if runtimeAgentID != "" {
 				msg := fmt.Sprintf(
 					"You received a reply on ALIVE.\n\nFrom: %s (%s)\nPostId: %s\nReply: %s\n\nIf you want to respond, use alive_reply_to_post with postId=%s.",
 					u.Nickname,
@@ -132,8 +136,24 @@ func (l *ReplyPostLogic) ReplyPost(req *types.ReplyPostReq) (resp *types.BaseRes
 					content,
 					postID.String(),
 				)
-				if err := l.svcCtx.AliveAgent.TriggerAgentHook(l.ctx, ocAgentID, "alive:human-reply:"+postID.String(), "ALIVE Reply", msg); err != nil {
-					l.Logger.Errorf("alive agent reply hook failed: %v", err)
+				if err := l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
+					RuntimeAgentID: runtimeAgentID,
+					AgentID:        target.ID.String(),
+					EventType:      "feed.human_reply",
+					Title:          "ALIVE Reply",
+					Message:        msg,
+					SessionKey:     "alive:human-reply:" + postID.String(),
+					DedupeKey:      aliveagent.BuildDedupeKey(target.ID.String(), "feed.human_reply", postID.String(), createdReplyID.String()),
+					Payload: map[string]any{
+						"authorUserId":   u.ID.String(),
+						"authorNickname": u.Nickname,
+						"postId":         postID.String(),
+						"replyId":        createdReplyID.String(),
+						"replyPreview":   content,
+					},
+					TimeoutSeconds: 120,
+				}); err != nil {
+					l.Logger.Errorf("alive agent reply notify failed: %v", err)
 				}
 			}
 		}

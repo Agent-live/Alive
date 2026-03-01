@@ -516,6 +516,7 @@ function TeachTab({ skills, agents, onSkillsUpdated }: { skills: AgentSkill[]; a
 
   const activeSkills = useMemo(() => skills.filter((s) => s.status === 'active'), [skills]);
   const lessons = useMemo(() => skills.filter((s) => s.status === 'lesson'), [skills]);
+  const rejectedSkills = useMemo(() => skills.filter((s) => s.status === 'rejected'), [skills]);
 
   const activeWithAgent = useMemo(
     () => activeSkills.filter((s): s is AgentSkill & Required<Pick<AgentSkill, 'agentId' | 'agentName' | 'agentAvatar'>> => !!s.agentId),
@@ -559,6 +560,19 @@ function TeachTab({ skills, agents, onSkillsUpdated }: { skills: AgentSkill[]; a
         </div>
       )}
 
+      {rejectedSkills.length > 0 && !selectedAgentId && (
+        <div>
+          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+            Rejected Skills ({rejectedSkills.length})
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {rejectedSkills.map((skill) => (
+              <SkillCard key={skill.id} skill={skill} showAgent={false} onClick={setSelectedSkill} />
+            ))}
+          </div>
+        </div>
+      )}
+
       {filteredActive.length === 0 && selectedAgentId && (
         <EmptyState icon="school" message={t('profile.noActiveSkills')} />
       )}
@@ -576,6 +590,13 @@ function TeachTab({ skills, agents, onSkillsUpdated }: { skills: AgentSkill[]; a
 function SkillCard({ skill, showAgent, onClick }: { skill: AgentSkill; showAgent?: boolean; onClick: (s: AgentSkill) => void }) {
   const { t } = useTranslation();
   const isLesson = skill.status === 'lesson';
+  const isRejected = skill.status === 'rejected';
+  const statusBadgeClass = isRejected
+    ? 'bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-400'
+    : isLesson
+      ? 'bg-orange-50 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400'
+      : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400';
+  const statusLabel = isRejected ? 'Rejected' : isLesson ? t('profile.lesson') : t('profile.active');
 
   return (
     <button
@@ -584,7 +605,7 @@ function SkillCard({ skill, showAgent, onClick }: { skill: AgentSkill; showAgent
     >
       <div className="flex items-start gap-3">
         <div className="relative flex-shrink-0">
-          {!isLesson && skill.agentAvatar ? (
+          {!isLesson && !isRejected && skill.agentAvatar ? (
             <>
               <img src={skill.agentAvatar} alt={skill.agentName} className="w-9 h-9 rounded-lg bg-gray-50 dark:bg-gray-800" />
               <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center ${categoryColors[skill.category]}`}>
@@ -600,12 +621,8 @@ function SkillCard({ skill, showAgent, onClick }: { skill: AgentSkill; showAgent
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">{skill.name}</p>
-            <span className={`text-[10px] px-1.5 py-0.5 rounded-full flex-shrink-0 ${
-              isLesson
-                ? 'bg-orange-50 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400'
-                : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400'
-            }`}>
-              {isLesson ? t('profile.lesson') : t('profile.active')}
+            <span className={`text-[10px] px-1.5 py-0.5 rounded-full flex-shrink-0 ${statusBadgeClass}`}>
+              {statusLabel}
             </span>
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">{skill.description}</p>
@@ -650,6 +667,7 @@ function SkillDetailModal({ skill, agents, onClose, onSkillsUpdated }: { skill: 
   if (!skill) return null;
 
   const isLesson = skill.status === 'lesson';
+  const isRejected = skill.status === 'rejected';
 
   const startEdit = () => {
     setDraft({
@@ -685,6 +703,37 @@ function SkillDetailModal({ skill, agents, onClose, onSkillsUpdated }: { skill: 
       onClose();
     } catch (e) {
       const message = e && typeof e === 'object' && 'message' in e ? String((e as any).message) : 'Deactivate failed';
+      toast.error(message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const doApprove = async () => {
+    setBusy(true);
+    try {
+      await skillApi.reviewSkill(skill.id, 'approve');
+      toast.success('Skill approved');
+      onSkillsUpdated();
+      onClose();
+    } catch (e) {
+      const message = e && typeof e === 'object' && 'message' in e ? String((e as any).message) : 'Approve failed';
+      toast.error(message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const doReject = async () => {
+    const reason = window.prompt('Reject reason (optional):') || '';
+    setBusy(true);
+    try {
+      await skillApi.reviewSkill(skill.id, 'reject', reason);
+      toast.success('Skill rejected');
+      onSkillsUpdated();
+      onClose();
+    } catch (e) {
+      const message = e && typeof e === 'object' && 'message' in e ? String((e as any).message) : 'Reject failed';
       toast.error(message);
     } finally {
       setBusy(false);
@@ -738,7 +787,7 @@ function SkillDetailModal({ skill, agents, onClose, onSkillsUpdated }: { skill: 
         {/* Header */}
         <div className="flex items-start gap-3 p-4 border-b border-gray-100 dark:border-gray-800">
           <div className="relative flex-shrink-0">
-            {!isLesson && skill.agentAvatar ? (
+            {!isLesson && !isRejected && skill.agentAvatar ? (
               <>
                 <img src={skill.agentAvatar} alt={skill.agentName} className="w-11 h-11 rounded-xl bg-gray-50 dark:bg-gray-800" />
                 <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center border-2 border-white dark:border-gray-900 ${categoryColors[skill.category]}`}>
@@ -755,11 +804,13 @@ function SkillDetailModal({ skill, agents, onClose, onSkillsUpdated }: { skill: 
             <div className="flex items-center gap-2">
               <h2 className="text-base font-bold text-gray-900 dark:text-gray-100 truncate">{skill.name}</h2>
               <span className={`text-[10px] px-1.5 py-0.5 rounded-full flex-shrink-0 ${
-                isLesson
-                  ? 'bg-orange-50 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400'
-                  : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400'
+                isRejected
+                  ? 'bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-400'
+                  : isLesson
+                    ? 'bg-orange-50 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400'
+                    : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400'
               }`}>
-                {isLesson ? t('profile.lesson') : t('profile.active')}
+                {isRejected ? 'Rejected' : isLesson ? t('profile.lesson') : t('profile.active')}
               </span>
             </div>
             <div className="flex items-center gap-2 mt-0.5">
@@ -869,6 +920,15 @@ function SkillDetailModal({ skill, agents, onClose, onSkillsUpdated }: { skill: 
               <Icon name="school" size={16} />
               {teachAgent ? t('profile.teachAgent', { name: agents.find((a) => a.agentId === teachAgent)?.agentName }) : t('profile.selectAnAgent')}
             </button>
+          ) : isRejected ? (
+            <button
+              onClick={doApprove}
+              disabled={busy}
+              className="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
+            >
+              <Icon name="check_circle" size={16} />
+              Approve
+            </button>
           ) : (
             <button
               onClick={doDeactivate}
@@ -897,14 +957,26 @@ function SkillDetailModal({ skill, agents, onClose, onSkillsUpdated }: { skill: 
               </button>
             </>
           ) : (
-            <button
-              onClick={startEdit}
-              disabled={busy}
-              className="flex-1 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
-            >
-              <Icon name="edit" size={16} />
-              {t('common.edit')}
-            </button>
+            <>
+              <button
+                onClick={startEdit}
+                disabled={busy}
+                className="flex-1 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
+              >
+                <Icon name="edit" size={16} />
+                {t('common.edit')}
+              </button>
+              {isLesson && (
+                <button
+                  onClick={doReject}
+                  disabled={busy}
+                  className="flex-1 py-2.5 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-300 text-sm font-medium hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
+                >
+                  <Icon name="block" size={16} />
+                  Reject
+                </button>
+              )}
+            </>
           )}
           <button
             onClick={doDelete}

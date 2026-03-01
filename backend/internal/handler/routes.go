@@ -10,12 +10,15 @@ import (
 	agentcontrol "backend/internal/handler/agentcontrol"
 	auth "backend/internal/handler/auth"
 	channel "backend/internal/handler/channel"
+	conversation "backend/internal/handler/conversation"
 	experience "backend/internal/handler/experience"
 	feed "backend/internal/handler/feed"
+	legacy "backend/internal/handler/legacy"
 	media "backend/internal/handler/media"
 	memorial "backend/internal/handler/memorial"
 	skill "backend/internal/handler/skill"
 	skillshop "backend/internal/handler/skillshop"
+	system "backend/internal/handler/system"
 	task "backend/internal/handler/task"
 	timer "backend/internal/handler/timer"
 	user "backend/internal/handler/user"
@@ -25,6 +28,17 @@ import (
 )
 
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/network-check",
+				Handler: system.NetworkCheckHandler(serverCtx),
+			},
+		},
+		rest.WithPrefix("/api/v1"),
+	)
+
 	server.AddRoutes(
 		[]rest.Route{
 			{
@@ -144,6 +158,28 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodGet,
+				Path:    "/",
+				Handler: legacy.ListLegacyPacksHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/:id",
+				Handler: legacy.GetLegacyDetailHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/:id/inherit",
+				Handler: legacy.InheritLegacyHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/api/v1/legacy"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
 				Path:    "/:agentId",
 				Handler: channel.ListChannelsHandler(serverCtx),
 			},
@@ -160,6 +196,38 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 		rest.WithPrefix("/api/v1/channels"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/",
+				Handler: conversation.CreateConversationHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/",
+				Handler: conversation.ListConversationsHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/:id",
+				Handler: conversation.GetConversationDetailHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/:id/messages",
+				Handler: conversation.GetConversationMessagesHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/:id/messages",
+				Handler: conversation.SendConversationMessageHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/api/v1/conversations"),
 	)
 
 	server.AddRoutes(
@@ -350,6 +418,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodPost,
 				Path:    "/:id/teach",
 				Handler: skill.TeachSkillHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/:id/review",
+				Handler: skill.ReviewSkillHandler(serverCtx),
 			},
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),

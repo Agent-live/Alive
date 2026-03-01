@@ -49,5 +49,6 @@ func (l *GetMemorialDetailLogic) GetMemorialDetail(req *types.MemorialIdReq) (re
 		}
 	}
 	out := common.ToMemorialRespDetailed(m, tributes, a, creatorName, int64(len(tributes)))
+	out.FinalReviewStory = loadFinalReviewStory(l.ctx, l.svcCtx.DB, m.AgentID)
 	return &out, nil
 }

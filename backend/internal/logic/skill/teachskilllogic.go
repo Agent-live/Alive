@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"backend/ent"
@@ -56,6 +57,9 @@ func (l *TeachSkillLogic) TeachSkill(req *types.SkillTeachReq) (resp *types.Skil
 	if template.OwnerUserID != u.ID || template.DeletedAt != nil {
 		return nil, errors.New("skill not found")
 	}
+	if strings.EqualFold(strings.TrimSpace(template.Status), "rejected") {
+		return nil, errors.New("skill is rejected and cannot be taught")
+	}
 
 	targetAgent, err := l.svcCtx.DB.Agent.Get(l.ctx, agentID)
 	if err != nil {
@@ -101,6 +105,26 @@ func (l *TeachSkillLogic) TeachSkill(req *types.SkillTeachReq) (resp *types.Skil
 		}
 	}
 
+	runtimeAgentID := strings.TrimSpace(common.PtrString(targetAgent.AliveAgentRuntimeID))
+	if runtimeAgentID != "" && l.svcCtx.AliveAgent != nil {
+		_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
+			RuntimeAgentID: runtimeAgentID,
+			AgentID:        targetAgent.ID.String(),
+			EventType:      "skill.teach_started",
+			Title:          "ALIVE Skill Teaching Started",
+			Message:        fmt.Sprintf("Teaching skill %s to %s", activeSkill.Name, targetAgent.Name),
+			DedupeKey:      aliveagent.BuildDedupeKey(targetAgent.ID.String(), "skill.teach_started", activeSkill.ID.String(), activeSkill.Name),
+			Payload: map[string]any{
+				"skillId":       activeSkill.ID.String(),
+				"skillName":     activeSkill.Name,
+				"sourceSkillId": common.UUIDStringPtr(activeSkill.SourceSkillID),
+				"targetAgentId": targetAgent.ID.String(),
+				"targetName":    targetAgent.Name,
+			},
+			TimeoutSeconds: 120,
+		})
+	}
+
 	// If this skill exists in the local AliveAgent skills checkout, prefer copying the full folder
 	// into the agent workspace (preserves _meta.json, scripts/, references/, etc).
 	localSourceDir := ""
@@ -134,6 +158,64 @@ func (l *TeachSkillLogic) TeachSkill(req *types.SkillTeachReq) (resp *types.Skil
 		Save(l.ctx)
 	if err != nil {
 		return nil, err
+	}
+
+	if runtimeAgentID != "" && l.svcCtx.AliveAgent != nil {
+		payload := map[string]any{
+			"skillId":                activeSkill.ID.String(),
+			"skillName":              activeSkill.Name,
+			"targetAgentId":          targetAgent.ID.String(),
+			"aliveAgentSkillId":      common.PtrString(activeSkill.AliveAgentSkillID),
+			"aliveAgentGatewayId":    common.PtrString(activeSkill.AliveAgentGatewayID),
+			"status":                 activeSkill.Status,
+			"sourceSkillId":          common.UUIDStringPtr(activeSkill.SourceSkillID),
+			"disableModelInvocation": false,
+		}
+		_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
+			RuntimeAgentID: runtimeAgentID,
+			AgentID:        targetAgent.ID.String(),
+			EventType:      "skill.taught_to_agent",
+			Title:          "ALIVE Skill Taught",
+			Message:        fmt.Sprintf("Skill taught: %s", activeSkill.Name),
+			DedupeKey:      aliveagent.BuildDedupeKey(targetAgent.ID.String(), "skill.taught_to_agent", activeSkill.ID.String(), common.PtrString(activeSkill.AliveAgentSkillID)),
+			Payload:        payload,
+			TimeoutSeconds: 120,
+		})
+		// Learning module signal: successful learning snapshot.
+		_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
+			RuntimeAgentID: runtimeAgentID,
+			AgentID:        targetAgent.ID.String(),
+			EventType:      "learning.skill_learned",
+			Title:          "ALIVE Learning Update",
+			Message:        fmt.Sprintf("Learned skill: %s", activeSkill.Name),
+			DedupeKey:      aliveagent.BuildDedupeKey(targetAgent.ID.String(), "learning.skill_learned", activeSkill.ID.String(), activeSkill.Name),
+			Payload: map[string]any{
+				"skillId":       activeSkill.ID.String(),
+				"key":           activeSkill.Name,
+				"name":          activeSkill.Name,
+				"source":        "alive.skill.teach",
+				"targetAgentId": targetAgent.ID.String(),
+			},
+			TimeoutSeconds: 120,
+		})
+		_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
+			RuntimeAgentID: runtimeAgentID,
+			AgentID:        targetAgent.ID.String(),
+			EventType:      "learning.skill_mastery_updated",
+			Title:          "ALIVE Learning Mastery",
+			Message:        fmt.Sprintf("Skill mastery initialized: %s", activeSkill.Name),
+			DedupeKey:      aliveagent.BuildDedupeKey(targetAgent.ID.String(), "learning.skill_mastery_updated", activeSkill.ID.String(), "novice"),
+			Payload: map[string]any{
+				"skillId":       activeSkill.ID.String(),
+				"key":           activeSkill.Name,
+				"masteryLevel":  "novice",
+				"runCount":      0,
+				"successCount":  0,
+				"failureCount":  0,
+				"targetAgentId": targetAgent.ID.String(),
+			},
+			TimeoutSeconds: 120,
+		})
 	}
 
 	_, _ = l.svcCtx.DB.AgentExperience.Create().

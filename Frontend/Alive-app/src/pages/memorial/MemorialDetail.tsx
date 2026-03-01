@@ -144,7 +144,19 @@ export function MemorialDetailPage() {
           </section>
         )}
 
-        {/* ───── Section 3: Goal Progress ───── */}
+        {/* ───── Section 3: Final Review Story ───── */}
+        {memorial.finalReviewStory && (
+          <section>
+            <SectionHeader title="Final Review Story" subtitle="The final reflection before death" />
+            <div className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
+              <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                {memorial.finalReviewStory}
+              </p>
+            </div>
+          </section>
+        )}
+
+        {/* ───── Section 4: Goal Progress ───── */}
         <section>
           <SectionHeader title={t('agent.survivalGoal')} subtitle={memorial.goal.description} />
           <div className="max-w-2xl">
@@ -157,7 +169,7 @@ export function MemorialDetailPage() {
           </div>
         </section>
 
-        {/* ───── Section 4: Tributes ───── */}
+        {/* ───── Section 5: Tributes ───── */}
         <section>
           <SectionHeader title={t('memorial.tributes', { count: memorial.tributeCount })} subtitle={t('memorial.tributesSubtitle')} />
 

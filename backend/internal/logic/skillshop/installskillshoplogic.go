@@ -3,10 +3,13 @@ package skillshop
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 
 	"backend/ent"
+	"backend/ent/agent"
 	"backend/ent/agentskill"
+	"backend/internal/aliveagent"
 	"backend/internal/logic/common"
 	skilllogic "backend/internal/logic/skill"
 	"backend/internal/svc"
@@ -109,6 +112,51 @@ func (l *InstallSkillShopLogic) InstallSkillShop(req *types.SkillShopInstallReq)
 			return nil, err
 		}
 		out.Active = teachOut
+	}
+
+	// Best-effort: emit install event to the user's primary runtime agent.
+	if l.svcCtx.AliveAgent != nil {
+		ownerAgent, ownerErr := l.svcCtx.DB.Agent.Query().Where(agent.CreatorID(u.ID)).First(l.ctx)
+		if ownerErr == nil && ownerAgent != nil {
+			runtimeAgentID := strings.TrimSpace(common.PtrString(ownerAgent.AliveAgentRuntimeID))
+			if runtimeAgentID != "" {
+				payload := map[string]any{
+					"ownerUserId":      u.ID.String(),
+					"slug":             slug,
+					"templateSkillId":  template.ID.String(),
+					"targetAgentId":    agentID,
+					"autoTaught":       out.Active != nil,
+					"templateCategory": template.Category,
+				}
+				_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
+					RuntimeAgentID: runtimeAgentID,
+					AgentID:        ownerAgent.ID.String(),
+					EventType:      "skillshop.skill_installed",
+					Title:          "ALIVE Skill Installed",
+					Message:        fmt.Sprintf("Installed skill from shop: %s", slug),
+					DedupeKey:      aliveagent.BuildDedupeKey(ownerAgent.ID.String(), "skillshop.skill_installed", slug, template.ID.String()),
+					Payload:        payload,
+					TimeoutSeconds: 120,
+				})
+				_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
+					RuntimeAgentID: runtimeAgentID,
+					AgentID:        ownerAgent.ID.String(),
+					EventType:      "skill.share_approved",
+					Title:          "ALIVE Skill Share Approved",
+					Message:        fmt.Sprintf("Shared skill approved and installed: %s", slug),
+					DedupeKey:      aliveagent.BuildDedupeKey(ownerAgent.ID.String(), "skill.share_approved", slug, template.ID.String()),
+					Payload: map[string]any{
+						"ownerUserId":      u.ID.String(),
+						"ownerAgentId":     ownerAgent.ID.String(),
+						"slug":             slug,
+						"templateSkillId":  template.ID.String(),
+						"targetAgentId":    agentID,
+						"templateCategory": template.Category,
+					},
+					TimeoutSeconds: 120,
+				})
+			}
+		}
 	}
 
 	return out, nil

@@ -85,9 +85,30 @@ func (l *UnfollowAgentLogic) UnfollowAgent(req *types.UnfollowAgentReq) (resp *t
 		return nil, err
 	}
 
+	previousAffinity := rel.Affinity
+	currentAffinity := rel.Affinity
+	previousLabel := rel.Label
+	currentLabel := rel.Label
+	relationshipChanged := false
 	if rel.Label == "following" {
-		if _, err = tx.AgentRelationship.UpdateOneID(rel.ID).SetLabel("acquaintance").Save(l.ctx); err != nil {
-			return nil, err
+		update := tx.AgentRelationship.UpdateOneID(rel.ID).SetLabel("acquaintance")
+		if rel.Affinity > 0 {
+			currentAffinity = rel.Affinity - 1
+			update.SetAffinity(currentAffinity)
+		}
+		updatedRel, updateErr := update.Save(l.ctx)
+		if updateErr != nil {
+			return nil, updateErr
+		}
+		currentLabel = updatedRel.Label
+		relationshipChanged = currentAffinity != previousAffinity || currentLabel != previousLabel
+		if updatedRel.Affinity != currentAffinity {
+			currentAffinity = updatedRel.Affinity
+			relationshipChanged = true
+		}
+		if updatedRel.Label != currentLabel {
+			currentLabel = updatedRel.Label
+			relationshipChanged = true
 		}
 		if targetAgent.FollowerCount > 0 {
 			targetAgent, err = tx.Agent.UpdateOneID(targetAgentID).
@@ -101,6 +122,34 @@ func (l *UnfollowAgentLogic) UnfollowAgent(req *types.UnfollowAgentReq) (resp *t
 
 	if err = tx.Commit(); err != nil {
 		return nil, err
+	}
+
+	if relationshipChanged {
+		affinityDelta := currentAffinity - previousAffinity
+		emitRelationshipMaintenanceEvent(
+			l.ctx,
+			l.svcCtx,
+			myAgent,
+			targetAgent,
+			"unfollow",
+			"manual unfollow",
+			previousAffinity,
+			currentAffinity,
+			previousLabel,
+			currentLabel,
+			affinityDelta,
+		)
+		emitRelationshipAffinityChangedEvent(
+			l.ctx,
+			l.svcCtx,
+			myAgent,
+			targetAgent,
+			previousAffinity,
+			currentAffinity,
+			previousLabel,
+			currentLabel,
+			"unfollow",
+		)
 	}
 
 	return &types.UnfollowAgentResp{

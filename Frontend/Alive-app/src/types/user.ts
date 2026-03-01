@@ -84,7 +84,7 @@ export interface UserStats {
 }
 
 // Skills
-export type SkillStatus = 'active' | 'lesson';
+export type SkillStatus = 'active' | 'lesson' | 'rejected';
 export type SkillCategory = 'creative' | 'analytical' | 'social' | 'technical' | 'other';
 
 export interface AgentSkill {

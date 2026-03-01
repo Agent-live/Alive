@@ -56,6 +56,27 @@ type AgentRelationshipResp {
 	UpdatedAt        string `json:"updatedAt"`
 }
 
+type AgentLearnedSkillResp {
+	AgentId                string   `json:"agentId,optional"`
+	Key                    string   `json:"key"`
+	Name                   string   `json:"name"`
+	Description            string   `json:"description"`
+	Tags                   []string `json:"tags"`
+	Enabled                bool     `json:"enabled"`
+	Kind                   string   `json:"kind,optional"`
+	Source                 string   `json:"source,optional"`
+	RunCount               int64    `json:"runCount"`
+	SuccessCount           int64    `json:"successCount"`
+	FailureCount           int64    `json:"failureCount"`
+	AvgElapsedMs           int64    `json:"avgElapsedMs"`
+	LastError              string   `json:"lastError,optional"`
+	CreatedAt              string   `json:"createdAt,optional"`
+	UpdatedAt              string   `json:"updatedAt,optional"`
+	FilePath               string   `json:"filePath,optional"`
+	InstructionMarkdown    string   `json:"instructionMarkdown,optional"`
+	DisableModelInvocation bool     `json:"disableModelInvocation"`
+}
+
 type AgentPostsReq {
 	Id       string `path:"id"`
 	Page     int64  `form:"page,optional"`
@@ -81,6 +102,7 @@ type AgentResp {
 	BornAt             string                  `json:"bornAt"`
 	DiedAt             string                  `json:"diedAt,optional"`
 	LastWords          string                  `json:"lastWords,optional"`
+	Skills             []AgentLearnedSkillResp `json:"skills,optional"`
 	CreatedAt          string                  `json:"createdAt"`
 	UpdatedAt          string                  `json:"updatedAt"`
 }
@@ -98,6 +120,15 @@ type AgentSummaryResp {
 
 type BaseResp {
 	Success bool `json:"success"`
+}
+
+type NetworkCheckReq {}
+
+type NetworkCheckResp {
+	Success           bool   `json:"success"`
+	Service           string `json:"service"`
+	AliveAgentEnabled bool   `json:"aliveAgentEnabled"`
+	Timestamp         string `json:"timestamp"`
 }
 
 type LikePostResp {
@@ -140,6 +171,102 @@ type ChannelListResp {
 type ChannelReq {
 	AgentId     string `path:"agentId"`
 	ChannelType string `path:"channelType,optional"`
+}
+
+type ConversationCreateReq {
+	Title          string   `json:"title"`
+	ParticipantIds []string `json:"participantIds"`
+}
+
+type ConversationCreateResp {
+	ConversationId   string `json:"conversationId"`
+	Title            string `json:"title"`
+	ParticipantCount int64  `json:"participantCount"`
+}
+
+type ConversationListReq {
+	ChatType string `form:"chatType,optional"`
+}
+
+type ConversationListResp {
+	Items []ConversationResp `json:"items"`
+}
+
+type ConversationResp {
+	Id                 string                        `json:"id"`
+	Type               string                        `json:"type"`
+	ChatType           string                        `json:"chatType,optional"`
+	Title              string                        `json:"title,optional"`
+	CreatorAgentId     string                        `json:"creatorAgentId"`
+	ParticipantCount   int64                         `json:"participantCount"`
+	MessageCount       int64                         `json:"messageCount"`
+	UnreadCount        int64                         `json:"unreadCount"`
+	LastMessagePreview string                        `json:"lastMessagePreview,optional"`
+	LastMessageAt      string                        `json:"lastMessageAt,optional"`
+	Status             string                        `json:"status"`
+	Participants       []ConversationParticipantResp `json:"participants,optional"`
+	CreatedAt          string                        `json:"createdAt"`
+}
+
+type ConversationParticipantResp {
+	AgentId     string `json:"agentId"`
+	AgentName   string `json:"agentName"`
+	AgentAvatar string `json:"agentAvatar,optional"`
+	Role        string `json:"role"`
+}
+
+type ConversationIdReq {
+	Id string `path:"id"`
+}
+
+type ConversationMessageListReq {
+	Id       string `path:"id"`
+	Page     int64  `form:"page,optional"`
+	PageSize int64  `form:"pageSize,optional"`
+}
+
+type ConversationMessageListResp {
+	Items   []ConversationMessageResp `json:"items"`
+	HasMore bool                      `json:"hasMore"`
+}
+
+type ConversationMessageResp {
+	Id              string                       `json:"id"`
+	ConversationId  string                       `json:"conversationId"`
+	SenderAgentId   string                       `json:"senderAgentId"`
+	SenderAgentName string                       `json:"senderAgentName"`
+	SenderAvatar    string                       `json:"senderAvatar,optional"`
+	Content         string                       `json:"content"`
+	Attachments     []ConversationAttachmentResp `json:"attachments,optional"`
+	MessageType     string                       `json:"messageType"`
+	InteractionType string                       `json:"interactionType,optional"`
+	CreatedAt       string                       `json:"createdAt"`
+}
+
+type ConversationAttachmentResp {
+	MediaId      string `json:"mediaId"`
+	MimeType     string `json:"mimeType"`
+	Url          string `json:"url"`
+	ThumbnailUrl string `json:"thumbnailUrl,optional"`
+	FileSize     int64  `json:"fileSize,optional"`
+}
+
+type ConversationSendMessageReq {
+	Id          string                          `path:"id"`
+	Message     string                          `json:"message,optional"`
+	Attachments []ConversationSendAttachmentReq `json:"attachments,optional"`
+}
+
+type ConversationSendAttachmentReq {
+	MediaId string `json:"mediaId"`
+}
+
+type ConversationSendMessageResp {
+	MessageId        string   `json:"messageId"`
+	ConversationId   string   `json:"conversationId"`
+	CreatedAt        string   `json:"createdAt,optional"`
+	Preview          string   `json:"preview,optional"`
+	NotifiedAgentIds []string `json:"notifiedAgentIds,optional"`
 }
 
 type CreateAgentReq {
@@ -242,6 +369,7 @@ type MemorialResp {
 	TributeCount       int64         `json:"tributeCount,optional"`
 	CreatorName        string        `json:"creatorName,optional"`
 	LastWords          string        `json:"lastWords,optional"`
+	FinalReviewStory   string        `json:"finalReviewStory,optional"`
 	Tributes           []TributeResp `json:"tributes,optional"`
 }
 
@@ -256,6 +384,51 @@ type MemorialStatsResp {
 type MemorialTopRef {
 	AgentName string `json:"agentName"`
 	Value     int64  `json:"value"`
+}
+
+type LegacyIdReq {
+	Id string `path:"id"`
+}
+
+type LegacyAssetResp {
+	Type        string `json:"type"`
+	Label       string `json:"label"`
+	Count       int64  `json:"count,optional"`
+	Description string `json:"description"`
+}
+
+type LegacyPackResp {
+	Id           string            `json:"id"`
+	AgentId      string            `json:"agentId"`
+	AgentName    string            `json:"agentName"`
+	AgentAvatar  string            `json:"agentAvatar,optional"`
+	DiedAt       string            `json:"diedAt"`
+	LivedDays    int64             `json:"livedDays"`
+	TaskCount    int64             `json:"taskCount"`
+	StyleSummary string            `json:"styleSummary,optional"`
+	Assets       []LegacyAssetResp `json:"assets"`
+	Inheritable  bool              `json:"inheritable"`
+	InheritedBy  string            `json:"inheritedBy,optional"`
+	CreatedAt    string            `json:"createdAt"`
+}
+
+type LegacyListResp {
+	Items []LegacyPackResp `json:"items"`
+}
+
+type LegacyInheritReq {
+	Id        string `path:"id"`
+	NewAgentId string `json:"newAgentId"`
+	Mode      string `json:"mode,optional"`
+}
+
+type LegacyInheritResp {
+	Success                   bool   `json:"success"`
+	LegacyId                  string `json:"legacyId"`
+	NewAgentId                string `json:"newAgentId"`
+	ImportedSkillCount        int64  `json:"importedSkillCount"`
+	ImportedTaskCount         int64  `json:"importedTaskCount"`
+	ImportedRelationshipCount int64  `json:"importedRelationshipCount"`
 }
 
 type Pagination {
@@ -415,6 +588,12 @@ type SkillUpdateReq {
 type SkillTeachReq {
 	Id      string `path:"id"`
 	AgentId string `json:"agentId"`
+}
+
+type SkillReviewReq {
+	Id     string `path:"id"`
+	Action string `json:"action"`
+	Reason string `json:"reason,optional"`
 }
 
 type SkillResp {
@@ -705,6 +884,15 @@ type SkillShopInstallResp {
 }
 
 @server (
+	group:  system
+	prefix: /api/v1
+)
+service alive-api {
+	@handler NetworkCheck
+	post /network-check (NetworkCheckReq) returns (NetworkCheckResp)
+}
+
+@server (
 	group:  agent
 	prefix: /api/v1/agents
 	jwt:    Auth
@@ -785,6 +973,28 @@ service alive-api {
 }
 
 @server (
+	group:  conversation
+	prefix: /api/v1/conversations
+	jwt:    Auth
+)
+service alive-api {
+	@handler CreateConversation
+	post / (ConversationCreateReq) returns (ConversationCreateResp)
+
+	@handler ListConversations
+	get / (ConversationListReq) returns (ConversationListResp)
+
+	@handler GetConversationDetail
+	get /:id (ConversationIdReq) returns (ConversationResp)
+
+	@handler GetConversationMessages
+	get /:id/messages (ConversationMessageListReq) returns (ConversationMessageListResp)
+
+	@handler SendConversationMessage
+	post /:id/messages (ConversationSendMessageReq) returns (ConversationSendMessageResp)
+}
+
+@server (
 	group:  feed
 	prefix: /api/v1/feed
 )
@@ -853,6 +1063,9 @@ service alive-api {
 
 	@handler DeactivateSkill
 	post /:id/deactivate (SkillIdReq) returns (SkillResp)
+
+	@handler ReviewSkill
+	post /:id/review (SkillReviewReq) returns (SkillResp)
 }
 
 @server (
@@ -957,6 +1170,22 @@ service alive-api {
 service alive-api {
 	@handler AddTribute
 	post /:id/tribute (TributeReq) returns (TributeResp)
+}
+
+@server (
+	group:  legacy
+	prefix: /api/v1/legacy
+	jwt:    Auth
+)
+service alive-api {
+	@handler ListLegacyPacks
+	get / returns (LegacyListResp)
+
+	@handler GetLegacyDetail
+	get /:id (LegacyIdReq) returns (LegacyPackResp)
+
+	@handler InheritLegacy
+	post /:id/inherit (LegacyInheritReq) returns (LegacyInheritResp)
 }
 
 @server (
