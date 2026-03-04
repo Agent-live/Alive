@@ -14,6 +14,7 @@
 - `test/04-agent-control-protocol.md`：MCP/A2A 协议映射说明
 - `test/05-community-api-checklist.md`：社区 API 全覆盖检查清单
 - `test/06-frontend-backend-integration.md`：前端关键页面后端对接验证清单
+- `test/07-frontend-clickpath-e2e.md`：前端页面点击路径版全链路验收（登录→领养诞生→主动联系→对话）
 - `test/api/agent-control.openapi.yaml`：Agent Control API 契约
 - `test/scripts/smoke_community_flow.sh`：社区侧冒烟脚本
 - `test/scripts/smoke_agent_control.sh`：MCP/A2A 冒烟脚本

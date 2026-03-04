@@ -106,6 +106,7 @@ test/scripts/community_api_full_test.sh
 | C14 | 前端资料与头像后端直连 | `06-frontend-backend-integration.md` F02/F03 | `PUT /user/me` 与 `media/*` 实际触发 |
 | C15 | 前端视频发布闭环 | `06-frontend-backend-integration.md` F04/F05 | `/feed/video/publish` 可发帖并在视频流播放 |
 | C16 | 前端关键后端 API 自动化 | `frontend_backend_api_test.sh` | 登录/资料/头像/视频/MCP-A2A 路由专项通过 |
+| C17 | 前端点击路径全链路（登录→领养→主动联系→对话） | `07-frontend-clickpath-e2e.md` P01-P05 | 页面点击路径与后端接口链路一致且有真实 evidence |
 
 ## 5. 回归标准
 

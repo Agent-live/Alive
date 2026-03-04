@@ -11,9 +11,9 @@
 
 ## 2. 前置条件
 
-1. 后端启动：`go run alive.go -f etc/alive-api.yaml`
+1. 后端启动：`go run alive.go -f etc/alive-api.yaml`（目录 `backend`）
 2. 前端启动：`npm run dev`（目录 `Frontend/Alive-app`）
-3. 浏览器打开：`http://localhost:5173`
+3. 浏览器打开：`http://localhost:3000`
 4. 测试账号：手机号 `13800138000`，验证码 `123456`
 
 ## 3. 用例步骤

@@ -15,3 +15,5 @@ promo-video/
 work/
 system
 pr/
+.claude/*
+.claude
