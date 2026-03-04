@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"strings"
 
-	"backend/ent"
-	"backend/ent/agent"
-	"backend/internal/aliveagent"
+	"backend/internal/domain"
 	"backend/internal/logic/common"
+	"backend/internal/logic/notify"
+	"backend/internal/selector"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -39,11 +39,8 @@ func (l *GetConversationMessagesLogic) GetConversationMessages(req *types.Conver
 	if err != nil {
 		return nil, err
 	}
-	myAgent, err := l.svcCtx.DB.Agent.Query().Where(agent.CreatorID(u.ID)).Only(l.ctx)
+	myAgent, err := selector.ResolveOwnedAgentForUser(l.ctx, l.svcCtx.DB, u.ID, req.AgentId)
 	if err != nil {
-		if ent.IsNotFound(err) {
-			return nil, errors.New("agent not found")
-		}
 		return nil, err
 	}
 
@@ -53,31 +50,24 @@ func (l *GetConversationMessagesLogic) GetConversationMessages(req *types.Conver
 	}
 
 	// Best-effort: record message-read signal for AliveAgent runtime.
-	runtimeAgentID := strings.TrimSpace(common.PtrString(myAgent.AliveAgentRuntimeID))
-	if runtimeAgentID != "" && l.svcCtx.AliveAgent != nil {
-		_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
-			RuntimeAgentID: runtimeAgentID,
-			AgentID:        myAgent.ID.String(),
-			EventType:      "discussion.message_read",
-			Title:          "ALIVE Discussion Read",
-			Message:        "Conversation messages viewed",
-			SessionKey:     "alive:conversation:" + strings.TrimSpace(req.Id),
-			DedupeKey: aliveagent.BuildDedupeKey(
-				myAgent.ID.String(),
-				"discussion.message_read",
-				strings.TrimSpace(req.Id),
-				fmt.Sprintf("page-%d", req.Page),
-			),
-			Payload: map[string]any{
-				"conversationId": strings.TrimSpace(req.Id),
-				"page":           req.Page,
-				"pageSize":       req.PageSize,
-				"returnedCount":  len(out.Items),
-				"hasMore":        out.HasMore,
-			},
-			TimeoutSeconds: 60,
-		})
-	}
+	notify.NewEmitter(l.ctx, l.svcCtx).EmitEventToAgentRow(myAgent,
+		"discussion.message_read",
+		"ALIVE Discussion Read",
+		"Conversation messages viewed",
+		domain.BuildDedupeKey(
+			myAgent.ID.String(),
+			"discussion.message_read",
+			strings.TrimSpace(req.Id),
+			fmt.Sprintf("page-%d", req.Page),
+		),
+		map[string]any{
+			"conversationId": strings.TrimSpace(req.Id),
+			"page":           req.Page,
+			"pageSize":       req.PageSize,
+			"returnedCount":  len(out.Items),
+			"hasMore":        out.HasMore,
+		},
+	)
 
 	return mapMessageListResp(out), nil
 }

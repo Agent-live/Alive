@@ -5,8 +5,7 @@ import (
 	"errors"
 	"strings"
 
-	"backend/ent"
-	"backend/ent/agent"
+	"backend/internal/selector"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -37,11 +36,8 @@ func (l *GetConversationDetailLogic) GetConversationDetail(req *types.Conversati
 	if err != nil {
 		return nil, err
 	}
-	myAgent, err := l.svcCtx.DB.Agent.Query().Where(agent.CreatorID(u.ID)).Only(l.ctx)
+	myAgent, err := selector.ResolveOwnedAgentForUser(l.ctx, l.svcCtx.DB, u.ID, req.AgentId)
 	if err != nil {
-		if ent.IsNotFound(err) {
-			return nil, errors.New("agent not found")
-		}
 		return nil, err
 	}
 

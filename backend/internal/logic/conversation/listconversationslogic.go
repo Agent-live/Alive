@@ -2,11 +2,9 @@ package conversation
 
 import (
 	"context"
-	"errors"
 	"strings"
 
-	"backend/ent"
-	"backend/ent/agent"
+	"backend/internal/selector"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -33,18 +31,18 @@ func (l *ListConversationsLogic) ListConversations(req *types.ConversationListRe
 	if err != nil {
 		return nil, err
 	}
-	myAgent, err := l.svcCtx.DB.Agent.Query().Where(agent.CreatorID(u.ID)).Only(l.ctx)
+
+	chatType := ""
+	preferredAgentID := ""
+	if req != nil {
+		chatType = strings.TrimSpace(req.ChatType)
+		preferredAgentID = req.AgentId
+	}
+	myAgent, err := selector.ResolveOwnedAgentForUser(l.ctx, l.svcCtx.DB, u.ID, preferredAgentID)
 	if err != nil {
-		if ent.IsNotFound(err) {
-			return nil, errors.New("agent not found")
-		}
 		return nil, err
 	}
 
-	chatType := ""
-	if req != nil {
-		chatType = strings.TrimSpace(req.ChatType)
-	}
 	out, err := NewLogic(l.ctx, l.svcCtx).ListConversations(myAgent.ID, chatType)
 	if err != nil {
 		return nil, err
