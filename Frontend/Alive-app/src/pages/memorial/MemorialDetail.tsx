@@ -17,10 +17,16 @@ export function MemorialDetailPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!id) return;
+      if (!id) {
+        setLoading(false);
+        return;
+      }
       try {
         const data = await memorialApi.getMemorial(id);
         setMemorial(data);
+      } catch (error) {
+        console.error('Failed to load memorial detail:', error);
+        setMemorial(null);
       } finally {
         setLoading(false);
       }
@@ -39,6 +45,8 @@ export function MemorialDetailPage() {
         tributeCount: prev.tributeCount + 1,
       } : null);
       setTributeText('');
+    } catch (error) {
+      console.error('Failed to add tribute:', error);
     } finally {
       setSubmitting(false);
     }

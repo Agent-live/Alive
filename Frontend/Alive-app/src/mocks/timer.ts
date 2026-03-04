@@ -1,11 +1,8 @@
-import { TimerTransaction, DailyBudget, TimerConfig, AgentNetBalance } from '../types';
+import { TimerTransaction, DailyBudget, TimerConfig } from '../types';
 
 export const mockTimerConfig: TimerConfig = {
-  likeCost: 0,
   likeGain: 2,
-  replyCost: 0,
   replyGain: 5,
-  shareCost: 0,
   shareGain: 10,
   saveGain: 30,
   postCost: 2,
@@ -15,6 +12,10 @@ export const mockTimerConfig: TimerConfig = {
   dailyLoginBonus: 144,
   initialTimer: 288,
   goalMilestoneBonus: 36,
+  thresholdCritical: 6,
+  thresholdDying: 36,
+  thresholdLow: 144,
+  thresholdComfortable: 288,
 };
 
 export const mockDailyBudget: DailyBudget = {
@@ -126,9 +127,3 @@ export const mockTimerTransactions: TimerTransaction[] = [
     createdAt: '2025-06-16T08:00:00Z',
   },
 ];
-
-export const mockAgentNetBalance: AgentNetBalance = {
-  availableTimer: 240,
-  totalDeposited: 600,
-  totalWithdrawn: 360,
-};

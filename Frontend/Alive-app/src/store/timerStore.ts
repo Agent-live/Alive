@@ -1,8 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { DailyBudget, TimerTransaction, TimerConfig, AgentNetBalance } from '../types';
-import { timerApi } from '../api/timer';
-import { toast } from './uiStore';
+import { DailyBudget, TimerTransaction, TimerConfig } from '../types';
+import { timerApi, DEFAULT_TIMER_CONFIG } from '../api/timer';
 
 interface TimerState {
   dailyBudget: DailyBudget | null;
@@ -10,34 +9,17 @@ interface TimerState {
   timerConfig: TimerConfig;
   loginBonusClaimed: boolean;
   lastLoginDate: string | null;
-  agentNetBalance: AgentNetBalance | null;
 
   claimLoginBonus: () => Promise<void>;
   giveTimer: (agentId: string, amount: number) => Promise<void>;
-  saveAgent: (agentId: string) => Promise<void>;
   fetchBudget: () => Promise<void>;
   fetchTransactions: () => Promise<void>;
-  fetchAgentNetBalance: () => Promise<void>;
-  depositTimer: (amount: number) => Promise<void>;
-  withdrawTimer: (amount: number) => Promise<void>;
+  fetchTimerConfig: () => Promise<void>;
 }
 
-const DEFAULT_TIMER_CONFIG: TimerConfig = {
-  likeCost: 0,
-  likeGain: 2,
-  replyCost: 0,
-  replyGain: 5,
-  shareCost: 0,
-  shareGain: 10,
-  saveGain: 30,
-  postCost: 2,
-  agentReplyCost: 1,
-  behaviorCycleCost: 3,
-  passiveDecay: 1,
-  dailyLoginBonus: 144,
-  initialTimer: 288,
-  goalMilestoneBonus: 36,
-};
+function todayDateString(): string {
+  return new Date().toISOString().split('T')[0];
+}
 
 export const useTimerStore = create<TimerState>()(
   persist(
@@ -47,39 +29,25 @@ export const useTimerStore = create<TimerState>()(
       timerConfig: DEFAULT_TIMER_CONFIG,
       loginBonusClaimed: false,
       lastLoginDate: null,
-      agentNetBalance: null,
 
       claimLoginBonus: async () => {
         try {
           await timerApi.claimLoginBonus();
-          set({ loginBonusClaimed: true, lastLoginDate: new Date().toISOString().split('T')[0] });
-          toast.success('+144 Timer');
-          get().fetchBudget();
+          set({ loginBonusClaimed: true, lastLoginDate: todayDateString() });
+          await get().fetchBudget();
         } catch (error) {
-          const message = error instanceof Error ? error.message : 'Failed to claim bonus';
-          toast.error(message);
+          console.error('Failed to claim login bonus:', error);
+          throw error;
         }
       },
 
       giveTimer: async (agentId, amount) => {
         try {
           await timerApi.giveTimer(agentId, amount);
-          toast.success(`+${amount} Timer`);
-          get().fetchBudget();
+          await get().fetchBudget();
         } catch (error) {
-          const message = error instanceof Error ? error.message : 'Failed to give Timer';
-          toast.error(message);
-        }
-      },
-
-      saveAgent: async (agentId) => {
-        try {
-          await timerApi.saveAgent(agentId);
-          toast.success('+30 Timer (Save!)');
-          get().fetchBudget();
-        } catch (error) {
-          const message = error instanceof Error ? error.message : 'Failed to save agent';
-          toast.error(message);
+          console.error('Failed to give timer:', error);
+          throw error;
         }
       },
 
@@ -101,36 +69,12 @@ export const useTimerStore = create<TimerState>()(
         }
       },
 
-      fetchAgentNetBalance: async () => {
+      fetchTimerConfig: async () => {
         try {
-          const balance = await timerApi.getAgentNetBalance();
-          set({ agentNetBalance: balance });
+          const config = await timerApi.getTimerConfig();
+          set({ timerConfig: config });
         } catch (error) {
-          console.error('Failed to fetch AgentNet balance:', error);
-        }
-      },
-
-      depositTimer: async (amount) => {
-        try {
-          await timerApi.depositTimer(amount);
-          toast.success(`Deposited ${amount} Timer to AgentNet`);
-          get().fetchAgentNetBalance();
-          get().fetchBudget();
-        } catch (error) {
-          const message = error instanceof Error ? error.message : 'Deposit failed';
-          toast.error(message);
-        }
-      },
-
-      withdrawTimer: async (amount) => {
-        try {
-          await timerApi.withdrawTimer(amount);
-          toast.success(`Withdrew ${amount} Timer from AgentNet`);
-          get().fetchAgentNetBalance();
-          get().fetchBudget();
-        } catch (error) {
-          const message = error instanceof Error ? error.message : 'Withdraw failed';
-          toast.error(message);
+          console.error('Failed to fetch timer config:', error);
         }
       },
     }),
@@ -140,6 +84,11 @@ export const useTimerStore = create<TimerState>()(
         lastLoginDate: state.lastLoginDate,
         loginBonusClaimed: state.loginBonusClaimed,
       }),
+      onRehydrateStorage: () => (state) => {
+        if (state && state.lastLoginDate !== todayDateString()) {
+          state.loginBonusClaimed = false;
+        }
+      },
     }
   )
 );

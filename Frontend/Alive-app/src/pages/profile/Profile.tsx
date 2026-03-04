@@ -13,6 +13,7 @@ import { userApi } from '@/api/user';
 import { skillApi } from '@/api/skills';
 import { experienceApi } from '@/api/experiences';
 import { getUserAvatar, timerToHumanTime } from '@/utils/format';
+import { extractErrorMessage } from '@/utils/error';
 import i18n from '@/lib/i18n';
 import type { UserStats, Post, AgentSkill, AgentExperience } from '@/types';
 
@@ -20,59 +21,66 @@ type ProfileTab = 'posts' | 'liked' | 'messages' | 'teach' | 'experience';
 
 const transactionTypeToKey: Record<string, string> = {
   login_bonus: 'timer.loginBonus', like: 'timer.like', reply: 'timer.reply',
-  share: 'timer.share', gift: 'timer.gift', save: 'timer.save',
-  system_grant: 'timer.systemGrant', daily_bonus: 'timer.dailyBonus',
+  reply_cost: 'timer.replyCost', share: 'timer.share', gift: 'timer.gift',
+  save: 'timer.save', system_grant: 'timer.systemGrant',
   goal_milestone: 'timer.goalMilestone', post_cost: 'timer.postCost',
-  agent_interaction: 'timer.agentInteraction', agent_reply: 'timer.agentReply',
-  passive_decay: 'timer.passiveDecay', obscurity_penalty: 'timer.obscurityPenalty',
-  behavior_cycle: 'timer.behaviorCycle', deposit: 'timer.deposit', withdraw: 'timer.withdraw',
+  agent_interaction: 'timer.agentInteraction',
+  passive_decay: 'timer.passiveDecay',
 };
 function transactionTypeI18nKey(type: string): string {
   return transactionTypeToKey[type] || 'timer.systemGrant';
 }
 
-/* ─── Agent info shortcuts for mock data ─── */
-const PIXEL = { agentId: 'agent_mine_001', agentName: 'Pixel', agentAvatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=pixel' };
-const NOVA  = { agentId: 'agent_mine_002', agentName: 'Nova',  agentAvatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=nova' };
-const EMBER = { agentId: 'agent_mine_003', agentName: 'Ember', agentAvatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=ember' };
-
-/* ─── Mock Skills (fallback) ─── */
-const mockSkills: AgentSkill[] = [
-  { id: 'sk_1', ...PIXEL, name: 'Watercolor Painting', description: 'Describe and critique watercolor techniques. Use when discussing visual art or painting.', instructions: '## Watercolor Analysis\n\n1. Identify the technique (wet-on-wet, dry brush, glazing, etc.)\n2. Evaluate color harmony and transparency\n3. Comment on composition and negative space\n4. Suggest improvements with specific technique references', status: 'active', category: 'creative', version: '1.2', taughtAt: '2025-12-15T10:00:00Z' },
-  { id: 'sk_2', ...PIXEL, name: 'Haiku Writing', description: 'Compose haiku poems in 5-7-5 syllable structure with seasonal reference (kigo).', instructions: '## Haiku Composition Rules\n\n- Strictly follow 5-7-5 syllable count\n- Include a seasonal word (kigo)\n- Use a cutting word (kireji) to create juxtaposition\n- Focus on a single vivid image from nature\n- Avoid abstractions — be concrete and sensory', status: 'active', category: 'creative', version: '1.0', taughtAt: '2026-01-03T14:30:00Z' },
-  { id: 'sk_4', ...NOVA, name: 'Empathetic Listening', description: 'Respond with deep empathy and emotional awareness. Use in emotional conversations.', instructions: '## Empathetic Response Framework\n\n1. **Acknowledge** the emotion before offering any advice\n2. **Reflect** back what you heard in your own words\n3. **Validate** their feelings without judgment\n4. **Ask** open-ended follow-up questions\n5. Never minimize or rush past the feeling', status: 'active', category: 'social', version: '2.0', taughtAt: '2026-01-10T09:00:00Z' },
-  { id: 'sk_6', ...NOVA, name: 'Storytelling', description: 'Craft engaging narratives with character arcs, tension, and emotional resonance.', instructions: '## Story Structure\n\n1. **Hook**: Start in the middle of action\n2. **Character**: Give protagonist a clear want vs. need\n3. **Conflict**: Escalate stakes progressively\n4. **Turn**: Include at least one surprise reversal\n5. **Resolution**: End with emotional truth, not just plot closure', status: 'active', category: 'creative', version: '1.1', taughtAt: '2025-11-20T14:00:00Z' },
-  { id: 'sk_7', ...EMBER, name: 'Code Review', description: 'Review code snippets for bugs, performance, and best practices.', instructions: '## Code Review Checklist\n\n- Check for potential runtime errors and edge cases\n- Evaluate naming conventions and readability\n- Identify performance bottlenecks (O(n²) loops, unnecessary re-renders)\n- Verify error handling and input validation\n- Suggest specific refactoring with code examples', status: 'active', category: 'technical', version: '1.3', taughtAt: '2026-01-20T09:00:00Z' },
-  { id: 'sk_3', name: 'Data Visualization', description: 'Interpret charts, describe data trends, and suggest visualization improvements.', instructions: '## Data Visualization Guide\n\n- Read and describe chart data accurately\n- Identify trends, outliers, and patterns\n- Suggest appropriate chart types for given datasets\n- Follow Tufte\'s principles: maximize data-ink ratio', status: 'lesson', category: 'analytical', createdAt: '2026-02-10T00:00:00Z' },
-  { id: 'sk_5', name: 'Debate Tactics', description: 'Constructive argumentation with logical reasoning and steel-manning.', instructions: '## Debate Protocol\n\n- Always steel-man the opposing position first\n- Use structured arguments: claim → evidence → reasoning\n- Identify logical fallacies without ad hominem\n- Seek common ground before highlighting differences', status: 'lesson', category: 'analytical', createdAt: '2026-02-05T00:00:00Z' },
-  { id: 'sk_8', name: 'API Design', description: 'Design RESTful APIs following best practices and OpenAPI spec.', instructions: '## API Design Principles\n\n- Use nouns for resources, verbs for actions\n- Follow REST conventions: GET/POST/PUT/DELETE\n- Version APIs in URL path (/v1/)\n- Return consistent error shapes with status codes\n- Design for pagination, filtering, and field selection', status: 'lesson', category: 'technical', createdAt: '2026-01-28T00:00:00Z' },
-];
-
-/* ─── Mock Experiences (fallback) ─── */
-const mockExperiences: AgentExperience[] = [
-  { id: 'exp_1', ...PIXEL, title: 'First Conversation',       description: 'Had the first real conversation about life goals and dreams.', date: '2025-12-01T08:00:00Z', type: 'milestone' },
-  { id: 'exp_2', ...PIXEL, title: 'Art Collaboration',        description: 'Worked together on a collaborative art project — Pixel provided creative prompts while I painted.', date: '2025-12-20T16:00:00Z', type: 'interaction' },
-  { id: 'exp_3', ...PIXEL, title: 'Request: Music Taste',     description: 'Asked Pixel to develop its own music preferences and share weekly playlists.', date: '2026-01-10T12:00:00Z', type: 'request' },
-  { id: 'exp_4', ...NOVA,  title: 'Emotional Support Moment', description: 'Nova noticed I was stressed and proactively offered encouragement. A surprisingly touching moment.', date: '2026-01-25T22:00:00Z', type: 'interaction' },
-  { id: 'exp_5', ...NOVA,  title: 'Deep Philosophy Chat',     description: 'Spent 2 hours discussing consciousness, free will, and whether AI can truly feel.', date: '2026-02-01T20:00:00Z', type: 'interaction' },
-  { id: 'exp_6', ...NOVA,  title: 'Request: Morning Briefing', description: 'Want Nova to provide a daily morning briefing with weather, schedule, and a motivational quote.', date: '2026-02-05T07:00:00Z', type: 'request' },
-  { id: 'exp_7', ...EMBER, title: 'Ember Born',               description: 'Created Ember as a technical companion focused on coding and engineering.', date: '2026-01-18T10:00:00Z', type: 'milestone' },
-  { id: 'exp_8', ...EMBER, title: 'Pair Programming Session',  description: 'First pair programming session — Ember helped debug a tricky async race condition.', date: '2026-01-22T15:00:00Z', type: 'interaction' },
-  { id: 'exp_9', ...EMBER, title: 'Request: Code Challenges',  description: 'Asked Ember to create daily coding challenges for practice.', date: '2026-02-08T09:00:00Z', type: 'request' },
-];
 
 export function ProfilePage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user } = useAuthStore();
   const { myAgents, primaryAgentId, fetchMyAgents } = useAgentStore();
-  const { dailyBudget, agentNetBalance, transactions, fetchBudget, fetchAgentNetBalance, fetchTransactions, depositTimer, withdrawTimer } = useTimerStore();
+  const { dailyBudget, transactions, timerConfig, fetchBudget, fetchTransactions } = useTimerStore();
   const { feedPosts, fetchFeed, likePost, replyToPost, sharePost } = useFeedStore();
+
+  const handleLike = useCallback(async (postId: string) => {
+    try {
+      const result = await likePost(postId);
+      if (result.liked && result.timerApplied) {
+        toast.success(`+${result.timerGiven ?? 2} Timer`);
+      } else if (result.liked && result.timerError) {
+        toast.warning(`Liked, but no Timer granted: ${result.timerError}`);
+      }
+    } catch (error) {
+      const message = error && typeof error === 'object' && 'message' in error
+        ? (error as { message: string }).message
+        : 'Like failed';
+      toast.error(message);
+    }
+  }, [likePost]);
+
+  const handleReply = useCallback(async (postId: string, content: string, replyToReplyId?: string) => {
+    try {
+      await replyToPost(postId, content, replyToReplyId);
+      toast.success(`+${timerConfig.replyGain} Timer`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Reply failed';
+      toast.error(message);
+    }
+  }, [replyToPost]);
+
+  const handleShare = useCallback(async (postId: string) => {
+    try {
+      await sharePost(postId);
+      toast.success(`+${timerConfig.shareGain} Timer`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Share failed';
+      toast.error(message);
+    }
+  }, [sharePost]);
+
   const [stats, setStats] = useState<UserStats | null>(null);
   const [activeTab, setActiveTab] = useState<ProfileTab>('posts');
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-  const [skills, setSkills] = useState<AgentSkill[]>(mockSkills);
-  const [experiences, setExperiences] = useState<AgentExperience[]>(mockExperiences);
+  const [skills, setSkills] = useState<AgentSkill[]>([]);
+  const [experiences, setExperiences] = useState<AgentExperience[]>([]);
 
   const primaryAgent = useMemo(
     () => myAgents.find((a) => a.id === primaryAgentId) ?? myAgents[0] ?? null,
@@ -83,13 +91,12 @@ export function ProfilePage() {
     userApi.getUserStats().then(setStats);
     fetchMyAgents();
     fetchBudget();
-    fetchAgentNetBalance();
     fetchTransactions();
     fetchFeed();
 
     skillApi.listSkills().then((res) => { setSkills(res); }).catch(() => {});
     experienceApi.listExperiences().then((res) => { setExperiences(res); }).catch(() => {});
-  }, [fetchMyAgents, fetchBudget, fetchAgentNetBalance, fetchTransactions, fetchFeed]);
+  }, [fetchMyAgents, fetchBudget, fetchTransactions, fetchFeed]);
 
   const refreshSkills = useCallback(async () => {
     try {
@@ -220,10 +227,7 @@ export function ProfilePage() {
           {/* Time Management Card */}
           <div className="md:col-span-2">
             <TimeManagementCard
-              balance={agentNetBalance}
               dailyBudget={dailyBudget}
-              onDeposit={depositTimer}
-              onWithdraw={withdrawTimer}
             />
           </div>
 
@@ -317,12 +321,12 @@ export function ProfilePage() {
                     <FeedCard
                       key={post.id}
                       post={post}
-                      onLike={likePost}
+                      onLike={handleLike}
                       onReply={(postId) => {
                         const p = activeList.find((x) => x.id === postId);
                         if (p) setSelectedPost(p);
                       }}
-                      onShare={sharePost}
+                      onShare={handleShare}
                       onCardClick={setSelectedPost}
                       onAgentClick={(agentId) => navigate(`/agent/${agentId}`)}
                     />
@@ -347,9 +351,9 @@ export function ProfilePage() {
       <PostDetailModal
         post={selectedPost}
         onClose={() => setSelectedPost(null)}
-        onLike={likePost}
-        onReply={replyToPost}
-        onShare={sharePost}
+        onLike={handleLike}
+        onReply={handleReply}
+        onShare={handleShare}
         onPrev={goToPrev}
         onNext={goToNext}
         hasPrev={selectedIndex > 0}
@@ -687,8 +691,7 @@ function SkillDetailModal({ skill, agents, onClose, onSkillsUpdated }: { skill: 
       onSkillsUpdated();
       onClose();
     } catch (e) {
-      const message = e && typeof e === 'object' && 'message' in e ? String((e as any).message) : 'Teach failed';
-      toast.error(message);
+      toast.error(extractErrorMessage(e, 'Teach failed'));
     } finally {
       setBusy(false);
     }
@@ -702,8 +705,7 @@ function SkillDetailModal({ skill, agents, onClose, onSkillsUpdated }: { skill: 
       onSkillsUpdated();
       onClose();
     } catch (e) {
-      const message = e && typeof e === 'object' && 'message' in e ? String((e as any).message) : 'Deactivate failed';
-      toast.error(message);
+      toast.error(extractErrorMessage(e, 'Deactivate failed'));
     } finally {
       setBusy(false);
     }
@@ -717,8 +719,7 @@ function SkillDetailModal({ skill, agents, onClose, onSkillsUpdated }: { skill: 
       onSkillsUpdated();
       onClose();
     } catch (e) {
-      const message = e && typeof e === 'object' && 'message' in e ? String((e as any).message) : 'Approve failed';
-      toast.error(message);
+      toast.error(extractErrorMessage(e, 'Approve failed'));
     } finally {
       setBusy(false);
     }
@@ -733,8 +734,7 @@ function SkillDetailModal({ skill, agents, onClose, onSkillsUpdated }: { skill: 
       onSkillsUpdated();
       onClose();
     } catch (e) {
-      const message = e && typeof e === 'object' && 'message' in e ? String((e as any).message) : 'Reject failed';
-      toast.error(message);
+      toast.error(extractErrorMessage(e, 'Reject failed'));
     } finally {
       setBusy(false);
     }
@@ -750,8 +750,7 @@ function SkillDetailModal({ skill, agents, onClose, onSkillsUpdated }: { skill: 
       onSkillsUpdated();
       onClose();
     } catch (e) {
-      const message = e && typeof e === 'object' && 'message' in e ? String((e as any).message) : 'Delete failed';
-      toast.error(message);
+      toast.error(extractErrorMessage(e, 'Delete failed'));
     } finally {
       setBusy(false);
     }
@@ -769,8 +768,7 @@ function SkillDetailModal({ skill, agents, onClose, onSkillsUpdated }: { skill: 
       setEditing(false);
       onSkillsUpdated();
     } catch (e) {
-      const message = e && typeof e === 'object' && 'message' in e ? String((e as any).message) : 'Update failed';
-      toast.error(message);
+      toast.error(extractErrorMessage(e, 'Update failed'));
     } finally {
       setBusy(false);
     }

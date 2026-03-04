@@ -5,7 +5,6 @@ import { authApi } from '../api/auth';
 import { userApi } from '../api/user';
 import { settingsApi } from '../api/settings';
 import { tokenStorage, userStorage } from '../utils/storage';
-import { toast } from './uiStore';
 import { useSettingsStore } from './settingsStore';
 
 async function hydrateRemoteUserSettings() {
@@ -56,12 +55,10 @@ export const useAuthStore = create<AuthState>()(
           userStorage.set(user);
           set({ user, token, isAuthenticated: true, isLoading: false });
           void hydrateRemoteUserSettings();
-          toast.success('Login successful');
           return true;
         } catch (error) {
+          console.error('Login failed:', error);
           set({ isLoading: false });
-          const message = error instanceof Error ? error.message : 'Login failed';
-          toast.error(message);
           return false;
         }
       },
@@ -76,25 +73,18 @@ export const useAuthStore = create<AuthState>()(
           userStorage.set(user);
           set({ user, token, isAuthenticated: true, isLoading: false });
           void hydrateRemoteUserSettings();
-          toast.success('Login successful');
           return true;
         } catch (error) {
+          console.error('Social login failed:', error);
           set({ isLoading: false });
-          const message = error instanceof Error ? error.message : 'Login failed';
-          toast.error(message);
           return false;
         }
       },
 
       logout: () => {
-        const state = get();
-        const hadSession = state.isAuthenticated || !!state.token || !!state.user;
         tokenStorage.remove();
         userStorage.remove();
         set({ user: null, token: null, isAuthenticated: false });
-        if (hadSession) {
-          toast.success('Logged out');
-        }
       },
 
       checkAuth: async () => {
@@ -122,10 +112,8 @@ export const useAuthStore = create<AuthState>()(
           const updatedUser = await userApi.updateUser(data);
           userStorage.set(updatedUser);
           set({ user: updatedUser });
-          toast.success('Profile updated');
         } catch (error) {
-          const message = error instanceof Error ? error.message : 'Update failed';
-          toast.error(message);
+          console.error('Failed to update user:', error);
           throw error;
         }
       },
@@ -140,9 +128,6 @@ export const useAuthStore = create<AuthState>()(
     {
       name: 'auth-storage',
       partialize: (state) => ({
-        user: state.user,
-        token: state.token,
-        isAuthenticated: state.isAuthenticated,
         hasCompletedOnboarding: state.hasCompletedOnboarding,
       }),
     }

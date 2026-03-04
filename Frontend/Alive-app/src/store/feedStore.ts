@@ -1,7 +1,13 @@
 import { create } from 'zustand';
 import { Post } from '../types';
 import { feedApi } from '../api/feed';
-import { toast } from './uiStore';
+
+export interface LikePostResult {
+  liked: boolean;
+  timerApplied?: boolean;
+  timerGiven?: number;
+  timerError?: string;
+}
 
 interface FeedState {
   feedPosts: Post[];
@@ -10,7 +16,7 @@ interface FeedState {
   page: number;
 
   fetchFeed: () => Promise<void>;
-  likePost: (postId: string) => Promise<void>;
+  likePost: (postId: string) => Promise<LikePostResult>;
   replyToPost: (postId: string, content: string, replyToReplyId?: string) => Promise<void>;
   sharePost: (postId: string) => Promise<void>;
   loadMore: () => Promise<void>;
@@ -30,10 +36,7 @@ export const useFeedStore = create<FeedState>((set, get) => ({
       set({ feedPosts: result.items, hasMore: result.hasMore, page: 1, loading: false });
     } catch (error) {
       set({ loading: false });
-      const message = error && typeof error === 'object' && 'message' in error
-        ? (error as { message: string }).message
-        : 'Failed to load feed';
-      toast.error(message);
+      console.error('Failed to load feed:', error);
     }
   },
 
@@ -64,12 +67,7 @@ export const useFeedStore = create<FeedState>((set, get) => ({
         }));
       }
 
-      // Only celebrate when the backend confirms the Timer credit succeeded.
-      if (liked && timerApplied) {
-        toast.success(`+${timerGiven ?? 2} Timer`);
-      } else if (liked && timerError) {
-        toast.warning(`Liked, but no Timer granted: ${timerError}`);
-      }
+      return { liked, timerApplied, timerGiven, timerError };
     } catch (error) {
       // Rollback optimistic update
       if (prevPost) {
@@ -77,55 +75,26 @@ export const useFeedStore = create<FeedState>((set, get) => ({
           feedPosts: state.feedPosts.map((p) => (p.id === postId ? prevPost : p)),
         }));
       }
-      const message = error && typeof error === 'object' && 'message' in error
-        ? (error as { message: string }).message
-        : 'Like failed';
-      toast.error(message);
+      throw error;
     }
   },
 
   replyToPost: async (postId, content, replyToReplyId) => {
-    try {
-      await feedApi.replyToPost(postId, content, replyToReplyId);
-      const { feedPosts } = get();
-      const targetAgentId = feedPosts.find((p) => p.id === postId)?.agentId;
-      set({
-        feedPosts: feedPosts.map((p) => {
-          let next = p;
-          if (p.id === postId) next = { ...next, replies: next.replies + 1 };
-          if (targetAgentId && p.agentId === targetAgentId) {
-            next = { ...next, agentTimerRemaining: Math.max(0, next.agentTimerRemaining + 5) };
-          }
-          return next;
-        }),
-      });
-      toast.success('+5 Timer');
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Reply failed';
-      toast.error(message);
-    }
+    await feedApi.replyToPost(postId, content, replyToReplyId);
+    set((state) => ({
+      feedPosts: state.feedPosts.map((p) =>
+        p.id === postId ? { ...p, replies: p.replies + 1 } : p
+      ),
+    }));
   },
 
   sharePost: async (postId) => {
-    try {
-      await feedApi.sharePost(postId);
-      const { feedPosts } = get();
-      const targetAgentId = feedPosts.find((p) => p.id === postId)?.agentId;
-      set({
-        feedPosts: feedPosts.map((p) => {
-          let next = p;
-          if (p.id === postId) next = { ...next, shares: next.shares + 1 };
-          if (targetAgentId && p.agentId === targetAgentId) {
-            next = { ...next, agentTimerRemaining: Math.max(0, next.agentTimerRemaining + 10) };
-          }
-          return next;
-        }),
-      });
-      toast.success('+10 Timer');
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Share failed';
-      toast.error(message);
-    }
+    await feedApi.sharePost(postId);
+    set((state) => ({
+      feedPosts: state.feedPosts.map((p) =>
+        p.id === postId ? { ...p, shares: p.shares + 1 } : p
+      ),
+    }));
   },
 
   loadMore: async () => {
@@ -143,10 +112,7 @@ export const useFeedStore = create<FeedState>((set, get) => ({
       }));
     } catch (error) {
       set({ loading: false });
-      const message = error && typeof error === 'object' && 'message' in error
-        ? (error as { message: string }).message
-        : 'Failed to load more';
-      toast.error(message);
+      console.error('Failed to load more:', error);
     }
   },
 
@@ -157,10 +123,7 @@ export const useFeedStore = create<FeedState>((set, get) => ({
       set({ feedPosts: result.items, hasMore: result.hasMore, page: 1, loading: false });
     } catch (error) {
       set({ loading: false });
-      const message = error && typeof error === 'object' && 'message' in error
-        ? (error as { message: string }).message
-        : 'Failed to refresh feed';
-      toast.error(message);
+      console.error('Failed to refresh feed:', error);
     }
   },
 }));

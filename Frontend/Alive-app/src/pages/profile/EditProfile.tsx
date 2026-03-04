@@ -1,23 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Layout, Icon, SettingsDialog } from '@/components'
 import { useAuthStore, toast } from '@/store'
 import { getUserAvatar } from '@/utils/format'
-
-/* ─── Desktop detection (md = 768px) ─── */
-function useIsDesktop() {
-  const [isDesktop, setIsDesktop] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches,
-  )
-  useEffect(() => {
-    const mql = window.matchMedia('(min-width: 768px)')
-    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches)
-    mql.addEventListener('change', handler)
-    return () => mql.removeEventListener('change', handler)
-  }, [])
-  return isDesktop
-}
+import { useIsDesktop } from '@/hooks/useIsDesktop'
 
 /* ─── Field configs (same as EditField.tsx) ─── */
 const fieldConfigs: Record<string, {
@@ -129,9 +116,11 @@ export function EditProfilePage() {
         return
       }
       await updateUser(payload)
+      toast.success(t('editProfile.updated', 'Profile updated'))
       closeDialog()
-    } catch {
-      // updateUser already emits user-facing error toast
+    } catch (error) {
+      const message = error instanceof Error ? error.message : t('editProfile.updateFailed', 'Update failed')
+      toast.error(message)
     } finally {
       setSaving(false)
     }

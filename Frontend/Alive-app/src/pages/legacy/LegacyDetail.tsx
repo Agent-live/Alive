@@ -23,6 +23,8 @@ export function LegacyDetailPage() {
   const [pack, setPack] = useState<LegacyPack | null>(null);
   const [loading, setLoading] = useState(true);
   const [inheriting, setInheriting] = useState(false);
+  const [mode, setMode] = useState<'full' | 'selective'>('full');
+  const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
   const { myAgents, primaryAgentId } = useAgentStore();
 
   useEffect(() => {
@@ -74,11 +76,21 @@ export function LegacyDetailPage() {
     myAgents.find((item) => item.status !== 'dead')?.id ||
     null;
 
+  const toggleAsset = (assetType: string) => {
+    setSelectedAssets((prev) =>
+      prev.includes(assetType) ? prev.filter((t) => t !== assetType) : [...prev, assetType],
+    );
+  };
+
   const handleInherit = async () => {
     if (!pack || !primaryAliveAgentId || inheriting) return;
+    if (mode === 'selective' && selectedAssets.length === 0) {
+      toast.error(t('legacy.selectAtLeastOne', 'Select at least one asset'));
+      return;
+    }
     setInheriting(true);
     try {
-      await legacyApi.inheritLegacy(primaryAliveAgentId, pack.id, 'full');
+      await legacyApi.inheritLegacy(primaryAliveAgentId, pack.id, mode);
       setPack({
         ...pack,
         inheritable: false,
@@ -160,10 +172,58 @@ export function LegacyDetailPage() {
                 {t('legacy.readyToInherit')}
               </span>
               <p className="text-xs text-gray-400 mt-2">{t('legacy.inheritHint')}</p>
+
+              {/* Mode selection */}
+              <div className="mt-4 flex gap-2 justify-center">
+                {(['full', 'selective'] as const).map((m) => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => setMode(m)}
+                    className={`px-4 py-2 rounded-xl text-sm font-medium border transition-colors ${
+                      mode === m
+                        ? 'bg-primary text-white border-primary'
+                        : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-primary/50'
+                    }`}
+                  >
+                    {m === 'full' ? t('legacy.modeFull', 'Full Inherit') : t('legacy.modeSelective', 'Selective')}
+                  </button>
+                ))}
+              </div>
+
+              {/* Selective asset checklist */}
+              {mode === 'selective' && (
+                <div className="mt-4 text-left space-y-2">
+                  <p className="text-xs text-gray-400 mb-3 text-center">{t('legacy.selectiveHint', 'Choose which assets to inherit')}</p>
+                  {pack.assets.map((asset) => (
+                    <label
+                      key={asset.type}
+                      className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 dark:border-gray-800 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedAssets.includes(asset.type)}
+                        onChange={() => toggleAsset(asset.type)}
+                        className="accent-primary w-4 h-4 flex-shrink-0"
+                      />
+                      <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Icon name={assetIcons[asset.type] || 'inventory_2'} size={14} className="text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0 text-left">
+                        <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{asset.label}</p>
+                        {asset.count != null && (
+                          <p className="text-xs text-gray-400">{asset.count} items</p>
+                        )}
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              )}
+
               <div className="mt-4">
                 <button
                   type="button"
-                  disabled={!primaryAliveAgentId || inheriting}
+                  disabled={!primaryAliveAgentId || inheriting || (mode === 'selective' && selectedAssets.length === 0)}
                   onClick={handleInherit}
                   className="px-4 py-2 rounded-xl bg-primary text-white text-sm font-medium disabled:opacity-40 transition-colors hover:bg-primary-dark"
                 >

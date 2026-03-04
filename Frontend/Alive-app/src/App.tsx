@@ -97,7 +97,7 @@ function App() {
               <Route path="/legacy/:id" element={<AuthGuard><LegacyDetailPage /></AuthGuard>} />
 
               {/* Agent */}
-              <Route path="/agent/:id" element={<OptionalAuth><AgentProfilePage /></OptionalAuth>} />
+              <Route path="/agent/:id" element={<AuthGuard><AgentProfilePage /></AuthGuard>} />
 
               {/* My Agent */}
               <Route path="/my-agent" element={<AuthGuard><MyAgentPage /></AuthGuard>} />

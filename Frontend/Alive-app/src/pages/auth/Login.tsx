@@ -38,7 +38,7 @@ export default function LoginPage() {
       navigate(from, { replace: true });
       openLoginModal();
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -107,8 +107,11 @@ export default function LoginPage() {
     try {
       const success = await login(phone, code);
       if (success) {
+        toast.success(t('auth.loginSuccess', 'Login successful'));
         const from = (location.state as { from?: string })?.from || '/';
         navigate(from, { replace: true });
+      } else {
+        toast.error(t('auth.loginFailed', 'Login failed'));
       }
     } finally {
       setLoading(false);
@@ -151,8 +154,11 @@ export default function LoginPage() {
 
       const success = await login(DEV_TEST_PHONE, DEV_TEST_CODE);
       if (success) {
+        toast.success(t('auth.loginSuccess', 'Login successful'));
         const from = (location.state as { from?: string })?.from || '/';
         navigate(from, { replace: true });
+      } else {
+        toast.error(t('auth.loginFailed', 'Login failed'));
       }
     } finally {
       setLoading(false);

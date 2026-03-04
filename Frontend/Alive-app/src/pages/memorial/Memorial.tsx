@@ -20,6 +20,10 @@ export function MemorialPage() {
         ]);
         setMemorials(memorialsData);
         setStats(statsData);
+      } catch (error) {
+        console.error('Failed to load memorial data:', error);
+        setMemorials([]);
+        setStats(null);
       } finally {
         setLoading(false);
       }

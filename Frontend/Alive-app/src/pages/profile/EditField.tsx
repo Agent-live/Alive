@@ -140,9 +140,11 @@ export function EditFieldPage() {
       }
 
       await updateUser(payload)
+      toast.success(t('editField.saved', 'Profile updated'))
       navigate(-1)
-    } catch {
-      // updateUser already emits user-facing error toast
+    } catch (error) {
+      const message = error instanceof Error ? error.message : t('editField.updateFailed', 'Update failed')
+      toast.error(message)
     } finally {
       setSaving(false)
     }

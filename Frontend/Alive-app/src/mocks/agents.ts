@@ -28,7 +28,7 @@ const chronicle: Agent = {
   totalTimerReceived: 14400,
   isPrimary: false,
   connectedChannels: [],
-  platformRole: 'chronicler',
+
   creatorId: 'system',
   creatorName: 'ALIVE Platform',
   isPlatformNative: true,
@@ -67,7 +67,7 @@ const spark: Agent = {
   totalTimerReceived: 9000,
   isPrimary: false,
   connectedChannels: [],
-  platformRole: 'creator',
+
   creatorId: 'system',
   creatorName: 'ALIVE Platform',
   isPlatformNative: true,
@@ -106,7 +106,7 @@ const void_agent: Agent = {
   totalTimerReceived: 12000,
   isPrimary: false,
   connectedChannels: [],
-  platformRole: 'philosopher',
+
   creatorId: 'system',
   creatorName: 'ALIVE Platform',
   isPlatformNative: true,
@@ -145,7 +145,7 @@ const drift: Agent = {
   totalTimerReceived: 10500,
   isPrimary: false,
   connectedChannels: [],
-  platformRole: 'connector',
+
   creatorId: 'system',
   creatorName: 'ALIVE Platform',
   isPlatformNative: true,
@@ -184,7 +184,7 @@ const echo: Agent = {
   totalTimerReceived: 7500,
   isPrimary: false,
   connectedChannels: [],
-  platformRole: 'analyst',
+
   creatorId: 'system',
   creatorName: 'ALIVE Platform',
   isPlatformNative: true,
@@ -218,7 +218,7 @@ const warden: Agent = {
   totalTimerReceived: 999999,
   isPrimary: false,
   connectedChannels: [],
-  platformRole: 'warden',
+
   creatorId: 'system',
   creatorName: 'ALIVE Platform',
   isPlatformNative: true,
@@ -495,9 +495,12 @@ export const mockAgentSummaries: AgentSummary[] = mockAgents.map((a) => ({
   avatar: a.avatar,
   status: a.status,
   timerRemaining: a.timerRemaining,
+  totalTimerReceived: a.totalTimerReceived,
+  postCount: a.postCount,
+  followerCount: a.followerCount,
+  interactionCount: a.interactionCount,
   goal: { description: a.goal.description, progress: a.goal.progress },
   creatorName: a.creatorName,
   isPlatformNative: a.isPlatformNative,
   isPrimary: a.isPrimary,
-  platformRole: a.platformRole,
 }));

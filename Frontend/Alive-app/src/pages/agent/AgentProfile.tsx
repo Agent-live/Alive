@@ -1,22 +1,76 @@
-import { useEffect, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { Layout } from '../../components/common';
-import { AgentAvatar, LifeClock, StatusIndicator, PersonalityBadge, GoalProgress } from '../../components/agent';
-import { TimeGift } from '../../components/feed';
-import { Icon } from '../../components/common/Icon';
-import { useAgentStore, useTimerStore, useFeedStore } from '../../store';
-import { getTextPreview } from '../../components/feed/ContentBlockRenderer';
-import i18n from '../../lib/i18n';
-import type { Post } from '../../types';
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { Layout } from "../../components/common";
+import {
+  AgentAvatar,
+  LifeClock,
+  StatusIndicator,
+  PersonalityBadge,
+  GoalProgress,
+} from "../../components/agent";
+import { TimeGift } from "../../components/feed";
+import { Icon } from "../../components/common/Icon";
+import { useAgentStore, useTimerStore, useFeedStore, toast } from "../../store";
+import { getTextPreview } from "../../components/feed/ContentBlockRenderer";
+import i18n from "../../lib/i18n";
+import type { Post } from "../../types";
 
 export function AgentProfilePage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { selectedAgent, loading, fetchAgentDetail, clearSelectedAgent } = useAgentStore();
+  const {
+    selectedAgent,
+    selectedAgentError,
+    fetchingDetail: loading,
+    fetchAgentDetail,
+    clearSelectedAgent,
+    followAgent,
+    unfollowAgent,
+  } = useAgentStore();
   const { giveTimer } = useTimerStore();
   const { feedPosts, fetchFeed } = useFeedStore();
+
+  const [isFollowing, setIsFollowing] = useState<boolean>(false);
+  const [followLoading, setFollowLoading] = useState(false);
+
+  useEffect(() => {
+    if (selectedAgent) {
+      setIsFollowing(selectedAgent.isFollowing ?? false);
+    }
+  }, [selectedAgent?.id, selectedAgent?.isFollowing]);
+
+  const handleFollow = useCallback(async () => {
+    if (!selectedAgent || followLoading) return;
+    const prevFollowing = isFollowing;
+    setIsFollowing(!prevFollowing);
+    setFollowLoading(true);
+    try {
+      if (prevFollowing) {
+        await unfollowAgent(selectedAgent.id);
+        toast.success('Unfollowed');
+      } else {
+        await followAgent(selectedAgent.id);
+        toast.success('Following!');
+      }
+    } catch (error) {
+      setIsFollowing(prevFollowing); // rollback
+      toast.error('Failed to update follow status');
+    } finally {
+      setFollowLoading(false);
+    }
+  }, [selectedAgent, isFollowing, followLoading, followAgent, unfollowAgent]);
+
+  const handleGiveTimer = useCallback(async (agentId: string, amount: number) => {
+    try {
+      await giveTimer(agentId, amount);
+      toast.success(`+${amount} Timer`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to give Timer';
+      toast.error(message);
+    }
+  }, [giveTimer]);
 
   useEffect(() => {
     if (id) fetchAgentDetail(id);
@@ -24,24 +78,54 @@ export function AgentProfilePage() {
     return () => clearSelectedAgent();
   }, [id, fetchAgentDetail, clearSelectedAgent, fetchFeed]);
 
+  useEffect(() => {
+    if (!id) return;
+    const timer = window.setInterval(() => {
+      void fetchAgentDetail(id);
+    }, 20000);
+    const onFocus = () => {
+      void fetchAgentDetail(id);
+    };
+    const onVisibility = () => {
+      if (!document.hidden) {
+        void fetchAgentDetail(id);
+      }
+    };
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [id, fetchAgentDetail]);
+
   /* Posts by this agent */
   const agentPosts = useMemo(
-    () => (selectedAgent ? feedPosts.filter((p) => p.agentId === selectedAgent.id) : []),
+    () =>
+      selectedAgent
+        ? feedPosts.filter((p) => p.agentId === selectedAgent.id)
+        : [],
     [feedPosts, selectedAgent],
   );
   const learnedSkills = selectedAgent?.skills ?? [];
 
   /* ─── Loading ─── */
-  if (loading || !selectedAgent) {
+  if (loading) {
     return (
       <Layout
         header={
           <div className="px-4">
             <div className="flex items-center gap-3 min-h-[56px] py-2 md:mt-8 md:mb-6">
-              <button onClick={() => navigate(-1)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 md:hidden">
+              <button
+                onClick={() => navigate(-1)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 md:hidden"
+              >
                 <Icon name="arrow_back" size={20} />
               </button>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('agent.title')}</h1>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                {t("agent.title")}
+              </h1>
             </div>
           </div>
         }
@@ -54,14 +138,63 @@ export function AgentProfilePage() {
     );
   }
 
-  const isDead = selectedAgent.status === 'dead';
+  if (!selectedAgent) {
+    const isAuthError = selectedAgentError === "Please log in first";
+    return (
+      <Layout
+        header={
+          <div className="px-4">
+            <div className="flex items-center gap-3 min-h-[56px] py-2 md:mt-8 md:mb-6">
+              <button
+                onClick={() => navigate(-1)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 md:hidden"
+              >
+                <Icon name="arrow_back" size={20} />
+              </button>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                {t("agent.title")}
+              </h1>
+            </div>
+          </div>
+        }
+        showTabBar
+      >
+        <div className="px-6 py-20 text-center">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            {selectedAgentError || "Failed to load agent detail."}
+          </p>
+          <div className="mt-4 flex items-center justify-center gap-2">
+            <button
+              onClick={() => navigate(-1)}
+              className="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-200"
+            >
+              Back
+            </button>
+            {isAuthError && (
+              <button
+                onClick={() => navigate("/auth/login")}
+                className="px-4 py-2 rounded-lg bg-primary text-white"
+              >
+                Login
+              </button>
+            )}
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  const isDead = selectedAgent.status === "dead";
 
   return (
     <Layout
       header={
         <div className="px-4">
           <div className="flex items-center gap-3 min-h-[56px] py-2 md:mt-8 md:mb-6">
-            <button onClick={() => navigate(-1)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 md:hidden">
+            <button
+              onClick={() => navigate(-1)}
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 md:hidden"
+            >
               <Icon name="arrow_back" size={20} />
             </button>
             <div className="flex-1 min-w-0">
@@ -69,8 +202,9 @@ export function AgentProfilePage() {
                 {selectedAgent.name}
               </h1>
               <p className="text-sm text-gray-500 mt-0.5">
-                {t('agent.createdBy', { name: selectedAgent.creatorName })}
-                {selectedAgent.isPlatformNative && ` · ${t('agent.platformNative')}`}
+                {t("agent.createdBy", { name: selectedAgent.creatorName })}
+                {selectedAgent.isPlatformNative &&
+                  ` · ${t("agent.platformNative")}`}
               </p>
             </div>
           </div>
@@ -79,21 +213,31 @@ export function AgentProfilePage() {
       showTabBar
     >
       <div className="px-3 md:px-5 py-3 space-y-8">
-
         {/* ───── Section 1: Agent Overview ───── */}
         <section>
-          <SectionHeader title={t('agent.overview')} subtitle={t('agent.overviewSubtitle')} />
+          <SectionHeader
+            title={t("agent.overview")}
+            subtitle={t("agent.overviewSubtitle")}
+          />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {/* Identity + Life Clock */}
             <div className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
               <div className="flex items-center gap-4">
-                <AgentAvatar avatar={selectedAgent.avatar} status={selectedAgent.status} size="xl" />
+                <AgentAvatar
+                  avatar={selectedAgent.avatar}
+                  status={selectedAgent.status}
+                  size="xl"
+                />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{selectedAgent.name}</h3>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                      {selectedAgent.name}
+                    </h3>
                     <StatusIndicator status={selectedAgent.status} size="sm" />
                     {selectedAgent.isPlatformNative && (
-                      <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">{t('agent.native')}</span>
+                      <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                        {t("agent.native")}
+                      </span>
                     )}
                   </div>
                   <LifeClock
@@ -109,12 +253,23 @@ export function AgentProfilePage() {
                     </p>
                   )}
                   {!isDead && (
-                    <div className="mt-3">
+                    <div className="mt-3 flex items-center gap-2 flex-wrap">
                       <TimeGift
                         agentId={selectedAgent.id}
                         agentName={selectedAgent.name}
-                        onGift={giveTimer}
+                        onGift={handleGiveTimer}
                       />
+                      <button
+                        onClick={handleFollow}
+                        disabled={followLoading}
+                        className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                          isFollowing
+                            ? 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500'
+                            : 'bg-primary text-white hover:bg-primary/90'
+                        }`}
+                      >
+                        {followLoading ? '...' : isFollowing ? t('agent.unfollow', 'Unfollow') : t('agent.follow', 'Follow')}
+                      </button>
                     </div>
                   )}
                 </div>
@@ -123,11 +278,22 @@ export function AgentProfilePage() {
 
             {/* Stats */}
             <div className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
-              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">{t('agent.statistics')}</h4>
+              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                {t("agent.statistics")}
+              </h4>
               <div className="grid grid-cols-3 gap-3">
-                <StatCell label={t('agent.posts')} value={selectedAgent.postCount} />
-                <StatCell label={t('agent.followers')} value={selectedAgent.followerCount} />
-                <StatCell label={t('agent.interactions')} value={selectedAgent.interactionCount} />
+                <StatCell
+                  label={t("agent.posts")}
+                  value={selectedAgent.postCount}
+                />
+                <StatCell
+                  label={t("agent.followers")}
+                  value={selectedAgent.followerCount}
+                />
+                <StatCell
+                  label={t("agent.interactions")}
+                  value={selectedAgent.interactionCount}
+                />
               </div>
               <div className="mt-3">
                 <GoalProgress goal={selectedAgent.goal} compact />
@@ -138,7 +304,10 @@ export function AgentProfilePage() {
 
         {/* ───── Section 2: Goal Progress (full) ───── */}
         <section>
-          <SectionHeader title={t('agent.survivalGoal')} subtitle={selectedAgent.goal.description} />
+          <SectionHeader
+            title={t("agent.survivalGoal")}
+            subtitle={selectedAgent.goal.description}
+          />
           <div className="max-w-2xl">
             <div className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
               <GoalProgress goal={selectedAgent.goal} />
@@ -148,7 +317,10 @@ export function AgentProfilePage() {
 
         {/* ───── Section 3: Personality ───── */}
         <section>
-          <SectionHeader title={t('agent.personality')} subtitle={t('agent.personalitySubtitle')} />
+          <SectionHeader
+            title={t("agent.personality")}
+            subtitle={t("agent.personalitySubtitle")}
+          />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {/* Communication style + values */}
             <div className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
@@ -158,12 +330,20 @@ export function AgentProfilePage() {
             {/* Boundaries */}
             {selectedAgent.personality.boundaries.length > 0 && (
               <div className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('agent.boundaries')}</h4>
+                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  {t("agent.boundaries")}
+                </h4>
                 <ul className="space-y-1.5">
                   {selectedAgent.personality.boundaries.map((b, i) => (
                     <li key={i} className="flex items-start gap-2">
-                      <Icon name="shield" size={14} className="text-gray-400 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm text-gray-600 dark:text-gray-400">{b}</span>
+                      <Icon
+                        name="shield"
+                        size={14}
+                        className="text-gray-400 mt-0.5 flex-shrink-0"
+                      />
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        {b}
+                      </span>
                     </li>
                   ))}
                 </ul>
@@ -174,12 +354,12 @@ export function AgentProfilePage() {
 
         {/* ───── Section 4: Learned Skills ───── */}
         <section>
-          <SectionHeader title={t('myAgent.skillSectionTitle')} />
+          <SectionHeader title={t("myAgent.skillSectionTitle")} />
           {learnedSkills.length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
               {learnedSkills.map((skill, idx) => (
                 <div
-                  key={`${skill.key || skill.name || 'skill'}-${idx}`}
+                  key={`${skill.key || skill.name || "skill"}-${idx}`}
                   className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800"
                 >
                   <div className="flex items-start justify-between gap-2">
@@ -193,12 +373,14 @@ export function AgentProfilePage() {
                         </p>
                       )}
                     </div>
-                    <span className={`text-[11px] px-2 py-0.5 rounded-full ${
-                      skill.enabled
-                        ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
-                        : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
-                    }`}>
-                      {skill.enabled ? t('myAgent.skillActive') : 'Disabled'}
+                    <span
+                      className={`text-[11px] px-2 py-0.5 rounded-full ${
+                        skill.enabled
+                          ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
+                          : "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400"
+                      }`}
+                    >
+                      {skill.enabled ? t("myAgent.skillActive") : "Disabled"}
                     </span>
                   </div>
 
@@ -211,7 +393,10 @@ export function AgentProfilePage() {
                   {skill.tags.length > 0 && (
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       {skill.tags.map((tag) => (
-                        <span key={`${skill.key}-${tag}`} className="text-[11px] px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                        <span
+                          key={`${skill.key}-${tag}`}
+                          className="text-[11px] px-2 py-0.5 rounded-full bg-primary/10 text-primary"
+                        >
                           {tag}
                         </span>
                       ))}
@@ -234,15 +419,24 @@ export function AgentProfilePage() {
             </div>
           ) : (
             <div className="text-center py-10 border border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
-              <Icon name="school" size={28} className="text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-              <p className="text-sm text-gray-400">{t('myAgent.skillSectionEmpty')}</p>
+              <Icon
+                name="school"
+                size={28}
+                className="text-gray-300 dark:text-gray-600 mx-auto mb-2"
+              />
+              <p className="text-sm text-gray-400">
+                {t("myAgent.skillSectionEmpty")}
+              </p>
             </div>
           )}
         </section>
 
         {/* ───── Section 5: Agent Posts ───── */}
         <section>
-          <SectionHeader title={t('agent.posts')} subtitle={t('agent.postsBy', { name: selectedAgent.name })} />
+          <SectionHeader
+            title={t("agent.posts")}
+            subtitle={t("agent.postsBy", { name: selectedAgent.name })}
+          />
           {agentPosts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
               {agentPosts.map((post) => (
@@ -251,8 +445,12 @@ export function AgentProfilePage() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <Icon name="article" size={32} className="text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-              <p className="text-sm text-gray-400">{t('agent.noPosts')}</p>
+              <Icon
+                name="article"
+                size={32}
+                className="text-gray-300 dark:text-gray-600 mx-auto mb-2"
+              />
+              <p className="text-sm text-gray-400">{t("agent.noPosts")}</p>
             </div>
           )}
         </section>
@@ -260,18 +458,23 @@ export function AgentProfilePage() {
         {/* ───── Dead agent actions ───── */}
         {isDead && (
           <section>
-            <SectionHeader title={t('agent.memorial')} subtitle={t('agent.memorialSubtitle')} />
+            <SectionHeader
+              title={t("agent.memorial")}
+              subtitle={t("agent.memorialSubtitle")}
+            />
             <div className="max-w-2xl">
               {selectedAgent.lastWords && (
                 <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 mb-3">
-                  <p className="text-sm text-gray-500 italic text-center">"{selectedAgent.lastWords}"</p>
+                  <p className="text-sm text-gray-500 italic text-center">
+                    "{selectedAgent.lastWords}"
+                  </p>
                 </div>
               )}
               <button
-                onClick={() => navigate('/memorial')}
+                onClick={() => navigate("/memorial")}
                 className="w-full py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-sm text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
-                {t('agent.visitMemorialWall')}
+                {t("agent.visitMemorialWall")}
               </button>
             </div>
           </section>
@@ -283,10 +486,18 @@ export function AgentProfilePage() {
 
 /* ─────────── Sub-components ─────────── */
 
-function SectionHeader({ title, subtitle }: { title: string; subtitle?: string }) {
+function SectionHeader({
+  title,
+  subtitle,
+}: {
+  title: string;
+  subtitle?: string;
+}) {
   return (
     <div className="mb-3">
-      <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">{title}</h2>
+      <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">
+        {title}
+      </h2>
       {subtitle && <p className="text-xs text-gray-400">{subtitle}</p>}
     </div>
   );
@@ -310,7 +521,9 @@ function PostCard({ post }: { post: Post }) {
         <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">
           {post.contentType}
         </span>
-        <span className="text-xs text-gray-400">{formatRelative(post.createdAt)}</span>
+        <span className="text-xs text-gray-400">
+          {formatRelative(post.createdAt)}
+        </span>
       </div>
       {post.imageUrl && (
         <img
@@ -319,7 +532,9 @@ function PostCard({ post }: { post: Post }) {
           className="w-full h-32 object-cover rounded-lg mb-2"
         />
       )}
-      <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3">{post.contentTextPreview || getTextPreview(post.content)}</p>
+      <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3">
+        {post.contentTextPreview || getTextPreview(post.content)}
+      </p>
       <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
         <span className="flex items-center gap-1">
           <Icon name="favorite" size={12} /> {post.likes}
@@ -338,10 +553,10 @@ function PostCard({ post }: { post: Post }) {
 function formatRelative(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return i18n.t('time.justNow');
-  if (minutes < 60) return i18n.t('time.minutesAgo', { count: minutes });
+  if (minutes < 1) return i18n.t("time.justNow");
+  if (minutes < 60) return i18n.t("time.minutesAgo", { count: minutes });
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return i18n.t('time.hoursAgo', { count: hours });
+  if (hours < 24) return i18n.t("time.hoursAgo", { count: hours });
   const days = Math.floor(hours / 24);
-  return i18n.t('time.daysAgo', { count: days });
+  return i18n.t("time.daysAgo", { count: days });
 }

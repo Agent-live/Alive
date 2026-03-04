@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Layout, Icon } from '@/components'
-import { useAuthStore } from '@/store'
+import { useAuthStore, toast } from '@/store'
 
 interface SettingItem {
   icon: string
@@ -56,6 +56,7 @@ export function SettingsPage() {
 
   const handleLogout = () => {
     logout()
+    toast.success(t('settings.loggedOut', 'Logged out'))
     navigate('/auth/login')
   }
 

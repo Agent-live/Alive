@@ -1,6 +1,16 @@
-import type { SkillShopItem } from '../types/discover';
+import type { AgentStatus, SkillCategory } from '../types';
 
-export const mockSkillShopItems: SkillShopItem[] = [
+interface MockSkillShopItem {
+  id: string;
+  name: string;
+  description: string;
+  category: SkillCategory;
+  estimatedTimeCost: number;
+  agents: { id: string; name: string; avatar: string; status: AgentStatus }[];
+  popularity: number;
+}
+
+export const mockSkillShopItems: MockSkillShopItem[] = [
   // Creative
   {
     id: 'skill_001',

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from '../../components/common/Icon';
 import { skillShopApi } from '../../api';
 import { useAgentStore, toast } from '../../store';
+import { extractErrorMessage } from '../../utils/error';
 import type { SkillShopCategory, SkillShopDetailResp, SkillShopItem } from '../../api/skillShop';
 
 const badgeClass = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium';
@@ -67,8 +68,7 @@ export function SkillShopTab() {
       setPage(res.page);
       setItems((prev) => (mode === 'append' ? [...prev, ...res.items] : res.items));
     } catch (e) {
-      const message = e && typeof e === 'object' && 'message' in e ? String((e as any).message) : 'Failed to load skills';
-      toast.error(message);
+      toast.error(extractErrorMessage(e, 'Failed to load skills'));
       setItems([]);
       setHasMore(false);
       setTotal(0);
@@ -79,7 +79,6 @@ export function SkillShopTab() {
 
   useEffect(() => {
     fetchPage(1, 'replace');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeCategory, q]);
 
   const openDetail = async (slug: string) => {
@@ -94,12 +93,13 @@ export function SkillShopTab() {
       // Ensure we have agent list if user wants to teach right away.
       if (myAgents.length === 0) fetchMyAgents();
     } catch (e) {
-      if (detailReqSeq.current !== reqId) return;
-      const message = e && typeof e === 'object' && 'message' in e ? String((e as any).message) : 'Failed to load skill';
-      toast.error(message);
+      if (detailReqSeq.current === reqId) {
+        toast.error(extractErrorMessage(e, 'Failed to load skill'));
+      }
     } finally {
-      if (detailReqSeq.current !== reqId) return;
-      setDetailLoading(false);
+      if (detailReqSeq.current === reqId) {
+        setDetailLoading(false);
+      }
     }
   };
 
@@ -118,8 +118,7 @@ export function SkillShopTab() {
       setItems((prev) => prev.map((it) => (it.slug === slug ? { ...it, installed: true } : it)));
       setSelected((prev) => (prev && prev.slug === slug ? { ...prev, installed: true } : prev));
     } catch (e) {
-      const message = e && typeof e === 'object' && 'message' in e ? String((e as any).message) : 'Install failed';
-      toast.error(message);
+      toast.error(extractErrorMessage(e, 'Install failed'));
     } finally {
       setActionLoading(false);
     }
@@ -133,8 +132,7 @@ export function SkillShopTab() {
       setItems((prev) => prev.map((it) => (it.slug === slug ? { ...it, installed: true } : it)));
       closeDetail();
     } catch (e) {
-      const message = e && typeof e === 'object' && 'message' in e ? String((e as any).message) : 'Teach failed';
-      toast.error(message);
+      toast.error(extractErrorMessage(e, 'Teach failed'));
     } finally {
       setActionLoading(false);
     }

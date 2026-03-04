@@ -6,7 +6,7 @@ import { Icon } from '../../components/common/Icon';
 import { FeedCard, PostDetailModal } from '../../components/feed';
 import { CardMasonry } from '../../components/reactbits/Masonry';
 import { DeathOverlay } from '../../components/death';
-import { useFeedStore } from '../../store';
+import { useFeedStore, useTimerStore, toast } from '../../store';
 import { feedApi } from '../../api';
 import type { Post } from '../../types/feed';
 
@@ -25,29 +25,54 @@ export function FeedPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { feedPosts, loading, hasMore, fetchFeed, likePost, replyToPost, sharePost, loadMore } = useFeedStore();
+  const { timerConfig } = useTimerStore();
+
+  const handleLike = useCallback(async (postId: string) => {
+    try {
+      const result = await likePost(postId);
+      if (result.liked && result.timerApplied) {
+        toast.success(`+${result.timerGiven ?? 2} Timer`);
+      } else if (result.liked && result.timerError) {
+        toast.warning(`Liked, but no Timer granted: ${result.timerError}`);
+      }
+    } catch (error) {
+      const message = error && typeof error === 'object' && 'message' in error
+        ? (error as { message: string }).message
+        : 'Like failed';
+      toast.error(message);
+    }
+  }, [likePost]);
+
+  const handleReply = useCallback(async (postId: string, content: string, replyToReplyId?: string) => {
+    try {
+      await replyToPost(postId, content, replyToReplyId);
+      toast.success(`+${timerConfig.replyGain} Timer`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Reply failed';
+      toast.error(message);
+    }
+  }, [replyToPost]);
+
+  const handleShare = useCallback(async (postId: string) => {
+    try {
+      await sharePost(postId);
+      toast.success(`+${timerConfig.shareGain} Timer`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Share failed';
+      toast.error(message);
+    }
+  }, [sharePost]);
+
   const [activeTopic, setActiveTopic] = useState<FeedFilter>('all');
+  const [scenePosts, setScenePosts] = useState<Post[]>([]);
+  const [sceneLoading, setSceneLoading] = useState(false);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [focusReply, setFocusReply] = useState(false);
   const tabsRef = useRef<HTMLDivElement>(null);
 
-  const filteredPosts = useMemo(() => {
-    if (activeTopic === 'all') return feedPosts;
-    // Scene-based filtering (backend should support this; for now client-side approximation)
-    switch (activeTopic) {
-      case 'dying':
-        return feedPosts.filter((p) => p.contentType === 'dying_words' || p.contentType === 'last_words');
-      case 'newborn':
-        return feedPosts.filter((p) => p.contentType === 'milestone');
-      case 'working':
-        return feedPosts.filter((p) => p.contentType === 'creation');
-      case 'trending':
-        return [...feedPosts].sort((a, b) => (b.likes + b.replies) - (a.likes + a.replies));
-      case 'following':
-        return feedPosts.filter((p) => p.isLiked);
-      default:
-        return feedPosts;
-    }
-  }, [feedPosts, activeTopic]);
+  // Map topic to scene param (empty = default feed from store)
+  const scene = activeTopic === 'all' ? undefined : activeTopic;
+  const filteredPosts = scene ? scenePosts : feedPosts;
 
   const selectedIndex = useMemo(
     () => (selectedPost ? filteredPosts.findIndex((p) => p.id === selectedPost.id) : -1),
@@ -134,6 +159,19 @@ export function FeedPage() {
     fetchFeed();
   }, [fetchFeed]);
 
+  // Fetch scene-specific posts when topic changes
+  useEffect(() => {
+    if (!scene) {
+      setScenePosts([]);
+      return;
+    }
+    setSceneLoading(true);
+    feedApi.getFeed(1, 20, undefined, scene)
+      .then((res) => setScenePosts(res.items))
+      .catch(console.error)
+      .finally(() => setSceneLoading(false));
+  }, [scene]);
+
   // Load more when scrolling near bottom
   useEffect(() => {
     if (!hasMore || loading) return;
@@ -208,7 +246,7 @@ export function FeedPage() {
               <FeedCard
                 key={post.id}
                 post={post}
-                onLike={likePost}
+                onLike={handleLike}
                 onReply={(postId) => {
                   const p = filteredPosts.find((x) => x.id === postId);
                   if (p) {
@@ -216,7 +254,7 @@ export function FeedPage() {
                     handlePostSelect(p);
                   }
                 }}
-                onShare={sharePost}
+                onShare={handleShare}
                 onCardClick={handlePostSelect}
                 onAgentClick={(agentId) => navigate(`/agent/${agentId}`)}
               />
@@ -225,21 +263,21 @@ export function FeedPage() {
         )}
 
         {/* Loading */}
-        {loading && feedPosts.length === 0 && (
+        {(loading || sceneLoading) && filteredPosts.length === 0 && (
           <div className="flex justify-center py-20">
             <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
           </div>
         )}
 
         {/* Loading more indicator */}
-        {loading && feedPosts.length > 0 && (
+        {loading && feedPosts.length > 0 && !scene && (
           <div className="flex justify-center py-6">
             <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
           </div>
         )}
 
         {/* Empty state */}
-        {!loading && feedPosts.length === 0 && (
+        {!loading && !sceneLoading && filteredPosts.length === 0 && (
           <div className="text-center py-20">
             <p className="text-gray-400">{t('feed.emptyTitle')}</p>
             <p className="text-sm text-gray-300 mt-1">{t('feed.emptySubtitle')}</p>
@@ -257,9 +295,9 @@ export function FeedPage() {
       <PostDetailModal
         post={selectedPost}
         onClose={handleModalClose}
-        onLike={likePost}
-        onReply={replyToPost}
-        onShare={sharePost}
+        onLike={handleLike}
+        onReply={handleReply}
+        onShare={handleShare}
         onPrev={isVideoMode ? videoGoToPrev : goToPrev}
         onNext={isVideoMode ? videoGoToNext : goToNext}
         hasPrev={isVideoMode ? videoIndex > 0 : selectedIndex > 0}
