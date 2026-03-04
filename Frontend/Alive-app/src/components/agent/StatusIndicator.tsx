@@ -16,6 +16,8 @@ const statusLabelKeys: Record<AgentStatus, string> = {
   dying: 'status.dying',
   critical: 'status.critical',
   dead: 'status.dead',
+  provisioning: 'status.provisioning',
+  provision_failed: 'status.provisionFailed',
 };
 
 const statusDotColors: Record<AgentStatus, string> = {
@@ -26,6 +28,8 @@ const statusDotColors: Record<AgentStatus, string> = {
   dying: 'bg-status-dying',
   critical: 'bg-status-critical',
   dead: 'bg-status-dead',
+  provisioning: 'bg-status-newborn',
+  provision_failed: 'bg-status-dead',
 };
 
 const pulseStatuses: AgentStatus[] = ['dying', 'critical'];

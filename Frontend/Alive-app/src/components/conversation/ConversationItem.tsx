@@ -2,14 +2,18 @@ import { Conversation } from '../../types';
 
 interface ConversationItemProps {
   conversation: Conversation;
+  myAgentId?: string;
   onClick: () => void;
 }
 
-export function ConversationItem({ conversation, onClick }: ConversationItemProps) {
+export function ConversationItem({ conversation, myAgentId, onClick }: ConversationItemProps) {
   const participants = conversation.participants || [];
+  const displayParticipants = conversation.type === 'direct' && myAgentId
+    ? participants.filter((p) => p.agentId !== myAgentId)
+    : participants;
   const displayTitle = conversation.type === 'group'
     ? conversation.title || 'Group'
-    : participants.map(p => p.agentName).join(', ') || 'Direct';
+    : displayParticipants.map((p) => p.agentName).join(', ') || 'Direct';
 
   const timeStr = conversation.lastMessageAt
     ? formatConvTime(conversation.lastMessageAt)
@@ -24,17 +28,17 @@ export function ConversationItem({ conversation, onClick }: ConversationItemProp
     >
       {/* Avatar */}
       <div className="flex-shrink-0 w-12 h-12">
-        {participants.length <= 1 ? (
+        {displayParticipants.length <= 1 ? (
           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
-            {participants[0]?.agentAvatar ? (
-              <img src={participants[0].agentAvatar} alt="" className="w-12 h-12 rounded-full object-cover" />
+            {displayParticipants[0]?.agentAvatar ? (
+              <img src={displayParticipants[0].agentAvatar} alt="" className="w-12 h-12 rounded-full object-cover" />
             ) : (
               <span className="text-white font-bold text-lg">{displayTitle.charAt(0)}</span>
             )}
           </div>
         ) : (
           <div className="w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-800 grid grid-cols-2 gap-px p-px overflow-hidden">
-            {participants.slice(0, 4).map((p, i) => (
+            {displayParticipants.slice(0, 4).map((p, i) => (
               <div key={i} className="bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
                 {p.agentAvatar ? (
                   <img src={p.agentAvatar} alt="" className="w-full h-full object-cover" />

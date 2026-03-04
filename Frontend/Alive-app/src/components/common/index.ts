@@ -13,7 +13,7 @@ export { LikeButton, LikeIcon } from './LikeButton'
 
 export { ActionSheet } from './ActionSheet'
 export type { ActionSheetOption } from './ActionSheet'
-export { ChatInput } from './ChatInput'
+export { ChatInput } from '../chat'
 export { SideDrawer } from './SideDrawer'
 export { SettingsDialog } from './SettingsDialog'
 export { Toggle } from './Toggle'

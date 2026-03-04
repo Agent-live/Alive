@@ -115,7 +115,10 @@ export function LoginModal() {
     try {
       const success = await login(phone, code)
       if (success) {
+        toast.success(t('auth.loginSuccess', 'Login successful'))
         handleLoginSuccess()
+      } else {
+        toast.error(t('auth.loginFailed', 'Login failed'))
       }
     } finally {
       setLoading(false)
@@ -281,7 +284,10 @@ export function LoginModal() {
                         onDoubleClick={async () => {
                           const success = await login('19900001234', '123456')
                           if (success) {
+                            toast.success(t('auth.loginSuccess', 'Login successful'))
                             handleLoginSuccess()
+                          } else {
+                            toast.error(t('auth.loginFailed', 'Login failed'))
                           }
                         }}
                       >

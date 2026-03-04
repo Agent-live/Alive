@@ -1,21 +1,28 @@
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { AgentSummary } from '../../types';
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { AgentSummary } from "../../types";
+import { timerToMinutes } from '../../utils/format';
 
 interface DeathBannerProps {
   agent: AgentSummary;
   className?: string;
 }
 
-export function DeathBanner({ agent, className = '' }: DeathBannerProps) {
+export function DeathBanner({ agent, className = "" }: DeathBannerProps) {
   const navigate = useNavigate();
-  const minutes = Math.floor(agent.timerRemaining / 60);
+  const minutes = timerToMinutes(agent.timerRemaining);
 
   return (
     <motion.button
       onClick={() => navigate(`/agent/${agent.id}`)}
       className={`w-full p-3 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 text-left ${className}`}
-      animate={{ borderColor: ['rgba(239,68,68,0.3)', 'rgba(239,68,68,0.8)', 'rgba(239,68,68,0.3)'] }}
+      animate={{
+        borderColor: [
+          "rgba(239,68,68,0.3)",
+          "rgba(239,68,68,0.8)",
+          "rgba(239,68,68,0.3)",
+        ],
+      }}
       transition={{ duration: 2, repeat: Infinity }}
     >
       <div className="flex items-center justify-between">

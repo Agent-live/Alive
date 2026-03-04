@@ -23,6 +23,8 @@ const statusRingColors: Record<AgentStatus, string> = {
   dying: 'ring-status-dying',
   critical: 'ring-status-critical',
   dead: 'ring-status-dead',
+  provisioning: 'ring-status-newborn',
+  provision_failed: 'ring-status-dead',
 };
 
 export function AgentAvatar({ avatar, status, size = 'md', className = '' }: AgentAvatarProps) {

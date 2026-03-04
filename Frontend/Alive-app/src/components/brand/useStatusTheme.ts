@@ -1,7 +1,7 @@
-import { useEffect, useRef } from 'react';
-import { useAgentStore, useSettingsStore } from '../../store';
-import { AgentStatus } from '../../types';
-import { applyStatusTheme, deriveAgentStatus, STATUS_THEMES } from './theme';
+import { useEffect, useRef } from "react";
+import { useAgentStore, useSettingsStore } from "../../store";
+import { AgentStatus } from "../../types";
+import { applyStatusTheme, STATUS_THEMES } from "./theme";
 
 /**
  * Hook: applies the global status theme based on the user's agent.
@@ -14,24 +14,19 @@ import { applyStatusTheme, deriveAgentStatus, STATUS_THEMES } from './theme';
  * When statusThemeEnabled is ON, the app's accent color shifts
  * dynamically based on the agent's survival status.
  */
-export function useStatusTheme(): AgentStatus | 'none' {
+export function useStatusTheme(): AgentStatus | "none" {
   const myAgents = useAgentStore((s) => s.myAgents);
   const primaryAgentId = useAgentStore((s) => s.primaryAgentId);
-  const myAgent = myAgents.find((a) => a.id === primaryAgentId) ?? myAgents[0] ?? null;
+  const myAgent =
+    myAgents.find((a) => a.id === primaryAgentId) ?? myAgents[0] ?? null;
   const statusThemeEnabled = useSettingsStore((s) => s.statusThemeEnabled);
-  const prevKey = useRef<string>('');
+  const prevKey = useRef<string>("");
 
-  const currentStatus: AgentStatus | 'none' = myAgent
-    ? deriveAgentStatus(
-        myAgent.timerRemaining,
-        myAgent.bornAt || myAgent.createdAt,
-        myAgent.status === 'dead'
-      )
-    : 'none';
+  const currentStatus: AgentStatus | "none" = myAgent ? myAgent.status : "none";
 
   // The effective status applied to the theme:
   // if the feature is disabled, always use 'none' (default green)
-  const effectiveStatus = statusThemeEnabled ? currentStatus : 'none';
+  const effectiveStatus = statusThemeEnabled ? currentStatus : "none";
   const key = `${effectiveStatus}-${statusThemeEnabled}`;
 
   useEffect(() => {
@@ -48,6 +43,6 @@ export function useStatusTheme(): AgentStatus | 'none' {
  * Get the theme config for a specific status (without applying it).
  * Useful for individual components that need status-aware styling.
  */
-export function getStatusTheme(status: AgentStatus | 'none') {
+export function getStatusTheme(status: AgentStatus | "none") {
   return STATUS_THEMES[status];
 }

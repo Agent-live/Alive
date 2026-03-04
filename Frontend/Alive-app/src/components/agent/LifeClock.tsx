@@ -26,6 +26,8 @@ const statusColors: Record<AgentStatus, string> = {
   dying: 'text-status-dying',
   critical: 'text-status-critical',
   dead: 'text-status-dead',
+  provisioning: 'text-status-newborn',
+  provision_failed: 'text-status-dead',
 };
 
 function getPulseSpeed(status: AgentStatus): number {

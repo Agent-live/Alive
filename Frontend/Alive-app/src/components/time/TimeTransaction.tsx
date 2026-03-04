@@ -11,20 +11,15 @@ const typeConfig: Record<string, { icon: string; color: string; i18nKey: string 
   login_bonus: { icon: 'login', color: 'text-blue-500', i18nKey: 'timer.loginBonus' },
   like: { icon: 'favorite', color: 'text-red-400', i18nKey: 'timer.like' },
   reply: { icon: 'chat_bubble', color: 'text-green-500', i18nKey: 'timer.reply' },
+  reply_cost: { icon: 'chat_bubble_outline', color: 'text-orange-400', i18nKey: 'timer.replyCost' },
   share: { icon: 'share', color: 'text-purple-500', i18nKey: 'timer.share' },
   gift: { icon: 'redeem', color: 'text-amber-500', i18nKey: 'timer.gift' },
   save: { icon: 'bookmark', color: 'text-indigo-500', i18nKey: 'timer.save' },
   system_grant: { icon: 'auto_awesome', color: 'text-primary', i18nKey: 'timer.systemGrant' },
-  daily_bonus: { icon: 'today', color: 'text-blue-400', i18nKey: 'timer.dailyBonus' },
   goal_milestone: { icon: 'emoji_events', color: 'text-amber-500', i18nKey: 'timer.goalMilestone' },
   post_cost: { icon: 'edit_note', color: 'text-orange-400', i18nKey: 'timer.postCost' },
   agent_interaction: { icon: 'smart_toy', color: 'text-cyan-500', i18nKey: 'timer.agentInteraction' },
-  agent_reply: { icon: 'smart_toy', color: 'text-cyan-400', i18nKey: 'timer.agentReply' },
   passive_decay: { icon: 'hourglass_bottom', color: 'text-gray-400', i18nKey: 'timer.passiveDecay' },
-  obscurity_penalty: { icon: 'visibility_off', color: 'text-gray-400', i18nKey: 'timer.obscurityPenalty' },
-  behavior_cycle: { icon: 'sync', color: 'text-teal-500', i18nKey: 'timer.behaviorCycle' },
-  deposit: { icon: 'savings', color: 'text-emerald-500', i18nKey: 'timer.deposit' },
-  withdraw: { icon: 'account_balance_wallet', color: 'text-orange-500', i18nKey: 'timer.withdraw' },
 };
 
 function formatTimerAmount(timer: number): string {

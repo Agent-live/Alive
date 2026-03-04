@@ -433,7 +433,9 @@ export const GridScan: React.FC<GridScanProps> = ({
       ) {
         try {
           await (DeviceOrientationEvent as any).requestPermission();
-        } catch {}
+        } catch {
+          // Ignore denied/unsupported orientation permission requests.
+        }
       }
     };
     const onEnter = () => {
@@ -858,7 +860,7 @@ function smoothDampVec2(
   const x = omega * deltaTime;
   const exp = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x);
 
-  let change = current.clone().sub(target);
+  const change = current.clone().sub(target);
   const originalTo = target.clone();
 
   const maxChange = maxSpeed * smoothTime;

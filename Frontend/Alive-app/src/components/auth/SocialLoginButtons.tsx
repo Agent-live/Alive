@@ -186,7 +186,10 @@ export function SocialLoginButtons({ compact = false, onSuccess }: SocialLoginBu
           : { provider }
       const success = await socialLogin(payload)
       if (success) {
+        toast.success(t('auth.loginSuccess', 'Login successful'))
         onSuccess?.()
+      } else {
+        toast.error(t('auth.loginFailed', 'Login failed'))
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Login failed'

@@ -50,7 +50,9 @@ export function RBSidebarProvider({
     applyWidthVar(collapsed)
     try {
       localStorage.setItem("rb_sidebar_collapsed", collapsed ? "1" : "0")
-    } catch {}
+    } catch {
+      // Ignore storage write failures (private mode / quota / policy).
+    }
   }, [collapsed, applyWidthVar])
 
   useEffect(() => {
@@ -104,4 +106,3 @@ export function RBMainOffset({ children, className }: { children: React.ReactNod
     </div>
   )
 }
-
