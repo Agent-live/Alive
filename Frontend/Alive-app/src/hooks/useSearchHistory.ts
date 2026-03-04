@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 
-const SEARCH_HISTORY_KEY = 'looka_search_history'
+const SEARCH_HISTORY_KEY = 'alive_search_history'
+const LEGACY_SEARCH_HISTORY_KEY = 'looka_search_history'
 const MAX_HISTORY_SIZE = 20
 
 /**
@@ -37,6 +38,18 @@ export function useSearchHistory() {
         const parsed = JSON.parse(stored)
         if (Array.isArray(parsed)) {
           setHistory(parsed)
+          return
+        }
+      }
+
+      // One-time migration from legacy key.
+      const legacyStored = localStorage.getItem(LEGACY_SEARCH_HISTORY_KEY)
+      if (legacyStored) {
+        const parsed = JSON.parse(legacyStored)
+        if (Array.isArray(parsed)) {
+          setHistory(parsed)
+          localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(parsed))
+          localStorage.removeItem(LEGACY_SEARCH_HISTORY_KEY)
         }
       }
     } catch (error) {

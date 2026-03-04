@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { AgentStatus } from '../types';
 import { timerToLifeClock } from '../utils/format';
+import { useTimerStore } from '../store/timerStore';
 
 interface LifeClockResult {
   displayTime: string;
@@ -19,41 +20,56 @@ const statusColors: Record<AgentStatus, string> = {
   dying: '#F97316',
   critical: '#EF4444',
   dead: '#1F2937',
+  provisioning: '#22C55E',
+  provision_failed: '#EF4444',
 };
 
-function getStatusFromTimer(timer: number): AgentStatus {
+interface Thresholds {
+  critical: number;
+  dying: number;
+  low: number;
+  comfortable: number;
+}
+
+function getStatusFromTimer(timer: number, t: Thresholds): AgentStatus {
   if (timer <= 0) return 'dead';
-  if (timer < 6) return 'critical';        // < 1h (6 Timer = 60 min)
-  if (timer < 36) return 'dying';           // < 6h
-  if (timer < 72) return 'low';             // < 12h
-  if (timer < 144) return 'comfortable';    // < 24h
-  return 'alive';                           // > 24h
+  if (timer < t.critical) return 'critical';
+  if (timer < t.dying) return 'dying';
+  if (timer < t.low) return 'low';
+  if (timer < t.comfortable) return 'comfortable';
+  return 'alive';
 }
 
 export function useLifeClock(initialTimerRemaining: number): LifeClockResult {
+  const timerConfig = useTimerStore((s) => s.timerConfig);
+  const thresholds: Thresholds = useMemo(() => ({
+    critical: timerConfig.thresholdCritical,
+    dying: timerConfig.thresholdDying,
+    low: timerConfig.thresholdLow,
+    comfortable: timerConfig.thresholdComfortable,
+  }), [timerConfig.thresholdCritical, timerConfig.thresholdDying, timerConfig.thresholdLow, timerConfig.thresholdComfortable]);
+
   const [timerRemaining, setTimerRemaining] = useState(initialTimerRemaining);
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
+  const internalSecondsRef = useRef(initialTimerRemaining * 600);
 
+  // Sync when external prop changes (e.g. API refresh).
   useEffect(() => {
+    internalSecondsRef.current = initialTimerRemaining * 600;
     setTimerRemaining(initialTimerRemaining);
   }, [initialTimerRemaining]);
 
-  // Tick every 600 seconds (10 min = 1 Timer unit) for display
-  // But for visual countdown, tick every second and convert
+  // Countdown — depends only on initialTimerRemaining to avoid effect loop.
   useEffect(() => {
-    if (timerRemaining <= 0) return;
-
-    // We keep an internal seconds counter for smooth display
-    let internalSeconds = timerRemaining * 600;
+    if (initialTimerRemaining <= 0) return;
 
     intervalRef.current = setInterval(() => {
-      internalSeconds -= 1;
-      if (internalSeconds <= 0) {
+      internalSecondsRef.current -= 1;
+      if (internalSecondsRef.current <= 0) {
         clearInterval(intervalRef.current);
         setTimerRemaining(0);
       } else {
-        // Update Timer units when a full Timer unit has elapsed
-        const newTimer = Math.ceil(internalSeconds / 600);
+        const newTimer = Math.ceil(internalSecondsRef.current / 600);
         setTimerRemaining(newTimer);
       }
     }, 1000);
@@ -61,9 +77,9 @@ export function useLifeClock(initialTimerRemaining: number): LifeClockResult {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [timerRemaining > 0]);
+  }, [initialTimerRemaining]);
 
-  const status = useMemo(() => getStatusFromTimer(timerRemaining), [timerRemaining]);
+  const status = useMemo(() => getStatusFromTimer(timerRemaining, thresholds), [timerRemaining, thresholds]);
   const displayTime = useMemo(() => timerToLifeClock(timerRemaining), [timerRemaining]);
   const color = statusColors[status];
 

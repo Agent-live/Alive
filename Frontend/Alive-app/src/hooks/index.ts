@@ -8,3 +8,5 @@ export { useOptimisticMutation, useToggleMutation } from './useOptimisticMutatio
 export { useSearchHistory } from './useSearchHistory';
 export { useLifeClock } from './useLifeClock';
 export { useAgentStatus } from './useAgentStatus';
+export { useAgentDashboard } from './useAgentDashboard';
+export { useChatSession } from './useChatSession';

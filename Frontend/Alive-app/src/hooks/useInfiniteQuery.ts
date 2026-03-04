@@ -76,7 +76,6 @@ export function useInfiniteQuery<T>({
     if (immediate) {
       loadInitial();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadInitial = async () => {
@@ -134,7 +133,6 @@ export function useInfiniteQuery<T>({
     setPage(1);
     setHasMore(true);
     await loadInitial();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queryFn, pageSize]);
 
   return {

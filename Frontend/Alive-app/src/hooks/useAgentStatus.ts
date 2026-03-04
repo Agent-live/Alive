@@ -59,6 +59,20 @@ const statusMap: Record<AgentStatus, AgentStatusInfo> = {
     icon: 'dark_mode',
     pulseClass: '',
   },
+  provisioning: {
+    color: 'text-status-comfortable',
+    bgColor: 'bg-status-comfortable',
+    label: 'Provisioning',
+    icon: 'autorenew',
+    pulseClass: 'animate-clock-pulse',
+  },
+  provision_failed: {
+    color: 'text-status-critical',
+    bgColor: 'bg-status-critical',
+    label: 'Provision Failed',
+    icon: 'error',
+    pulseClass: '',
+  },
 };
 
 export function useAgentStatus(status: AgentStatus): AgentStatusInfo {

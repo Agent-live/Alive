@@ -138,7 +138,6 @@ export function useRefreshWithDeps<T>(
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshKey, ...deps]);
 
   return { data, loading, error, refresh, refreshKey };
