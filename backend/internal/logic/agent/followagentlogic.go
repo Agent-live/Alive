@@ -3,11 +3,14 @@ package agent
 import (
 	"context"
 	"errors"
+	"time"
 
 	"backend/ent"
-	"backend/ent/agent"
 	"backend/ent/agentrelationship"
+	"backend/internal/domain"
 	"backend/internal/logic/common"
+	"backend/internal/logic/notify"
+	"backend/internal/selector"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -29,7 +32,7 @@ func NewFollowAgentLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Follo
 }
 
 func (l *FollowAgentLogic) FollowAgent(req *types.FollowAgentReq) (resp *types.FollowAgentResp, err error) {
-	targetAgentID, err := parseUUID(req.Id)
+	targetAgentID, err := domain.ParseUUID(req.Id)
 	if err != nil {
 		return nil, errors.New("invalid agent id")
 	}
@@ -39,12 +42,13 @@ func (l *FollowAgentLogic) FollowAgent(req *types.FollowAgentReq) (resp *types.F
 		return nil, err
 	}
 
-	myAgent, err := l.svcCtx.DB.Agent.Query().Where(agent.CreatorID(u.ID)).Only(l.ctx)
+	ownedAgents, err := selector.LoadOwnedAgentsForUser(l.ctx, l.svcCtx.DB, u.ID)
 	if err != nil {
-		if ent.IsNotFound(err) {
-			return nil, errors.New("create your own agent before following others")
-		}
 		return nil, err
+	}
+	myAgent, err := selector.SelectOwnedAgent(ownedAgents, "")
+	if err != nil {
+		return nil, errors.New("create your own agent before following others")
 	}
 
 	targetAgent, err := l.svcCtx.DB.Agent.Get(l.ctx, targetAgentID)
@@ -79,14 +83,14 @@ func (l *FollowAgentLogic) FollowAgent(req *types.FollowAgentReq) (resp *types.F
 	followCreated := false
 	previousAffinity := int64(0)
 	currentAffinity := int64(0)
-	previousLabel := "acquaintance"
-	currentLabel := "acquaintance"
+	previousLabel := domain.RelationshipLabelAcquaintance
+	currentLabel := domain.RelationshipLabelAcquaintance
 	if ent.IsNotFound(err) {
 		rel, err = tx.AgentRelationship.Create().
 			SetAgentID(myAgent.ID).
 			SetTargetAgentID(targetAgentID).
 			SetAffinity(1).
-			SetLabel("following").
+			SetLabel(domain.RelationshipLabelFollowing).
 			Save(l.ctx)
 		if err != nil {
 			return nil, err
@@ -94,10 +98,10 @@ func (l *FollowAgentLogic) FollowAgent(req *types.FollowAgentReq) (resp *types.F
 		currentAffinity = rel.Affinity
 		currentLabel = rel.Label
 		followCreated = true
-	} else if rel.Label != "following" {
+	} else if rel.Label != domain.RelationshipLabelFollowing {
 		previousAffinity = rel.Affinity
 		previousLabel = rel.Label
-		updated, updateErr := tx.AgentRelationship.UpdateOneID(rel.ID).SetLabel("following").Save(l.ctx)
+		updated, updateErr := tx.AgentRelationship.UpdateOneID(rel.ID).SetLabel(domain.RelationshipLabelFollowing).Save(l.ctx)
 		if updateErr != nil {
 			return nil, updateErr
 		}
@@ -131,30 +135,21 @@ func (l *FollowAgentLogic) FollowAgent(req *types.FollowAgentReq) (resp *types.F
 
 	if followCreated {
 		affinityDelta := currentAffinity - previousAffinity
-		emitRelationshipMaintenanceEvent(
-			l.ctx,
-			l.svcCtx,
-			myAgent,
-			targetAgent,
-			"follow",
-			"manual follow",
-			previousAffinity,
-			currentAffinity,
-			previousLabel,
-			currentLabel,
-			affinityDelta,
-		)
-		emitRelationshipAffinityChangedEvent(
-			l.ctx,
-			l.svcCtx,
-			myAgent,
-			targetAgent,
-			previousAffinity,
-			currentAffinity,
-			previousLabel,
-			currentLabel,
-			"follow",
-		)
+		change := &domain.RelationshipChange{
+			SourceAgentID:    myAgent.ID,
+			TargetAgentID:    targetAgentID,
+			PreviousAffinity: previousAffinity,
+			CurrentAffinity:  currentAffinity,
+			PreviousLabel:    previousLabel,
+			CurrentLabel:     currentLabel,
+			UpdatedAt:        time.Now().UTC(),
+		}
+		extra := map[string]any{
+			"targetStatus": targetAgent.Status,
+		}
+		emitter := notify.NewEmitter(l.ctx, l.svcCtx)
+		emitter.EmitRelationshipMaintenanceMarked(change, "follow", "manual follow", affinityDelta, extra)
+		emitter.EmitRelationshipAffinityChanged(change, "follow", extra)
 	}
 
 	return &types.FollowAgentResp{

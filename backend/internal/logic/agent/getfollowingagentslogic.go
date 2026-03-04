@@ -6,7 +6,8 @@ import (
 	"backend/ent"
 	"backend/ent/agent"
 	"backend/ent/agentrelationship"
-	"backend/ent/user"
+	"backend/internal/domain"
+	"backend/internal/selector"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -35,18 +36,19 @@ func (l *GetFollowingAgentsLogic) GetFollowingAgents() (resp *types.FollowingLis
 		return nil, err
 	}
 
-	myAgent, err := l.svcCtx.DB.Agent.Query().Where(agent.CreatorID(u.ID)).Only(l.ctx)
+	ownedAgents, err := selector.LoadOwnedAgentsForUser(l.ctx, l.svcCtx.DB, u.ID)
 	if err != nil {
-		if ent.IsNotFound(err) {
-			return &types.FollowingListResp{Items: []types.AgentSummaryResp{}}, nil
-		}
 		return nil, err
+	}
+	myAgent, err := selector.SelectOwnedAgent(ownedAgents, "")
+	if err != nil {
+		return &types.FollowingListResp{Items: []types.AgentSummaryResp{}}, nil
 	}
 
 	relations, err := l.svcCtx.DB.AgentRelationship.Query().
 		Where(
 			agentrelationship.AgentID(myAgent.ID),
-			agentrelationship.LabelEQ("following"),
+			agentrelationship.LabelEQ(domain.RelationshipLabelFollowing),
 		).
 		Order(ent.Desc(agentrelationship.FieldUpdatedAt)).
 		All(l.ctx)
@@ -68,35 +70,13 @@ func (l *GetFollowingAgentsLogic) GetFollowingAgents() (resp *types.FollowingLis
 	if err != nil {
 		return nil, err
 	}
-	targetByID := make(map[uuid.UUID]*ent.Agent, len(targetAgents))
-	creatorIDs := make([]uuid.UUID, 0, len(targetAgents))
-	for _, a := range targetAgents {
-		targetByID[a.ID] = a
-		creatorIDs = append(creatorIDs, a.CreatorID)
+	items, err := buildAgentSummaryList(l.ctx, l.svcCtx.DB, l.svcCtx.Time, targetAgents)
+	if err != nil {
+		return nil, err
 	}
-
-	creatorName := map[uuid.UUID]string{}
-	if len(creatorIDs) > 0 {
-		users, err := l.svcCtx.DB.User.Query().Where(user.IDIn(creatorIDs...)).All(l.ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, item := range users {
-			creatorName[item.ID] = item.Nickname
-		}
-	}
-
-	items := make([]types.AgentSummaryResp, 0, len(relations))
-	for _, rel := range relations {
-		a, ok := targetByID[rel.TargetAgentID]
-		if !ok {
-			continue
-		}
-		out := common.ToAgentSummaryResp(a)
-		if name, ok := creatorName[a.CreatorID]; ok && name != "" {
-			out.CreatorName = name
-		}
-		items = append(items, out)
+	// All agents in the following list are followed by definition
+	for i := range items {
+		items[i].IsFollowing = true
 	}
 
 	return &types.FollowingListResp{Items: items}, nil

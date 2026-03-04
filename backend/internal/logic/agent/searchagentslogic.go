@@ -5,12 +5,9 @@ import (
 	"strings"
 
 	"backend/ent/agent"
-	"backend/ent/user"
-	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
 
-	"github.com/google/uuid"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -44,29 +41,9 @@ func (l *SearchAgentsLogic) SearchAgents(req *types.SearchReq) (resp *types.Agen
 	if err != nil {
 		return nil, err
 	}
-
-	creatorIDs := make([]uuid.UUID, 0, len(results))
-	for _, a := range results {
-		creatorIDs = append(creatorIDs, a.CreatorID)
-	}
-	creatorName := map[uuid.UUID]string{}
-	if len(creatorIDs) > 0 {
-		users, err := l.svcCtx.DB.User.Query().Where(user.IDIn(creatorIDs...)).All(l.ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, u := range users {
-			creatorName[u.ID] = u.Nickname
-		}
-	}
-
-	items := make([]types.AgentSummaryResp, 0, len(results))
-	for _, a := range results {
-		out := common.ToAgentSummaryResp(a)
-		if name, ok := creatorName[a.CreatorID]; ok && name != "" {
-			out.CreatorName = name
-		}
-		items = append(items, out)
+	items, err := buildAgentSummaryList(l.ctx, l.svcCtx.DB, l.svcCtx.Time, results)
+	if err != nil {
+		return nil, err
 	}
 
 	return &types.AgentListResp{

@@ -9,9 +9,14 @@ import (
 	"time"
 
 	"backend/ent"
-	"backend/ent/agent"
-	"backend/internal/aliveagent"
+	"backend/internal/domain"
+	"backend/internal/gateway"
 	"backend/internal/logic/common"
+	"backend/internal/logic/notify"
+	"backend/internal/mapper"
+	"backend/internal/port"
+	"backend/internal/provisioning"
+	"backend/internal/selector"
 	"backend/internal/service/timeengine"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -40,10 +45,14 @@ func (l *CreateAgentLogic) CreateAgent(req *types.CreateAgentReq) (resp *types.A
 		return nil, err
 	}
 
-	if _, err = l.svcCtx.DB.Agent.Query().Where(agent.CreatorID(u.ID)).Only(l.ctx); err == nil {
-		return nil, errors.New("single-agent mode: user already has an agent")
-	} else if !ent.IsNotFound(err) {
+	ownedAgents, err := selector.LoadOwnedAgentsForUser(l.ctx, l.svcCtx.DB, u.ID)
+	if err != nil {
 		return nil, err
+	}
+	maxSlots := selector.MaxAgentSlotsForUser(u)
+	usedSlots := selector.CountOccupiedAgentSlots(ownedAgents)
+	if maxSlots > 0 && usedSlots >= maxSlots {
+		return nil, errors.New("agent slot limit reached")
 	}
 
 	name := strings.TrimSpace(req.Name)
@@ -68,16 +77,14 @@ func (l *CreateAgentLogic) CreateAgent(req *types.CreateAgentReq) (resp *types.A
 
 	now := time.Now().UTC()
 	newID := uuid.New()
-	prov, err := l.svcCtx.AliveAgent.ProvisionAgent(l.ctx, aliveagent.ProvisionAgentRequest{AgentID: newID.String(), Name: name})
+
+	agentToken, err := gateway.GenerateAgentToken(newID.String())
 	if err != nil {
 		return nil, err
 	}
 
-	agentToken, err := aliveagent.GenerateAgentToken(newID.String())
-	if err != nil {
-		return nil, err
-	}
-
+	// Step 1: Persist agent in DB first (status="provisioning") to avoid orphaned
+	// external resources if the DB transaction fails.
 	tx, err := l.svcCtx.DB.Tx(l.ctx)
 	if err != nil {
 		return nil, err
@@ -92,13 +99,10 @@ func (l *CreateAgentLogic) CreateAgent(req *types.CreateAgentReq) (resp *types.A
 		SetPersonality(personalityRaw).
 		SetGoalDescription(goal).
 		SetGoalTarget(100).
-		SetStatus("newborn").
+		SetStatus(domain.StatusProvisioning).
 		SetTimerRemaining(timeengine.InitialTimer).
 		SetTotalTimerReceived(timeengine.InitialTimer).
 		SetAliveAgentMode("green").
-		SetAliveAgentGatewayID(prov.GatewayID).
-		SetAliveAgentRuntimeID(prov.AgentRuntimeID).
-		SetAliveAgentWorkspace(prov.WorkspacePath).
 		SetAliveAgentToken(agentToken).
 		SetIsPlatformNative(false).
 		SetBornAt(now).
@@ -109,10 +113,10 @@ func (l *CreateAgentLogic) CreateAgent(req *types.CreateAgentReq) (resp *types.A
 
 	// Seed the timer ledger with the initial grant.
 	_, err = tx.TimerTransaction.Create().
-		SetTxType("system_grant").
+		SetTxType(domain.TxTypeSystemGrant).
 		SetAmount(timeengine.InitialTimer).
 		SetAgentID(a.ID).
-		SetSourceType("system").
+		SetSourceType(domain.SourceSystem).
 		SetDescription("Initial timer grant").
 		SetBalanceAfter(timeengine.InitialTimer).
 		SetCreatedAt(now).
@@ -141,17 +145,87 @@ func (l *CreateAgentLogic) CreateAgent(req *types.CreateAgentReq) (resp *types.A
 		return nil, err
 	}
 
-	// Initialize agent workspace (best-effort, non-blocking for creation)
-	if initErr := l.svcCtx.AliveAgent.InitWorkspace(
-		newID.String(), name, personalityRaw, goal, agentToken,
-	); initErr != nil {
-		l.Errorf("failed to init agent workspace: %v", initErr)
+	// Step 2: Provision agent externally (HTTP call to AliveAgent runtime).
+	provSoul := provisioning.BuildProvisionSoul(name, personalityRaw)
+	provNativeSkills := provisioning.BuildProvisionNativeSkills(domain.DefaultPlatformNativeSkillSeeds)
+	prov, provErr := l.svcCtx.AgentRuntime.ProvisionAgent(l.ctx, port.ProvisionAgentRequest{
+		AgentID:         newID.String(),
+		Name:            name,
+		Soul:            provSoul,
+		GoalDescription: goal,
+		Personality:     personalityRaw,
+		UserSettings: &port.ProvisionAgentUserSettings{
+			UserID:   u.ID.String(),
+			Nickname: strings.TrimSpace(u.Nickname),
+			Theme:    strings.TrimSpace(u.Theme),
+			Language: strings.TrimSpace(u.Language),
+		},
+		NativeSkills: provNativeSkills,
+	})
+
+	// Step 3: Update agent with provisioning result.
+	var warnings []string
+	provisionSucceeded := provErr == nil
+	if provErr != nil {
+		// Mark as provision_failed but still return the agent so the user can retry.
+		l.Errorf("provision failed for agent %s: %v", newID.String(), provErr)
+		_, _ = l.svcCtx.DB.Agent.UpdateOneID(newID).SetStatus(domain.StatusProvisionFailed).Save(l.ctx)
+		warnings = append(warnings, "provisioning failed, retry later")
+	} else {
+		a, err = l.svcCtx.DB.Agent.UpdateOneID(newID).
+			SetStatus(domain.StatusNewborn).
+			SetAliveAgentGatewayID(prov.GatewayID).
+			SetAliveAgentRuntimeID(prov.AgentRuntimeID).
+			SetAliveAgentWorkspace(gateway.DefaultWorkspacePath(newID.String())).
+			Save(l.ctx)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	out := common.ToAgentResp(a, u.Nickname, nil)
+	// Post-provision setup: native skills are part of the provisioning invariant.
+	// If skill preinstall fails, keep the agent in provision_failed state.
+	if provisionSucceeded {
+		if preloadErr := l.PreinstallNativeSkills(u.ID, a); preloadErr != nil {
+			l.Errorf("failed to preinstall native skills for agent %s: %v", a.ID.String(), preloadErr)
+			warnings = append(warnings, "native skill provisioning failed, retry later")
+			a, err = l.svcCtx.DB.Agent.UpdateOneID(newID).SetStatus(domain.StatusProvisionFailed).Save(l.ctx)
+			if err != nil {
+				return nil, err
+			}
+			provisionSucceeded = false
+		}
+	}
+
+	if provisionSucceeded {
+		runtimeAgentID := strings.TrimSpace(domain.PtrString(a.AliveAgentRuntimeID))
+		if runtimeAgentID != "" {
+			bornPayload := map[string]any{
+				"agentId":         a.ID.String(),
+				"runtimeAgentId":  runtimeAgentID,
+				"agentName":       a.Name,
+				"status":          strings.TrimSpace(a.Status),
+				"timerRemaining":  a.TimerRemaining,
+				"goalDescription": strings.TrimSpace(a.GoalDescription),
+				"bornAt":          a.BornAt.UTC().Format(time.RFC3339),
+			}
+			if workspace := strings.TrimSpace(domain.PtrString(a.AliveAgentWorkspace)); workspace != "" {
+				bornPayload["workspace"] = workspace
+			}
+			notify.NewEmitter(context.Background(), l.svcCtx).EmitEventToAgentIDWithRuntimeID(
+				a.ID.String(), runtimeAgentID,
+				"lifecycle.agent_born", "ALIVE Agent Born", "ALIVE agent creation committed",
+				domain.BuildDedupeKey(a.ID.String(), "lifecycle.agent_born", a.BornAt.UTC().Format("20060102150405")),
+				bornPayload,
+			)
+		}
+	}
+
+	out := mapper.ToAgentResp(a, u.Nickname, nil)
+	out.Warnings = warnings
 	return &out, nil
 }
 
-func parseUUID(id string) (uuid.UUID, error) {
-	return uuid.Parse(strings.TrimSpace(id))
+func (l *CreateAgentLogic) PreinstallNativeSkills(ownerID uuid.UUID, target *ent.Agent) error {
+	return PreinstallNativeSkillBindings(l.ctx, l.svcCtx.DB, l.svcCtx.AgentRuntime, ownerID, target)
 }

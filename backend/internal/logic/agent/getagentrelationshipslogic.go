@@ -8,7 +8,7 @@ import (
 	"backend/ent"
 	entAgent "backend/ent/agent"
 	"backend/ent/agentrelationship"
-	"backend/internal/logic/common"
+	"backend/internal/domain"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -74,11 +74,11 @@ func (l *GetAgentRelationshipsLogic) GetAgentRelationships(req *types.AgentIdReq
 			Label:            r.Label,
 			InteractionCount: r.InteractionCount,
 			MessageCount:     r.MessageCount,
-			UpdatedAt:        common.TimeToISO(r.UpdatedAt),
+			UpdatedAt:        domain.TimeToISO(r.UpdatedAt),
 		}
 		if a, ok := agentMap[r.TargetAgentID]; ok {
 			item.Name = a.Name
-			item.Avatar = common.PtrString(a.Avatar)
+			item.Avatar = domain.PtrString(a.Avatar)
 			item.Status = a.Status
 		}
 		items = append(items, item)

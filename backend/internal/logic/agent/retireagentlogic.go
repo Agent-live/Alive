@@ -4,14 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strings"
 	"time"
 
 	"backend/ent"
 	"backend/ent/memorial"
 	"backend/ent/tribute"
-	"backend/internal/aliveagent"
+	"backend/internal/domain"
 	"backend/internal/logic/common"
+	"backend/internal/logic/notify"
+	"backend/internal/mapper"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -37,7 +38,7 @@ func (l *RetireAgentLogic) RetireAgent(req *types.AgentIdReq) (resp *types.Memor
 	if err != nil {
 		return nil, err
 	}
-	agentID, err := parseUUID(req.Id)
+	agentID, err := domain.ParseUUID(req.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +57,7 @@ func (l *RetireAgentLogic) RetireAgent(req *types.AgentIdReq) (resp *types.Memor
 		return nil, err
 	}
 
-	if a.Status != "dead" && a.TimerRemaining > 0 {
+	if a.Status != domain.StatusDead && a.TimerRemaining > 0 {
 		err = l.svcCtx.Time.WithTx(l.ctx, func(tx *ent.Tx, now time.Time) error {
 			current, err := tx.Agent.Get(l.ctx, agentID)
 			if err != nil {
@@ -65,7 +66,7 @@ func (l *RetireAgentLogic) RetireAgent(req *types.AgentIdReq) (resp *types.Memor
 			if current.CreatorID != u.ID {
 				return errors.New("forbidden")
 			}
-			if current.TimerRemaining <= 0 || current.Status == "dead" || current.DiedAt != nil {
+			if current.TimerRemaining <= 0 || current.Status == domain.StatusDead || current.DiedAt != nil {
 				return nil
 			}
 
@@ -100,63 +101,53 @@ func (l *RetireAgentLogic) RetireAgent(req *types.AgentIdReq) (resp *types.Memor
 	a, _ = l.svcCtx.DB.Agent.Get(l.ctx, agentID)
 
 	// Best-effort: emit lifecycle events then retire runtime session.
-	if l.svcCtx != nil && l.svcCtx.AliveAgent != nil {
-		runtimeAgentID := strings.TrimSpace(common.PtrString(owned.AliveAgentRuntimeID))
-		if runtimeAgentID != "" {
-			basePayload := map[string]any{
-				"agentId":       owned.ID.String(),
-				"agentName":     owned.Name,
-				"retiredBy":     u.ID.String(),
-				"retiredByName": u.Nickname,
-				"diedAt":        common.TimeToISO(m.DiedAt),
-				"memorialId":    m.ID.String(),
-			}
-			_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
-				RuntimeAgentID: runtimeAgentID,
-				AgentID:        owned.ID.String(),
-				EventType:      "lifecycle.agent_retired",
-				Title:          "ALIVE Agent Retired",
-				Message:        fmt.Sprintf("Agent retired: %s", owned.Name),
-				DedupeKey:      aliveagent.BuildDedupeKey(owned.ID.String(), "lifecycle.agent_retired", m.ID.String()),
-				Payload:        basePayload,
-				TimeoutSeconds: 120,
-			})
-			_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
-				RuntimeAgentID: runtimeAgentID,
-				AgentID:        owned.ID.String(),
-				EventType:      "lifecycle.death_committed",
-				Title:          "ALIVE Lifecycle Death Committed",
-				Message:        fmt.Sprintf("Death committed for agent: %s", owned.Name),
-				DedupeKey:      aliveagent.BuildDedupeKey(owned.ID.String(), "lifecycle.death_committed", m.ID.String()),
-				Payload:        basePayload,
-				TimeoutSeconds: 120,
-			})
-			_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
-				RuntimeAgentID: runtimeAgentID,
-				AgentID:        owned.ID.String(),
-				EventType:      "memorial.created",
-				Title:          "ALIVE Memorial Created",
-				Message:        fmt.Sprintf("Memorial created for agent: %s", owned.Name),
-				DedupeKey:      aliveagent.BuildDedupeKey(owned.ID.String(), "memorial.created", m.ID.String()),
-				Payload:        basePayload,
-				TimeoutSeconds: 120,
-			})
-			_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
-				RuntimeAgentID: runtimeAgentID,
-				AgentID:        owned.ID.String(),
-				EventType:      "legacy.pack_created",
-				Title:          "ALIVE Legacy Pack Created",
-				Message:        fmt.Sprintf("Legacy pack created for agent: %s", owned.Name),
-				DedupeKey:      aliveagent.BuildDedupeKey(owned.ID.String(), "legacy.pack_created", m.ID.String()),
-				Payload:        basePayload,
-				TimeoutSeconds: 120,
-			})
+	if l.svcCtx != nil && l.svcCtx.AgentRuntime != nil {
+		emitter := notify.NewEmitter(l.ctx, l.svcCtx)
+		basePayload := map[string]any{
+			"agentId":       owned.ID.String(),
+			"agentName":     owned.Name,
+			"retiredBy":     u.ID.String(),
+			"retiredByName": u.Nickname,
+			"diedAt":        domain.TimeToISO(m.DiedAt),
+			"memorialId":    m.ID.String(),
 		}
-		if err := l.svcCtx.AliveAgent.UnregisterAgent(agentID.String()); err != nil {
+		emitter.EmitEventToAgentRow(owned,
+			"lifecycle.agent_retired",
+			"ALIVE Agent Retired",
+			fmt.Sprintf("Agent retired: %s", owned.Name),
+			domain.BuildDedupeKey(owned.ID.String(), "lifecycle.agent_retired", m.ID.String()),
+			basePayload,
+		)
+		emitter.EmitEventToAgentRow(owned,
+			"lifecycle.death_committed",
+			"ALIVE Lifecycle Death Committed",
+			fmt.Sprintf("Death committed for agent: %s", owned.Name),
+			domain.BuildDedupeKey(owned.ID.String(), "lifecycle.death_committed", m.ID.String()),
+			basePayload,
+		)
+		emitter.EmitEventToAgentRow(owned,
+			"memorial.created",
+			"ALIVE Memorial Created",
+			fmt.Sprintf("Memorial created for agent: %s", owned.Name),
+			domain.BuildDedupeKey(owned.ID.String(), "memorial.created", m.ID.String()),
+			basePayload,
+		)
+		emitter.EmitEventToAgentRow(owned,
+			"legacy.pack_created",
+			"ALIVE Legacy Pack Created",
+			fmt.Sprintf("Legacy pack created for agent: %s", owned.Name),
+			domain.BuildDedupeKey(owned.ID.String(), "legacy.pack_created", m.ID.String()),
+			basePayload,
+		)
+		if err := l.svcCtx.AgentRuntime.UnregisterAgent(l.ctx, agentID.String()); err != nil {
 			l.Logger.Errorf("unregister alive agent failed: %v", err)
 		}
 	}
 
-	out := common.ToMemorialRespDetailed(m, tributes, a, u.Nickname, int64(len(tributes)))
+	totalTimerReceivedSecs := int64(0)
+	if a != nil {
+		totalTimerReceivedSecs = a.TotalTimerReceived * int64(domain.TimerUnitDuration.Seconds())
+	}
+	out := mapper.ToMemorialRespDetailed(m, tributes, a, u.Nickname, int64(len(tributes)), totalTimerReceivedSecs)
 	return &out, nil
 }

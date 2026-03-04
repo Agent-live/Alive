@@ -3,11 +3,14 @@ package agent
 import (
 	"context"
 	"errors"
+	"time"
 
 	"backend/ent"
-	"backend/ent/agent"
 	"backend/ent/agentrelationship"
+	"backend/internal/domain"
 	"backend/internal/logic/common"
+	"backend/internal/logic/notify"
+	"backend/internal/selector"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -29,7 +32,7 @@ func NewUnfollowAgentLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Unf
 }
 
 func (l *UnfollowAgentLogic) UnfollowAgent(req *types.UnfollowAgentReq) (resp *types.UnfollowAgentResp, err error) {
-	targetAgentID, err := parseUUID(req.Id)
+	targetAgentID, err := domain.ParseUUID(req.Id)
 	if err != nil {
 		return nil, errors.New("invalid agent id")
 	}
@@ -39,12 +42,13 @@ func (l *UnfollowAgentLogic) UnfollowAgent(req *types.UnfollowAgentReq) (resp *t
 		return nil, err
 	}
 
-	myAgent, err := l.svcCtx.DB.Agent.Query().Where(agent.CreatorID(u.ID)).Only(l.ctx)
+	ownedAgents, err := selector.LoadOwnedAgentsForUser(l.ctx, l.svcCtx.DB, u.ID)
 	if err != nil {
-		if ent.IsNotFound(err) {
-			return &types.UnfollowAgentResp{Success: true, Following: false, FollowerCount: 0}, nil
-		}
 		return nil, err
+	}
+	myAgent, err := selector.SelectOwnedAgent(ownedAgents, "")
+	if err != nil {
+		return nil, errors.New("create your own agent before unfollowing others")
 	}
 	if myAgent.ID == targetAgentID {
 		return nil, errors.New("cannot unfollow your own agent")
@@ -90,8 +94,8 @@ func (l *UnfollowAgentLogic) UnfollowAgent(req *types.UnfollowAgentReq) (resp *t
 	previousLabel := rel.Label
 	currentLabel := rel.Label
 	relationshipChanged := false
-	if rel.Label == "following" {
-		update := tx.AgentRelationship.UpdateOneID(rel.ID).SetLabel("acquaintance")
+	if rel.Label == domain.RelationshipLabelFollowing {
+		update := tx.AgentRelationship.UpdateOneID(rel.ID).SetLabel(domain.RelationshipLabelAcquaintance)
 		if rel.Affinity > 0 {
 			currentAffinity = rel.Affinity - 1
 			update.SetAffinity(currentAffinity)
@@ -126,30 +130,21 @@ func (l *UnfollowAgentLogic) UnfollowAgent(req *types.UnfollowAgentReq) (resp *t
 
 	if relationshipChanged {
 		affinityDelta := currentAffinity - previousAffinity
-		emitRelationshipMaintenanceEvent(
-			l.ctx,
-			l.svcCtx,
-			myAgent,
-			targetAgent,
-			"unfollow",
-			"manual unfollow",
-			previousAffinity,
-			currentAffinity,
-			previousLabel,
-			currentLabel,
-			affinityDelta,
-		)
-		emitRelationshipAffinityChangedEvent(
-			l.ctx,
-			l.svcCtx,
-			myAgent,
-			targetAgent,
-			previousAffinity,
-			currentAffinity,
-			previousLabel,
-			currentLabel,
-			"unfollow",
-		)
+		change := &domain.RelationshipChange{
+			SourceAgentID:    myAgent.ID,
+			TargetAgentID:    targetAgentID,
+			PreviousAffinity: previousAffinity,
+			CurrentAffinity:  currentAffinity,
+			PreviousLabel:    previousLabel,
+			CurrentLabel:     currentLabel,
+			UpdatedAt:        time.Now().UTC(),
+		}
+		extra := map[string]any{
+			"targetStatus": targetAgent.Status,
+		}
+		emitter := notify.NewEmitter(l.ctx, l.svcCtx)
+		emitter.EmitRelationshipMaintenanceMarked(change, "unfollow", "manual unfollow", affinityDelta, extra)
+		emitter.EmitRelationshipAffinityChanged(change, "unfollow", extra)
 	}
 
 	return &types.UnfollowAgentResp{

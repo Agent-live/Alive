@@ -4,8 +4,12 @@ import (
 	"context"
 	"strings"
 
+	"backend/ent/agentrelationship"
 	"backend/ent/channelconnection"
+	"backend/internal/domain"
 	"backend/internal/logic/common"
+	"backend/internal/mapper"
+	"backend/internal/selector"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -27,9 +31,14 @@ func NewGetAgentDetailLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ge
 }
 
 func (l *GetAgentDetailLogic) GetAgentDetail(req *types.AgentIdReq) (resp *types.AgentResp, err error) {
-	agentID, err := parseUUID(req.Id)
+	agentID, err := domain.ParseUUID(req.Id)
 	if err != nil {
 		return nil, err
+	}
+	if l.svcCtx.Time != nil {
+		if _, syncErr := l.svcCtx.Time.SyncAgent(l.ctx, agentID.String()); syncErr != nil {
+			l.Errorf("get agent detail: sync agent %s failed: %v", agentID.String(), syncErr)
+		}
 	}
 	a, err := l.svcCtx.DB.Agent.Get(l.ctx, agentID)
 	if err != nil {
@@ -43,12 +52,33 @@ func (l *GetAgentDetailLogic) GetAgentDetail(req *types.AgentIdReq) (resp *types
 	if err != nil {
 		return nil, err
 	}
-	out := common.ToAgentResp(a, u.Nickname, channels)
-	runtimeAgentID := strings.TrimSpace(common.PtrString(a.AliveAgentRuntimeID))
+	out := mapper.ToAgentResp(a, u.Nickname, channels)
+
+	// Determine isFollowing based on current user's primary agent
+	if curUser, curErr := common.CurrentUser(l.ctx, l.svcCtx.DB); curErr == nil {
+		ownedAgents, loadErr := selector.LoadOwnedAgentsForUser(l.ctx, l.svcCtx.DB, curUser.ID)
+		if loadErr == nil && len(ownedAgents) > 0 {
+			for _, oa := range ownedAgents {
+				exists, relErr := l.svcCtx.DB.AgentRelationship.Query().
+					Where(
+						agentrelationship.AgentID(oa.ID),
+						agentrelationship.TargetAgentID(agentID),
+						agentrelationship.LabelEQ(domain.RelationshipLabelFollowing),
+					).
+					Exist(l.ctx)
+				if relErr == nil && exists {
+					out.IsFollowing = true
+					break
+				}
+			}
+		}
+	}
+
+	runtimeAgentID := strings.TrimSpace(domain.PtrString(a.AliveAgentRuntimeID))
 	if runtimeAgentID == "" {
 		runtimeAgentID = a.ID.String()
 	}
-	aliveSkills, skillErr := l.svcCtx.AliveAgent.ListAgentSkills(l.ctx, runtimeAgentID, false)
+	aliveSkills, skillErr := l.svcCtx.AgentRuntime.ListAgentSkills(l.ctx, runtimeAgentID, false)
 	if skillErr != nil {
 		l.Errorf(
 			"get agent detail: list aliveagent skills failed agent_id=%s runtime_id=%s err=%v",

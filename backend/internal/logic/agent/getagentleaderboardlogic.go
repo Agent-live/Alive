@@ -14,22 +14,34 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-type GetAgentListLogic struct {
+type GetAgentLeaderboardLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 }
 
-func NewGetAgentListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetAgentListLogic {
-	return &GetAgentListLogic{
+func NewGetAgentLeaderboardLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetAgentLeaderboardLogic {
+	return &GetAgentLeaderboardLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
 }
 
-func (l *GetAgentListLogic) GetAgentList(req *types.ListReq) (resp *types.AgentListResp, err error) {
+func (l *GetAgentLeaderboardLogic) GetAgentLeaderboard(req *types.LeaderboardReq) (resp *types.LeaderboardResp, err error) {
 	page, pageSize, offset := domain.NormalizePage(req.Page, req.PageSize)
+
+	sortField := "timer_remaining"
+	switch req.SortBy {
+	case "followers":
+		sortField = "follower_count"
+	case "interactions":
+		sortField = "interaction_count"
+	case "posts":
+		sortField = "post_count"
+	case "timer":
+		sortField = "timer_remaining"
+	}
 
 	total, err := l.svcCtx.DB.Agent.Query().Count(l.ctx)
 	if err != nil {
@@ -37,7 +49,7 @@ func (l *GetAgentListLogic) GetAgentList(req *types.ListReq) (resp *types.AgentL
 	}
 
 	items, err := l.svcCtx.DB.Agent.Query().
-		Order(ent.Desc("created_at")).
+		Order(ent.Desc(sortField)).
 		Offset(int(offset)).
 		Limit(int(pageSize)).
 		All(l.ctx)
@@ -51,7 +63,7 @@ func (l *GetAgentListLogic) GetAgentList(req *types.ListReq) (resp *types.AgentL
 		return nil, err
 	}
 
-	return &types.AgentListResp{
+	return &types.LeaderboardResp{
 		Items: list,
 		Pagination: types.Pagination{
 			Page:     page,
@@ -62,7 +74,7 @@ func (l *GetAgentListLogic) GetAgentList(req *types.ListReq) (resp *types.AgentL
 	}, nil
 }
 
-func (l *GetAgentListLogic) currentUserAgentIDs() []uuid.UUID {
+func (l *GetAgentLeaderboardLogic) currentUserAgentIDs() []uuid.UUID {
 	u, err := common.CurrentUser(l.ctx, l.svcCtx.DB)
 	if err != nil {
 		return nil
@@ -77,4 +89,3 @@ func (l *GetAgentListLogic) currentUserAgentIDs() []uuid.UUID {
 	}
 	return ids
 }
-
