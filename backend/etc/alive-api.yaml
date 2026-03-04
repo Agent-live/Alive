@@ -9,6 +9,7 @@ MaxBytes: 209715200
 Auth:
   AccessSecret: "alive-dev-secret-change-me"
   AccessExpire: 604800
+  AllowDevCode: true
   Social:
     AllowInsecureMock: true
     Google:
@@ -21,7 +22,7 @@ Timer:
   TickIntervalSeconds: 60
 
 Postgres:
-  DSN: "postgres://macbook.silan.tech@localhost:5432/alive_backend?sslmode=disable"
+  DSN: "postgres://alive:alive@localhost:5432/alive_backend?sslmode=disable"
 
 Media:
   # Local filesystem storage for uploaded files (development default).
@@ -29,10 +30,14 @@ Media:
   # 200 MiB
   MaxUploadBytes: 209715200
 
+WebSocket:
+  AllowedOrigins:
+    - "localhost"
+    - "127.0.0.1"
+    - "alive.social"
+
 AliveAgent:
   Enabled: true
   BaseURL: "http://127.0.0.1:18789"
   GatewayToken: "change-me"
-  GreenMode: true
   SharedGateway: true
-  WorkspaceRoot: "/data/agents"

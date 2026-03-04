@@ -12,6 +12,7 @@ import (
 
 	"backend/ent"
 	"backend/internal/config"
+	"backend/internal/domain"
 	"backend/internal/handler"
 	"backend/internal/service/timeengine"
 	"backend/internal/svc"
@@ -37,6 +38,7 @@ func main() {
 		if err == nil {
 			return http.StatusOK, nil
 		}
+		// Type-based error classification — checked first for precision.
 		if ent.IsNotFound(err) {
 			return http.StatusNotFound, map[string]any{
 				"code":    "NOT_FOUND",
@@ -50,16 +52,62 @@ func main() {
 				"message": be.Error(),
 			}
 		}
-		msg := strings.TrimSpace(err.Error())
-		if strings.Contains(strings.ToLower(msg), "forbidden") {
+		var ve *domain.ValidationError
+		if errors.As(err, &ve) {
+			return http.StatusBadRequest, map[string]any{
+				"code":    "BAD_REQUEST",
+				"message": ve.Error(),
+			}
+		}
+		var fe *domain.ForbiddenError
+		if errors.As(err, &fe) {
 			return http.StatusForbidden, map[string]any{
 				"code":    "FORBIDDEN",
+				"message": "access denied",
+			}
+		}
+		var ue *domain.UnauthorizedError
+		if errors.As(err, &ue) {
+			return http.StatusUnauthorized, map[string]any{
+				"code":    "UNAUTHORIZED",
+				"message": "authentication required",
+			}
+		}
+		var ce *domain.ConflictError
+		if errors.As(err, &ce) {
+			return http.StatusConflict, map[string]any{
+				"code":    "CONFLICT",
+				"message": ce.Error(),
+			}
+		}
+		// Legacy string-based fallback for un-migrated callers.
+		msg := strings.TrimSpace(err.Error())
+		lower := strings.ToLower(msg)
+		if strings.Contains(lower, "forbidden") {
+			return http.StatusForbidden, map[string]any{
+				"code":    "FORBIDDEN",
+				"message": "access denied",
+			}
+		}
+		if strings.Contains(lower, "unauthorized") ||
+			strings.Contains(lower, "invalid token") {
+			return http.StatusUnauthorized, map[string]any{
+				"code":    "UNAUTHORIZED",
+				"message": "authentication required",
+			}
+		}
+		if strings.Contains(lower, "invalid") ||
+			strings.Contains(lower, "required") ||
+			strings.Contains(lower, "missing") {
+			return http.StatusBadRequest, map[string]any{
+				"code":    "BAD_REQUEST",
 				"message": msg,
 			}
 		}
-		return http.StatusBadRequest, map[string]any{
-			"code":    "BAD_REQUEST",
-			"message": msg,
+		// Default: internal server error — hide details from client.
+		return http.StatusInternalServerError, map[string]any{
+			"code":    "INTERNAL_ERROR",
+			"message": "an unexpected error occurred",
 		}
 	})
 
@@ -116,17 +164,9 @@ func applyEnvOverrides(c *config.Config) {
 	if v := strings.TrimSpace(os.Getenv("ALIVE_AGENT_GATEWAY_TOKEN")); v != "" {
 		c.AliveAgent.GatewayToken = v
 	}
-	if v := strings.TrimSpace(os.Getenv("ALIVE_AGENT_WORKSPACE_ROOT")); v != "" {
-		c.AliveAgent.WorkspaceRoot = v
-	}
 	if v := strings.TrimSpace(os.Getenv("ALIVE_AGENT_ENABLED")); v != "" {
 		if b, err := strconv.ParseBool(v); err == nil {
 			c.AliveAgent.Enabled = b
-		}
-	}
-	if v := strings.TrimSpace(os.Getenv("ALIVE_AGENT_GREEN_MODE")); v != "" {
-		if b, err := strconv.ParseBool(v); err == nil {
-			c.AliveAgent.GreenMode = b
 		}
 	}
 	if v := strings.TrimSpace(os.Getenv("ALIVE_AGENT_SHARED_GATEWAY")); v != "" {

@@ -7,15 +7,16 @@ import (
 	"net/http"
 
 	agent "backend/internal/handler/agent"
-	agentcontrol "backend/internal/handler/agentcontrol"
 	auth "backend/internal/handler/auth"
 	channel "backend/internal/handler/channel"
 	conversation "backend/internal/handler/conversation"
 	experience "backend/internal/handler/experience"
 	feed "backend/internal/handler/feed"
 	legacy "backend/internal/handler/legacy"
+	mcp "backend/internal/handler/mcp"
 	media "backend/internal/handler/media"
 	memorial "backend/internal/handler/memorial"
+	notification "backend/internal/handler/notification"
 	skill "backend/internal/handler/skill"
 	skillshop "backend/internal/handler/skillshop"
 	system "backend/internal/handler/system"
@@ -28,17 +29,6 @@ import (
 )
 
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
-	server.AddRoutes(
-		[]rest.Route{
-			{
-				Method:  http.MethodPost,
-				Path:    "/network-check",
-				Handler: system.NetworkCheckHandler(serverCtx),
-			},
-		},
-		rest.WithPrefix("/api/v1"),
-	)
-
 	server.AddRoutes(
 		[]rest.Route{
 			{
@@ -93,6 +83,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodGet,
+				Path:    "/leaderboard",
+				Handler: agent.GetAgentLeaderboardHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
 				Path:    "/my",
 				Handler: agent.GetMyAgentHandler(serverCtx),
 			},
@@ -104,23 +99,6 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 		rest.WithPrefix("/api/v1/agents"),
-	)
-
-	server.AddRoutes(
-		[]rest.Route{
-			{
-				Method:  http.MethodPost,
-				Path:    "/a2a/messages",
-				Handler: agentcontrol.HandleA2AMessageHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/mcp",
-				Handler: agentcontrol.HandleMCPHandler(serverCtx),
-			},
-		},
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
-		rest.WithPrefix("/api/v1/agent-control"),
 	)
 
 	server.AddRoutes(
@@ -152,28 +130,6 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 		},
 		rest.WithPrefix("/api/v1/auth"),
-	)
-
-	server.AddRoutes(
-		[]rest.Route{
-			{
-				Method:  http.MethodGet,
-				Path:    "/",
-				Handler: legacy.ListLegacyPacksHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodGet,
-				Path:    "/:id",
-				Handler: legacy.GetLegacyDetailHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/:id/inherit",
-				Handler: legacy.InheritLegacyHandler(serverCtx),
-			},
-		},
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
-		rest.WithPrefix("/api/v1/legacy"),
 	)
 
 	server.AddRoutes(
@@ -224,6 +180,16 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodPost,
 				Path:    "/:id/messages",
 				Handler: conversation.SendConversationMessageHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPut,
+				Path:    "/:id/read",
+				Handler: conversation.MarkConversationReadHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/chat",
+				Handler: conversation.ConversationChatHandler(serverCtx),
 			},
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
@@ -298,6 +264,40 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 		rest.WithPrefix("/api/v1/feed"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/",
+				Handler: legacy.ListLegacyPacksHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/:id",
+				Handler: legacy.GetLegacyDetailHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/:id/inherit",
+				Handler: legacy.InheritLegacyHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/api/v1/legacy"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/mcp",
+				Handler: mcp.HandleMCPHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/api/v1/agent-control"),
 	)
 
 	server.AddRoutes(
@@ -385,6 +385,18 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodGet,
+				Path:    "/unread-count",
+				Handler: notification.GetUnreadCountHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/api/v1/notifications"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
 				Path:    "/",
 				Handler: skill.ListSkillsHandler(serverCtx),
 			},
@@ -416,13 +428,13 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodPost,
-				Path:    "/:id/teach",
-				Handler: skill.TeachSkillHandler(serverCtx),
+				Path:    "/:id/review",
+				Handler: skill.ReviewSkillHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
-				Path:    "/:id/review",
-				Handler: skill.ReviewSkillHandler(serverCtx),
+				Path:    "/:id/teach",
+				Handler: skill.TeachSkillHandler(serverCtx),
 			},
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
@@ -455,6 +467,17 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 		rest.WithPrefix("/api/v1/skill-shop"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/network-check",
+				Handler: system.NetworkCheckHandler(serverCtx),
+			},
+		},
+		rest.WithPrefix("/api/v1"),
 	)
 
 	server.AddRoutes(
@@ -507,6 +530,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodGet,
 				Path:    "/agents",
 				Handler: user.GetUserAgentsHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/agents-detail",
+				Handler: user.GetUserAgentsDetailHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodGet,

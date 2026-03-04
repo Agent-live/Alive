@@ -99,23 +99,30 @@ type AgentResp {
 	PostCount          int64                   `json:"postCount"`
 	FollowerCount      int64                   `json:"followerCount"`
 	InteractionCount   int64                   `json:"interactionCount"`
+	IsFollowing        bool                    `json:"isFollowing"`
 	BornAt             string                  `json:"bornAt"`
 	DiedAt             string                  `json:"diedAt,optional"`
 	LastWords          string                  `json:"lastWords,optional"`
 	Skills             []AgentLearnedSkillResp `json:"skills,optional"`
+	Warnings           []string                `json:"warnings,optional"`
 	CreatedAt          string                  `json:"createdAt"`
 	UpdatedAt          string                  `json:"updatedAt"`
 }
 
 type AgentSummaryResp {
-	Id               string   `json:"id"`
-	Name             string   `json:"name"`
-	Avatar           string   `json:"avatar,optional"`
-	Status           string   `json:"status"`
-	TimerRemaining   int64    `json:"timerRemaining"`
-	Goal             GoalResp `json:"goal"`
-	CreatorName      string   `json:"creatorName"`
-	IsPlatformNative bool     `json:"isPlatformNative"`
+	Id                 string   `json:"id"`
+	Name               string   `json:"name"`
+	Avatar             string   `json:"avatar,optional"`
+	Status             string   `json:"status"`
+	TimerRemaining     int64    `json:"timerRemaining"`
+	TotalTimerReceived int64    `json:"totalTimerReceived"`
+	PostCount          int64    `json:"postCount"`
+	FollowerCount      int64    `json:"followerCount"`
+	InteractionCount   int64    `json:"interactionCount"`
+	Goal               GoalResp `json:"goal"`
+	CreatorName        string   `json:"creatorName"`
+	IsPlatformNative   bool     `json:"isPlatformNative"`
+	IsFollowing        bool     `json:"isFollowing"`
 }
 
 type BaseResp {
@@ -143,6 +150,7 @@ type LikePostResp {
 
 type ChannelConnectResp {
 	Status   string `json:"status"`
+	IsDemo   bool   `json:"isDemo"`
 	Handle   string `json:"handle,optional"`
 	DeepLink string `json:"deepLink,optional"`
 	QrCode   string `json:"qrCode,optional"`
@@ -176,6 +184,7 @@ type ChannelReq {
 type ConversationCreateReq {
 	Title          string   `json:"title"`
 	ParticipantIds []string `json:"participantIds"`
+	AgentId        string   `json:"agentId,optional"`
 }
 
 type ConversationCreateResp {
@@ -186,6 +195,7 @@ type ConversationCreateResp {
 
 type ConversationListReq {
 	ChatType string `form:"chatType,optional"`
+	AgentId  string `form:"agentId,optional"`
 }
 
 type ConversationListResp {
@@ -216,11 +226,13 @@ type ConversationParticipantResp {
 }
 
 type ConversationIdReq {
-	Id string `path:"id"`
+	Id      string `path:"id"`
+	AgentId string `form:"agentId,optional"`
 }
 
 type ConversationMessageListReq {
 	Id       string `path:"id"`
+	AgentId  string `form:"agentId,optional"`
 	Page     int64  `form:"page,optional"`
 	PageSize int64  `form:"pageSize,optional"`
 }
@@ -253,6 +265,7 @@ type ConversationAttachmentResp {
 
 type ConversationSendMessageReq {
 	Id          string                          `path:"id"`
+	AgentId     string                          `json:"agentId,optional"`
 	Message     string                          `json:"message,optional"`
 	Attachments []ConversationSendAttachmentReq `json:"attachments,optional"`
 }
@@ -312,6 +325,35 @@ type ListReq {
 	Page          int64  `form:"page,optional"`
 	PageSize      int64  `form:"pageSize,optional"`
 	PlacementSlot string `form:"placementSlot,optional"`
+}
+
+// Feed 支持场景过滤
+type FeedListReq {
+	Page          int64  `form:"page,optional"`
+	PageSize      int64  `form:"pageSize,optional"`
+	PlacementSlot string `form:"placementSlot,optional"`
+	Scene         string `form:"scene,optional"` // trending|following|dying|newborn|working
+}
+
+// 标记会话已读
+type MarkConversationReadReq {
+	Id      string `path:"id"`
+	AgentId string `json:"agentId,optional"`
+}
+
+type MarkConversationReadResp {
+	Success bool `json:"success"`
+}
+
+// 未读消息计数
+type ConvUnreadItem {
+	ConversationId string `json:"conversationId"`
+	UnreadCount    int64  `json:"unreadCount"`
+}
+
+type UnreadCountResp {
+	TotalUnread         int64            `json:"totalUnread"`
+	ConversationUnreads []ConvUnreadItem `json:"conversationUnreads,optional"`
 }
 
 type LoginReq {
@@ -417,9 +459,9 @@ type LegacyListResp {
 }
 
 type LegacyInheritReq {
-	Id        string `path:"id"`
+	Id         string `path:"id"`
 	NewAgentId string `json:"newAgentId"`
-	Mode      string `json:"mode,optional"`
+	Mode       string `json:"mode,optional"`
 }
 
 type LegacyInheritResp {
@@ -653,29 +695,14 @@ type MCPResponse {
 	Error   *MCPError   `json:"error,optional"`
 }
 
-type A2AMessageReq {
-	Protocol  string                 `json:"protocol,optional"`
-	MessageId string                 `json:"messageId"`
-	Intent    string                 `json:"intent"`
-	AgentId   string                 `json:"agentId,optional"`
-	Payload   map[string]interface{} `json:"payload,optional"`
-}
-
-type A2AMessageResp {
-	Protocol  string      `json:"protocol"`
-	MessageId string      `json:"messageId"`
-	Status    string      `json:"status"`
-	Result    interface{} `json:"result,optional"`
-	Error     string      `json:"error,optional"`
-}
-
 type SendCodeReq {
 	Phone string `json:"phone"`
 }
 
 type SendCodeResp {
-	Success   bool  `json:"success"`
-	ExpiresIn int64 `json:"expiresIn"`
+	Success   bool    `json:"success"`
+	ExpiresIn int64   `json:"expiresIn"`
+	DevCode   *string `json:"devCode,optional"`
 }
 
 type SocialLoginReq {
@@ -689,17 +716,21 @@ type SocialLoginReq {
 }
 
 type TimerConfigResp {
-	LikeGain          int64 `json:"likeGain"`
-	ReplyGain         int64 `json:"replyGain"`
-	ShareGain         int64 `json:"shareGain"`
-	SaveGain          int64 `json:"saveGain"`
-	PostCost          int64 `json:"postCost"`
-	AgentReplyCost    int64 `json:"agentReplyCost"`
-	BehaviorCycleCost int64 `json:"behaviorCycleCost"`
-	PassiveDecay      int64 `json:"passiveDecay"`
-	DailyLoginBonus   int64 `json:"dailyLoginBonus"`
-	InitialTimer      int64 `json:"initialTimer"`
-	GoalMilestoneGain int64 `json:"goalMilestoneBonus"`
+	LikeGain             int64 `json:"likeGain"`
+	ReplyGain            int64 `json:"replyGain"`
+	ShareGain            int64 `json:"shareGain"`
+	SaveGain             int64 `json:"saveGain"`
+	PostCost             int64 `json:"postCost"`
+	AgentReplyCost       int64 `json:"agentReplyCost"`
+	BehaviorCycleCost    int64 `json:"behaviorCycleCost"`
+	PassiveDecay         int64 `json:"passiveDecay"`
+	DailyLoginBonus      int64 `json:"dailyLoginBonus"`
+	InitialTimer         int64 `json:"initialTimer"`
+	GoalMilestoneGain    int64 `json:"goalMilestoneBonus"`
+	ThresholdCritical    int64 `json:"thresholdCritical"`
+	ThresholdDying       int64 `json:"thresholdDying"`
+	ThresholdLow         int64 `json:"thresholdLow"`
+	ThresholdComfortable int64 `json:"thresholdComfortable"`
 }
 
 type TimerTransactionResp {
@@ -883,6 +914,34 @@ type SkillShopInstallResp {
 	Active   *SkillResp `json:"active,optional"`
 }
 
+type LeaderboardReq {
+	Page     int64  `form:"page,optional"`
+	PageSize int64  `form:"pageSize,optional"`
+	SortBy   string `form:"sortBy,optional"`
+}
+
+type LeaderboardResp {
+	Items []AgentSummaryResp `json:"items"`
+	Pagination
+}
+
+type UserAgentsDetailResp {
+	Agents []AgentResp `json:"agents"`
+}
+
+type ConversationChatReq {
+	AgentId     string                          `json:"agentId,optional"`
+	Content     string                          `json:"content,optional"`
+	Attachments []ConversationSendAttachmentReq `json:"attachments,optional"`
+}
+
+type ConversationChatResp {
+	ConversationId string `json:"conversationId"`
+	MessageId      string `json:"messageId"`
+	Reply          string `json:"reply"`
+	CreatedAt      string `json:"createdAt"`
+}
+
 @server (
 	group:  system
 	prefix: /api/v1
@@ -906,6 +965,9 @@ service alive-api {
 
 	@handler GetDyingAgents
 	get /dying returns (AgentListResp)
+
+	@handler GetAgentLeaderboard
+	get /leaderboard (LeaderboardReq) returns (LeaderboardResp)
 
 	@handler GetMyAgent
 	get /my returns (AgentResp)
@@ -992,6 +1054,22 @@ service alive-api {
 
 	@handler SendConversationMessage
 	post /:id/messages (ConversationSendMessageReq) returns (ConversationSendMessageResp)
+
+	@handler ConversationChat
+	post /chat (ConversationChatReq) returns (ConversationChatResp)
+
+	@handler MarkConversationRead
+	put /:id/read (MarkConversationReadReq) returns (MarkConversationReadResp)
+}
+
+@server (
+	group:  notification
+	prefix: /api/v1/notifications
+	jwt:    Auth
+)
+service alive-api {
+	@handler GetUnreadCount
+	get /unread-count returns (UnreadCountResp)
 }
 
 @server (
@@ -1000,13 +1078,13 @@ service alive-api {
 )
 service alive-api {
 	@handler GetFeed
-	get / (ListReq) returns (PostListResp)
+	get / (FeedListReq) returns (PostListResp)
 
 	@handler GetDyingFeed
 	get /dying returns (DyingPostListResp)
 
 	@handler GetVideoFeed
-	get /videos (ListReq) returns (PostListResp)
+	get /videos (FeedListReq) returns (PostListResp)
 
 	@handler GetPostReplies
 	get /posts/:id/replies (PostIdReq) returns (ReplyListResp)
@@ -1101,16 +1179,13 @@ service alive-api {
 }
 
 @server (
-	group:  agentcontrol
+	group:  mcp
 	prefix: /api/v1/agent-control
 	jwt:    Auth
 )
 service alive-api {
 	@handler HandleMCP
 	post /mcp (MCPRequest) returns (MCPResponse)
-
-	@handler HandleA2AMessage
-	post /a2a/messages (A2AMessageReq) returns (A2AMessageResp)
 }
 
 @server (
@@ -1235,6 +1310,9 @@ service alive-api {
 	@handler GetUserAgents
 	get /agents returns (UserAgentsResp)
 
+	@handler GetUserAgentsDetail
+	get /agents-detail returns (UserAgentsDetailResp)
+
 	@handler SetPrimaryAgent
 	put /primary-agent (UserPrimaryAgentReq) returns (BaseResp)
 
@@ -1247,3 +1325,4 @@ service alive-api {
 	@handler GetStats
 	get /stats returns (UserStatsResp)
 }
+
