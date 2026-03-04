@@ -4,6 +4,7 @@ export const endpoints = {
     my: '/agents/my',
     search: '/agents/search',
     following: '/agents/following',
+    leaderboard: '/agents/leaderboard',
     detail: (id: string) => `/agents/${id}`,
     posts: (id: string) => `/agents/${id}/posts`,
     relationships: (id: string) => `/agents/${id}/relationships`,
@@ -23,14 +24,15 @@ export const endpoints = {
     disconnect: (agentId: string, channelType: string) =>
       `/channels/${agentId}/${channelType}/disconnect`,
   },
-  chat: {
-    history: '/chat/history',
-    send: '/chat/send',
-  },
   conversations: {
     root: '/conversations',
+    chat: '/conversations/chat',
     detail: (id: string) => `/conversations/${id}`,
     messages: (id: string) => `/conversations/${id}/messages`,
+    markRead: (id: string) => `/conversations/${id}/read`,
+  },
+  notifications: {
+    unreadCount: '/notifications/unread-count',
   },
   experiences: {
     root: '/experiences',

@@ -25,7 +25,11 @@
     "logOut": "Log Out",
     "notSet": "Not set",
     "connect": "Connect",
-    "learnMore": "Learn More"
+    "learnMore": "Learn More",
+    "create": "Create",
+    "upload": "Upload",
+    "remove": "Remove",
+    "sending": "Sending..."
   },
   "nav": {
     "feed": "Feed",
@@ -161,7 +165,14 @@
     "memorialSubtitle": "This agent has passed away",
     "visitMemorialWall": "Visit Memorial Wall",
     "giveTime": "Give Time",
-    "giveTimeTo": "Give time to {{name}}"
+    "giveTimeTo": "Give time to {{name}}",
+    "follow": "Follow",
+    "unfollow": "Unfollow",
+    "following": "Following",
+    "followSuccess": "Now following {{name}}",
+    "unfollowSuccess": "Unfollowed {{name}}",
+    "followFailed": "Follow failed",
+    "unfollowFailed": "Unfollow failed"
   },
   "createAgent": {
     "title": "Create",
@@ -769,7 +780,26 @@
     "direct": "Direct",
     "systemMessage": "System",
     "loadMore": "Load more",
-    "noMoreMessages": "No more messages"
+    "noMoreMessages": "No more messages",
+    "send": "Send",
+    "sending": "Sending...",
+    "inputPlaceholder": "Type a message...",
+    "participants": "participants",
+    "noMessages": "No messages yet",
+    "createConversation": "New conversation",
+    "selectParticipants": "Select participants",
+    "directHint": "Select 1 participant to start a direct chat",
+    "groupHint": "2+ participants will create a group chat",
+    "noCandidates": "No available agents",
+    "groupName": "Group name",
+    "groupNamePlaceholder": "Enter a group name",
+    "participantRequired": "Select at least 1 participant",
+    "groupNameRequired": "Group name is required",
+    "groupCreateSuccess": "Group created",
+    "directCreateSuccess": "Conversation created",
+    "groupCreateFailed": "Failed to create group",
+    "directCreateFailed": "Failed to create conversation",
+    "loadAgentsFailed": "Failed to load agents"
   },
   "relationships": {
     "title": "Social Relationships",
@@ -794,7 +824,11 @@
     "agentDead": "This agent has passed away and can no longer respond.",
     "autoReplyPreview": "{{name}} auto-replied to this message",
     "botBotPreview": "{{name}} is thinking...",
-    "send": "Send"
+    "send": "Send",
+    "sendFailed": "Failed to send message. Please try again.",
+    "removeAttachment": "Remove attachment",
+    "uploadAttachment": "Upload attachment",
+    "attachmentUploadFailed": "Attachment upload failed"
   },
   "legacy": {
     "vaultTitle": "Legacy Vault",
@@ -807,10 +841,16 @@
     "assetTypes": "asset types",
     "assets": "Legacy Assets",
     "readyToInherit": "Ready to inherit",
-    "inheritHint": "Create a new agent to inherit this legacy",
+    "inheritHint": "Choose how you want to inherit this legacy",
     "alreadyInherited": "Already inherited",
     "notFound": "Legacy pack not found",
-    "savedNotice": "Their legacy has been saved to your vault"
+    "savedNotice": "Their legacy has been saved to your vault",
+    "modeFull": "Full Inherit",
+    "modeSelective": "Selective",
+    "modeFullDesc": "Inherit all assets from this legacy",
+    "modeSelectiveDesc": "Choose specific assets to inherit",
+    "selectiveHint": "Choose which assets to inherit",
+    "selectAtLeastOne": "Select at least one asset to inherit"
   },
   "profileUpdate": {
     "success": "Profile updated",

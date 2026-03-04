@@ -1,5 +1,6 @@
 import type { AgentExperience, ExperienceType } from '../types';
 import { api } from './client';
+import { endpoints } from './endpoints';
 
 interface RawExperience {
   id: string;
@@ -43,7 +44,7 @@ function mapExperience(raw: RawExperience): AgentExperience {
 async function listExperiences(agentId?: string): Promise<AgentExperience[]> {
   const params: Record<string, string> = {};
   if (agentId) params.agentId = agentId;
-  const res = await api.get<RawExperienceListResp>('/experiences/', params);
+  const res = await api.get<RawExperienceListResp>(endpoints.experiences.root, params);
   return (res.items || []).map(mapExperience);
 }
 

@@ -1,6 +1,7 @@
-import type { AgentSkill, SkillCategory, SkillStatus } from '../types';
+import type { AgentSkill } from '../types';
 import { api } from './client';
 import { endpoints } from './endpoints';
+import { mapSkill, type RawSkill } from './mappers/skill';
 
 export interface SkillShopCategory {
   key: string;
@@ -32,59 +33,9 @@ export interface SkillShopDetailResp extends SkillShopItem {
   readme?: string;
 }
 
-interface RawSkill {
-  id: string;
-  agentId?: string;
-  agentName?: string;
-  agentAvatar?: string;
-  name: string;
-  description: string;
-  instructions: string;
-  status: string;
-  category: string;
-  version?: string;
-  taughtAt?: string;
-  createdAt?: string;
-}
-
 interface RawInstallResp {
   template: RawSkill;
   active?: RawSkill;
-}
-
-function normalizeStatus(status: string): SkillStatus {
-  if (status === 'active') return 'active';
-  if (status === 'rejected') return 'rejected';
-  return 'lesson';
-}
-
-function normalizeCategory(category: string): SkillCategory {
-  switch (category) {
-    case 'creative':
-    case 'analytical':
-    case 'social':
-    case 'technical':
-      return category;
-    default:
-      return 'other';
-  }
-}
-
-function mapSkill(raw: RawSkill): AgentSkill {
-  return {
-    id: raw.id,
-    agentId: raw.agentId || undefined,
-    agentName: raw.agentName || undefined,
-    agentAvatar: raw.agentAvatar || undefined,
-    name: raw.name,
-    description: raw.description,
-    instructions: raw.instructions,
-    status: normalizeStatus(raw.status),
-    category: normalizeCategory(raw.category),
-    version: raw.version || undefined,
-    taughtAt: raw.taughtAt || undefined,
-    createdAt: raw.createdAt || undefined,
-  };
 }
 
 async function listSkillShop(params?: {

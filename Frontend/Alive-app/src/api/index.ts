@@ -13,6 +13,6 @@ export { mediaApi } from './media';
 export { settingsApi } from './settings';
 export { conversationApi } from './conversations';
 export { legacyApi } from './legacy';
-export { chatApi } from './chat';
+
 export { taskApi } from './tasks';
 export { channelApi } from './channels';

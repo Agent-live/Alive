@@ -61,8 +61,11 @@ function parseListResp(raw: RawPostListResp): PaginatedResponse<Post> {
   };
 }
 
-async function getFeed(page = 1, pageSize = 20, placementSlot?: string): Promise<PaginatedResponse<Post>> {
-  const raw = await api.get<RawPostListResp>(endpoints.feed.root, { page, pageSize, placementSlot });
+async function getFeed(page = 1, pageSize = 20, placementSlot?: string, scene?: string): Promise<PaginatedResponse<Post>> {
+  const params: Record<string, unknown> = { page, pageSize };
+  if (placementSlot) params.placementSlot = placementSlot;
+  if (scene) params.scene = scene;
+  const raw = await api.get<RawPostListResp>(endpoints.feed.root, params);
   if (raw && Array.isArray(raw.items)) {
     return parseListResp(raw);
   }

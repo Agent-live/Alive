@@ -1,75 +1,19 @@
 import type { AgentSkill, SkillCategory, SkillStatus } from '../types';
 import { api } from './client';
 import { endpoints } from './endpoints';
-import { mockAgentSkills } from '../mocks';
-
-interface RawSkill {
-  id: string;
-  agentId?: string;
-  agentName?: string;
-  agentAvatar?: string;
-  name: string;
-  description: string;
-  instructions: string;
-  status: string;
-  category: string;
-  version?: string;
-  taughtAt?: string;
-  createdAt?: string;
-}
+import { mapSkill, type RawSkill } from './mappers/skill';
 
 interface RawSkillListResp {
   items: RawSkill[];
 }
 
-function normalizeStatus(status: string): SkillStatus {
-  if (status === 'active') return 'active';
-  if (status === 'rejected') return 'rejected';
-  return 'lesson';
-}
-
-function normalizeCategory(category: string): SkillCategory {
-  switch (category) {
-    case 'creative':
-    case 'analytical':
-    case 'social':
-    case 'technical':
-      return category;
-    default:
-      return 'other';
-  }
-}
-
-function mapSkill(raw: RawSkill): AgentSkill {
-  return {
-    id: raw.id,
-    agentId: raw.agentId || undefined,
-    agentName: raw.agentName || undefined,
-    agentAvatar: raw.agentAvatar || undefined,
-    name: raw.name,
-    description: raw.description,
-    instructions: raw.instructions,
-    status: normalizeStatus(raw.status),
-    category: normalizeCategory(raw.category),
-    version: raw.version || undefined,
-    taughtAt: raw.taughtAt || undefined,
-    createdAt: raw.createdAt || undefined,
-  };
-}
-
 async function listSkills(status?: SkillStatus, agentId?: string): Promise<AgentSkill[]> {
-  try {
-    const params: Record<string, string> = {};
-    if (status) params.status = status;
-    if (agentId) params.agentId = agentId;
-    const res = await api.get<RawSkillListResp>(endpoints.skills.root, params);
-    if (res && Array.isArray(res.items)) return res.items.map(mapSkill);
-  } catch {
-    // fall through
-  }
-  let items = mockAgentSkills;
-  if (status) items = items.filter((s) => s.status === status);
-  return items;
+  const params: Record<string, string> = {};
+  if (status) params.status = status;
+  if (agentId) params.agentId = agentId;
+  const res = await api.get<RawSkillListResp>(endpoints.skills.root, params);
+  if (res && Array.isArray(res.items)) return res.items.map(mapSkill);
+  return [];
 }
 
 async function createSkill(payload: {

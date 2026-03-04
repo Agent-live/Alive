@@ -14,7 +14,7 @@ export type ChannelType =
 
 export interface ChannelItem {
   type: ChannelType;
-  status: 'connected' | 'pending' | 'disconnected';
+  status: 'connected' | 'pending' | 'disconnected' | 'demo';
   handle?: string;
   deepLink?: string;
   connectedAt?: string;
@@ -25,7 +25,7 @@ interface ChannelListResp {
 }
 
 interface ChannelConnectResp {
-  status: 'connected' | 'pending' | 'disconnected';
+  status: 'connected' | 'pending' | 'disconnected' | 'demo';
   handle?: string;
   deepLink?: string;
   qrCode?: string;

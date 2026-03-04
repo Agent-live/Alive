@@ -2,6 +2,7 @@ import { User, UserStats } from '../types';
 import { api } from './client';
 import { endpoints } from './endpoints';
 import { mapUser } from './mappers';
+import { asNumber } from '../utils/coerce';
 
 async function getCurrentUser(): Promise<User> {
   const me = await api.get<unknown>(endpoints.user.me);
@@ -33,11 +34,12 @@ async function updateUser(data: Partial<User>): Promise<User> {
 
 async function getUserStats(): Promise<UserStats> {
   const res = await api.get<Record<string, unknown>>(endpoints.user.stats);
+  const src = (res ?? {}) as Record<string, unknown>;
   return {
-    agentsCreated: Number(res.agentsCreated || 0),
-    agentsLost: Number(res.agentsLost || 0),
-    totalTimerGiven: Number(res.totalTimerGiven || 0),
-    dailyLoginStreak: Number(res.dailyLoginStreak || 0),
+    agentsCreated: asNumber(src.agentsCreated, 0),
+    agentsLost: asNumber(src.agentsLost, 0),
+    totalTimerGiven: asNumber(src.totalTimerGiven, 0),
+    dailyLoginStreak: asNumber(src.dailyLoginStreak, 0),
   };
 }
 
