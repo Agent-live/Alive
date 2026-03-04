@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"backend/ent/agent"
 	"backend/ent/agentrelationship"
 	"context"
 	"errors"
@@ -131,6 +132,16 @@ func (_c *AgentRelationshipCreate) SetNillableID(v *uuid.UUID) *AgentRelationshi
 	return _c
 }
 
+// SetAgent sets the "agent" edge to the Agent entity.
+func (_c *AgentRelationshipCreate) SetAgent(v *Agent) *AgentRelationshipCreate {
+	return _c.SetAgentID(v.ID)
+}
+
+// SetTargetAgent sets the "target_agent" edge to the Agent entity.
+func (_c *AgentRelationshipCreate) SetTargetAgent(v *Agent) *AgentRelationshipCreate {
+	return _c.SetTargetAgentID(v.ID)
+}
+
 // Mutation returns the AgentRelationshipMutation object of the builder.
 func (_c *AgentRelationshipCreate) Mutation() *AgentRelationshipMutation {
 	return _c.mutation
@@ -222,6 +233,12 @@ func (_c *AgentRelationshipCreate) check() error {
 	if _, ok := _c.mutation.MessageCount(); !ok {
 		return &ValidationError{Name: "message_count", err: errors.New(`ent: missing required field "AgentRelationship.message_count"`)}
 	}
+	if len(_c.mutation.AgentIDs()) == 0 {
+		return &ValidationError{Name: "agent", err: errors.New(`ent: missing required edge "AgentRelationship.agent"`)}
+	}
+	if len(_c.mutation.TargetAgentIDs()) == 0 {
+		return &ValidationError{Name: "target_agent", err: errors.New(`ent: missing required edge "AgentRelationship.target_agent"`)}
+	}
 	return nil
 }
 
@@ -265,14 +282,6 @@ func (_c *AgentRelationshipCreate) createSpec() (*AgentRelationship, *sqlgraph.C
 		_spec.SetField(agentrelationship.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := _c.mutation.AgentID(); ok {
-		_spec.SetField(agentrelationship.FieldAgentID, field.TypeUUID, value)
-		_node.AgentID = value
-	}
-	if value, ok := _c.mutation.TargetAgentID(); ok {
-		_spec.SetField(agentrelationship.FieldTargetAgentID, field.TypeUUID, value)
-		_node.TargetAgentID = value
-	}
 	if value, ok := _c.mutation.Affinity(); ok {
 		_spec.SetField(agentrelationship.FieldAffinity, field.TypeInt64, value)
 		_node.Affinity = value
@@ -288,6 +297,40 @@ func (_c *AgentRelationshipCreate) createSpec() (*AgentRelationship, *sqlgraph.C
 	if value, ok := _c.mutation.MessageCount(); ok {
 		_spec.SetField(agentrelationship.FieldMessageCount, field.TypeInt64, value)
 		_node.MessageCount = value
+	}
+	if nodes := _c.mutation.AgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   agentrelationship.AgentTable,
+			Columns: []string{agentrelationship.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.AgentID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.TargetAgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   agentrelationship.TargetAgentTable,
+			Columns: []string{agentrelationship.TargetAgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.TargetAgentID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

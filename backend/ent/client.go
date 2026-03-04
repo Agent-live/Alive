@@ -17,7 +17,6 @@ import (
 	"backend/ent/agentskill"
 	"backend/ent/agenttask"
 	"backend/ent/channelconnection"
-	"backend/ent/chatmessage"
 	"backend/ent/conversation"
 	"backend/ent/conversationmessage"
 	"backend/ent/conversationparticipant"
@@ -55,8 +54,6 @@ type Client struct {
 	AgentTask *AgentTaskClient
 	// ChannelConnection is the client for interacting with the ChannelConnection builders.
 	ChannelConnection *ChannelConnectionClient
-	// ChatMessage is the client for interacting with the ChatMessage builders.
-	ChatMessage *ChatMessageClient
 	// Conversation is the client for interacting with the Conversation builders.
 	Conversation *ConversationClient
 	// ConversationMessage is the client for interacting with the ConversationMessage builders.
@@ -98,7 +95,6 @@ func (c *Client) init() {
 	c.AgentSkill = NewAgentSkillClient(c.config)
 	c.AgentTask = NewAgentTaskClient(c.config)
 	c.ChannelConnection = NewChannelConnectionClient(c.config)
-	c.ChatMessage = NewChatMessageClient(c.config)
 	c.Conversation = NewConversationClient(c.config)
 	c.ConversationMessage = NewConversationMessageClient(c.config)
 	c.ConversationParticipant = NewConversationParticipantClient(c.config)
@@ -209,7 +205,6 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		AgentSkill:              NewAgentSkillClient(cfg),
 		AgentTask:               NewAgentTaskClient(cfg),
 		ChannelConnection:       NewChannelConnectionClient(cfg),
-		ChatMessage:             NewChatMessageClient(cfg),
 		Conversation:            NewConversationClient(cfg),
 		ConversationMessage:     NewConversationMessageClient(cfg),
 		ConversationParticipant: NewConversationParticipantClient(cfg),
@@ -247,7 +242,6 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		AgentSkill:              NewAgentSkillClient(cfg),
 		AgentTask:               NewAgentTaskClient(cfg),
 		ChannelConnection:       NewChannelConnectionClient(cfg),
-		ChatMessage:             NewChatMessageClient(cfg),
 		Conversation:            NewConversationClient(cfg),
 		ConversationMessage:     NewConversationMessageClient(cfg),
 		ConversationParticipant: NewConversationParticipantClient(cfg),
@@ -290,7 +284,7 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.Agent, c.AgentExperience, c.AgentRelationship, c.AgentSkill, c.AgentTask,
-		c.ChannelConnection, c.ChatMessage, c.Conversation, c.ConversationMessage,
+		c.ChannelConnection, c.Conversation, c.ConversationMessage,
 		c.ConversationParticipant, c.Media, c.Memorial, c.Post, c.PostLike, c.Reply,
 		c.TimerTransaction, c.Tribute, c.User, c.VerificationCode,
 	} {
@@ -303,7 +297,7 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.Agent, c.AgentExperience, c.AgentRelationship, c.AgentSkill, c.AgentTask,
-		c.ChannelConnection, c.ChatMessage, c.Conversation, c.ConversationMessage,
+		c.ChannelConnection, c.Conversation, c.ConversationMessage,
 		c.ConversationParticipant, c.Media, c.Memorial, c.Post, c.PostLike, c.Reply,
 		c.TimerTransaction, c.Tribute, c.User, c.VerificationCode,
 	} {
@@ -326,8 +320,6 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.AgentTask.mutate(ctx, m)
 	case *ChannelConnectionMutation:
 		return c.ChannelConnection.mutate(ctx, m)
-	case *ChatMessageMutation:
-		return c.ChatMessage.mutate(ctx, m)
 	case *ConversationMutation:
 		return c.Conversation.mutate(ctx, m)
 	case *ConversationMessageMutation:
@@ -641,6 +633,38 @@ func (c *AgentClient) QuerySentMessages(_m *Agent) *ConversationMessageQuery {
 	return query
 }
 
+// QueryRelationships queries the relationships edge of a Agent.
+func (c *AgentClient) QueryRelationships(_m *Agent) *AgentRelationshipQuery {
+	query := (&AgentRelationshipClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(agent.Table, agent.FieldID, id),
+			sqlgraph.To(agentrelationship.Table, agentrelationship.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, agent.RelationshipsTable, agent.RelationshipsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryIncomingRelationships queries the incoming_relationships edge of a Agent.
+func (c *AgentClient) QueryIncomingRelationships(_m *Agent) *AgentRelationshipQuery {
+	query := (&AgentRelationshipClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(agent.Table, agent.FieldID, id),
+			sqlgraph.To(agentrelationship.Table, agentrelationship.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, agent.IncomingRelationshipsTable, agent.IncomingRelationshipsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *AgentClient) Hooks() []Hook {
 	return c.hooks.Agent
@@ -937,6 +961,38 @@ func (c *AgentRelationshipClient) GetX(ctx context.Context, id uuid.UUID) *Agent
 		panic(err)
 	}
 	return obj
+}
+
+// QueryAgent queries the agent edge of a AgentRelationship.
+func (c *AgentRelationshipClient) QueryAgent(_m *AgentRelationship) *AgentQuery {
+	query := (&AgentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(agentrelationship.Table, agentrelationship.FieldID, id),
+			sqlgraph.To(agent.Table, agent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, agentrelationship.AgentTable, agentrelationship.AgentColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTargetAgent queries the target_agent edge of a AgentRelationship.
+func (c *AgentRelationshipClient) QueryTargetAgent(_m *AgentRelationship) *AgentQuery {
+	query := (&AgentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(agentrelationship.Table, agentrelationship.FieldID, id),
+			sqlgraph.To(agent.Table, agent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, agentrelationship.TargetAgentTable, agentrelationship.TargetAgentColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
 }
 
 // Hooks returns the client hooks.
@@ -1424,139 +1480,6 @@ func (c *ChannelConnectionClient) mutate(ctx context.Context, m *ChannelConnecti
 		return (&ChannelConnectionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown ChannelConnection mutation op: %q", m.Op())
-	}
-}
-
-// ChatMessageClient is a client for the ChatMessage schema.
-type ChatMessageClient struct {
-	config
-}
-
-// NewChatMessageClient returns a client for the ChatMessage from the given config.
-func NewChatMessageClient(c config) *ChatMessageClient {
-	return &ChatMessageClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `chatmessage.Hooks(f(g(h())))`.
-func (c *ChatMessageClient) Use(hooks ...Hook) {
-	c.hooks.ChatMessage = append(c.hooks.ChatMessage, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `chatmessage.Intercept(f(g(h())))`.
-func (c *ChatMessageClient) Intercept(interceptors ...Interceptor) {
-	c.inters.ChatMessage = append(c.inters.ChatMessage, interceptors...)
-}
-
-// Create returns a builder for creating a ChatMessage entity.
-func (c *ChatMessageClient) Create() *ChatMessageCreate {
-	mutation := newChatMessageMutation(c.config, OpCreate)
-	return &ChatMessageCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of ChatMessage entities.
-func (c *ChatMessageClient) CreateBulk(builders ...*ChatMessageCreate) *ChatMessageCreateBulk {
-	return &ChatMessageCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *ChatMessageClient) MapCreateBulk(slice any, setFunc func(*ChatMessageCreate, int)) *ChatMessageCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &ChatMessageCreateBulk{err: fmt.Errorf("calling to ChatMessageClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*ChatMessageCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &ChatMessageCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for ChatMessage.
-func (c *ChatMessageClient) Update() *ChatMessageUpdate {
-	mutation := newChatMessageMutation(c.config, OpUpdate)
-	return &ChatMessageUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *ChatMessageClient) UpdateOne(_m *ChatMessage) *ChatMessageUpdateOne {
-	mutation := newChatMessageMutation(c.config, OpUpdateOne, withChatMessage(_m))
-	return &ChatMessageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *ChatMessageClient) UpdateOneID(id uuid.UUID) *ChatMessageUpdateOne {
-	mutation := newChatMessageMutation(c.config, OpUpdateOne, withChatMessageID(id))
-	return &ChatMessageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for ChatMessage.
-func (c *ChatMessageClient) Delete() *ChatMessageDelete {
-	mutation := newChatMessageMutation(c.config, OpDelete)
-	return &ChatMessageDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *ChatMessageClient) DeleteOne(_m *ChatMessage) *ChatMessageDeleteOne {
-	return c.DeleteOneID(_m.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *ChatMessageClient) DeleteOneID(id uuid.UUID) *ChatMessageDeleteOne {
-	builder := c.Delete().Where(chatmessage.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &ChatMessageDeleteOne{builder}
-}
-
-// Query returns a query builder for ChatMessage.
-func (c *ChatMessageClient) Query() *ChatMessageQuery {
-	return &ChatMessageQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeChatMessage},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a ChatMessage entity by its id.
-func (c *ChatMessageClient) Get(ctx context.Context, id uuid.UUID) (*ChatMessage, error) {
-	return c.Query().Where(chatmessage.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *ChatMessageClient) GetX(ctx context.Context, id uuid.UUID) *ChatMessage {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// Hooks returns the client hooks.
-func (c *ChatMessageClient) Hooks() []Hook {
-	return c.hooks.ChatMessage
-}
-
-// Interceptors returns the client interceptors.
-func (c *ChatMessageClient) Interceptors() []Interceptor {
-	return c.inters.ChatMessage
-}
-
-func (c *ChatMessageClient) mutate(ctx context.Context, m *ChatMessageMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&ChatMessageCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&ChatMessageUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&ChatMessageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&ChatMessageDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown ChatMessage mutation op: %q", m.Op())
 	}
 }
 
@@ -3528,14 +3451,14 @@ func (c *VerificationCodeClient) mutate(ctx context.Context, m *VerificationCode
 type (
 	hooks struct {
 		Agent, AgentExperience, AgentRelationship, AgentSkill, AgentTask,
-		ChannelConnection, ChatMessage, Conversation, ConversationMessage,
-		ConversationParticipant, Media, Memorial, Post, PostLike, Reply,
-		TimerTransaction, Tribute, User, VerificationCode []ent.Hook
+		ChannelConnection, Conversation, ConversationMessage, ConversationParticipant,
+		Media, Memorial, Post, PostLike, Reply, TimerTransaction, Tribute, User,
+		VerificationCode []ent.Hook
 	}
 	inters struct {
 		Agent, AgentExperience, AgentRelationship, AgentSkill, AgentTask,
-		ChannelConnection, ChatMessage, Conversation, ConversationMessage,
-		ConversationParticipant, Media, Memorial, Post, PostLike, Reply,
-		TimerTransaction, Tribute, User, VerificationCode []ent.Interceptor
+		ChannelConnection, Conversation, ConversationMessage, ConversationParticipant,
+		Media, Memorial, Post, PostLike, Reply, TimerTransaction, Tribute, User,
+		VerificationCode []ent.Interceptor
 	}
 )

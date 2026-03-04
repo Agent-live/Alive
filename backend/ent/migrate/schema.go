@@ -52,7 +52,7 @@ var (
 		Indexes: []*schema.Index{
 			{
 				Name:    "agent_creator_id",
-				Unique:  true,
+				Unique:  false,
 				Columns: []*schema.Column{AgentsColumns[24]},
 			},
 			{
@@ -128,28 +128,42 @@ var (
 		{Name: "id", Type: field.TypeUUID},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "agent_id", Type: field.TypeUUID},
-		{Name: "target_agent_id", Type: field.TypeUUID},
 		{Name: "affinity", Type: field.TypeInt64, Default: 0},
 		{Name: "label", Type: field.TypeString, Default: "acquaintance"},
 		{Name: "interaction_count", Type: field.TypeInt64, Default: 0},
 		{Name: "message_count", Type: field.TypeInt64, Default: 0},
+		{Name: "agent_id", Type: field.TypeUUID},
+		{Name: "target_agent_id", Type: field.TypeUUID},
 	}
 	// AgentRelationshipsTable holds the schema information for the "agent_relationships" table.
 	AgentRelationshipsTable = &schema.Table{
 		Name:       "agent_relationships",
 		Columns:    AgentRelationshipsColumns,
 		PrimaryKey: []*schema.Column{AgentRelationshipsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "agent_relationships_agents_relationships",
+				Columns:    []*schema.Column{AgentRelationshipsColumns[7]},
+				RefColumns: []*schema.Column{AgentsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "agent_relationships_agents_incoming_relationships",
+				Columns:    []*schema.Column{AgentRelationshipsColumns[8]},
+				RefColumns: []*schema.Column{AgentsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
 		Indexes: []*schema.Index{
 			{
 				Name:    "agentrelationship_agent_id_target_agent_id",
 				Unique:  true,
-				Columns: []*schema.Column{AgentRelationshipsColumns[3], AgentRelationshipsColumns[4]},
+				Columns: []*schema.Column{AgentRelationshipsColumns[7], AgentRelationshipsColumns[8]},
 			},
 			{
 				Name:    "agentrelationship_agent_id",
 				Unique:  false,
-				Columns: []*schema.Column{AgentRelationshipsColumns[3]},
+				Columns: []*schema.Column{AgentRelationshipsColumns[7]},
 			},
 		},
 	}
@@ -293,34 +307,6 @@ var (
 				Name:    "channelconnection_agent_id_channel_type",
 				Unique:  true,
 				Columns: []*schema.Column{ChannelConnectionsColumns[8], ChannelConnectionsColumns[3]},
-			},
-		},
-	}
-	// ChatMessagesColumns holds the columns for the "chat_messages" table.
-	ChatMessagesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID},
-		{Name: "agent_id", Type: field.TypeUUID},
-		{Name: "user_id", Type: field.TypeUUID},
-		{Name: "session_id", Type: field.TypeString},
-		{Name: "role", Type: field.TypeString},
-		{Name: "content", Type: field.TypeString},
-		{Name: "created_at", Type: field.TypeTime},
-	}
-	// ChatMessagesTable holds the schema information for the "chat_messages" table.
-	ChatMessagesTable = &schema.Table{
-		Name:       "chat_messages",
-		Columns:    ChatMessagesColumns,
-		PrimaryKey: []*schema.Column{ChatMessagesColumns[0]},
-		Indexes: []*schema.Index{
-			{
-				Name:    "chatmessage_agent_id_session_id",
-				Unique:  false,
-				Columns: []*schema.Column{ChatMessagesColumns[1], ChatMessagesColumns[3]},
-			},
-			{
-				Name:    "chatmessage_user_id_agent_id",
-				Unique:  false,
-				Columns: []*schema.Column{ChatMessagesColumns[2], ChatMessagesColumns[1]},
 			},
 		},
 	}
@@ -768,7 +754,6 @@ var (
 		AgentSkillsTable,
 		AgentTasksTable,
 		ChannelConnectionsTable,
-		ChatMessagesTable,
 		ConversationsTable,
 		ConversationMessagesTable,
 		ConversationParticipantsTable,
@@ -788,6 +773,8 @@ func init() {
 	AgentsTable.ForeignKeys[0].RefTable = UsersTable
 	AgentExperiencesTable.ForeignKeys[0].RefTable = AgentsTable
 	AgentExperiencesTable.ForeignKeys[1].RefTable = UsersTable
+	AgentRelationshipsTable.ForeignKeys[0].RefTable = AgentsTable
+	AgentRelationshipsTable.ForeignKeys[1].RefTable = AgentsTable
 	AgentSkillsTable.ForeignKeys[0].RefTable = AgentsTable
 	AgentSkillsTable.ForeignKeys[1].RefTable = UsersTable
 	AgentTasksTable.ForeignKeys[0].RefTable = AgentsTable

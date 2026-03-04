@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/google/uuid"
 )
 
@@ -30,8 +31,26 @@ const (
 	FieldInteractionCount = "interaction_count"
 	// FieldMessageCount holds the string denoting the message_count field in the database.
 	FieldMessageCount = "message_count"
+	// EdgeAgent holds the string denoting the agent edge name in mutations.
+	EdgeAgent = "agent"
+	// EdgeTargetAgent holds the string denoting the target_agent edge name in mutations.
+	EdgeTargetAgent = "target_agent"
 	// Table holds the table name of the agentrelationship in the database.
 	Table = "agent_relationships"
+	// AgentTable is the table that holds the agent relation/edge.
+	AgentTable = "agent_relationships"
+	// AgentInverseTable is the table name for the Agent entity.
+	// It exists in this package in order to avoid circular dependency with the "agent" package.
+	AgentInverseTable = "agents"
+	// AgentColumn is the table column denoting the agent relation/edge.
+	AgentColumn = "agent_id"
+	// TargetAgentTable is the table that holds the target_agent relation/edge.
+	TargetAgentTable = "agent_relationships"
+	// TargetAgentInverseTable is the table name for the Agent entity.
+	// It exists in this package in order to avoid circular dependency with the "agent" package.
+	TargetAgentInverseTable = "agents"
+	// TargetAgentColumn is the table column denoting the target_agent relation/edge.
+	TargetAgentColumn = "target_agent_id"
 )
 
 // Columns holds all SQL columns for agentrelationship fields.
@@ -122,4 +141,32 @@ func ByInteractionCount(opts ...sql.OrderTermOption) OrderOption {
 // ByMessageCount orders the results by the message_count field.
 func ByMessageCount(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldMessageCount, opts...).ToFunc()
+}
+
+// ByAgentField orders the results by agent field.
+func ByAgentField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAgentStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByTargetAgentField orders the results by target_agent field.
+func ByTargetAgentField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTargetAgentStep(), sql.OrderByField(field, opts...))
+	}
+}
+func newAgentStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AgentInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, AgentTable, AgentColumn),
+	)
+}
+func newTargetAgentStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TargetAgentInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, TargetAgentTable, TargetAgentColumn),
+	)
 }

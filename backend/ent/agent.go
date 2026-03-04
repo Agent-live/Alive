@@ -99,9 +99,13 @@ type AgentEdges struct {
 	ConversationParticipations []*ConversationParticipant `json:"conversation_participations,omitempty"`
 	// SentMessages holds the value of the sent_messages edge.
 	SentMessages []*ConversationMessage `json:"sent_messages,omitempty"`
+	// Relationships holds the value of the relationships edge.
+	Relationships []*AgentRelationship `json:"relationships,omitempty"`
+	// IncomingRelationships holds the value of the incoming_relationships edge.
+	IncomingRelationships []*AgentRelationship `json:"incoming_relationships,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [11]bool
+	loadedTypes [13]bool
 }
 
 // CreatorOrErr returns the Creator value or an error if the edge
@@ -205,6 +209,24 @@ func (e AgentEdges) SentMessagesOrErr() ([]*ConversationMessage, error) {
 		return e.SentMessages, nil
 	}
 	return nil, &NotLoadedError{edge: "sent_messages"}
+}
+
+// RelationshipsOrErr returns the Relationships value or an error if the edge
+// was not loaded in eager-loading.
+func (e AgentEdges) RelationshipsOrErr() ([]*AgentRelationship, error) {
+	if e.loadedTypes[11] {
+		return e.Relationships, nil
+	}
+	return nil, &NotLoadedError{edge: "relationships"}
+}
+
+// IncomingRelationshipsOrErr returns the IncomingRelationships value or an error if the edge
+// was not loaded in eager-loading.
+func (e AgentEdges) IncomingRelationshipsOrErr() ([]*AgentRelationship, error) {
+	if e.loadedTypes[12] {
+		return e.IncomingRelationships, nil
+	}
+	return nil, &NotLoadedError{edge: "incoming_relationships"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -464,6 +486,16 @@ func (_m *Agent) QueryConversationParticipations() *ConversationParticipantQuery
 // QuerySentMessages queries the "sent_messages" edge of the Agent entity.
 func (_m *Agent) QuerySentMessages() *ConversationMessageQuery {
 	return NewAgentClient(_m.config).QuerySentMessages(_m)
+}
+
+// QueryRelationships queries the "relationships" edge of the Agent entity.
+func (_m *Agent) QueryRelationships() *AgentRelationshipQuery {
+	return NewAgentClient(_m.config).QueryRelationships(_m)
+}
+
+// QueryIncomingRelationships queries the "incoming_relationships" edge of the Agent entity.
+func (_m *Agent) QueryIncomingRelationships() *AgentRelationshipQuery {
+	return NewAgentClient(_m.config).QueryIncomingRelationships(_m)
 }
 
 // Update returns a builder for updating this Agent.

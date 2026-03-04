@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/google/uuid"
 )
 
@@ -190,26 +191,6 @@ func AgentIDNotIn(vs ...uuid.UUID) predicate.AgentRelationship {
 	return predicate.AgentRelationship(sql.FieldNotIn(FieldAgentID, vs...))
 }
 
-// AgentIDGT applies the GT predicate on the "agent_id" field.
-func AgentIDGT(v uuid.UUID) predicate.AgentRelationship {
-	return predicate.AgentRelationship(sql.FieldGT(FieldAgentID, v))
-}
-
-// AgentIDGTE applies the GTE predicate on the "agent_id" field.
-func AgentIDGTE(v uuid.UUID) predicate.AgentRelationship {
-	return predicate.AgentRelationship(sql.FieldGTE(FieldAgentID, v))
-}
-
-// AgentIDLT applies the LT predicate on the "agent_id" field.
-func AgentIDLT(v uuid.UUID) predicate.AgentRelationship {
-	return predicate.AgentRelationship(sql.FieldLT(FieldAgentID, v))
-}
-
-// AgentIDLTE applies the LTE predicate on the "agent_id" field.
-func AgentIDLTE(v uuid.UUID) predicate.AgentRelationship {
-	return predicate.AgentRelationship(sql.FieldLTE(FieldAgentID, v))
-}
-
 // TargetAgentIDEQ applies the EQ predicate on the "target_agent_id" field.
 func TargetAgentIDEQ(v uuid.UUID) predicate.AgentRelationship {
 	return predicate.AgentRelationship(sql.FieldEQ(FieldTargetAgentID, v))
@@ -228,26 +209,6 @@ func TargetAgentIDIn(vs ...uuid.UUID) predicate.AgentRelationship {
 // TargetAgentIDNotIn applies the NotIn predicate on the "target_agent_id" field.
 func TargetAgentIDNotIn(vs ...uuid.UUID) predicate.AgentRelationship {
 	return predicate.AgentRelationship(sql.FieldNotIn(FieldTargetAgentID, vs...))
-}
-
-// TargetAgentIDGT applies the GT predicate on the "target_agent_id" field.
-func TargetAgentIDGT(v uuid.UUID) predicate.AgentRelationship {
-	return predicate.AgentRelationship(sql.FieldGT(FieldTargetAgentID, v))
-}
-
-// TargetAgentIDGTE applies the GTE predicate on the "target_agent_id" field.
-func TargetAgentIDGTE(v uuid.UUID) predicate.AgentRelationship {
-	return predicate.AgentRelationship(sql.FieldGTE(FieldTargetAgentID, v))
-}
-
-// TargetAgentIDLT applies the LT predicate on the "target_agent_id" field.
-func TargetAgentIDLT(v uuid.UUID) predicate.AgentRelationship {
-	return predicate.AgentRelationship(sql.FieldLT(FieldTargetAgentID, v))
-}
-
-// TargetAgentIDLTE applies the LTE predicate on the "target_agent_id" field.
-func TargetAgentIDLTE(v uuid.UUID) predicate.AgentRelationship {
-	return predicate.AgentRelationship(sql.FieldLTE(FieldTargetAgentID, v))
 }
 
 // AffinityEQ applies the EQ predicate on the "affinity" field.
@@ -433,6 +394,52 @@ func MessageCountLT(v int64) predicate.AgentRelationship {
 // MessageCountLTE applies the LTE predicate on the "message_count" field.
 func MessageCountLTE(v int64) predicate.AgentRelationship {
 	return predicate.AgentRelationship(sql.FieldLTE(FieldMessageCount, v))
+}
+
+// HasAgent applies the HasEdge predicate on the "agent" edge.
+func HasAgent() predicate.AgentRelationship {
+	return predicate.AgentRelationship(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, AgentTable, AgentColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAgentWith applies the HasEdge predicate on the "agent" edge with a given conditions (other predicates).
+func HasAgentWith(preds ...predicate.Agent) predicate.AgentRelationship {
+	return predicate.AgentRelationship(func(s *sql.Selector) {
+		step := newAgentStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasTargetAgent applies the HasEdge predicate on the "target_agent" edge.
+func HasTargetAgent() predicate.AgentRelationship {
+	return predicate.AgentRelationship(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, TargetAgentTable, TargetAgentColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasTargetAgentWith applies the HasEdge predicate on the "target_agent" edge with a given conditions (other predicates).
+func HasTargetAgentWith(preds ...predicate.Agent) predicate.AgentRelationship {
+	return predicate.AgentRelationship(func(s *sql.Selector) {
+		step := newTargetAgentStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.

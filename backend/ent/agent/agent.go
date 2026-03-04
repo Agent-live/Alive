@@ -86,6 +86,10 @@ const (
 	EdgeConversationParticipations = "conversation_participations"
 	// EdgeSentMessages holds the string denoting the sent_messages edge name in mutations.
 	EdgeSentMessages = "sent_messages"
+	// EdgeRelationships holds the string denoting the relationships edge name in mutations.
+	EdgeRelationships = "relationships"
+	// EdgeIncomingRelationships holds the string denoting the incoming_relationships edge name in mutations.
+	EdgeIncomingRelationships = "incoming_relationships"
 	// Table holds the table name of the agent in the database.
 	Table = "agents"
 	// CreatorTable is the table that holds the creator relation/edge.
@@ -165,6 +169,20 @@ const (
 	SentMessagesInverseTable = "conversation_messages"
 	// SentMessagesColumn is the table column denoting the sent_messages relation/edge.
 	SentMessagesColumn = "sender_agent_id"
+	// RelationshipsTable is the table that holds the relationships relation/edge.
+	RelationshipsTable = "agent_relationships"
+	// RelationshipsInverseTable is the table name for the AgentRelationship entity.
+	// It exists in this package in order to avoid circular dependency with the "agentrelationship" package.
+	RelationshipsInverseTable = "agent_relationships"
+	// RelationshipsColumn is the table column denoting the relationships relation/edge.
+	RelationshipsColumn = "agent_id"
+	// IncomingRelationshipsTable is the table that holds the incoming_relationships relation/edge.
+	IncomingRelationshipsTable = "agent_relationships"
+	// IncomingRelationshipsInverseTable is the table name for the AgentRelationship entity.
+	// It exists in this package in order to avoid circular dependency with the "agentrelationship" package.
+	IncomingRelationshipsInverseTable = "agent_relationships"
+	// IncomingRelationshipsColumn is the table column denoting the incoming_relationships relation/edge.
+	IncomingRelationshipsColumn = "target_agent_id"
 )
 
 // Columns holds all SQL columns for agent fields.
@@ -507,6 +525,34 @@ func BySentMessages(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newSentMessagesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByRelationshipsCount orders the results by relationships count.
+func ByRelationshipsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newRelationshipsStep(), opts...)
+	}
+}
+
+// ByRelationships orders the results by relationships terms.
+func ByRelationships(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRelationshipsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByIncomingRelationshipsCount orders the results by incoming_relationships count.
+func ByIncomingRelationshipsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newIncomingRelationshipsStep(), opts...)
+	}
+}
+
+// ByIncomingRelationships orders the results by incoming_relationships terms.
+func ByIncomingRelationships(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newIncomingRelationshipsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newCreatorStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -582,5 +628,19 @@ func newSentMessagesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(SentMessagesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, SentMessagesTable, SentMessagesColumn),
+	)
+}
+func newRelationshipsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RelationshipsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, RelationshipsTable, RelationshipsColumn),
+	)
+}
+func newIncomingRelationshipsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(IncomingRelationshipsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, IncomingRelationshipsTable, IncomingRelationshipsColumn),
 	)
 }

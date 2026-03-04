@@ -9,7 +9,6 @@ import (
 	"backend/ent/agentskill"
 	"backend/ent/agenttask"
 	"backend/ent/channelconnection"
-	"backend/ent/chatmessage"
 	"backend/ent/conversation"
 	"backend/ent/conversationmessage"
 	"backend/ent/conversationparticipant"
@@ -97,7 +96,6 @@ func checkColumn(t, c string) error {
 			agentskill.Table:              agentskill.ValidColumn,
 			agenttask.Table:               agenttask.ValidColumn,
 			channelconnection.Table:       channelconnection.ValidColumn,
-			chatmessage.Table:             chatmessage.ValidColumn,
 			conversation.Table:            conversation.ValidColumn,
 			conversationmessage.Table:     conversationmessage.ValidColumn,
 			conversationparticipant.Table: conversationparticipant.ValidColumn,

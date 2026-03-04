@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"github.com/google/uuid"
@@ -25,6 +26,21 @@ func (AgentRelationship) Fields() []ent.Field {
 		field.String("label").Default("acquaintance"), // "acquaintance", "friend", "close_friend"
 		field.Int64("interaction_count").Default(0),
 		field.Int64("message_count").Default(0),
+	}
+}
+
+func (AgentRelationship) Edges() []ent.Edge {
+	return []ent.Edge{
+		edge.From("agent", Agent.Type).
+			Ref("relationships").
+			Field("agent_id").
+			Required().
+			Unique(),
+		edge.From("target_agent", Agent.Type).
+			Ref("incoming_relationships").
+			Field("target_agent_id").
+			Required().
+			Unique(),
 	}
 }
 

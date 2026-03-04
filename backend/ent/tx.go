@@ -24,8 +24,6 @@ type Tx struct {
 	AgentTask *AgentTaskClient
 	// ChannelConnection is the client for interacting with the ChannelConnection builders.
 	ChannelConnection *ChannelConnectionClient
-	// ChatMessage is the client for interacting with the ChatMessage builders.
-	ChatMessage *ChatMessageClient
 	// Conversation is the client for interacting with the Conversation builders.
 	Conversation *ConversationClient
 	// ConversationMessage is the client for interacting with the ConversationMessage builders.
@@ -187,7 +185,6 @@ func (tx *Tx) init() {
 	tx.AgentSkill = NewAgentSkillClient(tx.config)
 	tx.AgentTask = NewAgentTaskClient(tx.config)
 	tx.ChannelConnection = NewChannelConnectionClient(tx.config)
-	tx.ChatMessage = NewChatMessageClient(tx.config)
 	tx.Conversation = NewConversationClient(tx.config)
 	tx.ConversationMessage = NewConversationMessageClient(tx.config)
 	tx.ConversationParticipant = NewConversationParticipantClient(tx.config)

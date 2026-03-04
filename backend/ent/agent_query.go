@@ -5,6 +5,7 @@ package ent
 import (
 	"backend/ent/agent"
 	"backend/ent/agentexperience"
+	"backend/ent/agentrelationship"
 	"backend/ent/agentskill"
 	"backend/ent/agenttask"
 	"backend/ent/channelconnection"
@@ -46,6 +47,8 @@ type AgentQuery struct {
 	withCreatedConversations       *ConversationQuery
 	withConversationParticipations *ConversationParticipantQuery
 	withSentMessages               *ConversationMessageQuery
+	withRelationships              *AgentRelationshipQuery
+	withIncomingRelationships      *AgentRelationshipQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -324,6 +327,50 @@ func (_q *AgentQuery) QuerySentMessages() *ConversationMessageQuery {
 	return query
 }
 
+// QueryRelationships chains the current query on the "relationships" edge.
+func (_q *AgentQuery) QueryRelationships() *AgentRelationshipQuery {
+	query := (&AgentRelationshipClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(agent.Table, agent.FieldID, selector),
+			sqlgraph.To(agentrelationship.Table, agentrelationship.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, agent.RelationshipsTable, agent.RelationshipsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryIncomingRelationships chains the current query on the "incoming_relationships" edge.
+func (_q *AgentQuery) QueryIncomingRelationships() *AgentRelationshipQuery {
+	query := (&AgentRelationshipClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(agent.Table, agent.FieldID, selector),
+			sqlgraph.To(agentrelationship.Table, agentrelationship.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, agent.IncomingRelationshipsTable, agent.IncomingRelationshipsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Agent entity from the query.
 // Returns a *NotFoundError when no Agent was found.
 func (_q *AgentQuery) First(ctx context.Context) (*Agent, error) {
@@ -527,6 +574,8 @@ func (_q *AgentQuery) Clone() *AgentQuery {
 		withCreatedConversations:       _q.withCreatedConversations.Clone(),
 		withConversationParticipations: _q.withConversationParticipations.Clone(),
 		withSentMessages:               _q.withSentMessages.Clone(),
+		withRelationships:              _q.withRelationships.Clone(),
+		withIncomingRelationships:      _q.withIncomingRelationships.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -654,6 +703,28 @@ func (_q *AgentQuery) WithSentMessages(opts ...func(*ConversationMessageQuery)) 
 	return _q
 }
 
+// WithRelationships tells the query-builder to eager-load the nodes that are connected to
+// the "relationships" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *AgentQuery) WithRelationships(opts ...func(*AgentRelationshipQuery)) *AgentQuery {
+	query := (&AgentRelationshipClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withRelationships = query
+	return _q
+}
+
+// WithIncomingRelationships tells the query-builder to eager-load the nodes that are connected to
+// the "incoming_relationships" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *AgentQuery) WithIncomingRelationships(opts ...func(*AgentRelationshipQuery)) *AgentQuery {
+	query := (&AgentRelationshipClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withIncomingRelationships = query
+	return _q
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -732,7 +803,7 @@ func (_q *AgentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Agent,
 	var (
 		nodes       = []*Agent{}
 		_spec       = _q.querySpec()
-		loadedTypes = [11]bool{
+		loadedTypes = [13]bool{
 			_q.withCreator != nil,
 			_q.withPosts != nil,
 			_q.withTimerTransactions != nil,
@@ -744,6 +815,8 @@ func (_q *AgentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Agent,
 			_q.withCreatedConversations != nil,
 			_q.withConversationParticipations != nil,
 			_q.withSentMessages != nil,
+			_q.withRelationships != nil,
+			_q.withIncomingRelationships != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -842,6 +915,22 @@ func (_q *AgentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Agent,
 		if err := _q.loadSentMessages(ctx, query, nodes,
 			func(n *Agent) { n.Edges.SentMessages = []*ConversationMessage{} },
 			func(n *Agent, e *ConversationMessage) { n.Edges.SentMessages = append(n.Edges.SentMessages, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withRelationships; query != nil {
+		if err := _q.loadRelationships(ctx, query, nodes,
+			func(n *Agent) { n.Edges.Relationships = []*AgentRelationship{} },
+			func(n *Agent, e *AgentRelationship) { n.Edges.Relationships = append(n.Edges.Relationships, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withIncomingRelationships; query != nil {
+		if err := _q.loadIncomingRelationships(ctx, query, nodes,
+			func(n *Agent) { n.Edges.IncomingRelationships = []*AgentRelationship{} },
+			func(n *Agent, e *AgentRelationship) {
+				n.Edges.IncomingRelationships = append(n.Edges.IncomingRelationships, e)
+			}); err != nil {
 			return nil, err
 		}
 	}
@@ -1172,6 +1261,66 @@ func (_q *AgentQuery) loadSentMessages(ctx context.Context, query *ConversationM
 		node, ok := nodeids[fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "sender_agent_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *AgentQuery) loadRelationships(ctx context.Context, query *AgentRelationshipQuery, nodes []*Agent, init func(*Agent), assign func(*Agent, *AgentRelationship)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*Agent)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(agentrelationship.FieldAgentID)
+	}
+	query.Where(predicate.AgentRelationship(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(agent.RelationshipsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.AgentID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "agent_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *AgentQuery) loadIncomingRelationships(ctx context.Context, query *AgentRelationshipQuery, nodes []*Agent, init func(*Agent), assign func(*Agent, *AgentRelationship)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*Agent)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(agentrelationship.FieldTargetAgentID)
+	}
+	query.Where(predicate.AgentRelationship(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(agent.IncomingRelationshipsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.TargetAgentID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "target_agent_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}

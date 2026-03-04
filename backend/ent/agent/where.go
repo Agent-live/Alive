@@ -1614,6 +1614,52 @@ func HasSentMessagesWith(preds ...predicate.ConversationMessage) predicate.Agent
 	})
 }
 
+// HasRelationships applies the HasEdge predicate on the "relationships" edge.
+func HasRelationships() predicate.Agent {
+	return predicate.Agent(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, RelationshipsTable, RelationshipsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRelationshipsWith applies the HasEdge predicate on the "relationships" edge with a given conditions (other predicates).
+func HasRelationshipsWith(preds ...predicate.AgentRelationship) predicate.Agent {
+	return predicate.Agent(func(s *sql.Selector) {
+		step := newRelationshipsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasIncomingRelationships applies the HasEdge predicate on the "incoming_relationships" edge.
+func HasIncomingRelationships() predicate.Agent {
+	return predicate.Agent(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, IncomingRelationshipsTable, IncomingRelationshipsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasIncomingRelationshipsWith applies the HasEdge predicate on the "incoming_relationships" edge with a given conditions (other predicates).
+func HasIncomingRelationshipsWith(preds ...predicate.AgentRelationship) predicate.Agent {
+	return predicate.Agent(func(s *sql.Selector) {
+		step := newIncomingRelationshipsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Agent) predicate.Agent {
 	return predicate.Agent(sql.AndPredicates(predicates...))

@@ -65,12 +65,14 @@ func (Agent) Edges() []ent.Edge {
 		edge.To("created_conversations", Conversation.Type),
 		edge.To("conversation_participations", ConversationParticipant.Type),
 		edge.To("sent_messages", ConversationMessage.Type),
+		edge.To("relationships", AgentRelationship.Type),
+		edge.To("incoming_relationships", AgentRelationship.Type),
 	}
 }
 
 func (Agent) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("creator_id").Unique(), // V1: one user, one agent
+		index.Fields("creator_id"),
 		index.Fields("status"),
 		index.Fields("timer_remaining"),
 		index.Fields("alive_agent_token").Unique(),

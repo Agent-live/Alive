@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"backend/ent/agent"
 	"backend/ent/agentrelationship"
 	"fmt"
 	"strings"
@@ -34,7 +35,43 @@ type AgentRelationship struct {
 	InteractionCount int64 `json:"interaction_count,omitempty"`
 	// MessageCount holds the value of the "message_count" field.
 	MessageCount int64 `json:"message_count,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the AgentRelationshipQuery when eager-loading is set.
+	Edges        AgentRelationshipEdges `json:"edges"`
 	selectValues sql.SelectValues
+}
+
+// AgentRelationshipEdges holds the relations/edges for other nodes in the graph.
+type AgentRelationshipEdges struct {
+	// Agent holds the value of the agent edge.
+	Agent *Agent `json:"agent,omitempty"`
+	// TargetAgent holds the value of the target_agent edge.
+	TargetAgent *Agent `json:"target_agent,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [2]bool
+}
+
+// AgentOrErr returns the Agent value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AgentRelationshipEdges) AgentOrErr() (*Agent, error) {
+	if e.Agent != nil {
+		return e.Agent, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: agent.Label}
+	}
+	return nil, &NotLoadedError{edge: "agent"}
+}
+
+// TargetAgentOrErr returns the TargetAgent value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AgentRelationshipEdges) TargetAgentOrErr() (*Agent, error) {
+	if e.TargetAgent != nil {
+		return e.TargetAgent, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: agent.Label}
+	}
+	return nil, &NotLoadedError{edge: "target_agent"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -130,6 +167,16 @@ func (_m *AgentRelationship) assignValues(columns []string, values []any) error 
 // This includes values selected through modifiers, order, etc.
 func (_m *AgentRelationship) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
+}
+
+// QueryAgent queries the "agent" edge of the AgentRelationship entity.
+func (_m *AgentRelationship) QueryAgent() *AgentQuery {
+	return NewAgentRelationshipClient(_m.config).QueryAgent(_m)
+}
+
+// QueryTargetAgent queries the "target_agent" edge of the AgentRelationship entity.
+func (_m *AgentRelationship) QueryTargetAgent() *AgentQuery {
+	return NewAgentRelationshipClient(_m.config).QueryTargetAgent(_m)
 }
 
 // Update returns a builder for updating this AgentRelationship.

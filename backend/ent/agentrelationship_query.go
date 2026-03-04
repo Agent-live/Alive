@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"backend/ent/agent"
 	"backend/ent/agentrelationship"
 	"backend/ent/predicate"
 	"context"
@@ -19,10 +20,12 @@ import (
 // AgentRelationshipQuery is the builder for querying AgentRelationship entities.
 type AgentRelationshipQuery struct {
 	config
-	ctx        *QueryContext
-	order      []agentrelationship.OrderOption
-	inters     []Interceptor
-	predicates []predicate.AgentRelationship
+	ctx             *QueryContext
+	order           []agentrelationship.OrderOption
+	inters          []Interceptor
+	predicates      []predicate.AgentRelationship
+	withAgent       *AgentQuery
+	withTargetAgent *AgentQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -57,6 +60,50 @@ func (_q *AgentRelationshipQuery) Unique(unique bool) *AgentRelationshipQuery {
 func (_q *AgentRelationshipQuery) Order(o ...agentrelationship.OrderOption) *AgentRelationshipQuery {
 	_q.order = append(_q.order, o...)
 	return _q
+}
+
+// QueryAgent chains the current query on the "agent" edge.
+func (_q *AgentRelationshipQuery) QueryAgent() *AgentQuery {
+	query := (&AgentClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(agentrelationship.Table, agentrelationship.FieldID, selector),
+			sqlgraph.To(agent.Table, agent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, agentrelationship.AgentTable, agentrelationship.AgentColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTargetAgent chains the current query on the "target_agent" edge.
+func (_q *AgentRelationshipQuery) QueryTargetAgent() *AgentQuery {
+	query := (&AgentClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(agentrelationship.Table, agentrelationship.FieldID, selector),
+			sqlgraph.To(agent.Table, agent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, agentrelationship.TargetAgentTable, agentrelationship.TargetAgentColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first AgentRelationship entity from the query.
@@ -246,15 +293,39 @@ func (_q *AgentRelationshipQuery) Clone() *AgentRelationshipQuery {
 		return nil
 	}
 	return &AgentRelationshipQuery{
-		config:     _q.config,
-		ctx:        _q.ctx.Clone(),
-		order:      append([]agentrelationship.OrderOption{}, _q.order...),
-		inters:     append([]Interceptor{}, _q.inters...),
-		predicates: append([]predicate.AgentRelationship{}, _q.predicates...),
+		config:          _q.config,
+		ctx:             _q.ctx.Clone(),
+		order:           append([]agentrelationship.OrderOption{}, _q.order...),
+		inters:          append([]Interceptor{}, _q.inters...),
+		predicates:      append([]predicate.AgentRelationship{}, _q.predicates...),
+		withAgent:       _q.withAgent.Clone(),
+		withTargetAgent: _q.withTargetAgent.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
 	}
+}
+
+// WithAgent tells the query-builder to eager-load the nodes that are connected to
+// the "agent" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *AgentRelationshipQuery) WithAgent(opts ...func(*AgentQuery)) *AgentRelationshipQuery {
+	query := (&AgentClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withAgent = query
+	return _q
+}
+
+// WithTargetAgent tells the query-builder to eager-load the nodes that are connected to
+// the "target_agent" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *AgentRelationshipQuery) WithTargetAgent(opts ...func(*AgentQuery)) *AgentRelationshipQuery {
+	query := (&AgentClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withTargetAgent = query
+	return _q
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -333,8 +404,12 @@ func (_q *AgentRelationshipQuery) prepareQuery(ctx context.Context) error {
 
 func (_q *AgentRelationshipQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*AgentRelationship, error) {
 	var (
-		nodes = []*AgentRelationship{}
-		_spec = _q.querySpec()
+		nodes       = []*AgentRelationship{}
+		_spec       = _q.querySpec()
+		loadedTypes = [2]bool{
+			_q.withAgent != nil,
+			_q.withTargetAgent != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*AgentRelationship).scanValues(nil, columns)
@@ -342,6 +417,7 @@ func (_q *AgentRelationshipQuery) sqlAll(ctx context.Context, hooks ...queryHook
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &AgentRelationship{config: _q.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -353,7 +429,78 @@ func (_q *AgentRelationshipQuery) sqlAll(ctx context.Context, hooks ...queryHook
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := _q.withAgent; query != nil {
+		if err := _q.loadAgent(ctx, query, nodes, nil,
+			func(n *AgentRelationship, e *Agent) { n.Edges.Agent = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withTargetAgent; query != nil {
+		if err := _q.loadTargetAgent(ctx, query, nodes, nil,
+			func(n *AgentRelationship, e *Agent) { n.Edges.TargetAgent = e }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (_q *AgentRelationshipQuery) loadAgent(ctx context.Context, query *AgentQuery, nodes []*AgentRelationship, init func(*AgentRelationship), assign func(*AgentRelationship, *Agent)) error {
+	ids := make([]uuid.UUID, 0, len(nodes))
+	nodeids := make(map[uuid.UUID][]*AgentRelationship)
+	for i := range nodes {
+		fk := nodes[i].AgentID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(agent.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "agent_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (_q *AgentRelationshipQuery) loadTargetAgent(ctx context.Context, query *AgentQuery, nodes []*AgentRelationship, init func(*AgentRelationship), assign func(*AgentRelationship, *Agent)) error {
+	ids := make([]uuid.UUID, 0, len(nodes))
+	nodeids := make(map[uuid.UUID][]*AgentRelationship)
+	for i := range nodes {
+		fk := nodes[i].TargetAgentID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(agent.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "target_agent_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
 }
 
 func (_q *AgentRelationshipQuery) sqlCount(ctx context.Context) (int, error) {
@@ -380,6 +527,12 @@ func (_q *AgentRelationshipQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != agentrelationship.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if _q.withAgent != nil {
+			_spec.Node.AddColumnOnce(agentrelationship.FieldAgentID)
+		}
+		if _q.withTargetAgent != nil {
+			_spec.Node.AddColumnOnce(agentrelationship.FieldTargetAgentID)
 		}
 	}
 	if ps := _q.predicates; len(ps) > 0 {

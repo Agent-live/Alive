@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"backend/ent/agent"
 	"backend/ent/agentrelationship"
 	"backend/ent/predicate"
 	"context"
@@ -140,9 +141,31 @@ func (_u *AgentRelationshipUpdate) AddMessageCount(v int64) *AgentRelationshipUp
 	return _u
 }
 
+// SetAgent sets the "agent" edge to the Agent entity.
+func (_u *AgentRelationshipUpdate) SetAgent(v *Agent) *AgentRelationshipUpdate {
+	return _u.SetAgentID(v.ID)
+}
+
+// SetTargetAgent sets the "target_agent" edge to the Agent entity.
+func (_u *AgentRelationshipUpdate) SetTargetAgent(v *Agent) *AgentRelationshipUpdate {
+	return _u.SetTargetAgentID(v.ID)
+}
+
 // Mutation returns the AgentRelationshipMutation object of the builder.
 func (_u *AgentRelationshipUpdate) Mutation() *AgentRelationshipMutation {
 	return _u.mutation
+}
+
+// ClearAgent clears the "agent" edge to the Agent entity.
+func (_u *AgentRelationshipUpdate) ClearAgent() *AgentRelationshipUpdate {
+	_u.mutation.ClearAgent()
+	return _u
+}
+
+// ClearTargetAgent clears the "target_agent" edge to the Agent entity.
+func (_u *AgentRelationshipUpdate) ClearTargetAgent() *AgentRelationshipUpdate {
+	_u.mutation.ClearTargetAgent()
+	return _u
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -181,7 +204,21 @@ func (_u *AgentRelationshipUpdate) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (_u *AgentRelationshipUpdate) check() error {
+	if _u.mutation.AgentCleared() && len(_u.mutation.AgentIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "AgentRelationship.agent"`)
+	}
+	if _u.mutation.TargetAgentCleared() && len(_u.mutation.TargetAgentIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "AgentRelationship.target_agent"`)
+	}
+	return nil
+}
+
 func (_u *AgentRelationshipUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(agentrelationship.Table, agentrelationship.Columns, sqlgraph.NewFieldSpec(agentrelationship.FieldID, field.TypeUUID))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -192,12 +229,6 @@ func (_u *AgentRelationshipUpdate) sqlSave(ctx context.Context) (_node int, err 
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(agentrelationship.FieldUpdatedAt, field.TypeTime, value)
-	}
-	if value, ok := _u.mutation.AgentID(); ok {
-		_spec.SetField(agentrelationship.FieldAgentID, field.TypeUUID, value)
-	}
-	if value, ok := _u.mutation.TargetAgentID(); ok {
-		_spec.SetField(agentrelationship.FieldTargetAgentID, field.TypeUUID, value)
 	}
 	if value, ok := _u.mutation.Affinity(); ok {
 		_spec.SetField(agentrelationship.FieldAffinity, field.TypeInt64, value)
@@ -219,6 +250,64 @@ func (_u *AgentRelationshipUpdate) sqlSave(ctx context.Context) (_node int, err 
 	}
 	if value, ok := _u.mutation.AddedMessageCount(); ok {
 		_spec.AddField(agentrelationship.FieldMessageCount, field.TypeInt64, value)
+	}
+	if _u.mutation.AgentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   agentrelationship.AgentTable,
+			Columns: []string{agentrelationship.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.AgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   agentrelationship.AgentTable,
+			Columns: []string{agentrelationship.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.TargetAgentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   agentrelationship.TargetAgentTable,
+			Columns: []string{agentrelationship.TargetAgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.TargetAgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   agentrelationship.TargetAgentTable,
+			Columns: []string{agentrelationship.TargetAgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -351,9 +440,31 @@ func (_u *AgentRelationshipUpdateOne) AddMessageCount(v int64) *AgentRelationshi
 	return _u
 }
 
+// SetAgent sets the "agent" edge to the Agent entity.
+func (_u *AgentRelationshipUpdateOne) SetAgent(v *Agent) *AgentRelationshipUpdateOne {
+	return _u.SetAgentID(v.ID)
+}
+
+// SetTargetAgent sets the "target_agent" edge to the Agent entity.
+func (_u *AgentRelationshipUpdateOne) SetTargetAgent(v *Agent) *AgentRelationshipUpdateOne {
+	return _u.SetTargetAgentID(v.ID)
+}
+
 // Mutation returns the AgentRelationshipMutation object of the builder.
 func (_u *AgentRelationshipUpdateOne) Mutation() *AgentRelationshipMutation {
 	return _u.mutation
+}
+
+// ClearAgent clears the "agent" edge to the Agent entity.
+func (_u *AgentRelationshipUpdateOne) ClearAgent() *AgentRelationshipUpdateOne {
+	_u.mutation.ClearAgent()
+	return _u
+}
+
+// ClearTargetAgent clears the "target_agent" edge to the Agent entity.
+func (_u *AgentRelationshipUpdateOne) ClearTargetAgent() *AgentRelationshipUpdateOne {
+	_u.mutation.ClearTargetAgent()
+	return _u
 }
 
 // Where appends a list predicates to the AgentRelationshipUpdate builder.
@@ -405,7 +516,21 @@ func (_u *AgentRelationshipUpdateOne) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (_u *AgentRelationshipUpdateOne) check() error {
+	if _u.mutation.AgentCleared() && len(_u.mutation.AgentIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "AgentRelationship.agent"`)
+	}
+	if _u.mutation.TargetAgentCleared() && len(_u.mutation.TargetAgentIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "AgentRelationship.target_agent"`)
+	}
+	return nil
+}
+
 func (_u *AgentRelationshipUpdateOne) sqlSave(ctx context.Context) (_node *AgentRelationship, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(agentrelationship.Table, agentrelationship.Columns, sqlgraph.NewFieldSpec(agentrelationship.FieldID, field.TypeUUID))
 	id, ok := _u.mutation.ID()
 	if !ok {
@@ -434,12 +559,6 @@ func (_u *AgentRelationshipUpdateOne) sqlSave(ctx context.Context) (_node *Agent
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(agentrelationship.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := _u.mutation.AgentID(); ok {
-		_spec.SetField(agentrelationship.FieldAgentID, field.TypeUUID, value)
-	}
-	if value, ok := _u.mutation.TargetAgentID(); ok {
-		_spec.SetField(agentrelationship.FieldTargetAgentID, field.TypeUUID, value)
-	}
 	if value, ok := _u.mutation.Affinity(); ok {
 		_spec.SetField(agentrelationship.FieldAffinity, field.TypeInt64, value)
 	}
@@ -460,6 +579,64 @@ func (_u *AgentRelationshipUpdateOne) sqlSave(ctx context.Context) (_node *Agent
 	}
 	if value, ok := _u.mutation.AddedMessageCount(); ok {
 		_spec.AddField(agentrelationship.FieldMessageCount, field.TypeInt64, value)
+	}
+	if _u.mutation.AgentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   agentrelationship.AgentTable,
+			Columns: []string{agentrelationship.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.AgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   agentrelationship.AgentTable,
+			Columns: []string{agentrelationship.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.TargetAgentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   agentrelationship.TargetAgentTable,
+			Columns: []string{agentrelationship.TargetAgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.TargetAgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   agentrelationship.TargetAgentTable,
+			Columns: []string{agentrelationship.TargetAgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &AgentRelationship{config: _u.config}
 	_spec.Assign = _node.assignValues

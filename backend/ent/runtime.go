@@ -9,7 +9,6 @@ import (
 	"backend/ent/agentskill"
 	"backend/ent/agenttask"
 	"backend/ent/channelconnection"
-	"backend/ent/chatmessage"
 	"backend/ent/conversation"
 	"backend/ent/conversationmessage"
 	"backend/ent/conversationparticipant"
@@ -317,28 +316,6 @@ func init() {
 	channelconnectionDescID := channelconnectionFields[0].Descriptor()
 	// channelconnection.DefaultID holds the default value on creation for the id field.
 	channelconnection.DefaultID = channelconnectionDescID.Default.(func() uuid.UUID)
-	chatmessageFields := schema.ChatMessage{}.Fields()
-	_ = chatmessageFields
-	// chatmessageDescSessionID is the schema descriptor for session_id field.
-	chatmessageDescSessionID := chatmessageFields[3].Descriptor()
-	// chatmessage.SessionIDValidator is a validator for the "session_id" field. It is called by the builders before save.
-	chatmessage.SessionIDValidator = chatmessageDescSessionID.Validators[0].(func(string) error)
-	// chatmessageDescRole is the schema descriptor for role field.
-	chatmessageDescRole := chatmessageFields[4].Descriptor()
-	// chatmessage.RoleValidator is a validator for the "role" field. It is called by the builders before save.
-	chatmessage.RoleValidator = chatmessageDescRole.Validators[0].(func(string) error)
-	// chatmessageDescContent is the schema descriptor for content field.
-	chatmessageDescContent := chatmessageFields[5].Descriptor()
-	// chatmessage.ContentValidator is a validator for the "content" field. It is called by the builders before save.
-	chatmessage.ContentValidator = chatmessageDescContent.Validators[0].(func(string) error)
-	// chatmessageDescCreatedAt is the schema descriptor for created_at field.
-	chatmessageDescCreatedAt := chatmessageFields[6].Descriptor()
-	// chatmessage.DefaultCreatedAt holds the default value on creation for the created_at field.
-	chatmessage.DefaultCreatedAt = chatmessageDescCreatedAt.Default.(func() time.Time)
-	// chatmessageDescID is the schema descriptor for id field.
-	chatmessageDescID := chatmessageFields[0].Descriptor()
-	// chatmessage.DefaultID holds the default value on creation for the id field.
-	chatmessage.DefaultID = chatmessageDescID.Default.(func() uuid.UUID)
 	conversationMixin := schema.Conversation{}.Mixin()
 	conversationMixinFields0 := conversationMixin[0].Fields()
 	_ = conversationMixinFields0

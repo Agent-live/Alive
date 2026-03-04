@@ -24,9 +24,6 @@ type AgentTask func(*sql.Selector)
 // ChannelConnection is the predicate function for channelconnection builders.
 type ChannelConnection func(*sql.Selector)
 
-// ChatMessage is the predicate function for chatmessage builders.
-type ChatMessage func(*sql.Selector)
-
 // Conversation is the predicate function for conversation builders.
 type Conversation func(*sql.Selector)
 
