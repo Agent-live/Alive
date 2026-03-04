@@ -8,6 +8,7 @@ import (
 	"backend/ent"
 	"backend/ent/agentskill"
 	"backend/ent/user"
+	"backend/internal/domain"
 	"backend/internal/skillshop"
 )
 
@@ -36,7 +37,7 @@ func bootstrapSkillShopFeatured(ctx context.Context, db *ent.Client) error {
 		Where(
 			agentskill.OwnerUserID(sysUser.ID),
 			agentskill.DeletedAtIsNil(),
-			agentskill.StatusEQ("lesson"),
+			agentskill.StatusEQ(domain.SkillStatusLesson),
 			agentskill.NameIn(featured...),
 		).
 		All(ctx)
@@ -99,7 +100,7 @@ func bootstrapSkillShopFeatured(ctx context.Context, db *ent.Client) error {
 			SetName(it.Slug).
 			SetDescription(desc).
 			SetInstructions(instructions).
-			SetStatus("lesson").
+			SetStatus(domain.SkillStatusLesson).
 			SetCategory(skillshop.MapShopCategoryToInternal(it.Category)).
 			Save(ctx)
 		if err != nil {
@@ -125,7 +126,7 @@ func ensureSkillShopFeaturedUser(ctx context.Context, db *ent.Client) (*ent.User
 	return db.User.Create().
 		SetEmail(skillShopFeaturedUserEmail).
 		SetNickname(skillShopFeaturedUserNickname).
-		SetTheme("system").
+		SetTheme(domain.ThemeSystem).
 		SetLanguage("en-US").
 		Save(ctx)
 }

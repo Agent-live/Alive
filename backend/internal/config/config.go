@@ -7,6 +7,7 @@ type Config struct {
 	Auth struct {
 		AccessSecret string
 		AccessExpire int64
+		AllowDevCode bool
 		Social       struct {
 			AllowInsecureMock bool
 			Google            struct {
@@ -33,12 +34,13 @@ type Config struct {
 		// If <= 0, a default limit is applied.
 		MaxUploadBytes int64
 	}
+	WebSocket struct {
+		AllowedOrigins []string
+	}
 	AliveAgent struct {
 		Enabled       bool
 		BaseURL       string
 		GatewayToken  string
-		GreenMode     bool
 		SharedGateway bool
-		WorkspaceRoot string
 	}
 }
