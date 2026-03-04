@@ -5,7 +5,10 @@ import (
 	"errors"
 	"strings"
 
+	"backend/internal/domain"
 	"backend/internal/logic/common"
+	"backend/internal/mapper"
+	"backend/internal/port"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -48,18 +51,51 @@ func (l *UpdateSkillLogic) UpdateSkill(req *types.SkillUpdateReq) (resp *types.S
 		return nil, errors.New("skill already deleted")
 	}
 
-	update := l.svcCtx.DB.AgentSkill.UpdateOneID(skillID)
+	nextName := strings.TrimSpace(row.Name)
+	nextDescription := strings.TrimSpace(row.Description)
+	nextInstructions := strings.TrimSpace(row.Instructions)
+	nextCategory := strings.TrimSpace(row.Category)
+
 	if v := strings.TrimSpace(req.Name); v != "" {
-		update.SetName(v)
+		nextName = v
 	}
 	if v := strings.TrimSpace(req.Description); v != "" {
-		update.SetDescription(v)
+		nextDescription = v
 	}
 	if v := strings.TrimSpace(req.Instructions); v != "" {
-		update.SetInstructions(v)
+		nextInstructions = v
 	}
 	if v := strings.TrimSpace(req.Category); v != "" {
-		update.SetCategory(normalizeSkillCategory(v))
+		nextCategory = normalizeSkillCategory(v)
+	}
+
+	nameChanged := nextName != strings.TrimSpace(row.Name)
+	descriptionChanged := nextDescription != strings.TrimSpace(row.Description)
+	instructionsChanged := nextInstructions != strings.TrimSpace(row.Instructions)
+
+	var binding *port.BindSkillResult
+	if row.Status == domain.SkillStatusActive && row.AgentID != nil {
+		if nameChanged {
+			// Runtime skill keys are derived from skill name; renaming active skills
+			// can leave stale keys. Enforce deactivate -> rename -> teach.
+			return nil, errors.New("cannot rename active skill; deactivate and re-teach instead")
+		}
+		if descriptionChanged || instructionsChanged {
+			binding, err = l.bindActiveSkill(row.AgentID.String(), nextName, nextDescription, nextInstructions)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	update := l.svcCtx.DB.AgentSkill.UpdateOneID(skillID).
+		SetName(nextName).
+		SetDescription(nextDescription).
+		SetInstructions(nextInstructions).
+		SetCategory(nextCategory)
+	if binding != nil {
+		update.SetAliveAgentGatewayID(strings.TrimSpace(binding.GatewayID)).
+			SetAliveAgentSkillID(strings.TrimSpace(binding.SkillID))
 	}
 
 	row, err = update.Save(l.ctx)
@@ -67,21 +103,29 @@ func (l *UpdateSkillLogic) UpdateSkill(req *types.SkillUpdateReq) (resp *types.S
 		return nil, err
 	}
 
-	var aID string
-	if row.AgentID != nil {
-		aID = row.AgentID.String()
-	}
 	var agentName, agentAvatar string
-	if aID != "" {
-		agentRow, err := l.svcCtx.DB.Agent.Get(l.ctx, *row.AgentID)
-		if err == nil {
-			agentName = agentRow.Name
-			agentAvatar = common.PtrString(agentRow.Avatar)
+	if row.AgentID != nil {
+		agentRow, getErr := l.svcCtx.DB.Agent.Get(l.ctx, *row.AgentID)
+		if getErr == nil {
+			agentName = strings.TrimSpace(agentRow.Name)
+			agentAvatar = domain.PtrString(agentRow.Avatar)
 		}
 	}
 
-	out := common.ToSkillResp(row, nil)
+	out := mapper.ToSkillResp(row, nil)
 	out.AgentName = agentName
 	out.AgentAvatar = agentAvatar
 	return &out, nil
+}
+
+func (l *UpdateSkillLogic) bindActiveSkill(agentID, name, description, instructions string) (*port.BindSkillResult, error) {
+	if l.svcCtx.AgentRuntime == nil {
+		return nil, errors.New("agent runtime is not available")
+	}
+	return l.svcCtx.AgentRuntime.BindSkill(l.ctx, port.BindSkillRequest{
+		AgentID:      strings.TrimSpace(agentID),
+		SkillName:    strings.TrimSpace(name),
+		Description:  strings.TrimSpace(description),
+		Instructions: strings.TrimSpace(instructions),
+	})
 }

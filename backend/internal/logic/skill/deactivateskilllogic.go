@@ -7,8 +7,10 @@ import (
 	"strings"
 
 	"backend/ent"
-	"backend/internal/aliveagent"
+	"backend/internal/domain"
 	"backend/internal/logic/common"
+	"backend/internal/logic/notify"
+	"backend/internal/mapper"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -56,10 +58,10 @@ func (l *DeactivateSkillLogic) DeactivateSkill(req *types.SkillIdReq) (resp *typ
 	)
 	if row.AgentID != nil {
 		targetAgentID = row.AgentID.String()
-		aliveAgentSkill = strings.TrimSpace(common.PtrString(row.AliveAgentSkillID))
+		aliveAgentSkill = strings.TrimSpace(domain.PtrString(row.AliveAgentSkillID))
 		target, getErr := l.svcCtx.DB.Agent.Get(l.ctx, *row.AgentID)
 		if getErr == nil {
-			targetRuntimeID = strings.TrimSpace(common.PtrString(target.AliveAgentRuntimeID))
+			targetRuntimeID = strings.TrimSpace(domain.PtrString(target.AliveAgentRuntimeID))
 			targetAgentName = strings.TrimSpace(target.Name)
 		} else if !ent.IsNotFound(getErr) {
 			l.Logger.Errorf("load target agent for deactivate failed: %v", getErr)
@@ -67,16 +69,21 @@ func (l *DeactivateSkillLogic) DeactivateSkill(req *types.SkillIdReq) (resp *typ
 	}
 
 	// Best-effort: remove the bound workspace skill so AliveAgent stops loading it.
-	if row.AgentID != nil && row.Status == "active" {
+	if row.AgentID != nil && row.Status == domain.SkillStatusActive {
 		skillRef := row.Name
 		if row.AliveAgentSkillID != nil && strings.TrimSpace(*row.AliveAgentSkillID) != "" {
 			skillRef = *row.AliveAgentSkillID
 		}
-		_ = l.svcCtx.AliveAgent.RemoveSkill(l.ctx, row.AgentID.String(), skillRef)
+		if l.svcCtx.AgentRuntime == nil {
+			return nil, errors.New("agent runtime is not available")
+		}
+		if err := l.svcCtx.AgentRuntime.RemoveSkill(l.ctx, row.AgentID.String(), skillRef); err != nil {
+			return nil, err
+		}
 	}
 
 	row, err = l.svcCtx.DB.AgentSkill.UpdateOneID(skillID).
-		SetStatus("lesson").
+		SetStatus(domain.SkillStatusLesson).
 		ClearAgentID().
 		ClearTaughtAt().
 		ClearAliveAgentGatewayID().
@@ -85,25 +92,21 @@ func (l *DeactivateSkillLogic) DeactivateSkill(req *types.SkillIdReq) (resp *typ
 	if err != nil {
 		return nil, err
 	}
-	if targetRuntimeID != "" && l.svcCtx.AliveAgent != nil {
-		_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
-			RuntimeAgentID: targetRuntimeID,
-			AgentID:        targetAgentID,
-			EventType:      "skill.deactivated",
-			Title:          "ALIVE Skill Deactivated",
-			Message:        fmt.Sprintf("Skill deactivated: %s", row.Name),
-			DedupeKey:      aliveagent.BuildDedupeKey(targetAgentID, "skill.deactivated", row.ID.String(), deactivateReason),
-			Payload: map[string]any{
-				"skillId":           row.ID.String(),
-				"skillName":         row.Name,
-				"targetAgentId":     targetAgentID,
-				"targetAgentName":   targetAgentName,
-				"aliveAgentSkillId": aliveAgentSkill,
-				"reason":            deactivateReason,
-			},
-			TimeoutSeconds: 120,
-		})
-	}
-	out := common.ToSkillResp(row, nil)
+	notify.NewEmitter(l.ctx, l.svcCtx).EmitEventToAgentIDWithRuntimeID(
+		targetAgentID, targetRuntimeID,
+		domain.EventSkillDeactivated,
+		"ALIVE Skill Deactivated",
+		fmt.Sprintf("Skill deactivated: %s", row.Name),
+		domain.BuildDedupeKey(targetAgentID, domain.EventSkillDeactivated, row.ID.String(), deactivateReason),
+		map[string]any{
+			"skillId":           row.ID.String(),
+			"skillName":         row.Name,
+			"targetAgentId":     targetAgentID,
+			"targetAgentName":   targetAgentName,
+			"aliveAgentSkillId": aliveAgentSkill,
+			"reason":            deactivateReason,
+		},
+	)
+	out := mapper.ToSkillResp(row, nil)
 	return &out, nil
 }

@@ -6,6 +6,7 @@ import (
 	"backend/ent"
 	"backend/ent/agent"
 	"backend/ent/agentskill"
+	"backend/internal/mapper"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -77,7 +78,7 @@ func (l *ListSkillsLogic) ListSkills(req *types.SkillListReq) (resp *types.Skill
 		if row.AgentID != nil {
 			a = agentMap[*row.AgentID]
 		}
-		items = append(items, common.ToSkillResp(row, a))
+		items = append(items, mapper.ToSkillResp(row, a))
 	}
 	return &types.SkillListResp{Items: items}, nil
 }

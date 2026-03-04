@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"backend/ent/agentskill"
+	"backend/internal/domain"
 	"backend/internal/logic/common"
 	"backend/internal/skillshop"
 	"backend/internal/svc"
@@ -68,7 +69,7 @@ func (l *ListSkillShopLogic) ListSkillShop(req *types.SkillShopListReq) (*types.
 	rows, err := l.svcCtx.DB.AgentSkill.Query().
 		Where(
 			agentskill.OwnerUserID(featuredOwnerID),
-			agentskill.StatusEQ("lesson"),
+			agentskill.StatusEQ(domain.SkillStatusLesson),
 			agentskill.DeletedAtIsNil(),
 		).
 		All(l.ctx)

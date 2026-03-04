@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"backend/internal/domain"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -46,12 +47,17 @@ func (l *DeleteSkillLogic) DeleteSkill(req *types.SkillIdReq) (resp *types.BaseR
 	}
 
 	// Best-effort: remove the bound workspace skill so AliveAgent stops loading it.
-	if row.AgentID != nil && row.Status == "active" {
+	if row.AgentID != nil && row.Status == domain.SkillStatusActive {
 		skillRef := row.Name
 		if row.AliveAgentSkillID != nil && strings.TrimSpace(*row.AliveAgentSkillID) != "" {
 			skillRef = *row.AliveAgentSkillID
 		}
-		_ = l.svcCtx.AliveAgent.RemoveSkill(l.ctx, row.AgentID.String(), skillRef)
+		if l.svcCtx.AgentRuntime == nil {
+			return nil, errors.New("agent runtime is not available")
+		}
+		if err := l.svcCtx.AgentRuntime.RemoveSkill(l.ctx, row.AgentID.String(), skillRef); err != nil {
+			return nil, err
+		}
 	}
 
 	now := time.Now()

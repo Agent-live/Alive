@@ -2,18 +2,17 @@ package skill
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
 	"backend/ent"
 	"backend/ent/agentskill"
-	"backend/internal/aliveagent"
+	"backend/internal/domain"
 	"backend/internal/logic/common"
-	"backend/internal/skillshop"
+	"backend/internal/logic/notify"
+	"backend/internal/mapper"
+	"backend/internal/port"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -42,7 +41,7 @@ func (l *TeachSkillLogic) TeachSkill(req *types.SkillTeachReq) (resp *types.Skil
 	}
 	agentID, err := uuid.Parse(req.AgentId)
 	if err != nil {
-		return nil, errors.New("invalid agent id")
+		return nil, domain.NewValidationError("invalid agent id")
 	}
 
 	u, err := common.CurrentUser(l.ctx, l.svcCtx.DB)
@@ -55,10 +54,10 @@ func (l *TeachSkillLogic) TeachSkill(req *types.SkillTeachReq) (resp *types.Skil
 		return nil, err
 	}
 	if template.OwnerUserID != u.ID || template.DeletedAt != nil {
-		return nil, errors.New("skill not found")
+		return nil, domain.NewValidationError("skill not found")
 	}
-	if strings.EqualFold(strings.TrimSpace(template.Status), "rejected") {
-		return nil, errors.New("skill is rejected and cannot be taught")
+	if strings.EqualFold(strings.TrimSpace(template.Status), domain.SkillStatusRejected) {
+		return nil, domain.NewValidationError("skill is rejected and cannot be taught")
 	}
 
 	targetAgent, err := l.svcCtx.DB.Agent.Get(l.ctx, agentID)
@@ -66,7 +65,7 @@ func (l *TeachSkillLogic) TeachSkill(req *types.SkillTeachReq) (resp *types.Skil
 		return nil, err
 	}
 	if targetAgent.CreatorID != u.ID {
-		return nil, errors.New("forbidden")
+		return nil, domain.NewForbiddenError("forbidden")
 	}
 
 	var activeSkill *ent.AgentSkill
@@ -74,13 +73,28 @@ func (l *TeachSkillLogic) TeachSkill(req *types.SkillTeachReq) (resp *types.Skil
 		Where(
 			agentskill.OwnerUserID(u.ID),
 			agentskill.AgentID(agentID),
-			agentskill.Status("active"),
+			agentskill.Status(domain.SkillStatusActive),
 			agentskill.Name(template.Name),
 			agentskill.DeletedAtIsNil(),
 		).
 		First(l.ctx)
 	if err != nil && !ent.IsNotFound(err) {
 		return nil, err
+	}
+
+	// Call BindSkill BEFORE creating the DB row so that a gateway failure
+	// does not leave an orphaned active-skill record with no binding.
+	var binding *port.BindSkillResult
+	if l.svcCtx.AgentRuntime != nil {
+		binding, err = l.svcCtx.AgentRuntime.BindSkill(l.ctx, port.BindSkillRequest{
+			AgentID:      targetAgent.ID.String(),
+			SkillName:    template.Name,
+			Description:  template.Description,
+			Instructions: template.Instructions,
+		})
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if activeSkill == nil {
@@ -90,133 +104,96 @@ func (l *TeachSkillLogic) TeachSkill(req *types.SkillTeachReq) (resp *types.Skil
 			SetName(template.Name).
 			SetDescription(template.Description).
 			SetInstructions(template.Instructions).
-			SetStatus("active").
+			SetStatus(domain.SkillStatusActive).
 			SetCategory(template.Category).
 			SetTaughtAt(time.Now())
 		if template.Version != nil {
 			create.SetVersion(*template.Version)
 		}
-		if template.Status == "lesson" {
+		if template.Status == domain.SkillStatusLesson {
 			create.SetSourceSkillID(template.ID)
+		}
+		if binding != nil {
+			create.SetAliveAgentGatewayID(binding.GatewayID).
+				SetAliveAgentSkillID(binding.SkillID)
 		}
 		activeSkill, err = create.Save(l.ctx)
 		if err != nil {
 			return nil, err
 		}
-	}
-
-	runtimeAgentID := strings.TrimSpace(common.PtrString(targetAgent.AliveAgentRuntimeID))
-	if runtimeAgentID != "" && l.svcCtx.AliveAgent != nil {
-		_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
-			RuntimeAgentID: runtimeAgentID,
-			AgentID:        targetAgent.ID.String(),
-			EventType:      "skill.teach_started",
-			Title:          "ALIVE Skill Teaching Started",
-			Message:        fmt.Sprintf("Teaching skill %s to %s", activeSkill.Name, targetAgent.Name),
-			DedupeKey:      aliveagent.BuildDedupeKey(targetAgent.ID.String(), "skill.teach_started", activeSkill.ID.String(), activeSkill.Name),
-			Payload: map[string]any{
-				"skillId":       activeSkill.ID.String(),
-				"skillName":     activeSkill.Name,
-				"sourceSkillId": common.UUIDStringPtr(activeSkill.SourceSkillID),
-				"targetAgentId": targetAgent.ID.String(),
-				"targetName":    targetAgent.Name,
-			},
-			TimeoutSeconds: 120,
-		})
-	}
-
-	// If this skill exists in the local AliveAgent skills checkout, prefer copying the full folder
-	// into the agent workspace (preserves _meta.json, scripts/, references/, etc).
-	localSourceDir := ""
-	if cat, err := skillshop.LoadBundledCatalog(); err == nil {
-		if it, ok := cat.GetBySlug(activeSkill.Name); ok {
-			if dir, ok := skillshop.LocalRepoPath(filepath.Dir(it.RepoPath)); ok {
-				if st, err := os.Stat(dir); err == nil && st.IsDir() {
-					localSourceDir = dir
-				}
-			}
+	} else if binding != nil {
+		// Existing active skill — update it with the fresh gateway binding.
+		activeSkill, err = l.svcCtx.DB.AgentSkill.UpdateOneID(activeSkill.ID).
+			SetStatus(domain.SkillStatusActive).
+			SetAgentID(agentID).
+			SetTaughtAt(time.Now()).
+			SetAliveAgentGatewayID(binding.GatewayID).
+			SetAliveAgentSkillID(binding.SkillID).
+			Save(l.ctx)
+		if err != nil {
+			return nil, err
 		}
 	}
 
-	binding, err := l.svcCtx.AliveAgent.BindSkill(l.ctx, aliveagent.BindSkillRequest{
-		AgentID:        targetAgent.ID.String(),
-		SkillName:      activeSkill.Name,
-		Description:    activeSkill.Description,
-		Instructions:   activeSkill.Instructions,
-		LocalSourceDir: localSourceDir,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	activeSkill, err = l.svcCtx.DB.AgentSkill.UpdateOneID(activeSkill.ID).
-		SetStatus("active").
-		SetAgentID(agentID).
-		SetTaughtAt(time.Now()).
-		SetAliveAgentGatewayID(binding.GatewayID).
-		SetAliveAgentSkillID(binding.SkillID).
-		Save(l.ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	if runtimeAgentID != "" && l.svcCtx.AliveAgent != nil {
-		payload := map[string]any{
+	emitter := notify.NewEmitter(l.ctx, l.svcCtx)
+	emitter.EmitEventToAgentRow(targetAgent,
+		domain.EventSkillTeachStarted,
+		"ALIVE Skill Teaching Started",
+		fmt.Sprintf("Teaching skill %s to %s", activeSkill.Name, targetAgent.Name),
+		domain.BuildDedupeKey(targetAgent.ID.String(), domain.EventSkillTeachStarted, activeSkill.ID.String(), activeSkill.Name),
+		map[string]any{
+			"skillId":       activeSkill.ID.String(),
+			"skillName":     activeSkill.Name,
+			"sourceSkillId": domain.UUIDStringPtr(activeSkill.SourceSkillID),
+			"targetAgentId": targetAgent.ID.String(),
+			"targetName":    targetAgent.Name,
+		},
+	)
+	emitter.EmitEventToAgentRow(targetAgent,
+		domain.EventSkillTaughtToAgent,
+		"ALIVE Skill Taught",
+		fmt.Sprintf("Skill taught: %s", activeSkill.Name),
+		domain.BuildDedupeKey(targetAgent.ID.String(), domain.EventSkillTaughtToAgent, activeSkill.ID.String(), domain.PtrString(activeSkill.AliveAgentSkillID)),
+		map[string]any{
 			"skillId":                activeSkill.ID.String(),
 			"skillName":              activeSkill.Name,
 			"targetAgentId":          targetAgent.ID.String(),
-			"aliveAgentSkillId":      common.PtrString(activeSkill.AliveAgentSkillID),
-			"aliveAgentGatewayId":    common.PtrString(activeSkill.AliveAgentGatewayID),
+			"aliveAgentSkillId":      domain.PtrString(activeSkill.AliveAgentSkillID),
+			"aliveAgentGatewayId":    domain.PtrString(activeSkill.AliveAgentGatewayID),
 			"status":                 activeSkill.Status,
-			"sourceSkillId":          common.UUIDStringPtr(activeSkill.SourceSkillID),
+			"sourceSkillId":          domain.UUIDStringPtr(activeSkill.SourceSkillID),
 			"disableModelInvocation": false,
-		}
-		_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
-			RuntimeAgentID: runtimeAgentID,
-			AgentID:        targetAgent.ID.String(),
-			EventType:      "skill.taught_to_agent",
-			Title:          "ALIVE Skill Taught",
-			Message:        fmt.Sprintf("Skill taught: %s", activeSkill.Name),
-			DedupeKey:      aliveagent.BuildDedupeKey(targetAgent.ID.String(), "skill.taught_to_agent", activeSkill.ID.String(), common.PtrString(activeSkill.AliveAgentSkillID)),
-			Payload:        payload,
-			TimeoutSeconds: 120,
-		})
-		// Learning module signal: successful learning snapshot.
-		_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
-			RuntimeAgentID: runtimeAgentID,
-			AgentID:        targetAgent.ID.String(),
-			EventType:      "learning.skill_learned",
-			Title:          "ALIVE Learning Update",
-			Message:        fmt.Sprintf("Learned skill: %s", activeSkill.Name),
-			DedupeKey:      aliveagent.BuildDedupeKey(targetAgent.ID.String(), "learning.skill_learned", activeSkill.ID.String(), activeSkill.Name),
-			Payload: map[string]any{
-				"skillId":       activeSkill.ID.String(),
-				"key":           activeSkill.Name,
-				"name":          activeSkill.Name,
-				"source":        "alive.skill.teach",
-				"targetAgentId": targetAgent.ID.String(),
-			},
-			TimeoutSeconds: 120,
-		})
-		_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
-			RuntimeAgentID: runtimeAgentID,
-			AgentID:        targetAgent.ID.String(),
-			EventType:      "learning.skill_mastery_updated",
-			Title:          "ALIVE Learning Mastery",
-			Message:        fmt.Sprintf("Skill mastery initialized: %s", activeSkill.Name),
-			DedupeKey:      aliveagent.BuildDedupeKey(targetAgent.ID.String(), "learning.skill_mastery_updated", activeSkill.ID.String(), "novice"),
-			Payload: map[string]any{
-				"skillId":       activeSkill.ID.String(),
-				"key":           activeSkill.Name,
-				"masteryLevel":  "novice",
-				"runCount":      0,
-				"successCount":  0,
-				"failureCount":  0,
-				"targetAgentId": targetAgent.ID.String(),
-			},
-			TimeoutSeconds: 120,
-		})
-	}
+		},
+	)
+	// Learning module signal: successful learning snapshot.
+	emitter.EmitEventToAgentRow(targetAgent,
+		"learning.skill_learned",
+		"ALIVE Learning Update",
+		fmt.Sprintf("Learned skill: %s", activeSkill.Name),
+		domain.BuildDedupeKey(targetAgent.ID.String(), "learning.skill_learned", activeSkill.ID.String(), activeSkill.Name),
+		map[string]any{
+			"skillId":       activeSkill.ID.String(),
+			"key":           activeSkill.Name,
+			"name":          activeSkill.Name,
+			"source":        "alive.skill.teach",
+			"targetAgentId": targetAgent.ID.String(),
+		},
+	)
+	emitter.EmitEventToAgentRow(targetAgent,
+		"learning.skill_mastery_updated",
+		"ALIVE Learning Mastery",
+		fmt.Sprintf("Skill mastery initialized: %s", activeSkill.Name),
+		domain.BuildDedupeKey(targetAgent.ID.String(), "learning.skill_mastery_updated", activeSkill.ID.String(), "novice"),
+		map[string]any{
+			"skillId":       activeSkill.ID.String(),
+			"key":           activeSkill.Name,
+			"masteryLevel":  "novice",
+			"runCount":      0,
+			"successCount":  0,
+			"failureCount":  0,
+			"targetAgentId": targetAgent.ID.String(),
+		},
+	)
 
 	_, _ = l.svcCtx.DB.AgentExperience.Create().
 		SetOwnerUserID(u.ID).
@@ -229,6 +206,6 @@ func (l *TeachSkillLogic) TeachSkill(req *types.SkillTeachReq) (resp *types.Skil
 		SetEventAt(time.Now()).
 		Save(l.ctx)
 
-	out := common.ToSkillResp(activeSkill, targetAgent)
+	out := mapper.ToSkillResp(activeSkill, targetAgent)
 	return &out, nil
 }

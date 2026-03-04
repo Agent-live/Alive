@@ -7,8 +7,10 @@ import (
 	"strings"
 
 	"backend/ent/agent"
-	"backend/internal/aliveagent"
+	"backend/internal/domain"
 	"backend/internal/logic/common"
+	"backend/internal/logic/notify"
+	"backend/internal/mapper"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -53,24 +55,24 @@ func (l *ReviewSkillLogic) ReviewSkill(req *types.SkillReviewReq) (resp *types.S
 	if row.DeletedAt != nil {
 		return nil, errors.New("skill already deleted")
 	}
-	if row.AgentID != nil || strings.EqualFold(strings.TrimSpace(row.Status), "active") {
+	if row.AgentID != nil || strings.EqualFold(strings.TrimSpace(row.Status), domain.SkillStatusActive) {
 		return nil, errors.New("only lesson skills can be reviewed")
 	}
 
 	reason := strings.TrimSpace(req.Reason)
 	beforeStatus := strings.TrimSpace(row.Status)
 	afterStatus := beforeStatus
-	eventType := "skill.share_approved"
+	eventType := domain.EventSkillShareApproved
 	title := "ALIVE Skill Share Approved"
 	message := fmt.Sprintf("Skill approved for sharing: %s", row.Name)
 	if action == "reject" {
-		afterStatus = "rejected"
-		eventType = "skill.share_rejected"
+		afterStatus = domain.SkillStatusRejected
+		eventType = domain.EventSkillShareRejected
 		title = "ALIVE Skill Share Rejected"
 		message = fmt.Sprintf("Skill rejected for sharing: %s", row.Name)
 	} else {
 		// Approved share templates use lesson status in the current data model.
-		afterStatus = "lesson"
+		afterStatus = domain.SkillStatusLesson
 	}
 
 	if !strings.EqualFold(beforeStatus, afterStatus) {
@@ -82,43 +84,34 @@ func (l *ReviewSkillLogic) ReviewSkill(req *types.SkillReviewReq) (resp *types.S
 		}
 	}
 
-	if l.svcCtx.AliveAgent != nil {
-		ownerAgent, ownerErr := l.svcCtx.DB.Agent.Query().Where(agent.CreatorID(u.ID)).First(l.ctx)
-		if ownerErr == nil && ownerAgent != nil {
-			runtimeAgentID := strings.TrimSpace(common.PtrString(ownerAgent.AliveAgentRuntimeID))
-			if runtimeAgentID != "" {
-				payload := map[string]any{
-					"skillId":       row.ID.String(),
-					"skillName":     row.Name,
-					"ownerUserId":   u.ID.String(),
-					"ownerAgentId":  ownerAgent.ID.String(),
-					"action":        action,
-					"reason":        reason,
-					"beforeStatus":  beforeStatus,
-					"afterStatus":   afterStatus,
-					"templateSkill": true,
-					"category":      row.Category,
-				}
-				_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
-					RuntimeAgentID: runtimeAgentID,
-					AgentID:        ownerAgent.ID.String(),
-					EventType:      eventType,
-					Title:          title,
-					Message:        message,
-					DedupeKey: aliveagent.BuildDedupeKey(
-						ownerAgent.ID.String(),
-						eventType,
-						row.ID.String(),
-						afterStatus,
-						reason,
-					),
-					Payload:        payload,
-					TimeoutSeconds: 120,
-				})
-			}
-		}
+	ownerAgent, ownerErr := l.svcCtx.DB.Agent.Query().Where(agent.CreatorID(u.ID)).First(l.ctx)
+	if ownerErr == nil && ownerAgent != nil {
+		notify.NewEmitter(l.ctx, l.svcCtx).EmitEventToAgentRow(ownerAgent,
+			eventType,
+			title,
+			message,
+			domain.BuildDedupeKey(
+				ownerAgent.ID.String(),
+				eventType,
+				row.ID.String(),
+				afterStatus,
+				reason,
+			),
+			map[string]any{
+				"skillId":       row.ID.String(),
+				"skillName":     row.Name,
+				"ownerUserId":   u.ID.String(),
+				"ownerAgentId":  ownerAgent.ID.String(),
+				"action":        action,
+				"reason":        reason,
+				"beforeStatus":  beforeStatus,
+				"afterStatus":   afterStatus,
+				"templateSkill": true,
+				"category":      row.Category,
+			},
+		)
 	}
 
-	out := common.ToSkillResp(row, nil)
+	out := mapper.ToSkillResp(row, nil)
 	return &out, nil
 }

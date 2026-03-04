@@ -3,7 +3,6 @@ package skillshop
 import (
 	"encoding/json"
 	"fmt"
-	"sort"
 	"strings"
 	"sync"
 
@@ -42,10 +41,6 @@ var (
 	bundledCatalogErr  error
 )
 
-func LoadCatalog() (*Catalog, error) {
-	return LoadBundledCatalog()
-}
-
 // LoadBundledCatalog loads only the embedded catalog.json without scanning local skills.
 // Use this when startup code needs a stable slug lookup without paying local FS scan cost.
 func LoadBundledCatalog() (*Catalog, error) {
@@ -59,54 +54,6 @@ func LoadBundledCatalog() (*Catalog, error) {
 		bundledCatalogInst = base
 	})
 	return bundledCatalogInst, bundledCatalogErr
-}
-
-func mergeCatalog(base *Catalog, localItems []Item) *Catalog {
-	out := &Catalog{
-		GeneratedAt: base.GeneratedAt,
-	}
-
-	seen := make(map[string]bool, len(base.Items)+len(localItems))
-	items := make([]Item, 0, len(base.Items)+len(localItems))
-
-	add := func(it Item) {
-		key := strings.ToLower(strings.TrimSpace(it.Slug))
-		if key == "" {
-			return
-		}
-		if seen[key] {
-			return
-		}
-		seen[key] = true
-		items = append(items, it)
-	}
-
-	for _, it := range base.Items {
-		add(it)
-	}
-	for _, it := range localItems {
-		add(it)
-	}
-
-	out.Items = items
-	out.Categories = computeCategories(items)
-	return out
-}
-
-func cloneCatalog(in *Catalog) *Catalog {
-	if in == nil {
-		return &Catalog{}
-	}
-	out := &Catalog{
-		GeneratedAt: in.GeneratedAt,
-	}
-	if len(in.Categories) > 0 {
-		out.Categories = append([]Category(nil), in.Categories...)
-	}
-	if len(in.Items) > 0 {
-		out.Items = append([]Item(nil), in.Items...)
-	}
-	return out
 }
 
 func buildCatalogIndex(c *Catalog) {
@@ -125,28 +72,6 @@ func buildCatalogIndex(c *Catalog) {
 			c.bySlug[key] = it
 		}
 	}
-}
-
-func computeCategories(items []Item) []Category {
-	counts := make(map[string]int64, 32)
-	for _, it := range items {
-		key := strings.TrimSpace(it.Category)
-		if key == "" {
-			key = "Other"
-		}
-		counts[key]++
-	}
-	cats := make([]Category, 0, len(counts))
-	for k, v := range counts {
-		cats = append(cats, Category{Key: k, Count: v})
-	}
-	sort.Slice(cats, func(i, j int) bool {
-		if cats[i].Count != cats[j].Count {
-			return cats[i].Count > cats[j].Count
-		}
-		return cats[i].Key < cats[j].Key
-	})
-	return cats
 }
 
 func (c *Catalog) GetBySlug(slug string) (*Item, bool) {

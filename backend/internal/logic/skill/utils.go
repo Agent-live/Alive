@@ -4,6 +4,8 @@ import (
 	"errors"
 	"strings"
 
+	"backend/internal/domain"
+
 	"github.com/google/uuid"
 )
 
@@ -38,7 +40,7 @@ func normalizeSkillCategory(raw string) string {
 
 func normalizeSkillStatus(raw string) string {
 	switch strings.ToLower(strings.TrimSpace(raw)) {
-	case "lesson", "active", "rejected":
+	case domain.SkillStatusLesson, domain.SkillStatusActive, domain.SkillStatusRejected:
 		return strings.ToLower(strings.TrimSpace(raw))
 	default:
 		return ""

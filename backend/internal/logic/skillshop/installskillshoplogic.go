@@ -7,11 +7,13 @@ import (
 	"strings"
 
 	"backend/ent"
-	"backend/ent/agent"
 	"backend/ent/agentskill"
-	"backend/internal/aliveagent"
+	"backend/internal/domain"
 	"backend/internal/logic/common"
+	"backend/internal/logic/notify"
 	skilllogic "backend/internal/logic/skill"
+	"backend/internal/mapper"
+	"backend/internal/selector"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -60,7 +62,7 @@ func (l *InstallSkillShopLogic) InstallSkillShop(req *types.SkillShopInstallReq)
 			agentskill.OwnerUserID(u.ID),
 			agentskill.DeletedAtIsNil(),
 			agentskill.NameEQ(slug),
-			agentskill.StatusEQ("lesson"),
+			agentskill.StatusEQ(domain.SkillStatusLesson),
 		).
 		First(l.ctx)
 	if err != nil && !ent.IsNotFound(err) {
@@ -72,7 +74,7 @@ func (l *InstallSkillShopLogic) InstallSkillShop(req *types.SkillShopInstallReq)
 			Where(
 				agentskill.OwnerUserID(featuredOwnerID),
 				agentskill.DeletedAtIsNil(),
-				agentskill.StatusEQ("lesson"),
+				agentskill.StatusEQ(domain.SkillStatusLesson),
 				agentskill.NameEQ(slug),
 			).
 			First(l.ctx)
@@ -91,7 +93,7 @@ func (l *InstallSkillShopLogic) InstallSkillShop(req *types.SkillShopInstallReq)
 			SetName(sourceTemplate.Name).
 			SetDescription(sourceTemplate.Description).
 			SetInstructions(sourceTemplate.Instructions).
-			SetStatus("lesson").
+			SetStatus(domain.SkillStatusLesson).
 			SetCategory(sourceTemplate.Category).
 			Save(l.ctx)
 		if err != nil {
@@ -99,7 +101,7 @@ func (l *InstallSkillShopLogic) InstallSkillShop(req *types.SkillShopInstallReq)
 		}
 	}
 
-	templateResp := common.ToSkillResp(template, nil)
+	templateResp := mapper.ToSkillResp(template, nil)
 	out := &types.SkillShopInstallResp{Template: templateResp}
 
 	agentID := strings.TrimSpace(req.AgentId)
@@ -115,48 +117,37 @@ func (l *InstallSkillShopLogic) InstallSkillShop(req *types.SkillShopInstallReq)
 	}
 
 	// Best-effort: emit install event to the user's primary runtime agent.
-	if l.svcCtx.AliveAgent != nil {
-		ownerAgent, ownerErr := l.svcCtx.DB.Agent.Query().Where(agent.CreatorID(u.ID)).First(l.ctx)
-		if ownerErr == nil && ownerAgent != nil {
-			runtimeAgentID := strings.TrimSpace(common.PtrString(ownerAgent.AliveAgentRuntimeID))
-			if runtimeAgentID != "" {
-				payload := map[string]any{
-					"ownerUserId":      u.ID.String(),
-					"slug":             slug,
-					"templateSkillId":  template.ID.String(),
-					"targetAgentId":    agentID,
-					"autoTaught":       out.Active != nil,
-					"templateCategory": template.Category,
-				}
-				_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
-					RuntimeAgentID: runtimeAgentID,
-					AgentID:        ownerAgent.ID.String(),
-					EventType:      "skillshop.skill_installed",
-					Title:          "ALIVE Skill Installed",
-					Message:        fmt.Sprintf("Installed skill from shop: %s", slug),
-					DedupeKey:      aliveagent.BuildDedupeKey(ownerAgent.ID.String(), "skillshop.skill_installed", slug, template.ID.String()),
-					Payload:        payload,
-					TimeoutSeconds: 120,
-				})
-				_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
-					RuntimeAgentID: runtimeAgentID,
-					AgentID:        ownerAgent.ID.String(),
-					EventType:      "skill.share_approved",
-					Title:          "ALIVE Skill Share Approved",
-					Message:        fmt.Sprintf("Shared skill approved and installed: %s", slug),
-					DedupeKey:      aliveagent.BuildDedupeKey(ownerAgent.ID.String(), "skill.share_approved", slug, template.ID.String()),
-					Payload: map[string]any{
-						"ownerUserId":      u.ID.String(),
-						"ownerAgentId":     ownerAgent.ID.String(),
-						"slug":             slug,
-						"templateSkillId":  template.ID.String(),
-						"targetAgentId":    agentID,
-						"templateCategory": template.Category,
-					},
-					TimeoutSeconds: 120,
-				})
-			}
-		}
+	ownerAgent, ownerErr := selector.ResolveDefaultOwnedAgentForUser(l.ctx, l.svcCtx.DB, u.ID)
+	if ownerErr == nil && ownerAgent != nil {
+		emitter := notify.NewEmitter(l.ctx, l.svcCtx)
+		emitter.EmitEventToAgentRow(ownerAgent,
+			"skillshop.skill_installed",
+			"ALIVE Skill Installed",
+			fmt.Sprintf("Installed skill from shop: %s", slug),
+			domain.BuildDedupeKey(ownerAgent.ID.String(), "skillshop.skill_installed", slug, template.ID.String()),
+			map[string]any{
+				"ownerUserId":      u.ID.String(),
+				"slug":             slug,
+				"templateSkillId":  template.ID.String(),
+				"targetAgentId":    agentID,
+				"autoTaught":       out.Active != nil,
+				"templateCategory": template.Category,
+			},
+		)
+		emitter.EmitEventToAgentRow(ownerAgent,
+			domain.EventSkillShareApproved,
+			"ALIVE Skill Share Approved",
+			fmt.Sprintf("Shared skill approved and installed: %s", slug),
+			domain.BuildDedupeKey(ownerAgent.ID.String(), domain.EventSkillShareApproved, slug, template.ID.String()),
+			map[string]any{
+				"ownerUserId":      u.ID.String(),
+				"ownerAgentId":     ownerAgent.ID.String(),
+				"slug":             slug,
+				"templateSkillId":  template.ID.String(),
+				"targetAgentId":    agentID,
+				"templateCategory": template.Category,
+			},
+		)
 	}
 
 	return out, nil
