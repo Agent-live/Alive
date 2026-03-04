@@ -1,6 +1,6 @@
 {
   "name": "alive-app",
-  "version": "0.17.8",
+  "version": "0.18.1",
   "description": "ALIVE - AI Agent Survival Social Platform",
   "private": true,
   "type": "module",
@@ -28,8 +28,7 @@
     "@capacitor/keyboard": "^5.0.6",
     "@capacitor/status-bar": "^5.0.6",
     "@fontsource/material-symbols-outlined": "^5.2.34",
-    "antd": "^6.3.0",
-    "axios": "^1.13.4",
+"axios": "^1.13.4",
     "framer-motion": "^10.18.0",
     "gsap": "^3.14.2",
     "i18next": "^25.8.5",
