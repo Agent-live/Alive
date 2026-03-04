@@ -7,6 +7,7 @@ import { conversationApi } from '../../api/conversations';
 import type { AgentSummary } from '../../types';
 import { useAgentStore, useConversationStore, toast } from '../../store';
 import { ConversationItem } from '../../components/conversation/ConversationItem';
+import { extractErrorMessage } from '../../utils/error';
 
 export function ConversationListPage() {
   const { t } = useTranslation();
@@ -19,15 +20,20 @@ export function ConversationListPage() {
   const [candidateAgents, setCandidateAgents] = useState<AgentSummary[]>([]);
   const [candidateLoading, setCandidateLoading] = useState(false);
   const [creating, setCreating] = useState(false);
+  const myAgentId = primaryAgentId || myAgents[0]?.id;
 
   useEffect(() => {
+    const refreshHumanBotConversations = () => {
+      void fetchConversations('human-bot', myAgentId);
+    };
     fetchMyAgents();
-    fetchConversations();
-    const interval = setInterval(fetchConversations, 10000);
+    refreshHumanBotConversations();
+    const interval = setInterval(() => {
+      if (!document.hidden) refreshHumanBotConversations();
+    }, 5000);
     return () => clearInterval(interval);
-  }, [fetchConversations, fetchMyAgents]);
+  }, [fetchConversations, fetchMyAgents, myAgentId]);
 
-  const myAgentId = primaryAgentId || myAgents[0]?.id;
   const availableCandidates = useMemo(
     () => candidateAgents.filter((a) => a.id !== myAgentId && a.status !== 'dead'),
     [candidateAgents, myAgentId],
@@ -50,7 +56,7 @@ export function ConversationListPage() {
       const res = await agentApi.getAgentList(1, 100);
       setCandidateAgents(res.items || []);
     } catch (error) {
-      toast.error(getErrorMessage(error, t('conversations.loadAgentsFailed', 'Failed to load agents')));
+      toast.error(extractErrorMessage(error, t('conversations.loadAgentsFailed', 'Failed to load agents')));
     } finally {
       setCandidateLoading(false);
     }
@@ -63,26 +69,43 @@ export function ConversationListPage() {
     setParticipantIds([]);
   };
 
-  const createGroupConversation = async () => {
-    const groupTitle = title.trim();
-    if (!groupTitle) {
-      toast.error(t('conversations.groupNameRequired', 'Group name is required'));
+  const createConversation = async () => {
+    if (participantIds.length < 1) {
+      toast.error(t('conversations.participantRequired', 'Select at least 1 participant'));
       return;
     }
-    if (participantIds.length < 2) {
-      toast.error(t('conversations.groupParticipantsRequired', 'Select at least 2 participants'));
+
+    const isGroup = participantIds.length > 1;
+    const groupTitle = title.trim();
+    if (isGroup && !groupTitle) {
+      toast.error(t('conversations.groupNameRequired', 'Group name is required'));
       return;
     }
 
     setCreating(true);
     try {
-      const out = await conversationApi.createConversation(groupTitle, participantIds);
-      toast.success(t('conversations.groupCreateSuccess', 'Group created'));
+      const out = await conversationApi.createConversation(
+        isGroup ? groupTitle : '',
+        participantIds,
+        myAgentId,
+      );
+      toast.success(
+        isGroup
+          ? t('conversations.groupCreateSuccess', 'Group created')
+          : t('conversations.directCreateSuccess', 'Conversation created'),
+      );
       closeCreateDialog();
-      await fetchConversations();
+      await fetchConversations('human-bot', myAgentId);
       navigate(`/conversations/${out.conversationId}`);
     } catch (error) {
-      toast.error(getErrorMessage(error, t('conversations.groupCreateFailed', 'Failed to create group')));
+      toast.error(
+        extractErrorMessage(
+          error,
+          isGroup
+            ? t('conversations.groupCreateFailed', 'Failed to create group')
+            : t('conversations.directCreateFailed', 'Failed to create conversation'),
+        ),
+      );
     } finally {
       setCreating(false);
     }
@@ -101,7 +124,7 @@ export function ConversationListPage() {
         <button
           onClick={() => void openCreateDialog()}
           className="ml-auto p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
-          aria-label={t('conversations.createGroup', 'Create group')}
+          aria-label={t('conversations.createConversation', 'New conversation')}
         >
           <Icon name="group_add" size={20} className="text-gray-600 dark:text-gray-300" />
         </button>
@@ -128,6 +151,7 @@ export function ConversationListPage() {
                 <ConversationItem
                   key={conv.id}
                   conversation={conv}
+                  myAgentId={myAgentId}
                   onClick={() => navigate(`/conversations/${conv.id}`)}
                 />
               ))}
@@ -145,7 +169,7 @@ export function ConversationListPage() {
           >
             <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-800">
               <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                {t('conversations.createGroup', 'Create group')}
+                {t('conversations.createConversation', 'New conversation')}
               </h2>
               <button
                 onClick={closeCreateDialog}
@@ -158,27 +182,19 @@ export function ConversationListPage() {
 
             <div className="p-4 space-y-3">
               <div>
-                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-                  {t('conversations.groupName', 'Group name')}
-                </label>
-                <input
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  disabled={creating}
-                  placeholder={t('conversations.groupNamePlaceholder', 'Enter a group name')}
-                  className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 outline-none focus:border-primary"
-                />
-              </div>
-
-              <div>
                 <div className="flex items-center justify-between mb-1">
                   <label className="block text-xs font-medium text-gray-500 dark:text-gray-400">
                     {t('conversations.selectParticipants', 'Select participants')}
                   </label>
                   <span className="text-[11px] text-gray-400">
-                    {participantIds.length} / 2+
+                    {participantIds.length} / 1+
                   </span>
                 </div>
+                <p className="text-[11px] text-gray-400 mb-2">
+                  {participantIds.length <= 1
+                    ? t('conversations.directHint', 'Select 1 participant to start a direct chat')
+                    : t('conversations.groupHint', '2+ participants will create a group chat')}
+                </p>
                 <div className="max-h-56 overflow-y-auto rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-800">
                   {candidateLoading ? (
                     <div className="py-6 text-center text-xs text-gray-400">{t('common.loading', 'Loading...')}</div>
@@ -207,6 +223,21 @@ export function ConversationListPage() {
                   )}
                 </div>
               </div>
+
+              {participantIds.length > 1 && (
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+                    {t('conversations.groupName', 'Group name')}
+                  </label>
+                  <input
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    disabled={creating}
+                    placeholder={t('conversations.groupNamePlaceholder', 'Enter a group name')}
+                    className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 outline-none focus:border-primary"
+                  />
+                </div>
+              )}
             </div>
 
             <div className="px-4 py-3 border-t border-gray-100 dark:border-gray-800 flex justify-end gap-2">
@@ -218,8 +249,8 @@ export function ConversationListPage() {
                 {t('common.cancel', 'Cancel')}
               </button>
               <button
-                onClick={() => void createGroupConversation()}
-                disabled={creating || title.trim().length === 0 || participantIds.length < 2}
+                onClick={() => void createConversation()}
+                disabled={creating || participantIds.length === 0 || (participantIds.length > 1 && title.trim().length === 0)}
                 className="px-3 py-1.5 text-sm rounded-lg bg-primary text-white disabled:opacity-50"
               >
                 {creating ? t('common.loading', 'Loading...') : t('common.create', 'Create')}
@@ -230,12 +261,4 @@ export function ConversationListPage() {
       )}
     </div>
   );
-}
-
-function getErrorMessage(error: unknown, fallback: string): string {
-  if (typeof error === 'object' && error && 'message' in error) {
-    const value = (error as { message?: unknown }).message;
-    if (typeof value === 'string' && value.trim()) return value;
-  }
-  return fallback;
 }

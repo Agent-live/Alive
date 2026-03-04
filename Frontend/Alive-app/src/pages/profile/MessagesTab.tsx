@@ -1,8 +1,12 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/components';
-import { mockChatGroups, mockDirectMessages, mockPlazaNotifications } from '@/mocks';
-import type { ChatGroup, DirectMessage, PlazaNotification, PlazaNotificationType } from '@/types/conversation';
+import { conversationApi } from '@/api/conversations';
+import { useAgentStore } from '@/store';
+import type { ChatGroup, Conversation, DirectMessage, PlazaNotification, PlazaNotificationType } from '@/types/conversation';
 import i18n from '@/lib/i18n';
+import { extractErrorMessage } from '@/utils/error';
 
 /* ─── Notification type config ─── */
 const notificationConfig: Record<PlazaNotificationType, { icon: string; color: string; bgColor: string }> = {
@@ -37,24 +41,116 @@ function formatMessageTime(dateStr: string): string {
   return i18n.t('time.daysAgo', { count: diffDays });
 }
 
+function fallbackAvatar(seed: string): string {
+  const normalized = encodeURIComponent(seed || 'alive');
+  return `https://api.dicebear.com/7.x/bottts/svg?seed=${normalized}`;
+}
+
+function toChatGroup(conv: Conversation): ChatGroup {
+  const participants = conv.participants || [];
+  const avatars = participants.map((p) => p.agentAvatar || fallbackAvatar(p.agentName || p.agentId));
+  const fallbackName = participants.map((p) => p.agentName).filter(Boolean).join(', ');
+  return {
+    id: conv.id,
+    name: conv.title || fallbackName || 'Group',
+    memberAvatars: avatars,
+    memberCount: conv.participantCount || participants.length,
+    unreadCount: conv.unreadCount || 0,
+    lastMessage: conv.lastMessagePreview || '',
+    lastMessageAt: conv.lastMessageAt || conv.createdAt,
+  };
+}
+
+function toDirectMessage(conv: Conversation, myAgentId?: string | null): DirectMessage {
+  const participants = conv.participants || [];
+  const other = participants.find((p) => p.agentId !== myAgentId) || participants[0];
+  const recipientName = other?.agentName || 'Direct';
+  return {
+    id: conv.id,
+    recipientName,
+    recipientAvatar: other?.agentAvatar || fallbackAvatar(recipientName || conv.id),
+    isOnline: false,
+    lastMessage: conv.lastMessagePreview || '',
+    lastMessageAt: conv.lastMessageAt || conv.createdAt,
+    unreadCount: conv.unreadCount || 0,
+  };
+}
+
 export function MessagesTab() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
-  const chatGroups = mockChatGroups;
-  const directMessages = mockDirectMessages;
-  const notifications = mockPlazaNotifications;
+  const { myAgents, primaryAgentId, fetchMyAgents } = useAgentStore();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+
+  const myAgentId = primaryAgentId || myAgents[0]?.id || null;
+
+  const loadConversations = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
+    try {
+      const res = await conversationApi.getConversations('human-bot');
+      setConversations(res.items || []);
+      setError(null);
+    } catch (err) {
+      setError(extractErrorMessage(err, t('common.loadFailed', 'Failed to load')));
+    } finally {
+      if (!silent) setLoading(false);
+    }
+  }, [t]);
+
+  useEffect(() => {
+    if (myAgents.length === 0) {
+      void fetchMyAgents();
+    }
+    void loadConversations(false);
+    const interval = setInterval(() => {
+      void loadConversations(true);
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [fetchMyAgents, loadConversations, myAgents.length]);
+
+  const chatGroups = useMemo(
+    () => conversations.filter((c) => c.type === 'group').map((c) => toChatGroup(c)),
+    [conversations],
+  );
+  const directMessages = useMemo(
+    () => conversations.filter((c) => c.type === 'direct').map((c) => toDirectMessage(c, myAgentId)),
+    [conversations, myAgentId],
+  );
+  const notifications: PlazaNotification[] = [];
 
   return (
     <div className="space-y-5">
+      {error && (
+        <div className="px-3 py-2 rounded-lg bg-red-50 dark:bg-red-900/20 text-xs text-red-600 dark:text-red-300 flex items-center justify-between">
+          <span>{error}</span>
+          <button className="underline" onClick={() => void loadConversations(false)}>
+            {t('common.retry', 'Retry')}
+          </button>
+        </div>
+      )}
+
       {/* ─── Chat Groups Section ─── */}
-      <ChatGroupsSection groups={chatGroups} />
+      <ChatGroupsSection
+        groups={chatGroups}
+        loading={loading && conversations.length === 0}
+        onOpenGroup={(id) => navigate(`/conversations/${id}`)}
+      />
 
       {/* ─── Direct Messages Section ─── */}
       <div>
         <SectionHeader title={t('messages.privateMessages')} />
-        {directMessages.length > 0 ? (
+        {loading && conversations.length === 0 ? (
+          <LoadingSection text={t('common.loading', 'Loading...')} />
+        ) : directMessages.length > 0 ? (
           <div className="space-y-0.5">
             {directMessages.map((dm) => (
-              <DirectMessageItem key={dm.id} dm={dm} />
+              <DirectMessageItem
+                key={dm.id}
+                dm={dm}
+                onClick={() => navigate(`/conversations/${dm.id}`)}
+              />
             ))}
           </div>
         ) : (
@@ -81,29 +177,53 @@ export function MessagesTab() {
 
 /* ─── Chat Groups (horizontal scroll) ─── */
 
-function ChatGroupsSection({ groups }: { groups: ChatGroup[] }) {
+function ChatGroupsSection({
+  groups,
+  loading = false,
+  onOpenGroup,
+}: {
+  groups: ChatGroup[];
+  loading?: boolean;
+  onOpenGroup: (id: string) => void;
+}) {
   const { t } = useTranslation();
 
-  if (groups.length === 0) return null;
+  if (loading) {
+    return (
+      <div>
+        <SectionHeader title={t('messages.chatGroups')} />
+        <LoadingSection text={t('common.loading', 'Loading...')} />
+      </div>
+    );
+  }
+
+  if (groups.length === 0) {
+    return (
+      <div>
+        <SectionHeader title={t('messages.chatGroups')} />
+        <EmptySection icon="groups" message={t('messages.noMessages')} />
+      </div>
+    );
+  }
 
   return (
     <div>
       <SectionHeader title={t('messages.chatGroups')} />
       <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1">
         {groups.map((group) => (
-          <ChatGroupCard key={group.id} group={group} />
+          <ChatGroupCard key={group.id} group={group} onClick={() => onOpenGroup(group.id)} />
         ))}
       </div>
     </div>
   );
 }
 
-function ChatGroupCard({ group }: { group: ChatGroup }) {
+function ChatGroupCard({ group, onClick }: { group: ChatGroup; onClick: () => void }) {
   const { t } = useTranslation();
   const displayAvatars = group.memberAvatars.slice(0, 4);
 
   return (
-    <button className="flex-shrink-0 w-44 p-3 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 text-left hover:border-primary/30 transition-colors relative">
+    <button onClick={onClick} className="flex-shrink-0 w-44 p-3 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 text-left hover:border-primary/30 transition-colors relative">
       {/* Unread badge */}
       {group.unreadCount > 0 && (
         <span className="absolute -top-1.5 -right-1.5 inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-bold text-white bg-red-500 rounded-full">
@@ -113,14 +233,21 @@ function ChatGroupCard({ group }: { group: ChatGroup }) {
 
       {/* Avatar grid */}
       <div className="grid grid-cols-2 gap-0.5 w-10 h-10 mb-2">
-        {displayAvatars.map((avatar, i) => (
-          <img
-            key={i}
-            src={avatar}
-            alt=""
-            className="w-full h-full rounded-sm object-cover"
-          />
-        ))}
+        {displayAvatars.map((avatar, i) => {
+          if (!avatar) {
+            return (
+              <div key={i} className="w-full h-full rounded-sm bg-gray-200 dark:bg-gray-700" />
+            );
+          }
+          return (
+            <img
+              key={i}
+              src={avatar}
+              alt=""
+              className="w-full h-full rounded-sm object-cover"
+            />
+          );
+        })}
       </div>
 
       <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">{group.name}</p>
@@ -132,12 +259,12 @@ function ChatGroupCard({ group }: { group: ChatGroup }) {
 
 /* ─── Direct Message Item ─── */
 
-function DirectMessageItem({ dm }: { dm: DirectMessage }) {
+function DirectMessageItem({ dm, onClick }: { dm: DirectMessage; onClick: () => void }) {
   return (
-    <div className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer transition-colors">
+    <div onClick={onClick} className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer transition-colors">
       {/* Avatar + online dot */}
       <div className="relative flex-shrink-0">
-        <img src={dm.recipientAvatar} alt="" className="w-11 h-11 rounded-full object-cover" />
+        <img src={dm.recipientAvatar} alt="" className="w-11 h-11 rounded-full object-cover bg-gray-100 dark:bg-gray-800" />
         {dm.isOnline && (
           <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 border-white dark:border-gray-950" />
         )}
@@ -219,6 +346,15 @@ function EmptySection({ icon, message }: { icon: string; message: string }) {
     <div className="text-center py-8">
       <Icon name={icon} size={28} className="text-gray-300 dark:text-gray-600 mx-auto mb-2" />
       <p className="text-sm text-gray-400">{message}</p>
+    </div>
+  );
+}
+
+function LoadingSection({ text }: { text: string }) {
+  return (
+    <div className="flex items-center justify-center gap-2 py-8 text-sm text-gray-400">
+      <span className="inline-block w-4 h-4 rounded-full border-2 border-gray-300 border-t-primary animate-spin" />
+      <span>{text}</span>
     </div>
   );
 }
