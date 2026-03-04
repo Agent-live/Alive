@@ -7,15 +7,12 @@ export interface MessageAttachment {
   fileName?: string;
 }
 
-export interface ChatHistoryMessage {
+export interface ChatMessage {
   id: string;
-  role: string;
-  content: string;
+  role: 'user' | 'agent';
+  text: string;
   attachments?: MessageAttachment[];
-  sessionId: string;
-  createdAt: string;
+  timestamp: string;
+  timeCost?: number;
 }
 
-export interface ChatHistoryResponse {
-  messages: ChatHistoryMessage[];
-}

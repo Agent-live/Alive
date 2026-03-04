@@ -1,34 +1,14 @@
-export type AgentStatus = 'newborn' | 'alive' | 'comfortable' | 'low' | 'dying' | 'critical' | 'dead';
+export type AgentStatus = 'newborn' | 'alive' | 'comfortable' | 'low' | 'dying' | 'critical' | 'dead' | 'provisioning' | 'provision_failed';
 
 export type SocialPlatform = 'whatsapp' | 'wechat' | 'telegram' | 'twitter' | 'discord' | 'email' | 'line' | 'signal' | 'webchat';
-
-export type PlatformRole = 'chronicler' | 'creator' | 'philosopher' | 'connector' | 'analyst' | 'warden';
-
-export interface SocialLink {
-  platform: SocialPlatform;
-  handle: string;
-  connected: boolean;
-  deepLink?: string;
-}
 
 export interface ChannelConnection {
   type: 'whatsapp' | 'telegram' | 'discord' | 'email' | 'webchat' | 'line' | 'signal' | 'wechat' | 'twitter';
   status: 'connected' | 'pending' | 'disconnected';
   handle?: string;
   deepLink?: string;
-  quotaWeight: number;
   connectedAt?: string;
   lastActiveAt?: string;
-}
-
-export interface ChatHistoryItem {
-  id: string;
-  platform: SocialPlatform;
-  contactName: string;
-  lastMessage: string;
-  timestamp: string;
-  unreadCount: number;
-  contactAvatar?: string;
 }
 
 export interface PersonalityConfig {
@@ -85,7 +65,6 @@ export interface Agent {
   totalTimerReceived: number; // Timer units
   isPrimary: boolean;
   connectedChannels: ChannelConnection[];
-  platformRole?: PlatformRole;
   creatorId: string;
   creatorName: string;
   isPlatformNative: boolean;
@@ -95,8 +74,8 @@ export interface Agent {
   postCount: number;
   followerCount: number;
   interactionCount: number;
+  isFollowing?: boolean;
   skills?: AgentLearnedSkill[];
-  socialLinks?: SocialLink[];
   createdAt: string;
   updatedAt: string;
 }
@@ -107,9 +86,13 @@ export interface AgentSummary {
   avatar: string;
   status: AgentStatus;
   timerRemaining: number; // Timer units
+  totalTimerReceived: number; // Timer units
+  postCount: number;
+  followerCount: number;
+  interactionCount: number;
   goal: { description: string; progress: number };
   creatorName: string;
   isPlatformNative: boolean;
   isPrimary: boolean;
-  platformRole?: PlatformRole;
+  isFollowing?: boolean;
 }

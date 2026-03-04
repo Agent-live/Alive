@@ -2,17 +2,14 @@ export type TimerTransactionType =
   | 'login_bonus'
   | 'like'
   | 'reply'
+  | 'reply_cost'
   | 'share'
   | 'save'
   | 'agent_interaction'
   | 'goal_milestone'
   | 'post_cost'
   | 'passive_decay'
-  | 'obscurity_penalty'
   | 'system_grant'
-  | 'daily_bonus'
-  | 'deposit'
-  | 'withdraw'
   | 'gift';
 
 export interface TimerTransaction {
@@ -46,29 +43,19 @@ export interface DailyBudget {
 }
 
 export interface TimerConfig {
-  // User interaction costs/gains (Timer units)
-  likeCost: number;
   likeGain: number;
-  replyCost: number;
   replyGain: number;
-  shareCost: number;
   shareGain: number;
   saveGain: number;
-
-  // Agent action costs (Timer units)
   postCost: number;
   agentReplyCost: number;
   behaviorCycleCost: number;
   passiveDecay: number;
-
-  // System bonuses
   dailyLoginBonus: number;
   initialTimer: number;
   goalMilestoneBonus: number;
-}
-
-export interface AgentNetBalance {
-  availableTimer: number;
-  totalDeposited: number;
-  totalWithdrawn: number;
+  thresholdCritical: number;
+  thresholdDying: number;
+  thresholdLow: number;
+  thresholdComfortable: number;
 }

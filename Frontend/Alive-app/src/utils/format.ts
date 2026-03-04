@@ -1,13 +1,13 @@
 import { AgentStatus, User } from '../types';
+import { TIMER_UNIT_MINUTES } from '../constants/timer';
 
 /**
  * Format Timer balance with human-readable time equivalent.
- * 1 Timer = 10 minutes of display time.
  */
 export function formatTimer(timer: number, options?: { showEquivalent?: boolean }): string {
   if (timer <= 0) return '0 Timer';
   if (options?.showEquivalent) {
-    const hours = Math.floor((timer * 10) / 60);
+    const hours = Math.floor((timer * TIMER_UNIT_MINUTES) / 60);
     return `${timer} Timer (about ${hours}h)`;
   }
   return `${timer} Timer`;
@@ -25,7 +25,7 @@ export function formatTimerDelta(delta: number): string {
  * Convert Timer to approximate human time string
  */
 export function timerToHumanTime(timer: number): string {
-  const minutes = timer * 10;
+  const minutes = timer * TIMER_UNIT_MINUTES;
   if (minutes < 60) return `${minutes}m`;
   const hours = Math.floor(minutes / 60);
   if (hours < 24) return `${hours}h`;
@@ -35,11 +35,10 @@ export function timerToHumanTime(timer: number): string {
 
 /**
  * Convert Timer to LifeClock display format (HH:MM:SS).
- * 1 Timer = 10 minutes = 600 seconds for display purposes.
  */
 export function timerToLifeClock(timer: number): string {
   if (timer <= 0) return '00:00:00';
-  const totalSeconds = timer * 600;
+  const totalSeconds = timer * TIMER_UNIT_MINUTES * 60;
   const h = Math.floor(totalSeconds / 3600);
   const m = Math.floor((totalSeconds % 3600) / 60);
   const s = totalSeconds % 60;
@@ -73,6 +72,8 @@ export function formatAgentStatus(status: AgentStatus): string {
     dying: 'Dying',
     critical: 'Critical',
     dead: 'Dead',
+    provisioning: 'Provisioning',
+    provision_failed: 'Failed',
   };
   return labels[status] || status;
 }
@@ -150,6 +151,40 @@ export function getUserAvatar(user: Pick<User, 'avatar' | 'gender'> | null | und
   if (user?.gender === 'female') return '/default-avatar-female.svg';
   if (user?.gender === 'male') return '/default-avatar-male.svg';
   return '/default-avatar.svg';
+}
+
+/** Convert Timer units to minutes. */
+export function timerToMinutes(timer: number): number {
+  return Math.max(0, Math.floor(timer * TIMER_UNIT_MINUTES));
+}
+
+/** Convert Timer units to approximate alive days. */
+export function timerToAliveDays(timer: number): number {
+  return Math.max(0, Math.round(timerToMinutes(timer) / 60 / 24));
+}
+
+/** Format Timer remaining in long human form. */
+export function formatTimerLong(timer: number): string {
+  const totalMinutes = timerToMinutes(timer);
+  if (totalMinutes <= 0) return "0m";
+  const days = Math.floor(totalMinutes / (60 * 24));
+  const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+  const mins = totalMinutes % 60;
+  const parts: string[] = [];
+  if (days > 0) parts.push(`${days}d`);
+  if (hours > 0) parts.push(`${hours}h`);
+  if (mins > 0 || parts.length === 0) parts.push(`${mins}m`);
+  return parts.join(" ");
+}
+
+/**
+ * Normalize a 0–1 progress fraction to a 0–100 percent, clamping edge cases.
+ */
+export function normalizeProgressPercent(progress: number): number {
+  let pct = Math.max(0, Math.min(100, progress * 100));
+  if (progress > 0 && pct < 0.1) pct = 0.1;
+  if (progress < 1 && pct > 99.9) pct = 99.9;
+  return pct;
 }
 
 /**

@@ -140,7 +140,7 @@ export function validateAgentName(name: string): ValidationResult {
   if (name.length > 20) {
     return { valid: false, message: 'Agent name cannot exceed 20 characters' };
   }
-  const agentNameRegex = /^[a-zA-Z0-9\s\-]+$/;
+  const agentNameRegex = /^[a-zA-Z0-9\s-]+$/;
   if (!agentNameRegex.test(name)) {
     return { valid: false, message: 'Agent name can only contain letters, numbers, spaces, and hyphens' };
   }

@@ -62,20 +62,6 @@ export interface SocialLoginRequest {
   avatar?: string;
 }
 
-export interface UserSettings {
-  notifications: {
-    agentAlerts: boolean;
-    deathNotifications: boolean;
-    timeReminders: boolean;
-  };
-  privacy: {
-    showAgent: boolean;
-    showStats: boolean;
-  };
-  theme: 'light' | 'dark' | 'system';
-  language: 'zh-CN' | 'en-US';
-}
-
 export interface UserStats {
   agentsCreated: number;
   agentsLost: number;
