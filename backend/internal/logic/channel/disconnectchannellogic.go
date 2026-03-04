@@ -7,6 +7,7 @@ import (
 
 	"backend/ent"
 	"backend/ent/channelconnection"
+	"backend/internal/domain"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -61,7 +62,7 @@ func (l *DisconnectChannelLogic) DisconnectChannel(req *types.ChannelReq) (resp 
 		return nil, err
 	}
 
-	_, err = l.svcCtx.DB.ChannelConnection.UpdateOneID(conn.ID).SetStatus("disconnected").ClearConnectedAt().Save(l.ctx)
+	_, err = l.svcCtx.DB.ChannelConnection.UpdateOneID(conn.ID).SetStatus(domain.ChannelStatusDisconnected).ClearConnectedAt().Save(l.ctx)
 	if err != nil {
 		return nil, err
 	}

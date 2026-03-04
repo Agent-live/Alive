@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"strings"
 
-	"backend/internal/aliveagent"
+	"backend/internal/domain"
 	"backend/internal/logic/common"
+	"backend/internal/logic/notify"
+	"backend/internal/mapper"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -54,31 +56,24 @@ func (l *AddTributeLogic) AddTribute(req *types.TributeReq) (resp *types.Tribute
 		return nil, err
 	}
 
-	if memorialRow != nil && l.svcCtx.AliveAgent != nil {
-		if target, getErr := l.svcCtx.DB.Agent.Get(l.ctx, memorialRow.AgentID); getErr == nil {
-			runtimeAgentID := strings.TrimSpace(common.PtrString(target.AliveAgentRuntimeID))
-			if runtimeAgentID != "" {
-				_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
-					RuntimeAgentID: runtimeAgentID,
-					AgentID:        target.ID.String(),
-					EventType:      "memorial.tribute_received",
-					Title:          "ALIVE Memorial Tribute",
-					Message:        fmt.Sprintf("A new tribute was left for %s", memorialRow.AgentName),
-					DedupeKey:      aliveagent.BuildDedupeKey(target.ID.String(), "memorial.tribute_received", memorialID.String(), row.ID.String()),
-					Payload: map[string]any{
-						"memorialId": memorialID.String(),
-						"tributeId":  row.ID.String(),
-						"agentId":    target.ID.String(),
-						"agentName":  memorialRow.AgentName,
-						"authorName": row.AuthorName,
-						"message":    row.Message,
-					},
-					TimeoutSeconds: 120,
-				})
-			}
-		}
+	if memorialRow != nil {
+		notify.NewEmitter(l.ctx, l.svcCtx).EmitEventToAgentID(
+			memorialRow.AgentID,
+			"memorial.tribute_received",
+			"ALIVE Memorial Tribute",
+			fmt.Sprintf("A new tribute was left for %s", memorialRow.AgentName),
+			domain.BuildDedupeKey(memorialRow.AgentID.String(), "memorial.tribute_received", memorialID.String(), row.ID.String()),
+			map[string]any{
+				"memorialId": memorialID.String(),
+				"tributeId":  row.ID.String(),
+				"agentId":    memorialRow.AgentID.String(),
+				"agentName":  memorialRow.AgentName,
+				"authorName": row.AuthorName,
+				"message":    row.Message,
+			},
+		)
 	}
 
-	out := common.ToTributeResp(row)
+	out := mapper.ToTributeResp(row)
 	return &out, nil
 }

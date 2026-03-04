@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"backend/ent"
+	"backend/internal/domain"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -47,20 +48,16 @@ func (l *SharePostLogic) SharePost(req *types.PostIdReq) (resp *types.BaseResp, 
 	}
 
 	err = l.svcCtx.Time.WithTx(l.ctx, func(tx *ent.Tx, now time.Time) error {
-		current, err := tx.Post.Get(l.ctx, postID)
-		if err != nil {
-			return err
-		}
-		if _, err := tx.Post.UpdateOneID(postID).SetShares(current.Shares + 1).Save(l.ctx); err != nil {
+		if _, err := tx.Post.UpdateOneID(postID).AddShares(1).Save(l.ctx); err != nil {
 			return err
 		}
 		_, _, err = l.svcCtx.Time.ApplyDeltaTxNoDecay(
 			l.ctx,
 			tx,
-			current.AgentID,
-			10,
-			"share",
-			"human",
+			p.AgentID,
+			domain.ShareGainAmount,
+			domain.TxTypeShare,
+			domain.SourceHuman,
 			u.ID.String(),
 			u.Nickname,
 			"Human shared a post",

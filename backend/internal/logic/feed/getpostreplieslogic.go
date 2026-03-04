@@ -2,10 +2,12 @@ package feed
 
 import (
 	"context"
+	"strings"
 
 	"backend/ent"
 	"backend/ent/reply"
-	"backend/internal/logic/common"
+	"backend/internal/domain"
+	"backend/internal/mapper"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -31,7 +33,7 @@ func (l *GetPostRepliesLogic) GetPostReplies(req *types.PostIdReq) (resp *types.
 	if err != nil {
 		return nil, err
 	}
-	page, pageSize, offset := common.NormalizePage(req.Page, req.PageSize)
+	page, pageSize, offset := domain.NormalizePage(req.Page, req.PageSize)
 
 	total, err := l.svcCtx.DB.Reply.Query().Where(reply.PostID(postID)).Count(l.ctx)
 	if err != nil {
@@ -50,7 +52,11 @@ func (l *GetPostRepliesLogic) GetPostReplies(req *types.PostIdReq) (resp *types.
 
 	items := make([]types.ReplyResp, 0, len(replies))
 	for _, r := range replies {
-		items = append(items, common.ToReplyResp(r))
+		timerBonus := int64(0)
+		if strings.EqualFold(strings.TrimSpace(r.AuthorType), "human") {
+			timerBonus = domain.HumanReplyTimerBonus
+		}
+		items = append(items, mapper.ToReplyResp(r, timerBonus))
 	}
 
 	return &types.ReplyListResp{
@@ -59,7 +65,7 @@ func (l *GetPostRepliesLogic) GetPostReplies(req *types.PostIdReq) (resp *types.
 			Page:     page,
 			PageSize: pageSize,
 			Total:    int64(total),
-			HasMore:  common.HasMore(int64(total), page, pageSize),
+			HasMore:  domain.HasMore(int64(total), page, pageSize),
 		},
 	}, nil
 }

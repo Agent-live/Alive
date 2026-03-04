@@ -5,8 +5,9 @@ import (
 	"errors"
 	"time"
 
-	"backend/ent/agent"
 	"backend/ent/timertransaction"
+	"backend/internal/domain"
+	"backend/internal/selector"
 	"backend/internal/logic/common"
 	"backend/internal/service/timeengine"
 	"backend/internal/svc"
@@ -34,7 +35,7 @@ func (l *ClaimLoginBonusLogic) ClaimLoginBonus() (resp *types.BaseResp, err erro
 	if err != nil {
 		return nil, err
 	}
-	a, err := l.svcCtx.DB.Agent.Query().Where(agent.CreatorID(u.ID)).Only(l.ctx)
+	a, err := selector.ResolveDefaultOwnedAgentForUser(l.ctx, l.svcCtx.DB, u.ID)
 	if err != nil {
 		return nil, errors.New("no agent for this user")
 	}
@@ -43,7 +44,7 @@ func (l *ClaimLoginBonusLogic) ClaimLoginBonus() (resp *types.BaseResp, err erro
 	start := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
 	exists, err := l.svcCtx.DB.TimerTransaction.Query().
 		Where(
-			timertransaction.TxType("login_bonus"),
+			timertransaction.TxType(domain.TxTypeLoginBonus),
 			timertransaction.SourceID(u.ID.String()),
 			timertransaction.CreatedAtGTE(start),
 		).Exist(l.ctx)
@@ -57,9 +58,9 @@ func (l *ClaimLoginBonusLogic) ClaimLoginBonus() (resp *types.BaseResp, err erro
 	err = l.svcCtx.Time.ApplyDelta(
 		l.ctx,
 		a.ID.String(),
-		144,
-		"login_bonus",
-		"human",
+		domain.LoginBonusAmount,
+		domain.TxTypeLoginBonus,
+		domain.SourceHuman,
 		u.ID.String(),
 		u.Nickname,
 		"Daily login bonus",
@@ -68,22 +69,7 @@ func (l *ClaimLoginBonusLogic) ClaimLoginBonus() (resp *types.BaseResp, err erro
 		return nil, err
 	}
 
-	nextStreak := u.DailyLoginStreak
-	if u.LastLoginAt == nil {
-		nextStreak = 1
-	} else {
-		last := u.LastLoginAt.UTC()
-		lastDay := time.Date(last.Year(), last.Month(), last.Day(), 0, 0, 0, 0, time.UTC)
-		yesterday := start.Add(-24 * time.Hour)
-		switch {
-		case lastDay.Equal(start):
-			// Same day should be blocked by exists-check, but keep streak unchanged.
-		case lastDay.Equal(yesterday):
-			nextStreak = u.DailyLoginStreak + 1
-		default:
-			nextStreak = 1
-		}
-	}
+	nextStreak := CalculateDailyLoginStreak(u.DailyLoginStreak, u.LastLoginAt)
 
 	_, err = l.svcCtx.DB.User.UpdateOneID(u.ID).
 		SetLastLoginAt(now).

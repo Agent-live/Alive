@@ -6,6 +6,9 @@ import (
 	"backend/ent"
 	"backend/ent/agent"
 	"backend/ent/timertransaction"
+	"backend/internal/domain"
+	"backend/internal/mapper"
+	"backend/internal/selector"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -29,24 +32,30 @@ func NewGetTimerTransactionsLogic(ctx context.Context, svcCtx *svc.ServiceContex
 }
 
 func (l *GetTimerTransactionsLogic) GetTimerTransactions(req *types.ListReq) (resp *types.TimerTxListResp, err error) {
-	page, pageSize, offset := common.NormalizePage(req.Page, req.PageSize)
+	page, pageSize, offset := domain.NormalizePage(req.Page, req.PageSize)
 
 	u, err := common.CurrentUser(l.ctx, l.svcCtx.DB)
 	if err != nil {
 		return nil, err
 	}
 
-	var myAgentID *uuid.UUID
-	if a, err := l.svcCtx.DB.Agent.Query().Where(agent.CreatorID(u.ID)).Only(l.ctx); err == nil {
-		id := a.ID
-		myAgentID = &id
+	ownedAgents, err := selector.LoadOwnedAgentsForUser(l.ctx, l.svcCtx.DB, u.ID)
+	if err != nil {
+		return nil, err
+	}
+	ownedAgentIDs := make([]uuid.UUID, 0, len(ownedAgents))
+	for _, item := range ownedAgents {
+		if item == nil {
+			continue
+		}
+		ownedAgentIDs = append(ownedAgentIDs, item.ID)
 	}
 
 	query := l.svcCtx.DB.TimerTransaction.Query()
-	if myAgentID != nil {
+	if len(ownedAgentIDs) > 0 {
 		query = query.Where(
 			timertransaction.Or(
-				timertransaction.AgentID(*myAgentID),
+				timertransaction.AgentIDIn(ownedAgentIDs...),
 				timertransaction.And(
 					timertransaction.SourceType("human"),
 					timertransaction.SourceID(u.ID.String()),
@@ -93,7 +102,7 @@ func (l *GetTimerTransactionsLogic) GetTimerTransactions(req *types.ListReq) (re
 
 	items := make([]types.TimerTransactionResp, 0, len(txs))
 	for _, tx := range txs {
-		items = append(items, common.ToTxResp(tx, aMap[tx.AgentID]))
+		items = append(items, mapper.ToTxResp(tx, aMap[tx.AgentID]))
 	}
 
 	return &types.TimerTxListResp{
@@ -102,7 +111,7 @@ func (l *GetTimerTransactionsLogic) GetTimerTransactions(req *types.ListReq) (re
 			Page:     page,
 			PageSize: pageSize,
 			Total:    int64(total),
-			HasMore:  common.HasMore(int64(total), page, pageSize),
+			HasMore:  domain.HasMore(int64(total), page, pageSize),
 		},
 	}, nil
 }

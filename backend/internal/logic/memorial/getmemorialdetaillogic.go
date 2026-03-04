@@ -5,7 +5,8 @@ import (
 
 	"backend/ent"
 	"backend/ent/tribute"
-	"backend/internal/logic/common"
+	"backend/internal/domain"
+	"backend/internal/mapper"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -48,7 +49,11 @@ func (l *GetMemorialDetailLogic) GetMemorialDetail(req *types.MemorialIdReq) (re
 			creatorName = u.Nickname
 		}
 	}
-	out := common.ToMemorialRespDetailed(m, tributes, a, creatorName, int64(len(tributes)))
+	totalTimerReceivedSecs := int64(0)
+	if a != nil {
+		totalTimerReceivedSecs = a.TotalTimerReceived * int64(domain.TimerUnitDuration.Seconds())
+	}
+	out := mapper.ToMemorialRespDetailed(m, tributes, a, creatorName, int64(len(tributes)), totalTimerReceivedSecs)
 	out.FinalReviewStory = loadFinalReviewStory(l.ctx, l.svcCtx.DB, m.AgentID)
 	return &out, nil
 }

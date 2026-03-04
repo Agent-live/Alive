@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	"backend/internal/domain"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -47,7 +48,7 @@ func (l *GetUploadURLLogic) GetUploadURL(req *types.UploadURLReq) (resp *types.U
 	m, err := l.svcCtx.DB.Media.Create().
 		SetMimeType(req.MimeType).
 		SetFileSize(req.FileSize).
-		SetStatus("uploading").
+		SetStatus(domain.MediaStatusUploading).
 		Save(l.ctx)
 	if err != nil {
 		return nil, err

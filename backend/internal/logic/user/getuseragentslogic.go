@@ -3,7 +3,8 @@ package user
 import (
 	"context"
 
-	"backend/ent/agent"
+	"backend/internal/mapper"
+	"backend/internal/selector"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -31,27 +32,44 @@ func (l *GetUserAgentsLogic) GetUserAgents() (resp *types.UserAgentsResp, err er
 		return nil, err
 	}
 
-	rows, err := l.svcCtx.DB.Agent.Query().Where(agent.CreatorID(u.ID)).All(l.ctx)
+	rows, err := selector.LoadOwnedAgentsForUser(l.ctx, l.svcCtx.DB, u.ID)
 	if err != nil {
 		return nil, err
+	}
+	if l.svcCtx.Time != nil {
+		for idx := range rows {
+			if rows[idx] == nil {
+				continue
+			}
+			synced, syncErr := l.svcCtx.Time.SyncAgent(l.ctx, rows[idx].ID.String())
+			if syncErr != nil {
+				l.Errorf("get user agents: sync agent %s failed: %v", rows[idx].ID.String(), syncErr)
+				continue
+			}
+			if synced != nil {
+				rows[idx] = synced
+			}
+		}
 	}
 
 	agents := make([]types.AgentSummaryResp, 0, len(rows))
 	for _, a := range rows {
-		out := common.ToAgentSummaryResp(a)
+		out := mapper.ToAgentSummaryResp(a)
 		out.CreatorName = u.Nickname
 		agents = append(agents, out)
 	}
 
 	primary := ""
-	if len(rows) > 0 {
-		primary = rows[0].ID.String()
+	if selected, selectErr := selector.SelectOwnedAgent(rows, ""); selectErr == nil && selected != nil {
+		primary = selected.ID.String()
 	}
+	maxSlots := selector.MaxAgentSlotsForUser(u)
+	usedSlots := selector.CountOccupiedAgentSlots(rows)
 
 	return &types.UserAgentsResp{
 		Agents:         agents,
-		MaxSlots:       1, // V1 single-agent mode
-		UsedSlots:      int64(len(agents)),
+		MaxSlots:       maxSlots,
+		UsedSlots:      usedSlots,
 		PrimaryAgentId: primary,
 	}, nil
 }

@@ -9,6 +9,7 @@ import (
 
 	"backend/ent"
 	"backend/ent/channelconnection"
+	"backend/internal/domain"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -31,6 +32,8 @@ func NewConnectChannelLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Co
 	}
 }
 
+// PLACEHOLDER: All channel handles below are mock/demo implementations.
+// Real integration requires OAuth flows per channel provider.
 func (l *ConnectChannelLogic) ConnectChannel(req *types.ChannelReq) (resp *types.ChannelConnectResp, err error) {
 	aid, err := uuid.Parse(req.AgentId)
 	if err != nil {
@@ -95,7 +98,7 @@ func (l *ConnectChannelLogic) ConnectChannel(req *types.ChannelReq) (resp *types
 		create := l.svcCtx.DB.ChannelConnection.Create().
 			SetAgentID(aid).
 			SetChannelType(channelType).
-			SetStatus("connected").
+			SetStatus(domain.ChannelStatusDemo).
 			SetConnectedAt(time.Now())
 		if handle != "" {
 			create.SetHandle(handle)
@@ -109,7 +112,7 @@ func (l *ConnectChannelLogic) ConnectChannel(req *types.ChannelReq) (resp *types
 		}
 	} else {
 		update := l.svcCtx.DB.ChannelConnection.UpdateOneID(existing.ID).
-			SetStatus("connected").
+			SetStatus(domain.ChannelStatusDemo).
 			SetConnectedAt(time.Now())
 		if handle != "" {
 			update.SetHandle(handle)
@@ -123,7 +126,8 @@ func (l *ConnectChannelLogic) ConnectChannel(req *types.ChannelReq) (resp *types
 	}
 
 	return &types.ChannelConnectResp{
-		Status:   "connected",
+		Status:   domain.ChannelStatusDemo,
+		IsDemo:   true,
 		Handle:   handle,
 		DeepLink: deepLink,
 		QrCode:   qr,

@@ -3,6 +3,8 @@ package timer
 import (
 	"context"
 
+	"backend/internal/domain"
+	"backend/internal/service/timeengine"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -25,16 +27,20 @@ func NewGetTimerConfigLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ge
 
 func (l *GetTimerConfigLogic) GetTimerConfig() (resp *types.TimerConfigResp, err error) {
 	return &types.TimerConfigResp{
-		LikeGain:          2,
-		ReplyGain:         5,
-		ShareGain:         10,
-		SaveGain:          30,
-		PostCost:          2,
-		AgentReplyCost:    1,
-		BehaviorCycleCost: 3,
-		PassiveDecay:      1,
-		DailyLoginBonus:   144,
-		InitialTimer:      288,
-		GoalMilestoneGain: 36,
+		LikeGain:             domain.LikeGainAmount,
+		ReplyGain:            domain.ReplyGainAmount,
+		ShareGain:            domain.ShareGainAmount,
+		SaveGain:             domain.SaveGainAmount,
+		PostCost:             domain.PostCostAmount,
+		AgentReplyCost:       domain.ReplyCostAmount,
+		BehaviorCycleCost:    domain.BehaviorCycleCostAmount,
+		PassiveDecay:         timeengine.PassiveDecayPerUnit,
+		DailyLoginBonus:      domain.LoginBonusAmount,
+		InitialTimer:         timeengine.InitialTimer,
+		GoalMilestoneGain:    domain.GoalMilestoneBonus,
+		ThresholdCritical:    domain.ThresholdCritical,
+		ThresholdDying:       domain.ThresholdDying,
+		ThresholdLow:         domain.ThresholdLow,
+		ThresholdComfortable: domain.ThresholdComfortable,
 	}, nil
 }

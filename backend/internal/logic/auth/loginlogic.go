@@ -8,12 +8,13 @@ import (
 	"time"
 
 	"backend/ent"
-	"backend/ent/agent"
 	"backend/ent/user"
 	"backend/ent/verificationcode"
 	internalAuth "backend/internal/auth"
-	"backend/internal/logic/common"
-	"backend/internal/service/timeengine"
+	"backend/internal/domain"
+	timerlogic "backend/internal/logic/timer"
+	"backend/internal/mapper"
+	"backend/internal/selector"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -49,16 +50,13 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err erro
 		if !ent.IsNotFound(err) {
 			return nil, err
 		}
-		if code != "123456" {
-			return nil, errors.New("invalid verification code")
-		}
-	} else {
-		if vc.ExpiresAt.Before(time.Now()) {
-			return nil, errors.New("verification code expired")
-		}
-		if vc.Code != code {
-			return nil, errors.New("invalid verification code")
-		}
+		return nil, errors.New("invalid verification code")
+	}
+	if vc.ExpiresAt.Before(time.Now()) {
+		return nil, errors.New("verification code expired")
+	}
+	if vc.Code != code {
+		return nil, errors.New("invalid verification code")
 	}
 
 	u, err := l.svcCtx.DB.User.Query().Where(user.Phone(phone)).Only(l.ctx)
@@ -69,8 +67,8 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err erro
 		u, err = l.svcCtx.DB.User.Create().
 			SetPhone(phone).
 			SetNickname(fmt.Sprintf("ALIVE User %s", phone[max(0, len(phone)-4):])).
-			SetTheme("system").
-			SetLanguage("zh-CN").
+			SetTheme(domain.ThemeSystem).
+			SetLanguage(domain.DefaultLanguage).
 			Save(l.ctx)
 		if err != nil {
 			return nil, err
@@ -78,23 +76,7 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err erro
 	}
 
 	now := time.Now().UTC()
-	start := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
-	nextStreak := u.DailyLoginStreak
-	if u.LastLoginAt == nil {
-		nextStreak = 1
-	} else {
-		last := u.LastLoginAt.UTC()
-		lastDay := time.Date(last.Year(), last.Month(), last.Day(), 0, 0, 0, 0, time.UTC)
-		yesterday := start.Add(-24 * time.Hour)
-		switch {
-		case lastDay.Equal(start):
-			// Same day: keep streak unchanged.
-		case lastDay.Equal(yesterday):
-			nextStreak = u.DailyLoginStreak + 1
-		default:
-			nextStreak = 1
-		}
-	}
+	nextStreak := timerlogic.CalculateDailyLoginStreak(u.DailyLoginStreak, u.LastLoginAt)
 	u, err = l.svcCtx.DB.User.UpdateOneID(u.ID).
 		SetLastLoginAt(now).
 		SetDailyLoginStreak(nextStreak).
@@ -113,36 +95,16 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err erro
 	}
 
 	agentID := ""
-	a, err := l.svcCtx.DB.Agent.Query().Where(agent.CreatorID(u.ID)).Only(l.ctx)
-	if err == nil {
+	a, err := selector.ResolveDefaultOwnedAgentForUser(l.ctx, l.svcCtx.DB, u.ID)
+	if err == nil && a != nil {
 		agentID = a.ID.String()
-	} else if err != nil && !ent.IsNotFound(err) {
-		return nil, err
-	}
-
-	if agentID != "" {
-		if err := l.svcCtx.Time.ApplyDelta(
-			l.ctx,
-			agentID,
-			144,
-			"login_bonus",
-			"human",
-			u.ID.String(),
-			u.Nickname,
-			"Daily login bonus",
-		); err != nil {
-			var be *timeengine.BusinessError
-			if !errors.As(err, &be) {
-				return nil, err
-			}
-		}
 	}
 
 	return &types.LoginResp{
 		Token:        token,
 		RefreshToken: refreshToken,
 		ExpiresIn:    l.svcCtx.Config.Auth.AccessExpire,
-		User:         common.ToUserResp(u, agentID),
+		User:         mapper.ToUserResp(u, agentID),
 	}, nil
 }
 
@@ -152,3 +114,4 @@ func max(a, b int) int {
 	}
 	return b
 }
+

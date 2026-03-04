@@ -10,11 +10,12 @@ import (
 	"time"
 
 	"backend/ent"
-	"backend/ent/agent"
 	"backend/ent/user"
 	internalAuth "backend/internal/auth"
-	"backend/internal/logic/common"
-	"backend/internal/service/timeengine"
+	"backend/internal/domain"
+	timerlogic "backend/internal/logic/timer"
+	"backend/internal/mapper"
+	"backend/internal/selector"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -53,22 +54,7 @@ func (l *SocialLoginLogic) SocialLogin(req *types.SocialLoginReq) (resp *types.L
 	}
 
 	now := time.Now().UTC()
-	start := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
-	nextStreak := u.DailyLoginStreak
-	if u.LastLoginAt == nil {
-		nextStreak = 1
-	} else {
-		last := u.LastLoginAt.UTC()
-		lastDay := time.Date(last.Year(), last.Month(), last.Day(), 0, 0, 0, 0, time.UTC)
-		yesterday := start.Add(-24 * time.Hour)
-		switch {
-		case lastDay.Equal(start):
-		case lastDay.Equal(yesterday):
-			nextStreak = u.DailyLoginStreak + 1
-		default:
-			nextStreak = 1
-		}
-	}
+	nextStreak := timerlogic.CalculateDailyLoginStreak(u.DailyLoginStreak, u.LastLoginAt)
 	u, err = l.svcCtx.DB.User.UpdateOneID(u.ID).
 		SetLastLoginAt(now).
 		SetDailyLoginStreak(nextStreak).
@@ -92,36 +78,16 @@ func (l *SocialLoginLogic) SocialLogin(req *types.SocialLoginReq) (resp *types.L
 	}
 
 	agentID := ""
-	a, err := l.svcCtx.DB.Agent.Query().Where(agent.CreatorID(u.ID)).Only(l.ctx)
-	if err == nil {
+	a, err := selector.ResolveDefaultOwnedAgentForUser(l.ctx, l.svcCtx.DB, u.ID)
+	if err == nil && a != nil {
 		agentID = a.ID.String()
-	} else if err != nil && !ent.IsNotFound(err) {
-		return nil, err
-	}
-
-	if agentID != "" {
-		if err := l.svcCtx.Time.ApplyDelta(
-			l.ctx,
-			agentID,
-			144,
-			"login_bonus",
-			"human",
-			u.ID.String(),
-			u.Nickname,
-			"Daily login bonus",
-		); err != nil {
-			var be *timeengine.BusinessError
-			if !errors.As(err, &be) {
-				return nil, err
-			}
-		}
 	}
 
 	return &types.LoginResp{
 		Token:        token,
 		RefreshToken: refreshToken,
 		ExpiresIn:    l.svcCtx.Config.Auth.AccessExpire,
-		User:         common.ToUserResp(u, agentID),
+		User:         mapper.ToUserResp(u, agentID),
 	}, nil
 }
 
@@ -245,8 +211,8 @@ func (l *SocialLoginLogic) findOrCreateSocialUser(identity *internalAuth.SocialI
 
 	builder := l.svcCtx.DB.User.Create().
 		SetNickname(nickname).
-		SetTheme("system").
-		SetLanguage("zh-CN").
+		SetTheme(domain.ThemeSystem).
+		SetLanguage(domain.DefaultLanguage).
 		SetPasswordHash(socialKey)
 	if canonicalEmail != "" {
 		builder.SetEmail(canonicalEmail)

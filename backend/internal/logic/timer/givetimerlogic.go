@@ -2,9 +2,9 @@ package timer
 
 import (
 	"context"
-	"errors"
 	"strings"
 
+	"backend/internal/domain"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -29,10 +29,10 @@ func NewGiveTimerLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GiveTim
 func (l *GiveTimerLogic) GiveTimer(req *types.GiveTimerReq) (resp *types.BaseResp, err error) {
 	agentID := strings.TrimSpace(req.AgentId)
 	if agentID == "" {
-		return nil, errors.New("agentId is required")
+		return nil, domain.NewValidationError("agentId is required")
 	}
 	if req.Amount <= 0 {
-		return nil, errors.New("amount must be positive")
+		return nil, domain.NewValidationError("amount must be positive")
 	}
 
 	u, err := common.CurrentUser(l.ctx, l.svcCtx.DB)
@@ -44,8 +44,8 @@ func (l *GiveTimerLogic) GiveTimer(req *types.GiveTimerReq) (resp *types.BaseRes
 		l.ctx,
 		agentID,
 		req.Amount,
-		"gift",
-		"human",
+		domain.TxTypeGift,
+		domain.SourceHuman,
 		u.ID.String(),
 		u.Nickname,
 		"Manual timer gift",

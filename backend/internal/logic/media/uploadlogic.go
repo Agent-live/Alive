@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"backend/ent"
+	"backend/internal/domain"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -244,7 +245,7 @@ func (l *UploadLogic) parseAndGetMedia(req *types.MediaIdReq) (uuid.UUID, *ent.M
 }
 
 func (l *UploadLogic) updateUploadedMetadata(id uuid.UUID, m *ent.Media, size int64, contentType string) error {
-	upd := l.svcCtx.DB.Media.UpdateOneID(id).SetStatus("uploaded")
+	upd := l.svcCtx.DB.Media.UpdateOneID(id).SetStatus(domain.MediaStatusUploaded)
 	if m == nil || m.FileSize != size {
 		upd.SetFileSize(size)
 	}

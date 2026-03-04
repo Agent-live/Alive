@@ -8,7 +8,8 @@ import (
 	"backend/ent/memorial"
 	"backend/ent/tribute"
 	"backend/ent/user"
-	"backend/internal/logic/common"
+	"backend/internal/domain"
+	"backend/internal/mapper"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -31,7 +32,7 @@ func NewGetMemorialsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetM
 }
 
 func (l *GetMemorialsLogic) GetMemorials(req *types.ListReq) (resp *types.MemorialListResp, err error) {
-	page, pageSize, offset := common.NormalizePage(req.Page, req.PageSize)
+	page, pageSize, offset := domain.NormalizePage(req.Page, req.PageSize)
 
 	total, err := l.svcCtx.DB.Memorial.Query().Count(l.ctx)
 	if err != nil {
@@ -94,7 +95,11 @@ func (l *GetMemorialsLogic) GetMemorials(req *types.ListReq) (resp *types.Memori
 		if a != nil {
 			cName = creatorName[a.CreatorID]
 		}
-		item := common.ToMemorialRespDetailed(m, nil, a, cName, tributeCount[m.ID])
+		totalTimerReceivedSecs := int64(0)
+		if a != nil {
+			totalTimerReceivedSecs = a.TotalTimerReceived * int64(domain.TimerUnitDuration.Seconds())
+		}
+		item := mapper.ToMemorialRespDetailed(m, nil, a, cName, tributeCount[m.ID], totalTimerReceivedSecs)
 		item.FinalReviewStory = loadFinalReviewStory(l.ctx, l.svcCtx.DB, m.AgentID)
 		items = append(items, item)
 	}
@@ -105,7 +110,7 @@ func (l *GetMemorialsLogic) GetMemorials(req *types.ListReq) (resp *types.Memori
 			Page:     page,
 			PageSize: pageSize,
 			Total:    int64(total),
-			HasMore:  common.HasMore(int64(total), page, pageSize),
+			HasMore:  domain.HasMore(int64(total), page, pageSize),
 		},
 	}, nil
 }

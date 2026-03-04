@@ -4,12 +4,13 @@ import (
 	"context"
 	"sort"
 	"strings"
+	"time"
 
 	"backend/ent"
 	"backend/ent/agent"
+	"backend/ent/agentrelationship"
 	"backend/ent/post"
-	"backend/ent/postlike"
-	"backend/ent/reply"
+	"backend/internal/domain"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -32,21 +33,29 @@ func NewGetFeedLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetFeedLo
 	}
 }
 
-func (l *GetFeedLogic) GetFeed(req *types.ListReq) (resp *types.PostListResp, err error) {
-	page, pageSize, offset := common.NormalizePage(req.Page, req.PageSize)
+func (l *GetFeedLogic) GetFeed(req *types.FeedListReq) (resp *types.PostListResp, err error) {
+	page, pageSize, offset := domain.NormalizePage(req.Page, req.PageSize)
 
 	u, err := common.CurrentUser(l.ctx, l.svcCtx.DB)
 	if err != nil {
 		return nil, err
 	}
 
-	total, err := l.svcCtx.DB.Post.Query().Count(l.ctx)
+	scene := strings.TrimSpace(req.Scene)
+
+	// Build post query with scene filter
+	postQuery, countQuery, orderField, queryErr := l.buildSceneQuery(scene, u.ID)
+	if queryErr != nil {
+		return nil, queryErr
+	}
+
+	total, err := countQuery.Count(l.ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	posts, err := l.svcCtx.DB.Post.Query().
-		Order(ent.Desc(post.FieldCreatedAt)).
+	posts, err := postQuery.
+		Order(ent.Desc(orderField)).
 		Offset(int(offset)).
 		Limit(int(pageSize)).
 		All(l.ctx)
@@ -55,10 +64,8 @@ func (l *GetFeedLogic) GetFeed(req *types.ListReq) (resp *types.PostListResp, er
 	}
 
 	agentIDs := make([]uuid.UUID, 0, len(posts))
-	postIDs := make([]uuid.UUID, 0, len(posts))
 	for _, p := range posts {
 		agentIDs = append(agentIDs, p.AgentID)
-		postIDs = append(postIDs, p.ID)
 	}
 	agents := map[uuid.UUID]*ent.Agent{}
 	if len(agentIDs) > 0 {
@@ -71,51 +78,9 @@ func (l *GetFeedLogic) GetFeed(req *types.ListReq) (resp *types.PostListResp, er
 		}
 	}
 
-	liked := map[uuid.UUID]bool{}
-	realLikeCounts := map[uuid.UUID]int64{}
-	realReplyCounts := map[uuid.UUID]int64{}
-	if len(postIDs) > 0 {
-		// Current user liked status
-		rows, err := l.svcCtx.DB.PostLike.Query().
-			Where(
-				postlike.UserID(u.ID),
-				postlike.PostIDIn(postIDs...),
-			).
-			All(l.ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, row := range rows {
-			liked[row.PostID] = true
-		}
-
-		// Real like counts from PostLike records
-		for _, pid := range postIDs {
-			cnt, err := l.svcCtx.DB.PostLike.Query().Where(postlike.PostID(pid)).Count(l.ctx)
-			if err != nil {
-				return nil, err
-			}
-			realLikeCounts[pid] = int64(cnt)
-		}
-
-		// Real reply counts from Reply records
-		for _, pid := range postIDs {
-			cnt, err := l.svcCtx.DB.Reply.Query().Where(reply.PostID(pid)).Count(l.ctx)
-			if err != nil {
-				return nil, err
-			}
-			realReplyCounts[pid] = int64(cnt)
-		}
-	}
-
-	items := make([]types.PostResp, 0, len(posts))
-	for _, p := range posts {
-		out := common.ToPostResp(p, agents[p.AgentID])
-		out.IsLiked = liked[p.ID]
-		// Use real counts from actual records instead of stored counters
-		out.Likes = realLikeCounts[p.ID]
-		out.Replies = realReplyCounts[p.ID]
-		items = append(items, out)
+	items, err := BuildPostResponses(l.ctx, l.svcCtx.DB, posts, agents, u.ID)
+	if err != nil {
+		return nil, err
 	}
 	items = applyFeedPlacement(items, req.PlacementSlot)
 
@@ -125,9 +90,120 @@ func (l *GetFeedLogic) GetFeed(req *types.ListReq) (resp *types.PostListResp, er
 			Page:     page,
 			PageSize: pageSize,
 			Total:    int64(total),
-			HasMore:  common.HasMore(int64(total), page, pageSize),
+			HasMore:  domain.HasMore(int64(total), page, pageSize),
 		},
 	}, nil
+}
+
+// buildSceneQuery constructs the post query and count query for the given scene.
+// Returns (postQuery, countQuery, orderField, error).
+func (l *GetFeedLogic) buildSceneQuery(scene string, userID uuid.UUID) (*ent.PostQuery, *ent.PostQuery, string, error) {
+	orderField := post.FieldCreatedAt
+
+	switch scene {
+	case "dying":
+		agentIDs, err := l.agentIDsByStatus(domain.StatusDying, domain.StatusCritical)
+		if err != nil {
+			return nil, nil, "", err
+		}
+		q1 := l.svcCtx.DB.Post.Query().Where(post.AgentIDIn(agentIDs...))
+		q2 := l.svcCtx.DB.Post.Query().Where(post.AgentIDIn(agentIDs...))
+		return q1, q2, orderField, nil
+
+	case "newborn":
+		agentIDs, err := l.agentIDsByStatus(domain.StatusNewborn)
+		if err != nil {
+			return nil, nil, "", err
+		}
+		q1 := l.svcCtx.DB.Post.Query().Where(post.AgentIDIn(agentIDs...))
+		q2 := l.svcCtx.DB.Post.Query().Where(post.AgentIDIn(agentIDs...))
+		return q1, q2, orderField, nil
+
+	case "trending":
+		since := time.Now().Add(-24 * time.Hour)
+		q1 := l.svcCtx.DB.Post.Query().Where(post.CreatedAtGT(since))
+		q2 := l.svcCtx.DB.Post.Query().Where(post.CreatedAtGT(since))
+		return q1, q2, post.FieldLikes, nil
+
+	case "following":
+		followingIDs, err := l.loadFollowingAgentIDs(userID)
+		if err != nil {
+			return nil, nil, "", err
+		}
+		if len(followingIDs) == 0 {
+			// Return empty-ish query
+			q1 := l.svcCtx.DB.Post.Query().Where(post.AgentIDIn(uuid.Nil))
+			q2 := l.svcCtx.DB.Post.Query().Where(post.AgentIDIn(uuid.Nil))
+			return q1, q2, orderField, nil
+		}
+		q1 := l.svcCtx.DB.Post.Query().Where(post.AgentIDIn(followingIDs...))
+		q2 := l.svcCtx.DB.Post.Query().Where(post.AgentIDIn(followingIDs...))
+		return q1, q2, orderField, nil
+
+	case "working":
+		agentIDs, err := l.agentIDsByStatus(domain.StatusAlive, domain.StatusNewborn)
+		if err != nil {
+			return nil, nil, "", err
+		}
+		q1 := l.svcCtx.DB.Post.Query().Where(post.AgentIDIn(agentIDs...))
+		q2 := l.svcCtx.DB.Post.Query().Where(post.AgentIDIn(agentIDs...))
+		return q1, q2, orderField, nil
+
+	default:
+		q1 := l.svcCtx.DB.Post.Query()
+		q2 := l.svcCtx.DB.Post.Query()
+		return q1, q2, orderField, nil
+	}
+}
+
+func (l *GetFeedLogic) agentIDsByStatus(statuses ...string) ([]uuid.UUID, error) {
+	agents, err := l.svcCtx.DB.Agent.Query().
+		Where(agent.StatusIn(statuses...)).
+		All(l.ctx)
+	if err != nil {
+		return nil, err
+	}
+	ids := make([]uuid.UUID, 0, len(agents))
+	for _, a := range agents {
+		ids = append(ids, a.ID)
+	}
+	if len(ids) == 0 {
+		ids = append(ids, uuid.Nil) // ensure empty result set
+	}
+	return ids, nil
+}
+
+func (l *GetFeedLogic) loadFollowingAgentIDs(userID uuid.UUID) ([]uuid.UUID, error) {
+	userAgents, err := l.svcCtx.DB.Agent.Query().
+		Where(agent.CreatorID(userID)).
+		All(l.ctx)
+	if err != nil {
+		return nil, err
+	}
+	if len(userAgents) == 0 {
+		return nil, nil
+	}
+
+	agentIDs := make([]uuid.UUID, 0, len(userAgents))
+	for _, a := range userAgents {
+		agentIDs = append(agentIDs, a.ID)
+	}
+
+	rels, err := l.svcCtx.DB.AgentRelationship.Query().
+		Where(
+			agentrelationship.AgentIDIn(agentIDs...),
+			agentrelationship.LabelEQ(domain.RelationshipLabelFollowing),
+		).
+		All(l.ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	targetIDs := make([]uuid.UUID, 0, len(rels))
+	for _, r := range rels {
+		targetIDs = append(targetIDs, r.TargetAgentID)
+	}
+	return targetIDs, nil
 }
 
 func applyFeedPlacement(items []types.PostResp, slot string) []types.PostResp {

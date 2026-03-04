@@ -7,6 +7,7 @@ import (
 
 	"backend/ent"
 	"backend/ent/postlike"
+	"backend/internal/domain"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -110,9 +111,9 @@ func (l *LikePostLogic) LikePost(req *types.PostIdReq) (resp *types.LikePostResp
 				l.ctx,
 				tx,
 				agentID,
-				2,
-				"like",
-				"human",
+				domain.LikeGainAmount,
+				domain.TxTypeLike,
+				domain.SourceHuman,
 				u.ID.String(),
 				u.Nickname,
 				"Human liked a post",
@@ -129,7 +130,7 @@ func (l *LikePostLogic) LikePost(req *types.PostIdReq) (resp *types.LikePostResp
 			timerError = err.Error()
 		} else if updated != nil {
 			timerApplied = true
-			timerGiven = 2
+			timerGiven = domain.LikeGainAmount
 			newTimerRemaining = updated.TimerRemaining
 		}
 	}

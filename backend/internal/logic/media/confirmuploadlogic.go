@@ -7,7 +7,8 @@ import (
 	"os"
 	"strings"
 
-	"backend/internal/logic/common"
+	"backend/internal/domain"
+	"backend/internal/mapper"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -54,7 +55,7 @@ func (l *ConfirmUploadLogic) ConfirmUpload(req *types.MediaIdReq) (resp *types.M
 
 	publicURL := fmt.Sprintf("/api/v1/media/%s/original", id.String())
 	upd := l.svcCtx.DB.Media.UpdateOneID(id).
-		SetStatus("ready").
+		SetStatus(domain.MediaStatusReady).
 		SetURL(publicURL)
 	// Only images get a thumbnail URL for now; video thumbnails can be added later.
 	if strings.HasPrefix(strings.ToLower(strings.TrimSpace(m.MimeType)), "image/") {
@@ -64,6 +65,6 @@ func (l *ConfirmUploadLogic) ConfirmUpload(req *types.MediaIdReq) (resp *types.M
 	if err != nil {
 		return nil, err
 	}
-	out := common.ToMediaResp(m)
+	out := mapper.ToMediaResp(m)
 	return &out, nil
 }

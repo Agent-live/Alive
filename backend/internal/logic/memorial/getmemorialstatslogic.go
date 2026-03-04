@@ -6,8 +6,10 @@ import (
 	"backend/ent"
 	"backend/ent/agent"
 	"backend/ent/memorial"
+	"backend/ent/tribute"
 	"backend/ent/user"
-	"backend/internal/logic/common"
+	"backend/internal/domain"
+	"backend/internal/mapper"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -44,39 +46,70 @@ func (l *GetMemorialStatsLogic) GetMemorialStats() (resp *types.MemorialStatsRes
 		}, nil
 	}
 
-	allRows, err := l.svcCtx.DB.Memorial.Query().All(l.ctx)
+	// Aggregate total lifespan using SQL SUM instead of loading all rows
+	var lifespanAgg []struct {
+		Sum int64 `json:"sum"`
+	}
+	err = l.svcCtx.DB.Memorial.Query().
+		Aggregate(ent.Sum(memorial.FieldLifespanHours)).
+		Scan(l.ctx, &lifespanAgg)
+	if err != nil {
+		return nil, err
+	}
+	totalLifespan := int64(0)
+	if len(lifespanAgg) > 0 {
+		totalLifespan = lifespanAgg[0].Sum
+	}
+
+	// Longest lived: single row ordered by lifespan DESC
+	longestRow, err := l.svcCtx.DB.Memorial.Query().
+		Order(ent.Desc(memorial.FieldLifespanHours)).
+		First(l.ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	tributeRows, err := l.svcCtx.DB.Tribute.Query().All(l.ctx)
+	// Most mourned: GROUP BY memorial_id on tributes, ordered by count DESC
+	type memorialCount struct {
+		MemorialID uuid.UUID `json:"memorial_id"`
+		Count      int       `json:"count"`
+	}
+	var tributeAgg []memorialCount
+	err = l.svcCtx.DB.Tribute.Query().
+		GroupBy(tribute.FieldMemorialID).
+		Aggregate(ent.Count()).
+		Scan(l.ctx, &tributeAgg)
 	if err != nil {
 		return nil, err
 	}
-	tributeCount := make(map[uuid.UUID]int64, len(tributeRows))
-	for _, tr := range tributeRows {
-		tributeCount[tr.MemorialID]++
-	}
-
-	var totalLifespan int64
-	var longestName string
-	var longestValue int64
-	var mostMournedName string
+	tributeCount := make(map[uuid.UUID]int64, len(tributeAgg))
+	var mostMournedMemorialID uuid.UUID
 	var mostMournedValue int64
-
-	for _, row := range allRows {
-		totalLifespan += row.LifespanHours
-		if row.LifespanHours > longestValue {
-			longestValue = row.LifespanHours
-			longestName = row.AgentName
-		}
-
-		if tributeCount[row.ID] > mostMournedValue {
-			mostMournedValue = tributeCount[row.ID]
-			mostMournedName = row.AgentName
+	for _, tc := range tributeAgg {
+		tributeCount[tc.MemorialID] = int64(tc.Count)
+		if int64(tc.Count) > mostMournedValue {
+			mostMournedValue = int64(tc.Count)
+			mostMournedMemorialID = tc.MemorialID
 		}
 	}
 
+	// Look up the most mourned memorial name
+	mostMournedName := ""
+	if mostMournedValue > 0 {
+		mm, err := l.svcCtx.DB.Memorial.Get(l.ctx, mostMournedMemorialID)
+		if err == nil {
+			mostMournedName = mm.AgentName
+		}
+	}
+	if mostMournedName == "" {
+		// Fallback: use the first memorial
+		first, err := l.svcCtx.DB.Memorial.Query().First(l.ctx)
+		if err == nil {
+			mostMournedName = first.AgentName
+		}
+	}
+
+	// Recent deaths (limited to 5)
 	recentRows, err := l.svcCtx.DB.Memorial.Query().
 		Order(ent.Desc(memorial.FieldDiedAt)).
 		Limit(5).
@@ -116,24 +149,22 @@ func (l *GetMemorialStatsLogic) GetMemorialStats() (resp *types.MemorialStatsRes
 	for _, row := range recentRows {
 		a := agentMap[row.AgentID]
 		cName := ""
+		totalTimerReceivedSecs := int64(0)
 		if a != nil {
 			cName = creatorName[a.CreatorID]
+			totalTimerReceivedSecs = a.TotalTimerReceived * int64(domain.TimerUnitDuration.Seconds())
 		}
-		item := common.ToMemorialRespDetailed(row, nil, a, cName, tributeCount[row.ID])
+		item := mapper.ToMemorialRespDetailed(row, nil, a, cName, tributeCount[row.ID], totalTimerReceivedSecs)
 		item.FinalReviewStory = loadFinalReviewStory(l.ctx, l.svcCtx.DB, row.AgentID)
 		recent = append(recent, item)
-	}
-
-	if mostMournedName == "" && len(allRows) > 0 {
-		mostMournedName = allRows[0].AgentName
 	}
 
 	return &types.MemorialStatsResp{
 		TotalDeaths:     int64(total),
 		AverageLifespan: totalLifespan / int64(total),
 		LongestLived: types.MemorialTopRef{
-			AgentName: longestName,
-			Value:     longestValue,
+			AgentName: longestRow.AgentName,
+			Value:     longestRow.LifespanHours,
 		},
 		MostMourned: types.MemorialTopRef{
 			AgentName: mostMournedName,

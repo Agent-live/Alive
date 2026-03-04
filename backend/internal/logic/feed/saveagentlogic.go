@@ -8,6 +8,7 @@ import (
 
 	"backend/ent"
 	"backend/ent/timertransaction"
+	"backend/internal/domain"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -16,10 +17,6 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-const (
-	saveTimerGain  int64 = 30
-	saveDailyLimit int64 = 3
-)
 
 type SaveAgentLogic struct {
 	logx.Logger
@@ -55,7 +52,7 @@ func (l *SaveAgentLogic) SaveAgent(req *types.SaveAgentReq) (resp *types.SaveAge
 	if err != nil {
 		return nil, err
 	}
-	if a.Status != "dying" && a.Status != "critical" {
+	if a.Status != domain.StatusDying && a.Status != domain.StatusCritical {
 		return nil, errors.New("agent is not in dying state")
 	}
 
@@ -65,9 +62,9 @@ func (l *SaveAgentLogic) SaveAgent(req *types.SaveAgentReq) (resp *types.SaveAge
 			l.ctx,
 			tx,
 			id,
-			saveTimerGain,
-			"save",
-			"human",
+			domain.SaveGainAmount,
+			domain.TxTypeSave,
+			domain.SourceHuman,
 			u.ID.String(),
 			u.Nickname,
 			"Saved a dying agent",
@@ -88,8 +85,8 @@ func (l *SaveAgentLogic) SaveAgent(req *types.SaveAgentReq) (resp *types.SaveAge
 	start := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
 	saveCount, err := l.svcCtx.DB.TimerTransaction.Query().
 		Where(
-			timertransaction.TxType("save"),
-			timertransaction.SourceType("human"),
+			timertransaction.TxType(domain.TxTypeSave),
+			timertransaction.SourceType(domain.SourceHuman),
 			timertransaction.SourceID(u.ID.String()),
 			timertransaction.CreatedAtGTE(start),
 		).
@@ -97,14 +94,14 @@ func (l *SaveAgentLogic) SaveAgent(req *types.SaveAgentReq) (resp *types.SaveAge
 	if err != nil {
 		saveCount = 0
 	}
-	left := saveDailyLimit - int64(saveCount)
+	left := domain.DailySavesMax - int64(saveCount)
 	if left < 0 {
 		left = 0
 	}
 
 	return &types.SaveAgentResp{
 		Success:           true,
-		TimerGiven:        saveTimerGain,
+		TimerGiven:        domain.SaveGainAmount,
 		NewTimerRemaining: a.TimerRemaining,
 		DailySavesLeft:    left,
 	}, nil

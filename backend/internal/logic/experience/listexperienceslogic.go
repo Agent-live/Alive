@@ -5,6 +5,7 @@ import (
 
 	"backend/ent"
 	"backend/ent/agentexperience"
+	"backend/internal/mapper"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -48,7 +49,7 @@ func (l *ListExperiencesLogic) ListExperiences(req *types.ExperienceListReq) (re
 	}
 	items := make([]types.ExperienceResp, 0, len(rows))
 	for _, row := range rows {
-		items = append(items, common.ToExperienceResp(row))
+		items = append(items, mapper.ToExperienceResp(row))
 	}
 	return &types.ExperienceListResp{Items: items}, nil
 }

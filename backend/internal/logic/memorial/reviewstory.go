@@ -7,6 +7,7 @@ import (
 
 	"backend/ent"
 	"backend/ent/post"
+	"backend/internal/domain"
 
 	"github.com/google/uuid"
 )
@@ -32,10 +33,10 @@ func loadFinalReviewStory(ctx context.Context, db *ent.Client, agentID uuid.UUID
 	}
 	payload := map[string]any{}
 	if json.Unmarshal([]byte(trimmed), &payload) != nil {
-		return truncateRunes(trimmed, 220)
+		return domain.Truncate(trimmed, 220)
 	}
-	if preview := strings.TrimSpace(asStoryString(payload["preview"])); preview != "" {
-		return truncateRunes(preview, 220)
+	if preview := strings.TrimSpace(domain.AsString(payload["preview"])); preview != "" {
+		return domain.Truncate(preview, 220)
 	}
 	if blocks, ok := payload["blocks"].([]any); ok {
 		for _, block := range blocks {
@@ -43,32 +44,14 @@ func loadFinalReviewStory(ctx context.Context, db *ent.Client, agentID uuid.UUID
 			if !ok {
 				continue
 			}
-			if strings.TrimSpace(asStoryString(item["type"])) != "text" {
+			if strings.TrimSpace(domain.AsString(item["type"])) != domain.ContentBlockTypeText {
 				continue
 			}
-			if text := strings.TrimSpace(asStoryString(item["text"])); text != "" {
-				return truncateRunes(text, 220)
+			if text := strings.TrimSpace(domain.AsString(item["text"])); text != "" {
+				return domain.Truncate(text, 220)
 			}
 		}
 	}
-	return truncateRunes(trimmed, 220)
+	return domain.Truncate(trimmed, 220)
 }
 
-func truncateRunes(in string, max int) string {
-	runes := []rune(strings.TrimSpace(in))
-	if len(runes) <= max {
-		return string(runes)
-	}
-	return string(runes[:max])
-}
-
-func asStoryString(v any) string {
-	if v == nil {
-		return ""
-	}
-	if s, ok := v.(string); ok {
-		return s
-	}
-	raw, _ := json.Marshal(v)
-	return strings.Trim(string(raw), "\"")
-}

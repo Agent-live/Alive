@@ -6,6 +6,7 @@ import (
 	"backend/ent"
 	"backend/ent/agent"
 	"backend/ent/agenttask"
+	"backend/internal/mapper"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -77,7 +78,7 @@ func (l *ListTasksLogic) ListTasks(req *types.TaskListReq) (resp *types.TaskList
 
 	items := make([]types.TaskResp, 0, len(rows))
 	for _, row := range rows {
-		items = append(items, common.ToTaskResp(row, agentMap[row.AgentID]))
+		items = append(items, mapper.ToTaskResp(row, agentMap[row.AgentID]))
 	}
 	return &types.TaskListResp{Items: items}, nil
 }

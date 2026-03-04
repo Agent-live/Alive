@@ -3,7 +3,7 @@ package media
 import (
 	"context"
 
-	"backend/internal/logic/common"
+	"backend/internal/mapper"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -34,6 +34,6 @@ func (l *GetMediaLogic) GetMedia(req *types.MediaIdReq) (resp *types.MediaResp, 
 	if err != nil {
 		return nil, err
 	}
-	out := common.ToMediaResp(m)
+	out := mapper.ToMediaResp(m)
 	return &out, nil
 }

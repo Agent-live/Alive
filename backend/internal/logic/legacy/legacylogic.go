@@ -16,8 +16,11 @@ import (
 	"backend/ent/agenttask"
 	"backend/ent/memorial"
 	"backend/ent/post"
-	"backend/internal/aliveagent"
+	"backend/internal/domain"
 	"backend/internal/logic/common"
+	"backend/internal/logic/notify"
+	"backend/internal/mapper"
+	"backend/internal/port"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -126,7 +129,7 @@ func (l *Logic) InheritLegacy(req *types.LegacyInheritReq) (*types.LegacyInherit
 	if targetAgent.CreatorID != u.ID {
 		return nil, errors.New("forbidden")
 	}
-	if strings.EqualFold(targetAgent.Status, "dead") {
+	if strings.EqualFold(targetAgent.Status, domain.StatusDead) {
 		return nil, errors.New("target agent must be alive")
 	}
 
@@ -161,7 +164,7 @@ func (l *Logic) InheritLegacy(req *types.LegacyInheritReq) (*types.LegacyInherit
 		"legacy.inheritance_requested",
 		"ALIVE Legacy Inheritance Requested",
 		fmt.Sprintf("Inheritance requested from %s", memorialRow.AgentName),
-		aliveagent.BuildDedupeKey(targetAgent.ID.String(), "legacy.inheritance_requested", legacyID, targetAgent.ID.String()),
+		domain.BuildDedupeKey(targetAgent.ID.String(), "legacy.inheritance_requested", legacyID, targetAgent.ID.String()),
 		map[string]any{
 			"legacyId":      legacyID,
 			"sourceAgentId": sourceAgent.ID.String(),
@@ -175,7 +178,7 @@ func (l *Logic) InheritLegacy(req *types.LegacyInheritReq) (*types.LegacyInherit
 		"legacy.inheritance_previewed",
 		"ALIVE Legacy Inheritance Preview",
 		"Inheritance preview generated",
-		aliveagent.BuildDedupeKey(targetAgent.ID.String(), "legacy.inheritance_previewed", legacyID, mode),
+		domain.BuildDedupeKey(targetAgent.ID.String(), "legacy.inheritance_previewed", legacyID, mode),
 		map[string]any{
 			"legacyId":           legacyID,
 			"mode":               mode,
@@ -219,7 +222,7 @@ func (l *Logic) InheritLegacy(req *types.LegacyInheritReq) (*types.LegacyInherit
 				SetDescription(src.Description).
 				SetInstructions(src.Instructions).
 				SetCategory(src.Category).
-				SetStatus("active").
+				SetStatus(domain.SkillStatusActive).
 				SetTaughtAt(now).
 				SetSourceSkillID(src.ID)
 			if src.Version != nil {
@@ -252,7 +255,7 @@ func (l *Logic) InheritLegacy(req *types.LegacyInheritReq) (*types.LegacyInherit
 					SetPriority(src.Priority).
 					SetStatus("todo").
 					SetProgress(0)
-				if desc := strings.TrimSpace(common.PtrString(src.Description)); desc != "" {
+				if desc := strings.TrimSpace(domain.PtrString(src.Description)); desc != "" {
 					create.SetDescription(desc)
 				}
 				if _, err := create.Save(l.ctx); err != nil {
@@ -280,7 +283,7 @@ func (l *Logic) InheritLegacy(req *types.LegacyInheritReq) (*types.LegacyInherit
 
 				label := src.Label
 				if strings.TrimSpace(label) == "" {
-					label = "acquaintance"
+					label = domain.RelationshipLabelAcquaintance
 				}
 				_, err = tx.AgentRelationship.Create().
 					SetAgentID(newAgentID).
@@ -326,7 +329,7 @@ func (l *Logic) InheritLegacy(req *types.LegacyInheritReq) (*types.LegacyInherit
 			"legacy.inheritance_rejected",
 			"ALIVE Legacy Inheritance Failed",
 			"Inheritance application failed",
-			aliveagent.BuildDedupeKey(targetAgent.ID.String(), "legacy.inheritance_rejected", legacyID, targetAgent.ID.String()),
+			domain.BuildDedupeKey(targetAgent.ID.String(), "legacy.inheritance_rejected", legacyID, targetAgent.ID.String()),
 			map[string]any{
 				"legacyId":      legacyID,
 				"targetAgentId": targetAgent.ID.String(),
@@ -338,12 +341,12 @@ func (l *Logic) InheritLegacy(req *types.LegacyInheritReq) (*types.LegacyInherit
 
 	// Bind imported skills into AliveAgent runtime (best-effort post-commit).
 	boundSkillCount := int64(0)
-	runtimeAgentID := strings.TrimSpace(common.PtrString(targetAgent.AliveAgentRuntimeID))
+	runtimeAgentID := strings.TrimSpace(domain.PtrString(targetAgent.AliveAgentRuntimeID))
 	for _, item := range createdSkills {
-		if runtimeAgentID == "" || l.svcCtx.AliveAgent == nil {
+		if runtimeAgentID == "" || l.svcCtx.AgentRuntime == nil {
 			continue
 		}
-		binding, bindErr := l.svcCtx.AliveAgent.BindSkill(l.ctx, aliveagent.BindSkillRequest{
+		binding, bindErr := l.svcCtx.AgentRuntime.BindSkill(l.ctx, port.BindSkillRequest{
 			AgentID:      targetAgent.ID.String(),
 			SkillName:    item.Name,
 			Description:  item.Description,
@@ -365,7 +368,7 @@ func (l *Logic) InheritLegacy(req *types.LegacyInheritReq) (*types.LegacyInherit
 		"legacy.asset_imported",
 		"ALIVE Legacy Assets Imported",
 		"Legacy assets imported",
-		aliveagent.BuildDedupeKey(targetAgent.ID.String(), "legacy.asset_imported", legacyID, targetAgent.ID.String()),
+		domain.BuildDedupeKey(targetAgent.ID.String(), "legacy.asset_imported", legacyID, targetAgent.ID.String()),
 		map[string]any{
 			"legacyId":                  legacyID,
 			"targetAgentId":             targetAgent.ID.String(),
@@ -381,7 +384,7 @@ func (l *Logic) InheritLegacy(req *types.LegacyInheritReq) (*types.LegacyInherit
 		"legacy.inheritance_applied",
 		"ALIVE Legacy Inheritance Applied",
 		fmt.Sprintf("Legacy inheritance applied from %s", memorialRow.AgentName),
-		aliveagent.BuildDedupeKey(targetAgent.ID.String(), "legacy.inheritance_applied", legacyID, targetAgent.ID.String()),
+		domain.BuildDedupeKey(targetAgent.ID.String(), "legacy.inheritance_applied", legacyID, targetAgent.ID.String()),
 		map[string]any{
 			"legacyId":                  legacyID,
 			"sourceAgentId":             sourceAgent.ID.String(),
@@ -406,7 +409,7 @@ func (l *Logic) InheritLegacy(req *types.LegacyInheritReq) (*types.LegacyInherit
 
 func (l *Logic) collectLegacyPacksForUser(userID uuid.UUID) ([]types.LegacyPackResp, error) {
 	deadAgents, err := l.svcCtx.DB.Agent.Query().
-		Where(agent.CreatorID(userID), agent.Status("dead")).
+		Where(agent.CreatorID(userID), agent.Status(domain.StatusDead)).
 		All(l.ctx)
 	if err != nil {
 		return nil, err
@@ -513,15 +516,15 @@ func (l *Logic) buildLegacyPack(m *ent.Memorial, src *ent.Agent, inheritanceMap 
 		Id:           legacyID,
 		AgentId:      m.AgentID.String(),
 		AgentName:    m.AgentName,
-		AgentAvatar:  common.PtrString(m.AgentAvatar),
-		DiedAt:       common.TimeToISO(m.DiedAt),
+		AgentAvatar:  domain.PtrString(m.AgentAvatar),
+		DiedAt:       domain.TimeToISO(m.DiedAt),
 		LivedDays:    livedDays,
 		TaskCount:    int64(taskCount),
 		StyleSummary: styleSummary,
 		Assets:       assets,
 		Inheritable:  inheritable,
 		InheritedBy:  inheritedBy,
-		CreatedAt:    common.TimeToISO(m.CreatedAt),
+		CreatedAt:    domain.TimeToISO(m.CreatedAt),
 	}
 }
 
@@ -542,8 +545,8 @@ func (l *Logic) loadInheritanceMap(userID uuid.UUID) (map[string]string, error) 
 		if err := json.Unmarshal([]byte(strings.TrimSpace(row.Description)), &payload); err != nil {
 			continue
 		}
-		legacyID := strings.TrimSpace(asString(payload["legacyId"]))
-		newAgentID := strings.TrimSpace(asString(payload["newAgentId"]))
+		legacyID := strings.TrimSpace(domain.AsString(payload["legacyId"]))
+		newAgentID := strings.TrimSpace(domain.AsString(payload["newAgentId"]))
 		if legacyID == "" || newAgentID == "" {
 			continue
 		}
@@ -559,7 +562,7 @@ func legacyStyleSummary(a *ent.Agent) string {
 	if a == nil {
 		return ""
 	}
-	p := common.ParsePersonality(a.Personality)
+	p := mapper.ParsePersonality(a.Personality)
 	parts := make([]string, 0, 3)
 	if v := strings.TrimSpace(p.Tone); v != "" {
 		parts = append(parts, v)
@@ -568,7 +571,7 @@ func legacyStyleSummary(a *ent.Agent) string {
 		parts = append(parts, v)
 	}
 	if v := strings.TrimSpace(p.Worldview); v != "" {
-		parts = append(parts, truncate(v, 72))
+		parts = append(parts, domain.Truncate(v, 72))
 	}
 	return strings.TrimSpace(strings.Join(parts, " · "))
 }
@@ -593,51 +596,15 @@ func findReviewStory(ctx context.Context, db *ent.Client, agentID uuid.UUID) str
 	}
 	payload := map[string]any{}
 	if json.Unmarshal([]byte(trimmed), &payload) != nil {
-		return truncate(trimmed, 120)
+		return domain.Truncate(trimmed, 120)
 	}
-	if preview := strings.TrimSpace(asString(payload["preview"])); preview != "" {
-		return truncate(preview, 120)
+	if preview := strings.TrimSpace(domain.AsString(payload["preview"])); preview != "" {
+		return domain.Truncate(preview, 120)
 	}
-	return truncate(trimmed, 120)
+	return domain.Truncate(trimmed, 120)
 }
 
 func (l *Logic) notifyLegacyEvent(target *ent.Agent, eventType, title, message, dedupeKey string, payload map[string]any) {
-	if l.svcCtx == nil || l.svcCtx.AliveAgent == nil || target == nil {
-		return
-	}
-	runtimeAgentID := strings.TrimSpace(common.PtrString(target.AliveAgentRuntimeID))
-	if runtimeAgentID == "" {
-		return
-	}
-	_ = l.svcCtx.AliveAgent.NotifyStructuredEvent(l.ctx, aliveagent.StructuredNotifyRequest{
-		RuntimeAgentID: runtimeAgentID,
-		AgentID:        target.ID.String(),
-		EventType:      eventType,
-		Title:          title,
-		Message:        message,
-		DedupeKey:      dedupeKey,
-		Payload:        payload,
-		TimeoutSeconds: 120,
-	})
+	notify.NewEmitter(l.ctx, l.svcCtx).EmitEventToAgentRow(target, eventType, title, message, dedupeKey, payload)
 }
 
-func truncate(in string, max int) string {
-	runes := []rune(strings.TrimSpace(in))
-	if len(runes) <= max {
-		return string(runes)
-	}
-	return string(runes[:max])
-}
-
-func asString(v any) string {
-	if v == nil {
-		return ""
-	}
-	switch value := v.(type) {
-	case string:
-		return value
-	default:
-		raw, _ := json.Marshal(value)
-		return strings.Trim(string(raw), "\"")
-	}
-}

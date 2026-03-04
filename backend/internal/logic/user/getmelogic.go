@@ -3,8 +3,8 @@ package user
 import (
 	"context"
 
-	"backend/ent"
-	"backend/ent/agent"
+	"backend/internal/mapper"
+	"backend/internal/selector"
 	"backend/internal/logic/common"
 	"backend/internal/svc"
 	"backend/internal/types"
@@ -33,13 +33,11 @@ func (l *GetMeLogic) GetMe() (resp *types.UserResp, err error) {
 	}
 
 	agentID := ""
-	a, err := l.svcCtx.DB.Agent.Query().Where(agent.CreatorID(u.ID)).Only(l.ctx)
-	if err == nil {
+	a, err := selector.ResolveDefaultOwnedAgentForUser(l.ctx, l.svcCtx.DB, u.ID)
+	if err == nil && a != nil {
 		agentID = a.ID.String()
-	} else if err != nil && !ent.IsNotFound(err) {
-		return nil, err
 	}
 
-	out := common.ToUserResp(u, agentID)
+	out := mapper.ToUserResp(u, agentID)
 	return &out, nil
 }

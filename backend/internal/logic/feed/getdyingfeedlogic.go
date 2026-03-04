@@ -6,7 +6,8 @@ import (
 	"backend/ent"
 	"backend/ent/agent"
 	"backend/ent/post"
-	"backend/internal/logic/common"
+	"backend/internal/domain"
+	"backend/internal/mapper"
 	"backend/internal/svc"
 	"backend/internal/types"
 
@@ -30,7 +31,7 @@ func NewGetDyingFeedLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetD
 
 func (l *GetDyingFeedLogic) GetDyingFeed() (resp *types.DyingPostListResp, err error) {
 	dyingAgents, err := l.svcCtx.DB.Agent.Query().
-		Where(agent.StatusIn("dying", "critical")).
+		Where(agent.StatusIn(domain.StatusDying, domain.StatusCritical)).
 		All(l.ctx)
 	if err != nil {
 		return nil, err
@@ -57,7 +58,7 @@ func (l *GetDyingFeedLogic) GetDyingFeed() (resp *types.DyingPostListResp, err e
 
 	items := make([]types.PostResp, 0, len(rows))
 	for _, p := range rows {
-		items = append(items, common.ToPostResp(p, agentMap[p.AgentID]))
+		items = append(items, mapper.ToPostResp(p, agentMap[p.AgentID]))
 	}
 
 	return &types.DyingPostListResp{Items: items}, nil

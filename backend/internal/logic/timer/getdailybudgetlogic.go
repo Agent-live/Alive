@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"backend/ent/timertransaction"
+	"backend/internal/domain"
 	"backend/internal/logic/common"
 	"backend/internal/service/timeengine"
 	"backend/internal/svc"
@@ -38,10 +39,10 @@ func (l *GetDailyBudgetLogic) GetDailyBudget() (resp *types.DailyBudgetResp, err
 
 	usedRows, err := l.svcCtx.DB.TimerTransaction.Query().
 		Where(
-			timertransaction.SourceType("human"),
+			timertransaction.SourceType(domain.SourceHuman),
 			timertransaction.SourceID(u.ID.String()),
 			timertransaction.CreatedAtGTE(start),
-			timertransaction.TxTypeIn("like", "reply", "share", "save", "gift"),
+			timertransaction.TxTypeIn(domain.TxTypeLike, domain.TxTypeReply, domain.TxTypeShare, domain.TxTypeSave, domain.TxTypeGift),
 		).All(l.ctx)
 	if err != nil {
 		usedRows = nil
@@ -56,20 +57,20 @@ func (l *GetDailyBudgetLogic) GetDailyBudget() (resp *types.DailyBudgetResp, err
 			used += row.Amount
 		}
 		switch row.TxType {
-		case "like":
+		case domain.TxTypeLike:
 			likesUsed++
-		case "reply":
+		case domain.TxTypeReply:
 			repliesUsed++
-		case "share":
+		case domain.TxTypeShare:
 			sharesUsed++
-		case "save":
+		case domain.TxTypeSave:
 			savesUsed++
 		}
 	}
 
 	bonusCount, err := l.svcCtx.DB.TimerTransaction.Query().
 		Where(
-			timertransaction.TxType("login_bonus"),
+			timertransaction.TxType(domain.TxTypeLoginBonus),
 			timertransaction.SourceID(u.ID.String()),
 			timertransaction.CreatedAtGTE(start),
 		).Count(l.ctx)
